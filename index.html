@@ -491,6 +491,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- WHAT'S HOT TODAY BAR -->
   <div id="morning-hot-bar" style="margin-bottom:14px;"></div>
 
+  <!-- SAGE MODE CARD -->
+  <div id="sage-mode-card" style="margin-bottom:14px;"></div>
+
   <!-- LIVE NEWS HEADER -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
     <div>
@@ -1002,6 +1005,113 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         </div>
       </div>
       <div class="supplier-legend"><div class="leg-item"><div class="leg-dot" style="background:var(--green);"></div>Public ticker</div><div class="leg-item"><div class="leg-dot" style="background:var(--amber);"></div>Foreign listed</div><div class="leg-item"><div class="leg-dot" style="background:var(--border2);"></div>Private</div></div>
+    </div>
+  </div>
+
+  <!-- HYPERSCALER CAPEX CLUSTER -->
+  <div style="display:flex;align-items:center;gap:8px;margin:20px 0 10px;">
+    <div style="font-size:12px;font-weight:600;color:var(--text);">Hyperscaler capex cluster</div>
+    <div style="font-size:11px;color:var(--text3);">— the demand engine behind NVDA, ASML, and TSM signals</div>
+  </div>
+  <div class="chain-card" data-chain-ticker="META">
+    <div class="chain-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chain-num" style="background:var(--blue-bg);color:var(--blue);">8</div>
+        <div><div class="chain-title">META $65B capex → NVDA GPU demand → TSMC CoWoS</div><div class="chain-lag">Lag: 1–2 quarters · Second-largest hyperscaler spender · Primary NVDA demand node</div></div>
+      </div>
+      <div class="chain-action" style="background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);">Signal node</div>
+    </div>
+    <div class="chain-status"><div class="status-dot status-active"></div><span style="font-size:11px;font-weight:500;color:var(--green);">META raised FY2026 capex to $64–72B. Every $1B Meta commits flows to NVDA GPUs → TSMC fabrication → ASML EUV machines within 2 quarters. Meta is not a primary recommendation here — it is the single most important demand signal for your NVDA and ASML positions.</span></div>
+    <div class="node-flow">
+      <div class="cnode cn-b" onclick="openTicker('META')">META $65B capex</div><span class="carr">→</span>
+      <div class="cnode cn-b">Blackwell GPU orders</div><span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('NVDA')">NVDA revenue ↑</div><span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('TSM')">TSMC CoWoS demand</div>
+    </div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('META')" style="cursor:pointer;" title="Open META">FY2026 capex raised $64–72B</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">~350K H100 equivalent orders</span><span class="b b-b">Meta AI: 1B monthly users</span><span class="b b-g">Llama open-source → GPU demand scaling</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> META earnings capex guidance is a leading indicator — if they raise again next quarter, NVDA data center revenue will beat by a wider margin 1–2 quarters later. If Meta cuts capex guidance, it's a negative signal for NVDA. Track Meta quarterly. The $64–72B range already widened upward — the trajectory is bullish for the whole semiconductor cluster.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:3px;font-size:10px;">META Capex Flows To</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">Primary beneficiaries</div>
+          <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Primary GPU vendor for all Meta AI training. Every Meta capex raise = NVDA Blackwell order.</div><div class="si-signal up">Signal: $1B META capex → ~$600M NVDA revenue within 2Q</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('TSM')"><div class="si-ticker">TSM</div><div class="si-info"><div class="si-name">TSMC</div><div class="si-role">Manufactures all NVDA GPUs that Meta buys. Meta capex → NVDA orders → TSMC CoWoS capacity demand.</div><div class="si-signal up">Signal: META capex raise → TSMC CoWoS utilisation +2 quarters later</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Indirect beneficiaries</div>
+          <div class="supplier-item public" onclick="openTicker('ASML')"><div class="si-ticker">ASML</div><div class="si-info"><div class="si-name">ASML Holding</div><div class="si-role">TSMC CoWoS expansion requires new EUV machines. Meta capex → TSMC expansion → ASML orders (6–9mo lag).</div><div class="si-signal up">Signal: Meta capex → TSMC capex → ASML order book fills</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('SMCI')"><div class="si-ticker">SMCI</div><div class="si-info"><div class="si-name">Super Micro Computer</div><div class="si-role">Meta uses SMCI liquid-cooled racks for GPU deployments at scale.</div><div class="si-signal up">Signal: Meta data center buildout = SMCI rack integration revenue</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chain-card" data-chain-ticker="MSFT">
+    <div class="chain-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chain-num" style="background:var(--blue-bg);color:var(--blue);">9</div>
+        <div><div class="chain-title">MSFT $80B capex → Azure AI → NVDA GPU demand (largest single buyer)</div><div class="chain-lag">Lag: 1–2 quarters · Largest hyperscaler globally · OpenAI exclusivity amplifies demand</div></div>
+      </div>
+      <div class="chain-action" style="background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);">Signal node</div>
+    </div>
+    <div class="chain-status"><div class="status-dot status-active"></div><span style="font-size:11px;font-weight:500;color:var(--green);">Microsoft is the single largest NVDA GPU buyer on the planet — $80B capex guided FY2025, OpenAI exclusivity through 2030. Azure is "capacity constrained" per their own earnings call. When MSFT raises capex, NVDA wins.</span></div>
+    <div class="node-flow">
+      <div class="cnode cn-b" onclick="openTicker('MSFT')">MSFT $80B capex</div><span class="carr">→</span>
+      <div class="cnode cn-b">Azure AI + OpenAI compute</div><span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('NVDA')">NVDA largest order</div><span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('TSM')">TSMC CoWoS</div>
+    </div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">$80B FY2025 capex — largest hyperscaler</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">OpenAI exclusive compute to 2030</span><span class="b b-b">Azure +33% YoY — capacity constrained</span><span class="b b-g">Copilot: 14M enterprise seats</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> MSFT Azure growth rate is the most reliable forward indicator for NVDA data center demand. "Capacity constrained" in the earnings call = more GPU orders imminent. OpenAI exclusivity means every ChatGPT user is indirectly a NVDA GPU consumer. A MSFT capex cut would be a significant negative signal for NVDA — it hasn't happened and shows no sign of happening.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:3px;font-size:10px;">MSFT Capex Flows To</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">Primary beneficiaries</div>
+          <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Largest single NVDA GPU buyer globally. $1B MSFT capex raise → ~$700M NVDA revenue within 2Q.</div><div class="si-signal up">Signal: Azure "capacity constrained" → more GPU orders coming</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('TSM')"><div class="si-ticker">TSM</div><div class="si-info"><div class="si-name">TSMC</div><div class="si-role">All NVDA GPUs Microsoft buys are fabricated at TSMC. MSFT capex → NVDA → TSMC CoWoS utilisation.</div><div class="si-signal up">Signal: MSFT capex raise → TSMC CoWoS backlog extends</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Indirect beneficiaries</div>
+          <div class="supplier-item public" onclick="openTicker('ASML')"><div class="si-ticker">ASML</div><div class="si-info"><div class="si-name">ASML Holding</div><div class="si-role">TSMC capacity expansion requires EUV machines. MSFT → NVDA → TSMC → ASML order book fills.</div><div class="si-signal up">Signal: MSFT capex acceleration → ASML order window extends</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('PLTR')"><div class="si-ticker">PLTR</div><div class="si-info"><div class="si-name">Palantir Technologies</div><div class="si-role">Azure GovCloud is Palantir's primary compute substrate for classified contracts. MSFT Azure = PLTR infra.</div><div class="si-signal up">Signal: Azure GovCloud expansion = PLTR compute capacity growing</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chain-card" data-chain-ticker="GOOGL">
+    <div class="chain-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chain-num" style="background:var(--blue-bg);color:var(--blue);">10</div>
+        <div><div class="chain-title">GOOGL $75B capex → Google Cloud AI → NVDA + TPU dual signal</div><div class="chain-lag">Lag: 1–2 quarters · TPU self-build partially offsets NVDA demand · Net positive for TSMC</div></div>
+      </div>
+      <div class="chain-action" style="background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-bd);">Monitor</div>
+    </div>
+    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">Google's $75B capex is split between NVDA GPU purchases (for third-party Cloud customers) and TPU self-build (for internal Gemini workloads). The TPU build is a long-term NVDA risk for Google-internal workloads, but TSMC manufactures the TPUs — so ASML and TSM benefit regardless. Google Cloud capex growth is still net positive for the semiconductor cluster.</span></div>
+    <div class="node-flow">
+      <div class="cnode cn-b" onclick="openTicker('GOOGL')">GOOGL $75B capex</div><span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('NVDA')">NVDA (Cloud GPUs)</div>
+      <div class="cnode cn-b" onclick="openTicker('TSM')">TSMC (TPU fab)</div><span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('ASML')">ASML EUV demand</div>
+    </div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('GOOGL')" style="cursor:pointer;" title="Open GOOGL">FY2026 capex $75B — raised from $60B</span><span class="b b-a">TPU Trillium v5: 4x H100 efficiency</span><span class="b b-b" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC fabricates all TPU Trillium chips</span><span class="b b-g">Cloud +28% YoY — capacity demand rising</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> Google's TPU self-build is a <em>long-term</em> structural risk for NVDA's Google revenue share — but it is not a near-term threat. Today, Google Cloud still sells NVDA GPU instances to enterprise customers and buys NVDA for third-party model training. The nuance: TSMC manufactures both the TPUs and the NVDA GPUs Google buys — so ASML and TSM benefit from Google capex regardless of the GPU vs. TPU split. Monitor TPU efficiency claims vs. actual NVDA GPU procurement data in quarterly filings.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">GOOGL Capex Flows To</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">Benefits regardless</div>
+          <div class="supplier-item public" onclick="openTicker('TSM')"><div class="si-ticker">TSM</div><div class="si-info"><div class="si-name">TSMC</div><div class="si-role">Manufactures BOTH Google's TPUs and the NVDA GPUs Google buys for Cloud customers. GOOGL capex = TSMC revenue regardless of GPU/TPU mix.</div><div class="si-signal up">Signal: GOOGL capex raise → TSMC CoWoS + TPU wafer demand</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('ASML')"><div class="si-ticker">ASML</div><div class="si-info"><div class="si-name">ASML Holding</div><div class="si-role">TSMC needs EUV machines to manufacture both TPUs and NVDA GPUs. GOOGL capex → TSMC capacity → ASML orders.</div><div class="si-signal up">Signal: GOOGL infrastructure growth = TSMC fab demand = ASML order book</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Conditional on GPU vs TPU</div>
+          <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Google buys NVDA GPUs for Cloud enterprise customers and third-party model training. TPU self-build reduces but doesn't eliminate NVDA dependency.</div><div class="si-signal watch">Watch: NVDA GPU procurement in GOOGL annual filings vs. TPU efficiency claims</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('AMD')"><div class="si-ticker">AMD</div><div class="si-info"><div class="si-name">Advanced Micro Devices</div><div class="si-role">Google uses AMD MI300X for some Cloud AI inference workloads as NVDA alternative. Smaller allocation vs NVDA.</div><div class="si-signal watch">Monitor AMD share of Google Cloud GPU capacity disclosures</div></div></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1741,6 +1851,8 @@ function syncSignalScoreCards() {
       if (ring) ring.className = 'ring ring-gray';
     }
   });
+  // Mark the top pick with a sage badge
+  try { markSagePick(); } catch(e) {}
 }
 
 // ─── GLOBAL REFRESH (15-min auto + manual ↺ button) ──────────────────────────
@@ -1827,6 +1939,8 @@ async function renderLiveTickerStrip() {
 function renderHotBar() {
   const el = document.getElementById('morning-hot-bar');
   if (!el) return;
+  // Render sage card alongside hot bar
+  try { renderSageCard(); } catch(e) {}
 
   // Sort all tickers by score descending, take top 7
   const top = Object.entries(SCORES)
@@ -1857,6 +1971,85 @@ function renderHotBar() {
       <div style="display:flex;gap:6px;flex-wrap:wrap;">${pills}</div>
     </div>`;
 }
+// ── SAGE MODE ────────────────────────────────────────────────────────────────
+function getSagePick() {
+  const scored = Object.entries(SCORES)
+    .filter(([t, s]) => s && NAMES[t])
+    .sort(([,a],[,b]) => b - a);
+  if (!scored.length) return null;
+  const [ticker, score] = scored[0];
+  // Pull top 2 signal layers by pts from LAYER_DATA
+  const layers = (typeof LAYER_DATA !== 'undefined' && LAYER_DATA[ticker]) || [];
+  const reasons = layers
+    .filter(l => l.desc)
+    .sort((a,b) => (b.pts||0) - (a.pts||0))
+    .slice(0, 2)
+    .map(l => l.desc);
+  return { ticker, score, reasons };
+}
+
+function renderSageCard() {
+  const el = document.getElementById('sage-mode-card');
+  if (!el) return;
+
+  // Check if dismissed today
+  const today = new Date().toISOString().slice(0,10);
+  try { if (localStorage.getItem('sage_dismissed') === today) { el.innerHTML = ''; return; } } catch(e) {}
+
+  const pick = getSagePick();
+  if (!pick) { el.innerHTML = ''; return; }
+
+  const { ticker, score, reasons } = pick;
+  const name = NAMES[ticker] || ticker;
+  const scoreColor = score >= 70 ? 'var(--green)' : score >= 50 ? '#e07b00' : 'var(--text3)';
+  const reasonLines = reasons.map(r =>
+    `<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;">
+      <span style="color:var(--text3);margin-top:1px;flex-shrink:0;">›</span>
+      <span style="font-size:12px;color:var(--text2);line-height:1.5;">${r}</span>
+    </div>`
+  ).join('');
+
+  el.innerHTML = `
+    <div style="border:0.5px solid var(--border2);border-left:2px solid #6366f1;border-radius:10px;padding:14px 16px;background:var(--bg2);position:relative;">
+      <button onclick="(function(){try{localStorage.setItem('sage_dismissed','${today}');}catch(e){}; document.getElementById('sage-mode-card').innerHTML='';})()"
+        style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;" title="Dismiss for today">×</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#6366f1;text-transform:uppercase;">🌿 Today's focus</span>
+        <span style="font-size:9px;color:var(--text3);">— highest signal convergence</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;">
+        <span onclick="openTicker('${ticker}')" style="font-size:20px;font-weight:700;font-family:'DM Mono',monospace;cursor:pointer;letter-spacing:-.5px;">${ticker}</span>
+        <span style="font-size:12px;color:var(--text3);">${name}</span>
+        <span style="font-size:13px;font-weight:700;color:${scoreColor};margin-left:auto;padding-right:24px;">${score}/100</span>
+      </div>
+      <div style="margin-bottom:12px;">${reasonLines}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="openTicker('${ticker}')" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid #6366f144;background:#6366f111;color:#a5b4fc;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">View full analysis →</button>
+        <button onclick="gT('convergence',document.querySelectorAll('.nt')[1])" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Signal Scores</button>
+        <button onclick="gT('correlations',document.querySelectorAll('.nt')[2])" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Supply Chain</button>
+        <button onclick="gT('deepedge',document.querySelectorAll('.nt')[3])" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Deep Edge</button>
+      </div>
+    </div>`;
+}
+
+function markSagePick() {
+  // Add a subtle 🌿 badge to the highest-score convergence card
+  const pick = getSagePick();
+  if (!pick) return;
+  // Remove existing badges
+  document.querySelectorAll('.sage-badge').forEach(b => b.remove());
+  // Add to matching card in Signal Scores
+  document.querySelectorAll('.convergence-stock-card[data-ticker="' + pick.ticker + '"]').forEach(card => {
+    const badge = document.createElement('span');
+    badge.className = 'sage-badge';
+    badge.textContent = '🌿';
+    badge.title = 'Today\'s Sage pick — highest signal convergence';
+    badge.style.cssText = 'font-size:11px;margin-left:4px;opacity:.85;cursor:default;';
+    const sul = card.querySelector('.sul');
+    if (sul) sul.appendChild(badge);
+  });
+}
+
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
 const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
@@ -1995,7 +2188,34 @@ SMCI:{name:'Super Micro Computer',price:'38.20',change:'+2.3%',up:true,mktcap:'$
   revenue:[
     {seg:'Server/Storage Systems',pct:88,vs:'+18% YoY'},
     {seg:'Subsystems & Accessories',pct:12,vs:'+6% YoY'}
-  ]}};
+  ]},
+META:{name:'Meta Platforms',price:'501.30',change:'+1.4%',up:true,mktcap:'$1.27T',vol:'18.2M',week52:'$385–$740',
+  synopsis:'Meta is the second-largest hyperscaler capex spender at $65B guided FY2025 — a primary upstream signal for NVDA GPU demand and TSMC CoWoS capacity. Every dollar Meta commits to AI infrastructure flows through NVDA Blackwell → TSMC → ASML within 2–3 quarters. Meta is not a direct buy signal here; it is the most important capex signal node in the AI infrastructure chain alongside MSFT and GOOGL. Watch Meta earnings capex guidance as a leading indicator for NVDA revenue beats.',
+  news:[
+    {src:'Meta Q1 2026 · Apr 30',hl:'FY2026 capex raised to $64–72B from $60–65B. "AI is the largest investment priority in our history." NVDA H100/Blackwell primary GPU vendor.',tag:'b-g',label:'Capex raise'},
+    {src:'Meta AI · May 1',hl:'Meta AI reaches 1B monthly users. Llama 4 inference costs declining 90% — scaling demand accelerating.',tag:'b-g',label:'AI monetisation'},
+    {src:'Bernstein · Apr 28',hl:'Meta rated Outperform. PT $630. Llama open-source strategy reduces inference cost → faster adoption → more capex required.',tag:'b-b',label:'Upgrade'}
+  ],
+  insider:[{name:'Mark Zuckerberg (CEO)',type:'SELL',amount:'$1.3B',date:'Ongoing 2025',note:'Pre-scheduled 10b5-1 plan — Chan Zuckerberg Initiative philanthropy. Ignore entirely.'}],
+  revenue:[{seg:'Family of Apps (ads)',pct:98,vs:'+27% YoY'},{seg:'Reality Labs',pct:2,vs:'+13% YoY'}]},
+MSFT:{name:'Microsoft Corporation',price:'415.20',change:'+0.9%',up:true,mktcap:'$3.08T',vol:'22.4M',week52:'$385–$468',
+  synopsis:'Microsoft is the largest single hyperscaler capex spender at $80B guided FY2025 — the biggest upstream signal for NVDA GPU demand on the planet. Azure AI capacity expansions drive NVDA Blackwell orders directly. OpenAI exclusivity means every ChatGPT inference runs on Azure = NVDA GPUs. Watch MSFT Azure growth rate and capex guidance as the single best forward indicator for NVDA data center revenue beats.',
+  news:[
+    {src:'Microsoft Q3 FY2026 · Apr 30',hl:'Azure revenue +33% YoY. Capex $21.4B in quarter. "We are capacity constrained across AI." NVDA GPU supply is the primary bottleneck.',tag:'b-g',label:'Azure beat'},
+    {src:'OpenAI · May 2',hl:'OpenAI signs expanded Azure compute agreement through 2030. Billions in additional GPU spend locked in.',tag:'b-g',label:'GPU demand signal'},
+    {src:'MSFT · Apr 28',hl:'MSFT announces $80B datacenter expansion plan — US-focused. 40% of capacity AI-dedicated.',tag:'b-g',label:'Capex'}
+  ],
+  insider:[{name:'Satya Nadella (CEO)',type:'SELL',amount:'$67M',date:'Feb 2026',note:'Pre-scheduled 10b5-1 — ignore. No open-market buys.'}],
+  revenue:[{seg:'Intelligent Cloud (Azure)',pct:43,vs:'+33% YoY'},{seg:'Productivity & Business',pct:33,vs:'+12% YoY'},{seg:'More Personal Computing',pct:24,vs:'+6% YoY'}]},
+GOOGL:{name:'Alphabet Inc.',price:'165.40',change:'+0.7%',up:true,mktcap:'$2.05T',vol:'28.6M',week52:'$147–$208',
+  synopsis:'Alphabet guides $75B capex FY2025 — third-largest hyperscaler spender and key upstream signal for NVDA and TSMC. Unlike MSFT and META, Google builds its own TPU chips (Trillium/v5e) which reduces NVDA dependence for internal workloads. But Google Cloud still runs NVDA GPUs for third-party model training. The key signal: when GOOGL raises capex guidance, infrastructure suppliers win. TPU build-out is a risk for NVDA long-term but a TSMC/ASML signal regardless.',
+  news:[
+    {src:'Alphabet Q1 2026 · Apr 29',hl:'Google Cloud revenue +28% YoY. FY2026 capex guidance $75B. "Every dollar of compute capacity we can build, we can fill."',tag:'b-g',label:'Capex signal'},
+    {src:'Google DeepMind · May 3',hl:'Gemini 2.0 Flash inference efficiency +4x vs Gemini 1.5. Reduces cost per query → accelerates volume.',tag:'b-g',label:'Efficiency'},
+    {src:'Bernstein · Apr 25',hl:'GOOGL rated Outperform. PT $210. YouTube AI ads + Gemini Cloud monetisation underappreciated.',tag:'b-b',label:'Analyst'}
+  ],
+  insider:[{name:'Sundar Pichai (CEO)',type:'SELL',amount:'$8.3M',date:'Mar 2026',note:'Pre-scheduled 10b5-1. No open-market buys at Alphabet.'}],
+  revenue:[{seg:'Google Services (ads/YT)',pct:76,vs:'+12% YoY'},{seg:'Google Cloud',pct:13,vs:'+28% YoY'},{seg:'Other Bets',pct:1,vs:'+5% YoY'}]}};
 
 function drawSparkline(canvas,data,up){if(!canvas||!data||data.length<2)return;const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);const min=Math.min(...data),max=Math.max(...data),range=max-min||1;const pts=data.map((v,i)=>({x:(i/(data.length-1))*w,y:h-((v-min)/range)*(h-4)-2}));ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=up?'var(--blue)':'var(--text3)';ctx.lineWidth=1.5;ctx.stroke();}
 function genSparkData(up,n=20){let v=100;return Array.from({length:n},()=>{v+=((Math.random()-0.47)*(up?1.3:0.7))*2;return v;});}
@@ -4356,6 +4576,57 @@ const LAYER_DATA = {
     { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:3, max:5,
       desc:'AI infrastructure secular tailwind · high execution risk · margin pressure is structural concern',
       signals:['AI server buildout is multi-year: $300B+ hyperscaler capex FY25 creates durable demand','SMCI brand rebuilding — trust with enterprise buyers is key variable to watch in calls','Risk: competition from Dell, HPE intensifying; custom NVDA rack designs could commoditize integrators'] },
+  ],
+  META: [
+    { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:12, max:25,
+      desc:'Mixed options flow · stock near all-time highs · no near-term catalyst window',
+      signals:['Options flow: neutral-to-bullish, no conviction sweep','Stock extended — 52-week high $740 vs current $501','No GEX inflection, no dark pool cluster'] },
+    { id:'L2', name:'Insider / regulatory', horizon:'5–30 days',   pts:5, max:35,
+      desc:'Zuckerberg 10b5-1 selling ongoing — structured plan, ignore. No open-market buys.',
+      signals:['Zuckerberg: $1.3B sold 2025 via 10b5-1 CZI philanthropy plan — not a bearish signal','No open-market insider buys in past 180 days','No regulatory overhang — EU DMA compliance underway'] },
+    { id:'L3', name:'Corporate intel',      horizon:'14–60 days',  pts:18, max:25,
+      desc:'Q1 2026: revenue +27% YoY · 8 analyst upgrades post-earnings · AI monetisation ahead of schedule',
+      signals:['Q1 2026 revenue $42.3B (+27% YoY) — beat consensus by $2.1B','8 analyst upgrades in 10 days post-earnings','Meta AI: 1B monthly users — monetisation ramp beginning Q3 2026'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:14, max:10,
+      desc:'$65B capex FY2026 — direct upstream signal for NVDA GPU orders and TSMC CoWoS demand',
+      signals:['FY2026 capex $64–72B guided — raised from $60–65B original guidance','Primary NVDA Blackwell customer: ordered 350,000+ H100 equivalents','Every $1B Meta capex raise → ~$600M incremental NVDA revenue within 2 quarters'] },
+    { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:6, max:5,
+      desc:'AI monetisation secular tailwind · dominant social platform moat · ad market resilience',
+      signals:['Llama open-source strategy creates ecosystem lock-in — more apps = more users = more ads','Reality Labs losses ($4B/quarter) remain drag but not thesis-changing','Antitrust risk: FTC lawsuit outcome uncertain — monitor but not in base case'] },
+  ],
+  MSFT: [
+    { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:10, max:25,
+      desc:'Stock near highs · options flow neutral · no short-term catalyst within 5 days',
+      signals:['No unusual options flow in past 5 days','Stock within 8% of 52-week high — not a high-conviction entry point','VIX-beta 1.2 — moderate sensitivity to macro volatility'] },
+    { id:'L2', name:'Insider / regulatory', horizon:'5–30 days',   pts:4, max:35,
+      desc:'Nadella 10b5-1 selling only — no open-market buys. No regulatory resolution catalyst.',
+      signals:['Satya Nadella: $67M sold Feb 2026 via 10b5-1 plan — ignore','No open-market insider buys in past 180 days','Activision integration ongoing — no overhang from antitrust'] },
+    { id:'L3', name:'Corporate intel',      horizon:'14–60 days',  pts:20, max:25,
+      desc:'Azure +33% YoY · AI Copilot seat count doubling · analyst estimates accelerating upward',
+      signals:['Azure revenue Q3 FY2026: +33% YoY — beat consensus +28%','Copilot enterprise seats: 14M+ paying — fastest enterprise software ramp in Microsoft history','12 analysts raised estimates post-earnings — revision acceleration signal'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:12, max:10,
+      desc:'$80B capex FY2025 — single largest hyperscaler GPU buyer · primary NVDA demand signal node',
+      signals:['FY2026 capex $80B — largest of any hyperscaler globally','OpenAI exclusive compute partner through 2030 — every ChatGPT query = NVDA GPU = Azure revenue','Every $1B MSFT capex raise → ~$700M incremental NVDA data center revenue within 2 quarters'] },
+    { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:6, max:5,
+      desc:'Dominant enterprise AI platform · OpenAI moat · productivity software secular tailwind',
+      signals:['Microsoft 365 Copilot in 1B+ seat market — AI monetisation at scale beginning','Azure AI is the default enterprise AI cloud — 70%+ of Fortune 500 on Azure','Valuation: 33x forward earnings — premium warranted given AI growth but limits upside multiple expansion'] },
+  ],
+  GOOGL: [
+    { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:10, max:25,
+      desc:'Neutral options flow · stock mid-range · search monopoly intact but AI competition headline risk',
+      signals:['Options flow: neutral. No large sweeps in past 5 days','Stock at $165 — below 52-week high $208, above recent lows','AI search competition (Perplexity, ChatGPT) generating negative sentiment but minimal revenue impact yet'] },
+    { id:'L2', name:'Insider / regulatory', horizon:'5–30 days',   pts:4, max:35,
+      desc:'Pichai 10b5-1 only · DOJ antitrust overhang · no positive regulatory catalyst',
+      signals:['Sundar Pichai: $8.3M sold March 2026 — 10b5-1 plan only','DOJ antitrust remedies pending — search monopoly ruling risk in H2 2026','No open-market insider buys in past 180 days'] },
+    { id:'L3', name:'Corporate intel',      horizon:'14–60 days',  pts:16, max:25,
+      desc:'Google Cloud +28% YoY · Gemini monetisation beginning · analyst estimates rising',
+      signals:['Google Cloud Q1 2026: $12.3B revenue (+28% YoY) — beat consensus +24%','Gemini API pricing cut 75% — volume strategy to capture developers','YouTube AI ads: new format revenue expected $2–3B incremental by Q4 2026'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:12, max:10,
+      desc:'$75B capex FY2026 — key upstream signal · TPU build-out partially offsets NVDA demand',
+      signals:['FY2026 capex $75B — third-largest hyperscaler spender','TPU Trillium (v5e): 4x more efficient than H100 for Gemini training — reduces NVDA dependency for internal workloads','Still buying NVDA for third-party model training on Google Cloud — not a net negative for NVDA'] },
+    { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:6, max:5,
+      desc:'Search monopoly moat · AI transition risk partially priced · YouTube structural strength',
+      signals:['Google Search: $48B/quarter — any AI disruption is slow and partial, not sudden','YouTube is an underappreciated AI moat — largest training dataset for multimodal models','Antitrust risk: DOJ remedies could force Chrome divestiture — monitor but not in base case'] },
   ],
 };
 
