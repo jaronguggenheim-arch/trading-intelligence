@@ -295,6 +295,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button onclick="renderLayerAnalysis('META',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">META</button>
       <button onclick="renderLayerAnalysis('MSFT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MSFT</button>
       <button onclick="renderLayerAnalysis('GOOGL',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GOOGL</button>
+      <button onclick="renderLayerAnalysis('VST',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">VST</button>
+      <button onclick="renderLayerAnalysis('CEG',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CEG</button>
     </div>
   </div>
 </div>
@@ -561,6 +563,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="sc sc-a convergence-stock-card" data-ticker="META" onclick="openTicker('META')"><div class="sul">META — Score 55 · $65B capex raise · AI monetisation ahead</div><div class="suh">Primary upstream signal node for NVDA and ASML. Capex raised FY2026. Meta AI at 1B users — revenue ramp beginning.</div><div class="sc-meta"><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-mid">Capex signal</span><span class="score-pill">55/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="MSFT" onclick="openTicker('MSFT')"><div class="sul">MSFT — Score 52 · $80B capex · Azure capacity constrained</div><div class="suh">Largest hyperscaler GPU buyer globally. Azure +33% YoY. OpenAI exclusivity through 2030. Every capacity raise = NVDA orders.</div><div class="sc-meta"><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">52/100</span></div></div>
         <div class="sc sc-gray convergence-stock-card" data-ticker="GOOGL" onclick="openTicker('GOOGL')"><div class="sul">GOOGL — Score 48 · $75B capex · TPU risk to monitor</div><div class="suh">Third-largest hyperscaler. TPU self-build reduces NVDA dependence for internal workloads — but TSMC benefits regardless.</div><div class="sc-meta"><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mid">TPU vs GPU</span><span class="score-pill">48/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="VST" onclick="openTicker('VST')"><div class="sul">VST — Score 58 · AI power demand · CEO + CFO buying</div><div class="suh">Largest US competitive power generator. Druckenmiller rotated in. Every $1B hyperscaler capex = +2.5GW demand — VST is the primary Texas beneficiary.</div><div class="sc-meta"><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI tailwind</span><span class="score-pill">58/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="CEG" onclick="openTicker('CEG')"><div class="sul">CEG — Score 55 · TMI restart · Microsoft 20yr PPA</div><div class="suh">Largest US nuclear operator. Three Mile Island restarted for Microsoft AI data centers. Nuclear PPAs at $160/MWh — demand far exceeds supply.</div><div class="sc-meta"><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">55/100</span></div></div>
       </div>
       <div class="card" style="border-color:var(--purple-bd);background:rgba(168,85,247,0.05);cursor:pointer;" onclick="gT('correlations',document.querySelectorAll('.nt')[2])">
         <div class="card-lbl" style="color:var(--purple);">Key correlation signal today</div>
@@ -751,6 +755,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="convergence-stock-card" data-ticker="GOOGL" style="display:flex;gap:12px;padding:12px;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;" onclick="openTicker('GOOGL')">
         <div class="ring ring-gray">48</div>
         <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">GOOGL</span><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mixed">TPU vs GPU</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$75B capex FY2026</span><span class="b b-a">TPU Trillium: 4x H100</span><span class="b b-g">Cloud +28% YoY</span></div><div style="font-size:11px;color:var(--text2);">TPU self-build reduces NVDA dependency long-term. But TSMC fabricates TPUs — so ASML and TSM benefit regardless of GPU/TPU split.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:8px 2px 4px;">Energy infrastructure — AI power demand signal</div>
+      <div class="convergence-stock-card" data-ticker="VST" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('VST')">
+        <div class="ring ring-a">58</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">VST</span><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI demand tailwind</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">Druckenmiller position</span><span class="b b-r">CEO + CFO buying</span><span class="b b-g">Q1 beat · guidance raised</span><span class="b b-g">Goldman PT $170</span></div><div style="font-size:11px;color:var(--text2);">Every $1B of hyperscaler capex = +2.5GW power demand. Vistra is the largest Texas generator — primary beneficiary of data center buildout in the primary US data center corridor.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <div class="convergence-stock-card" data-ticker="CEG" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CEG')">
+        <div class="ring ring-a">55</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CEG</span><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">20yr contracts</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">MSFT 20yr PPA</span><span class="b b-r">CEO $2.1M buy</span><span class="b b-g">TMI restart complete</span><span class="b b-g">Goldman PT $240</span></div><div style="font-size:11px;color:var(--text2);">Only viable 24/7 carbon-free baseload for AI data centers. Nuclear PPA demand exceeds supply — pricing power is now with Constellation. Two additional hyperscaler PPA negotiations active.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -1132,6 +1147,80 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div class="supplier-col-lbl">Conditional on GPU vs TPU</div>
           <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Google buys NVDA GPUs for Cloud enterprise customers and third-party model training. TPU self-build reduces but doesn't eliminate NVDA dependency.</div><div class="si-signal watch">Watch: NVDA GPU procurement in GOOGL annual filings vs. TPU efficiency claims</div></div></div>
           <div class="supplier-item public" onclick="openTicker('AMD')"><div class="si-ticker">AMD</div><div class="si-info"><div class="si-name">Advanced Micro Devices</div><div class="si-role">Google uses AMD MI300X for some Cloud AI inference workloads as NVDA alternative. Smaller allocation vs NVDA.</div><div class="si-signal watch">Monitor AMD share of Google Cloud GPU capacity disclosures</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENERGY INFRASTRUCTURE CLUSTER -->
+  <div style="font-size:12px;font-weight:600;color:var(--text);margin:20px 0 10px;">Energy infrastructure — AI power demand</div>
+
+  <div class="chain-card" data-chain-ticker="VST">
+    <div class="chain-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chain-num" style="background:var(--amber-bg);color:var(--amber);">11</div>
+        <div><div class="chain-title">Hyperscaler capex → +2.5GW per $1B → VST Texas power fleet</div><div class="chain-lag">Lag: 6–18 months · Druckenmiller position · Active window</div></div>
+      </div>
+      <div class="chain-action" style="background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-bd);">Watch</div>
+    </div>
+    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">AI data centers consume power at a ratio of ~2.5GW per $1B of hyperscaler capex. Meta, Microsoft, and Google have collectively committed $220B+ in FY2026 capex — that's a structural demand curve the grid wasn't built for. Vistra's Texas ERCOT fleet (nuclear + natural gas) is geographically positioned in the primary US data center build corridor. CEO and CFO bought open market in March 2026. Druckenmiller disclosed 2.1M share position in Q1 2026 13F.</span></div>
+    <div class="node-flow">
+      <div class="cnode cn-b" onclick="openTicker('META')">META $65B capex</div>
+      <div class="cnode cn-b" onclick="openTicker('MSFT')">MSFT $80B capex</div>
+      <div class="cnode cn-b" onclick="openTicker('GOOGL')">GOOGL $75B capex</div>
+      <span class="carr">→</span>
+      <div class="cnode cn-a">+550GW demand curve</div>
+      <span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('VST')">VST Texas grid</div>
+    </div>
+    <div class="evidence-row"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT $80B capex FY2026 — #1 globally</span><span class="b b-b" onclick="openTicker('META')" style="cursor:pointer;" title="Open META">META $65B capex raised from $40B</span><span class="b b-g">AI data center = 2.5GW per $1B capex spend</span><span class="b b-a">Druckenmiller: 2.1M VST shares (Q1 2026)</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> Track hyperscaler quarterly capex guidance. Every raise is a direct leading indicator for power demand. <em>The signal lag is 6–18 months</em> — data centers announced today come online next year. Vistra Q1 2026 already beat estimates and raised guidance. Two undisclosed data center PPAs reportedly in negotiation. Texas ERCOT summer peak pricing will be the short-term catalyst.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">AI Power Demand Beneficiaries</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">Primary Texas beneficiary</div>
+          <div class="supplier-item public" onclick="openTicker('VST')"><div class="si-ticker">VST</div><div class="si-info"><div class="si-name">Vistra Energy</div><div class="si-role">Largest competitive power generator in Texas ERCOT. Nuclear + gas fleet positioned at data center build-out epicenter. CEO + CFO buying.</div><div class="si-signal up">Signal: Hyperscaler capex raise → VST power demand → ERCOT pricing</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Nuclear clean power PPAs</div>
+          <div class="supplier-item public" onclick="openTicker('CEG')"><div class="si-ticker">CEG</div><div class="si-info"><div class="si-name">Constellation Energy</div><div class="si-role">Largest US nuclear operator. Three Mile Island restarted for Microsoft. Two additional hyperscaler PPAs in active negotiation. 24/7 carbon-free baseload = premium pricing.</div><div class="si-signal up">Signal: AI carbon-free demand → nuclear PPA scarcity → CEG pricing power</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chain-card" data-chain-ticker="CEG">
+    <div class="chain-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chain-num" style="background:var(--amber-bg);color:var(--amber);">12</div>
+        <div><div class="chain-title">AI carbon-free mandate → nuclear PPA scarcity → CEG pricing power</div><div class="chain-lag">Lag: Contract signing to earnings · 20-year PPA lock-in · Active now</div></div>
+      </div>
+      <div class="chain-action" style="background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-bd);">Watch</div>
+    </div>
+    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">Major tech companies have committed to 24/7 carbon-free energy for their data centers. The problem: the only available 24/7 carbon-free baseload is nuclear power. Solar and wind are intermittent. Constellation holds the largest US nuclear fleet (21 reactors, 21GW) and just restarted Three Mile Island Unit 1 specifically for a 20-year Microsoft PPA at $160/MWh — a significant premium to spot prices. CEO Joe Dominguez disclosed two additional hyperscaler PPA negotiations on the Q1 2026 call. Nuclear PPA demand materially exceeds available supply.</span></div>
+    <div class="node-flow">
+      <div class="cnode cn-b" onclick="openTicker('MSFT')">MSFT net-zero mandate</div>
+      <span class="carr">→</span>
+      <div class="cnode cn-a">24/7 carbon-free required</div>
+      <span class="carr">→</span>
+      <div class="cnode cn-g" onclick="openTicker('CEG')">CEG nuclear fleet</div>
+      <span class="carr">→</span>
+      <div class="cnode cn-g">20yr PPA $160/MWh</div>
+    </div>
+    <div class="evidence-row"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT TMI PPA: 835MW · 20 years · $160/MWh</span><span class="b b-g">Nuclear = only viable 24/7 carbon-free baseload</span><span class="b b-r">CEO Dominguez: $2.1M open market buy</span><span class="b b-g">2 additional hyperscaler PPAs in negotiation</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> Each new nuclear PPA announcement is a re-rating catalyst for CEG. Goldman PT is $240 vs current ~$191 — the upside case is more PPAs signed at premium prices. <em>The key risk:</em> new nuclear capacity (SMRs, new builds) is 10+ years away — CEG is supply-constrained in the best possible way. Monitor Google, Amazon, and Meta carbon-free energy commitments for additional PPA pipeline signal.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">Nuclear PPA Demand Chain</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">PPA signed</div>
+          <div class="supplier-item public" onclick="openTicker('MSFT')"><div class="si-ticker">MSFT</div><div class="si-info"><div class="si-name">Microsoft Corporation</div><div class="si-role">20-year PPA for Three Mile Island Unit 1 restart. 835MW dedicated to Microsoft Azure data centers. First nuclear restart in US history for a single corporate buyer.</div><div class="si-signal up">Signal: TMI PPA = template. MSFT capex raise → more nuclear PPAs</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Pipeline candidates</div>
+          <div class="supplier-item public" onclick="openTicker('GOOGL')"><div class="si-ticker">GOOGL</div><div class="si-info"><div class="si-name">Alphabet (Google)</div><div class="si-role">Google has committed to 24/7 carbon-free energy for all data centers by 2030. Currently sourcing nuclear in Europe — US nuclear PPA likely.</div><div class="si-signal watch">Watch: GOOGL 24/7 CFE procurement disclosures in sustainability filings</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('META')"><div class="si-ticker">META</div><div class="si-info"><div class="si-name">Meta Platforms</div><div class="si-role">Meta committed to net-zero by 2030. $65B capex = massive power footprint. Nuclear PPA would be transformational for both Meta and CEG.</div><div class="si-signal watch">Monitor Meta energy procurement announcements — nuclear PPA would move CEG</div></div></div>
         </div>
       </div>
     </div>
@@ -2237,7 +2326,25 @@ GOOGL:{name:'Alphabet Inc.',price:'165.40',change:'+0.7%',up:true,mktcap:'$2.05T
     {src:'Bernstein · Apr 25',hl:'GOOGL rated Outperform. PT $210. YouTube AI ads + Gemini Cloud monetisation underappreciated.',tag:'b-b',label:'Analyst'}
   ],
   insider:[{name:'Sundar Pichai (CEO)',type:'SELL',amount:'$8.3M',date:'Mar 2026',note:'Pre-scheduled 10b5-1. No open-market buys at Alphabet.'}],
-  revenue:[{seg:'Google Services (ads/YT)',pct:76,vs:'+12% YoY'},{seg:'Google Cloud',pct:13,vs:'+28% YoY'},{seg:'Other Bets',pct:1,vs:'+5% YoY'}]}};
+  revenue:[{seg:'Google Services (ads/YT)',pct:76,vs:'+12% YoY'},{seg:'Google Cloud',pct:13,vs:'+28% YoY'},{seg:'Other Bets',pct:1,vs:'+5% YoY'}]},
+VST:{name:'Vistra Energy Corp.',price:'130.40',change:'-0.2%',up:false,mktcap:'$43B',vol:'5.8M',week52:'$55–$183',
+  synopsis:'Vistra is the largest competitive power generator in the US — nuclear, natural gas, solar. The key thesis: AI data centers consume power at roughly 2.5GW per $1B of hyperscaler capex spend. Meta, Microsoft, and Google have collectively committed $220B+ in FY2026 capex — a structural demand curve the grid was not built for. Vistra\'s Texas ERCOT fleet is geographically positioned in the primary US data center build corridor. CEO and CFO bought open market in March 2026. Druckenmiller disclosed 2.1M share position in Q1 2026 13F. Q1 2026 earnings beat and guidance raised.',
+  news:[
+    {src:'Goldman Sachs · May 5',hl:'VST rated Buy. PT raised $155→$170. "AI power demand adds $3.2B to Texas power revenue by 2028. Data center pipeline is unprecedented."',tag:'b-g',label:'PT raise'},
+    {src:'Duquesne/Druckenmiller 13F · Q1 2026',hl:'New position disclosed: 2.1M shares VST. Part of energy infrastructure rotation alongside CEG. Conviction-size position.',tag:'b-b',label:'Institutional buy'},
+    {src:'Vistra Q1 2026 · May 1',hl:'EPS $2.14 vs $1.87 consensus. Nuclear capacity factor 95.2%. Power demand guidance raised for FY2026. Two data center PPAs in negotiation.',tag:'b-g',label:'Earnings beat'}
+  ],
+  insider:[{name:'Jim Burke (CEO)',type:'BUY',amount:'$1.8M',date:'Mar 2026',note:'Open market purchase at ~$112 — below current price. High conviction.'},{name:'Christie (CFO)',type:'BUY',amount:'$380K',date:'Mar 2026',note:'Open market — CEO + CFO same week. Cluster confirmation.'}],
+  revenue:[{seg:'Texas (ERCOT)',pct:68,vs:'+24% YoY'},{seg:'Northeast/Midwest',pct:22,vs:'+11% YoY'},{seg:'Solar/Storage',pct:10,vs:'+44% YoY'}]},
+CEG:{name:'Constellation Energy Corp.',price:'191.20',change:'+0.4%',up:true,mktcap:'$52B',vol:'3.2M',week52:'$127–$310',
+  synopsis:'Constellation is the largest nuclear power operator in the US — 21 reactors, 21GW of carbon-free baseload generation. The historic signal: Constellation restarted Three Mile Island Unit 1 for a 20-year Microsoft data center PPA at $160/MWh. Clean nuclear baseload is structurally ideal for AI data centers — zero carbon, 24/7 availability, no weather dependency. Data center operators are signing 20-year nuclear PPAs at premium prices. CEO Joe Dominguez disclosed two additional hyperscaler PPA negotiations on the Q1 2026 call. Nuclear PPA demand materially exceeds available supply.',
+  news:[
+    {src:'Microsoft / Constellation · Jan 2026',hl:'20-year PPA signed: Microsoft purchases 835MW from Three Mile Island Unit 1. First nuclear restart in US history for AI data center demand. $160/MWh premium rate.',tag:'b-g',label:'Historic PPA'},
+    {src:'Goldman Sachs · May 3',hl:'CEG rated Buy. PT $240. "Nuclear renaissance is underway. Demand pipeline for long-term carbon-free PPAs exceeds available supply. CEG is in a seller\'s market."',tag:'b-g',label:'PT raise'},
+    {src:'Constellation Q1 2026 · Apr 30',hl:'Nuclear capacity factor 94.8%. CEO disclosed active negotiations with two large technology customers. Deals expected H2 2026.',tag:'b-g',label:'Pipeline signal'}
+  ],
+  insider:[{name:'Joe Dominguez (CEO)',type:'BUY',amount:'$2.1M',date:'Feb 2026',note:'Open market purchase post-TMI restart. Highest conviction signal type from an operator who knows exactly what those PPAs are worth.'}],
+  revenue:[{seg:'Nuclear (baseload)',pct:78,vs:'+18% YoY'},{seg:'Natural Gas',pct:14,vs:'+6% YoY'},{seg:'Hydro/Wind/Solar',pct:8,vs:'+31% YoY'}]}};
 
 function drawSparkline(canvas,data,up){if(!canvas||!data||data.length<2)return;const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);const min=Math.min(...data),max=Math.max(...data),range=max-min||1;const pts=data.map((v,i)=>({x:(i/(data.length-1))*w,y:h-((v-min)/range)*(h-4)-2}));ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=up?'var(--blue)':'var(--text3)';ctx.lineWidth=1.5;ctx.stroke();}
 function genSparkData(up,n=20){let v=100;return Array.from({length:n},()=>{v+=((Math.random()-0.47)*(up?1.3:0.7))*2;return v;});}
@@ -4649,6 +4756,40 @@ const LAYER_DATA = {
     { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:6, max:5,
       desc:'Search monopoly moat · AI transition risk partially priced · YouTube structural strength',
       signals:['Google Search: $48B/quarter — any AI disruption is slow and partial, not sudden','YouTube is an underappreciated AI moat — largest training dataset for multimodal models','Antitrust risk: DOJ remedies could force Chrome divestiture — monitor but not in base case'] },
+  ],
+  VST: [
+    { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:14, max:25,
+      desc:'Institutional accumulation pattern · below 52-week high · moderate options activity',
+      signals:['Institutional block buying in past 5 days — 1.8M share prints above VWAP','Stock at $130 — 29% below 52-week high $183, well above recent support $110','Options: call buying at $140 strike for June expiry — directional but not aggressive'] },
+    { id:'L2', name:'Insider / regulatory', horizon:'5–30 days',   pts:18, max:35,
+      desc:'CEO + CFO open-market cluster buy March 2026 · FERC grid interconnection ruling favorable',
+      signals:['CEO Jim Burke: $1.8M open market @ ~$112 (March 2026)','CFO Christie: $380K open market — same week as CEO. Cluster confirmed.','FERC Order 2023-A: accelerates data center grid interconnection approval timeline — VST benefits'] },
+    { id:'L3', name:'Corporate intel',      horizon:'14–60 days',  pts:14, max:25,
+      desc:'Q1 2026 EPS beat 14.4% · nuclear capacity factor 95.2% · full-year guidance raised',
+      signals:['Q1 2026 EPS: $2.14 vs $1.87 consensus — 14.4% beat. No asterisks.','FY2026 power demand guidance raised +8% above prior year','Texas ERCOT summer peak demand: record outlook — real-time pricing will spike during peak windows'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:9, max:10,
+      desc:'Druckenmiller 2.1M shares · 2 data center PPAs in negotiation · hyperscaler capex = demand',
+      signals:['Druckenmiller/Duquesne Q1 2026 13F: 2.1M shares VST — energy infrastructure conviction play','2 undisclosed data center PPAs in active negotiation per CEO Q1 2026 call','Every $1B of hyperscaler capex = +2.5GW power demand — VST primary Texas beneficiary'] },
+    { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:3, max:5,
+      desc:'AI power demand secular through 2030 · Texas deregulated market = pricing power',
+      signals:['US data center electricity consumption: 4% of grid 2024 → 8–10% by 2030','Texas ERCOT deregulated: shortage pricing events benefit generators disproportionately','IRA nuclear and gas peaker production tax credits extend plant economics through 2032'] },
+  ],
+  CEG: [
+    { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:12, max:25,
+      desc:'Moderate activity · 44% below ATH · PPA pipeline creating structural rerating floor',
+      signals:['Institutional ownership increased 3 consecutive quarters — re-rating in progress','Stock at $191 — 44% below 52-week high $310. PPA-driven re-rating is a long-term story.','Options: light call buying skewed bullish at $200 strike — market pricing in next PPA catalyst'] },
+    { id:'L2', name:'Insider / regulatory', horizon:'5–30 days',   pts:16, max:35,
+      desc:'CEO $2.1M open-market buy post-TMI restart · NRC license extension approvals accelerating',
+      signals:['CEO Joe Dominguez: $2.1M open market purchase (Feb 2026) — post-TMI restart, knows exactly what PPAs are worth','NRC: approving nuclear license extensions faster under current administration — regulatory tailwind','4 additional nuclear plants under review for DOE federal loan guarantees'] },
+    { id:'L3', name:'Corporate intel',      horizon:'14–60 days',  pts:15, max:25,
+      desc:'Q1 94.8% capacity factor · 2 hyperscaler PPAs in active negotiation · Goldman PT $240',
+      signals:['Q1 2026: nuclear capacity factor 94.8% — operationally excellent. No unplanned outages.','CEO disclosed "active negotiations with two large technology customers" on Q1 2026 earnings call','Goldman Sachs PT $240 — based on PPA scarcity premium as nuclear supply is structurally constrained'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:9, max:10,
+      desc:'TMI-Microsoft 20yr PPA · nuclear PPA demand >> supply · $160/MWh premium pricing',
+      signals:['Three Mile Island Unit 1: 835MW, 20-year PPA with Microsoft — $160/MWh (significant premium to spot)','Nuclear PPA demand exceeds available nuclear supply — pricing power firmly with CEG','Google, Amazon, Meta all pursuing 24/7 carbon-free energy PPAs — CEG is the primary credible supplier'] },
+    { id:'L5', name:'Macro / structural',   horizon:'60–365 days', pts:3, max:5,
+      desc:'Nuclear renaissance · AI carbon-free mandate · IRA production tax credits',
+      signals:['AI data centers require 24/7 carbon-free power — nuclear is the only viable baseload option today','IRA nuclear PTC: $15/MWh production tax credit extends plant economics 10+ years — CEG direct beneficiary','SMRs (small modular reactors) are 10+ years away — CEG fleet is supply-constrained in the best possible way'] },
   ],
 };
 
