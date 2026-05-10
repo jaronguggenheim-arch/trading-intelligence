@@ -255,6 +255,8 @@ body.mkt-mode .main{padding:0;max-width:none;}
 
   /* ── Focus/stock bar ────────────────────── */
   #stock-focus-bar{padding:6px 10px;}
+  #stock-focus-bar *::-webkit-scrollbar{display:none;}
+  #stock-focus-bar > div{scrollbar-width:none;-ms-overflow-style:none;}
   #focus-search-input{font-size:11px;}
 
   /* ── Ticker modal / score pill ──────────── */
@@ -294,9 +296,10 @@ body.mkt-mode .main{padding:0;max-width:none;}
   #layer-ticker-btns{display:none !important;}
 }
 
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;overflow-x:hidden;}
 .hdr{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:50px;position:sticky;top:0;z-index:100;gap:16px;}
-.hdr-left{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+#app-hdr{overflow:hidden;max-width:100%;}
+  .hdr-left{display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .brand{font-size:13px;font-weight:700;letter-spacing:-.4px;color:var(--text);}
 .brand-sub{font-size:10px;color:var(--text3);font-weight:400;}
 .live-p{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);background:var(--green-bg);padding:2px 8px;border-radius:20px;font-weight:600;border:0.5px solid var(--green-bd);white-space:nowrap;}
@@ -312,7 +315,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 #ticker-track:hover{animation-play-state:paused;}
 @keyframes ticker-run{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .nt{padding:11px 12px;font-size:12px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}.nt.active{color:var(--text);border-bottom-color:var(--text);font-weight:500;}.nt.corr-tab{color:var(--purple);}.nt.corr-tab.active{border-bottom-color:var(--purple);}.nt:hover:not(.active){color:var(--text);}
-.main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;}.sec.active{display:block;}
+.main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;max-width:100%;}.sec.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
 .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;font-weight:600;}
 .sc{border-radius:8px;padding:11px 13px;border:0.5px solid;margin-bottom:8px;cursor:pointer;transition:transform .12s;position:relative;}.sc:hover{transform:translateY(-1px);}.sc::after{content:'›';position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.3;}
@@ -485,7 +488,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 <!-- STOCK FOCUS BAR -->
 <div id="stock-focus-bar" style="display:none;background:var(--bg2);border-bottom:0.5px solid var(--border);padding:7px 16px;position:sticky;top:92px;z-index:97;">
-  <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:nowrap;overflow-x:auto;">
+  <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;">
     <button id="focus-all-btn" onclick="setFocusTicker(null)"
       style="font-size:11px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s;">
       All stocks
@@ -506,33 +509,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
     </div>
     <div id="focus-active-chip" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);color:var(--blue);font-weight:600;letter-spacing:.02em;flex-shrink:0;"></div>
-    <div id="layer-ticker-btns" style="display:none;align-items:center;gap:4px;margin-left:auto;padding-left:12px;border-left:0.5px solid var(--border2);flex-shrink:0;">
-      <button onclick="renderLayerAnalysis('ASML',this)" style="padding:4px 10px;border:0.5px solid var(--red);border-radius:5px;background:var(--red-bg);color:var(--red);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">ASML</button>
-      <button onclick="renderLayerAnalysis('NVDA',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NVDA</button>
-      <button onclick="renderLayerAnalysis('RKLB',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RKLB</button>
-      <button onclick="renderLayerAnalysis('PLTR',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PLTR</button>
-      <button onclick="renderLayerAnalysis('AMD',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMD</button>
-      <button onclick="renderLayerAnalysis('TSM',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">TSM</button>
-      <button onclick="renderLayerAnalysis('SMCI',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SMCI</button>
-      <button onclick="renderLayerAnalysis('META',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">META</button>
-      <button onclick="renderLayerAnalysis('MSFT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MSFT</button>
-      <button onclick="renderLayerAnalysis('GOOGL',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GOOGL</button>
-      <button onclick="renderLayerAnalysis('VST',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">VST</button>
-      <button onclick="renderLayerAnalysis('CEG',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CEG</button>
-      <button onclick="renderLayerAnalysis('AMAT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMAT</button>
-      <button onclick="renderLayerAnalysis('LRCX',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LRCX</button>
-      <button onclick="renderLayerAnalysis('MU',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MU</button>
-      <button onclick="renderLayerAnalysis('LMT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LMT</button>
-      <button onclick="renderLayerAnalysis('NOC',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOC</button>
-      <button onclick="renderLayerAnalysis('RTX',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RTX</button>
-      <button onclick="renderLayerAnalysis('CRM',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CRM</button>
-      <button onclick="renderLayerAnalysis('NOW',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOW</button>
-      <button onclick="renderLayerAnalysis('SNOW',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SNOW</button>
-      <button onclick="renderLayerAnalysis('AMZN',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMZN</button>
-      <button onclick="renderLayerAnalysis('ARM',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">ARM</button>
-      <button onclick="renderLayerAnalysis('AAPL',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AAPL</button>
-      <button onclick="renderLayerAnalysis('PANW',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PANW</button>
-      <button onclick="renderLayerAnalysis('GEV',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GEV</button>
+    <div id="layer-ticker-btns" style="display:none;align-items:center;gap:4px;padding-left:12px;border-left:0.5px solid var(--border2);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex-shrink:1;min-width:0;">
+      <button onclick=\"focusBarTick('ASML',this)\" style="padding:4px 10px;border:0.5px solid var(--red);border-radius:5px;background:var(--red-bg);color:var(--red);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">ASML</button>
+      <button onclick=\"focusBarTick('NVDA',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NVDA</button>
+      <button onclick=\"focusBarTick('RKLB',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RKLB</button>
+      <button onclick=\"focusBarTick('PLTR',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PLTR</button>
+      <button onclick=\"focusBarTick('AMD',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMD</button>
+      <button onclick=\"focusBarTick('TSM',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">TSM</button>
+      <button onclick=\"focusBarTick('SMCI',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SMCI</button>
+      <button onclick=\"focusBarTick('META',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">META</button>
+      <button onclick=\"focusBarTick('MSFT',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MSFT</button>
+      <button onclick=\"focusBarTick('GOOGL',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GOOGL</button>
+      <button onclick=\"focusBarTick('VST',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">VST</button>
+      <button onclick=\"focusBarTick('CEG',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CEG</button>
+      <button onclick=\"focusBarTick('AMAT',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMAT</button>
+      <button onclick=\"focusBarTick('LRCX',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LRCX</button>
+      <button onclick=\"focusBarTick('MU',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MU</button>
+      <button onclick=\"focusBarTick('LMT',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LMT</button>
+      <button onclick=\"focusBarTick('NOC',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOC</button>
+      <button onclick=\"focusBarTick('RTX',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RTX</button>
+      <button onclick=\"focusBarTick('CRM',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CRM</button>
+      <button onclick=\"focusBarTick('NOW',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOW</button>
+      <button onclick=\"focusBarTick('SNOW',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SNOW</button>
+      <button onclick=\"focusBarTick('AMZN',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMZN</button>
+      <button onclick=\"focusBarTick('ARM',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">ARM</button>
+      <button onclick=\"focusBarTick('AAPL',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AAPL</button>
+      <button onclick=\"focusBarTick('PANW',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PANW</button>
+      <button onclick=\"focusBarTick('GEV',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GEV</button>
     </div>
   </div>
 </div>
@@ -4181,7 +4184,7 @@ function gT(n,btn){
   if(btn)btn.classList.add('active');
   /* Tab-specific init hooks */
   /* Show layer quick-picks only on Signal Scores tab */
-  try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=(n==='convergence')?'flex':'none';}catch(e){}
+  try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=isMkt?'none':'flex';}catch(e){}
   if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
   if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();}catch(e){}},50);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
@@ -4297,6 +4300,27 @@ function initLandingDynamic(){
         +'</div>';
     }
   }catch(e){console.warn('initLandingDynamic',e);}
+}
+
+
+/* ── FOCUS BAR TICKER BUTTON CLICK ── */
+function focusBarTick(sym, btn) {
+  setFocusTicker(sym);
+  // On Signal Scores tab, also render layer analysis
+  if (S.activeTab === 'convergence') {
+    try { renderLayerAnalysis(sym, btn); } catch(e) {}
+  }
+  // Highlight active button
+  document.querySelectorAll('#layer-ticker-btns button').forEach(b => {
+    b.style.background = 'none';
+    b.style.color = 'var(--text2)';
+    b.style.borderColor = 'var(--border2)';
+  });
+  if (btn) {
+    btn.style.background = 'var(--green-bg)';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green-bd)';
+  }
 }
 
 function enterApp(){
@@ -4890,6 +4914,9 @@ function setFocusTicker(ticker) {
     if (t === 'smart')        { renderSmartMoney && renderSmartMoney(); }
     if (t === 'markets')      { renderMarkets && renderMarkets(); }
   } catch(e) { console.warn('focusTicker re-render:', e); }
+
+  // Refresh Signal Scores layer panel if on that tab
+  if(S.activeTab==='convergence'){try{renderLayerAnalysis(sym||S.focusTicker||'ASML',null);}catch(e){}}
 }
 
 function focusSearchInput(q) {
@@ -6862,7 +6889,7 @@ function renderLayerAnalysis(ticker, btn) {
   let html = `
   <div style="margin-top:14px;">
     <!-- Overall score header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:12px 14px;background:var(--card2);border-radius:10px;border:0.5px solid var(--border2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:12px 14px;background:var(--card2);border-radius:10px;border:0.5px solid var(--border2);min-width:0;overflow:hidden;">
       <div>
         <div style="font-size:13px;font-weight:700;">${ticker} — Composite signal score</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px;">Across all 5 layers · 100pt scale</div>
