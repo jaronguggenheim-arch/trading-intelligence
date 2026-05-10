@@ -6371,7 +6371,287 @@ const CHAIN_GRAPH = {
     l3:{ score:76, label:'Bullish', signals:[{t:'Gas turbine orders +85% YoY — backlog $51B, 3+ years of revenue visibility',b:'bullish',date:'2026-04-29'},{t:'Electrification segment +38% — grid modernization capex super-cycle',b:'bullish',date:'2026-04-29'},{t:'Free cash flow margin expanded to 8% — capital return coming',b:'bullish',date:'2026-04-29'}] },
     l4:{ score:77, label:'Bullish', signals:[{t:'VST Comanche Peak: GEV supplying steam turbine upgrades for nuclear life extension',b:'bullish',date:'2026-03-20'},{t:'CEG Clinton Station: GEV grid connection equipment for nuclear restart',b:'bullish',date:'2026-03-25'},{t:'Hyperscaler datacenters: GEV gas turbines in 12 new datacenter power plants',b:'bullish',date:'2026-04-10'}] },
     l5:{ score:78, label:'Bullish', signals:[{t:'AI power crisis: datacenter electricity demand +400% by 2030 — GEV makes the turbines',b:'bullish',date:'2026-05-01'},{t:'Grid investment: $3T needed globally through 2030 — GEV grid equipment is critical path',b:'bullish',date:'2026-04-20'},{t:'Onshoring: US manufacturing expansion = new industrial power demand = GEV turbines',b:'bullish',date:'2026-04-25'}] }
+  },  AVGO: {
+    name: 'Broadcom',
+    upstream: [
+      { ticker:'TSM',  metric:'capex',            lag:1, direction:'positive', weight:0.45,
+        desc:'TSMC 3nm/2nm wafer starts → AVGO custom ASIC production capacity',
+        logic:'AVGO custom ASICs (Google TPU, Meta MTIA) are manufactured exclusively at TSMC advanced nodes. TSMC capex beat signals wafer allocation expansion for AVGO 1 quarter out.' },
+      { ticker:'GOOGL', metric:'capex',            lag:1, direction:'positive', weight:0.35,
+        desc:'Google capex → AVGO TPU v5/v6 ASIC order intake',
+        logic:'Google is AVGO largest custom ASIC customer (~40% of XPU revenue). Google capex acceleration signals new TPU tape-out and production ramp 1-2 quarters ahead.' },
+      { ticker:'META',  metric:'capex',            lag:1, direction:'positive', weight:0.20,
+        desc:'Meta capex → AVGO MTIA inference chip orders',
+        logic:'Meta MTIA (custom AI inference chip) is designed and supplied by AVGO. Meta capex beat implies MTIA production ramp — each chip is sole-source AVGO revenue.' }
+    ]
   },
+  MRVL: {
+    name: 'Marvell Technology',
+    upstream: [
+      { ticker:'TSM',  metric:'capex',            lag:1, direction:'positive', weight:0.40,
+        desc:'TSMC 3nm CoWoS packaging → MRVL custom ASIC production schedule',
+        logic:'MRVL custom chips for AWS Trainium and Azure Maia are TSMC 3nm. TSMC CoWoS packaging capacity is the bottleneck — capex beat signals available slots for MRVL ramp.' },
+      { ticker:'AMZN', metric:'capex',            lag:1, direction:'positive', weight:0.35,
+        desc:'AWS capex → MRVL Trainium 3 custom chip production ramp',
+        logic:'MRVL is sole-source designer for AWS Trainium 3. AWS capex acceleration confirms AI training infrastructure expansion — direct MRVL volume signal.' },
+      { ticker:'MSFT',  metric:'capex',            lag:1, direction:'positive', weight:0.25,
+        desc:'Azure capex → MRVL Maia 2 custom ASIC orders',
+        logic:'MRVL designs Azure Maia 2 custom AI chip. MSFT capex beat implies Maia 2 ramp is on or ahead of schedule — direct MRVL revenue.' }
+    ]
+  },
+  INTC: {
+    name: 'Intel Corporation',
+    upstream: [
+      { ticker:'ASML', metric:'revenue',           lag:2, direction:'positive', weight:0.50,
+        desc:'ASML High-NA EUV delivery → Intel 18A process capability unlock',
+        logic:'Intel 18A production requires ASML High-NA EUV (first US delivery). ASML revenue beat including High-NA shipments signals Intel foundry production capability 2 quarters out.' },
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:1, direction:'negative', weight:0.30,
+        desc:'NVIDIA datacenter revenue growth → INTC Gaudi market share pressure',
+        logic:'NVDA datacenter dominance reduces urgency for customers to evaluate Gaudi. NVDA beat implies INTC AI accelerator wins are harder to close — negative signal for near-term Gaudi revenue.' },
+      { ticker:'TSM',  metric:'revenue',           lag:1, direction:'negative', weight:0.20,
+        desc:'TSMC advanced node demand → validates Intel Foundry competitive positioning',
+        logic:'TSMC revenue beat signals strong external foundry demand, validating that advanced node customers exist. This is indirect positive for Intel Foundry Services long-term, but short-term signals TSMC winning deals Intel wants.' }
+    ]
+  },
+  DELL: {
+    name: 'Dell Technologies',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:0, direction:'positive', weight:0.60,
+        desc:'NVIDIA Blackwell GPU shipments → DELL AI server assembly and revenue',
+        logic:'DELL is one of the top 3 NVIDIA ODM partners. NVDA datacenter revenue beat directly implies DELL AI server builds are ramping — NVDA GPUs are the core component in DELL PowerEdge AI servers.' },
+      { ticker:'AMD',  metric:'revenue_datacenter', lag:0, direction:'positive', weight:0.25,
+        desc:'AMD Instinct GPU revenue → DELL AI server mix diversification',
+        logic:'DELL builds AMD Instinct-based AI servers for price-sensitive enterprise customers. AMD datacenter revenue beat signals DELL is shipping AMD-based AI server SKUs.' },
+      { ticker:'MU',   metric:'revenue',           lag:0, direction:'positive', weight:0.15,
+        desc:'Micron HBM and DDR5 revenue → DELL server memory availability',
+        logic:'AI servers require massive DRAM (DDR5) and HBM. MU revenue and shipment data signals memory supply availability — tight supply delays DELL server builds.' }
+    ]
+  },
+  ORCL: {
+    name: 'Oracle Corporation',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:1, direction:'positive', weight:0.55,
+        desc:'NVIDIA GPU availability → ORCL OCI cluster capacity expansion',
+        logic:'ORCL OCI GPU clusters are the primary AI training product. NVDA datacenter shipments are the supply constraint. NVDA revenue beat signals ORCL can provision contracted GPU clusters on schedule.' },
+      { ticker:'AMZN', metric:'revenue_aws',        lag:1, direction:'positive', weight:0.25,
+        desc:'AWS revenue growth → validates enterprise cloud spending, benefits ORCL OCI',
+        logic:'AWS growth confirms enterprise cloud budgets are healthy. ORCL OCI is the overflow and alternative — customers who cannot get AWS GPU allocation come to ORCL.' },
+      { ticker:'MSFT',  metric:'revenue_cloud',     lag:1, direction:'positive', weight:0.20,
+        desc:'Azure growth → enterprise cloud commitment validation for ORCL database migration',
+        logic:'Azure growth signals enterprises are committing to cloud, including Oracle Database on Azure. MSFT and ORCL have a joint product (Oracle Database@Azure) — MSFT Azure growth is a co-selling signal.' }
+    ]
+  },
+  NET: {
+    name: 'Cloudflare',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:2, direction:'positive', weight:0.40,
+        desc:'NVIDIA GPU cluster buildout → AI inference traffic routes through Cloudflare edge',
+        logic:'As AI training clusters come online, inference traffic (real-time AI API calls) routes through the internet — and Cloudflare handles 20% of all web traffic. NVDA buildout is a 2Q leading indicator for NET AI Gateway volume.' },
+      { ticker:'MSFT',  metric:'revenue_cloud',     lag:1, direction:'positive', weight:0.35,
+        desc:'Azure OpenAI Service growth → Cloudflare AI Gateway traffic',
+        logic:'Azure OpenAI is the largest source of enterprise LLM API calls. Many companies route these calls through Cloudflare AI Gateway for caching and observability. MSFT cloud growth is a direct NET traffic signal.' },
+      { ticker:'GOOGL', metric:'revenue_cloud',     lag:1, direction:'positive', weight:0.25,
+        desc:'Google Cloud AI API growth → Cloudflare edge inference routing',
+        logic:'Google Cloud Vertex AI API traffic is increasingly routed through Cloudflare Workers for low-latency edge delivery. GOOGL cloud beat confirms enterprise AI API adoption is accelerating.' }
+    ]
+  },
+  NEE: {
+    name: 'NextEra Energy',
+    upstream: [
+      { ticker:'GEV',  metric:'revenue',            lag:2, direction:'positive', weight:0.35,
+        desc:'GE Vernova turbine orders → NEE gas peaker and combined-cycle capacity expansion',
+        logic:'NEE uses GEV gas turbines for baseload and peaker plants. GEV order intake beat signals utility power capacity expansion is accelerating — NEE is one of the top GEV customers.' },
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:3, direction:'positive', weight:0.35,
+        desc:'NVIDIA GPU cluster buildout → hyperscaler power demand → NEE long-term PPAs',
+        logic:'AI data center buildout drives hyperscaler power demand. Hyperscalers sign 20-year PPAs with NEE to secure power. NVDA datacenter revenue is a 3Q leading indicator for NEE PPA signings.' },
+      { ticker:'AMZN', metric:'capex',              lag:2, direction:'positive', weight:0.30,
+        desc:'AWS capex → data center power demand → NEE power purchase agreements',
+        logic:'AWS data center capex is the most direct indicator of future power demand. NEE PPAs follow data center construction commitments by 2-3 quarters.' }
+    ]
+  },
+  ETN: {
+    name: 'Eaton Corporation',
+    upstream: [
+      { ticker:'GEV',  metric:'revenue',            lag:1, direction:'positive', weight:0.40,
+        desc:'GE Vernova turbine shipments → ETN switchgear and PDU demand at power plants',
+        logic:'Every GEV turbine installation requires Eaton switchgear to distribute the generated power. GEV revenue beat implies ETN electrical equipment orders 1 quarter later.' },
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:2, direction:'positive', weight:0.35,
+        desc:'NVIDIA GPU cluster buildout → data center power distribution equipment demand',
+        logic:'AI data centers require 10-100x more power per sq ft than traditional DCs. Each NVIDIA GPU cluster campus needs ETN PDUs and switchgear. NVDA datacenter revenue is a 2Q leading indicator for ETN data center orders.' },
+      { ticker:'NEE',  metric:'capex',              lag:1, direction:'positive', weight:0.25,
+        desc:'NextEra capex → grid expansion requiring ETN transformers and distribution equipment',
+        logic:'NEE grid expansion and new power plant construction requires ETN electrical equipment at every step. NEE capex beat signals ETN equipment order intake 1 quarter ahead.' }
+    ]
+  },
+  PWR: {
+    name: 'Quanta Services',
+    upstream: [
+      { ticker:'NEE',  metric:'capex',              lag:1, direction:'positive', weight:0.40,
+        desc:'NextEra capex → transmission line and substation construction contracts for Quanta',
+        logic:'NEE is one of PWR largest customers. NEE capex beat implies new transmission and substation projects that PWR will build. 1 quarter lag from capex commitment to construction contract award.' },
+      { ticker:'GEV',  metric:'revenue',            lag:2, direction:'positive', weight:0.30,
+        desc:'GE Vernova turbine orders → grid interconnection construction for Quanta',
+        logic:'Every new GEV power plant needs grid interconnection built by contractors like PWR. GEV order intake beat signals future PWR interconnection work 2 quarters out.' },
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:3, direction:'positive', weight:0.30,
+        desc:'NVIDIA datacenter revenue → hyperscaler grid connection contracts for Quanta',
+        logic:'Hyperscaler data center campus construction requires dedicated transmission lines PWR builds. NVDA datacenter growth signals future hyperscaler capex → utility PPAs → grid construction PWR executes.' }
+    ]
+  },
+  OKLO: {
+    name: 'Oklo Inc.',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:4, direction:'positive', weight:0.50,
+        desc:'NVIDIA GPU cluster buildout → AI power demand → nuclear SMR procurement pipeline',
+        logic:'AI data centers need 24/7 carbon-free power. Nuclear SMR is the only solution that meets all three requirements. NVDA datacenter revenue growth is the 4-quarter leading indicator for hyperscaler nuclear procurement decisions.' },
+      { ticker:'CEG',  metric:'revenue',            lag:2, direction:'positive', weight:0.30,
+        desc:'Constellation Energy nuclear power deals → validates nuclear-for-AI thesis benefiting OKLO',
+        logic:'CEG nuclear-for-AI deals (Microsoft, Google) validate the entire nuclear SMR thesis. Each CEG deal announcement reduces risk perception for OKLO and accelerates customer conversations.' },
+      { ticker:'AMZN', metric:'capex',              lag:3, direction:'positive', weight:0.20,
+        desc:'AWS capex → data center power demand → nuclear SMR procurement pipeline',
+        logic:'Amazon has signed nuclear agreements with Dominion and X-energy. AWS capex acceleration signals Amazon will pursue additional nuclear supply, creating pipeline for OKLO.' }
+    ]
+  },
+  GD: {
+    name: 'General Dynamics',
+    upstream: [
+      { ticker:'LMT',  metric:'revenue',            lag:1, direction:'positive', weight:0.45,
+        desc:'Lockheed Martin revenue beat → confirms defense budget execution, benefits GD',
+        logic:'LMT and GD serve overlapping DoD budget categories. LMT revenue beat signals DoD spending is being executed as planned — GD combat systems and submarines operate on the same budget cycle.' },
+      { ticker:'NOC',  metric:'revenue',            lag:1, direction:'positive', weight:0.30,
+        desc:'Northrop revenue beat → defense electronics demand confirms GD Mission Systems outlook',
+        logic:'NOC and GD Mission Systems compete for C4ISR and AI battlefield contracts. NOC revenue beat signals the defense electronics budget is healthy — positive read-through for GD.' },
+      { ticker:'RTX',  metric:'revenue',            lag:1, direction:'positive', weight:0.25,
+        desc:'RTX defense revenue → sector-wide defense procurement confirmation',
+        logic:'RTX, LMT, NOC, and GD all read the same DoD appropriations. RTX beat confirms the overall defense sector revenue environment is favorable for GD.' }
+    ]
+  },
+  LHX: {
+    name: 'L3Harris Technologies',
+    upstream: [
+      { ticker:'NOC',  metric:'revenue',            lag:1, direction:'positive', weight:0.45,
+        desc:'Northrop revenue → space and ISR budget confirmation for L3Harris',
+        logic:'NOC and LHX both compete for space-based ISR contracts. NOC beat signals the intelligence community and DoD space budget is being spent — positive for LHX satellite and sensor programs.' },
+      { ticker:'LMT',  metric:'revenue',            lag:1, direction:'positive', weight:0.30,
+        desc:'Lockheed revenue → fighter and missile programs drive LHX avionics demand',
+        logic:'LHX supplies avionics, electronic warfare systems, and communications to LMT F-35 and F-16 programs. LMT revenue beat signals LHX subsystem deliveries are on schedule.' },
+      { ticker:'RTX',  metric:'revenue',            lag:1, direction:'positive', weight:0.25,
+        desc:'RTX defense revenue → defense electronics environment confirmation',
+        logic:'RTX defense systems use LHX electronic warfare and communications components. RTX beat confirms component demand is healthy across the defense electronics supply chain.' }
+    ]
+  },
+  ADBE: {
+    name: 'Adobe Inc.',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:2, direction:'positive', weight:0.45,
+        desc:'NVIDIA GPU availability → Adobe Firefly AI generation speed and scale',
+        logic:'Adobe Firefly runs on NVIDIA H100/H200 GPU clusters on AWS. NVDA datacenter revenue beat signals GPU availability improving — directly reduces Adobe AI generation latency and capacity constraints.' },
+      { ticker:'MSFT',  metric:'revenue_cloud',     lag:1, direction:'positive', weight:0.30,
+        desc:'Microsoft cloud growth → Adobe Creative Cloud + Microsoft 365 co-selling pipeline',
+        logic:'Adobe and Microsoft have a joint integration (Adobe Express in Teams, Firefly in Copilot). MSFT cloud growth signals enterprise software budgets are healthy — Adobe rides the same enterprise renewal cycle.' },
+      { ticker:'CRM',  metric:'revenue',            lag:1, direction:'positive', weight:0.25,
+        desc:'Salesforce revenue → enterprise software spending environment confirmation',
+        logic:'Adobe and Salesforce share enterprise marketing and CRM customers. Salesforce beat signals enterprise software budgets are intact — positive read-through for Adobe Creative Cloud renewals.' }
+    ]
+  },
+  TSLA: {
+    name: 'Tesla Inc.',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:1, direction:'positive', weight:0.35,
+        desc:'NVIDIA Dojo competitor reveals → Tesla custom AI chip competitive positioning',
+        logic:'Tesla Dojo supercomputer competes with NVIDIA for AI training. NVDA datacenter dominance is a headwind for Dojo adoption outside Tesla. NVDA beat signals Tesla must continue building Dojo to remain competitive in autonomous driving AI.' },
+      { ticker:'ON',   metric:'revenue',            lag:1, direction:'positive', weight:0.35,
+        desc:'ON Semiconductor SiC revenue → Tesla EV powertrain component availability',
+        logic:'Tesla is ON Semiconductor largest SiC customer (~20% of ON SiC revenue). ON SiC production ramp signals Tesla can source sufficient power modules for Model Y and Cybertruck production scaling.' },
+      { ticker:'PANW', metric:'revenue',            lag:2, direction:'positive', weight:0.30,
+        desc:'Panasonic battery cell production → Tesla vehicle production rate',
+        logic:'Panasonic produces 4680 cells at Giga Nevada. Panasonic quarterly production disclosures are a leading indicator for Tesla battery availability and vehicle production guidance.' }
+    ]
+  },
+  NFLX: {
+    name: 'Netflix Inc.',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:2, direction:'positive', weight:0.40,
+        desc:'NVIDIA GPU availability → Netflix AI recommendation model retraining speed',
+        logic:'Netflix retrains its recommendation engine on NVIDIA GPU clusters weekly. NVDA datacenter revenue beat signals GPU cloud capacity is available — Netflix can run larger models and more frequent retraining.' },
+      { ticker:'GOOGL', metric:'revenue_ads',       lag:1, direction:'positive', weight:0.35,
+        desc:'Google ad revenue → digital advertising market health, benefits Netflix ad tier',
+        logic:'Google ad revenue is the benchmark for digital advertising CPMs. Google beat signals advertisers are spending more, validating Netflix ad tier CPM pricing of $45-55 per thousand impressions.' },
+      { ticker:'META',  metric:'revenue',           lag:1, direction:'positive', weight:0.25,
+        desc:'Meta advertising revenue → streaming ad market validation for Netflix',
+        logic:'Meta and Netflix compete for the same brand advertising budgets. Meta beat signals total brand ad spending is healthy — positive read-through for Netflix ad tier revenue growth.' }
+    ]
+  },
+  APP: {
+    name: 'AppLovin Corporation',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:1, direction:'positive', weight:0.40,
+        desc:'NVIDIA GPU availability → AXON AI model training and inference capacity',
+        logic:'APP AXON engine runs on NVIDIA GPU infrastructure. NVDA datacenter revenue beat signals APP can access more GPU capacity for AXON model training and real-time inference at scale.' },
+      { ticker:'META',  metric:'revenue',           lag:1, direction:'negative', weight:0.35,
+        desc:'Meta advertising revenue → competitive intensity in mobile performance marketing',
+        logic:'Meta and APP compete for mobile performance advertising budgets. Meta beat can signal advertisers are concentrating spend on Meta (negative for APP) OR that total mobile ad budgets are expanding (positive for both).' },
+      { ticker:'GOOGL', metric:'revenue_ads',       lag:1, direction:'positive', weight:0.25,
+        desc:'Google ad revenue beat → mobile advertising market expansion',
+        logic:'Google ad revenue growth signals overall digital advertising market is expanding. Larger total ad spend means more budget available for mobile performance channels where APP AXON operates.' }
+    ]
+  },
+  ON: {
+    name: 'ON Semiconductor',
+    upstream: [
+      { ticker:'TSM',  metric:'revenue',            lag:1, direction:'positive', weight:0.40,
+        desc:'TSMC advanced process revenue → ON logic chip availability for SiC control circuits',
+        logic:'ON uses TSMC advanced nodes for the logic chips that control SiC power modules. TSMC revenue beat signals capacity availability — ON can produce more complete SiC systems.' },
+      { ticker:'TSLA', metric:'revenue',            lag:0, direction:'positive', weight:0.35,
+        desc:'Tesla vehicle production volume → ON SiC power module demand',
+        logic:'Tesla is ON largest SiC customer. Tesla quarterly vehicle delivery numbers are a same-quarter indicator for ON SiC revenue. Each Tesla Model Y uses $400+ of ON SiC content.' },
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:2, direction:'positive', weight:0.25,
+        desc:'NVIDIA AI data center buildout → power conversion semiconductor demand for ON',
+        logic:'AI server power supplies use SiC power modules for efficiency. NVDA datacenter revenue growth drives data center construction which drives ON SiC power supply content.' }
+    ]
+  },
+  HPE: {
+    name: 'Hewlett Packard Enterprise',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:1, direction:'positive', weight:0.50,
+        desc:'NVIDIA GPU shipments → HPE AI server (ProLiant Gen12) builds and revenue',
+        logic:'HPE integrates NVIDIA GPUs into ProLiant AI servers. NVDA datacenter revenue beat signals GPU supply is improving — HPE can fulfill the AI server order backlog faster.' },
+      { ticker:'AMD',  metric:'revenue_datacenter', lag:1, direction:'positive', weight:0.25,
+        desc:'AMD Instinct GPU revenue → HPE AI server AMD-based SKU demand',
+        logic:'HPE offers AMD Instinct-based AI server configurations for cost-sensitive enterprise deployments. AMD datacenter beat signals HPE is shipping AMD AI server SKUs.' },
+      { ticker:'MU',   metric:'revenue',            lag:1, direction:'positive', weight:0.25,
+        desc:'Micron DDR5 availability → HPE server memory supply chain',
+        logic:'AI servers require large DDR5 DRAM pools. MU revenue beat and guidance signals memory supply is adequate — HPE can complete AI server builds without memory allocation delays.' }
+    ]
+  },
+  WDAY: {
+    name: 'Workday Inc.',
+    upstream: [
+      { ticker:'MSFT',  metric:'revenue_cloud',     lag:1, direction:'positive', weight:0.45,
+        desc:'Microsoft cloud revenue → enterprise software spending validation for Workday',
+        logic:'MSFT and WDAY serve the same enterprise IT buyers. MSFT cloud beat signals enterprise digital transformation budgets are intact — Workday HR and finance cloud deals operate on the same procurement cycle.' },
+      { ticker:'CRM',  metric:'revenue',            lag:1, direction:'positive', weight:0.35,
+        desc:'Salesforce revenue → enterprise SaaS spending environment for Workday',
+        logic:'CRM and WDAY are the two most important enterprise SaaS platforms. CRM beat confirms enterprise willingness to spend on cloud software — strongly positive for WDAY renewal and expansion rates.' },
+      { ticker:'NOW',  metric:'revenue',            lag:1, direction:'positive', weight:0.20,
+        desc:'ServiceNow revenue → enterprise AI SaaS upsell validation',
+        logic:'NOW and WDAY both sell AI-enhanced enterprise SaaS. NOW beat signals enterprise customers are adopting AI SaaS upsells — validates WDAY AI Assist adoption trajectory.' }
+    ]
+  },
+  COIN: {
+    name: 'Coinbase Global',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter', lag:2, direction:'positive', weight:0.30,
+        desc:'NVIDIA datacenter revenue → crypto mining hardware demand → network activity',
+        logic:'GPU availability affects crypto mining profitability. NVDA datacenter revenue growth indirectly signals GPU supply — when GPUs are scarce for miners, on-chain activity shifts, affecting COIN transaction volumes.' },
+      { ticker:'MSFT',  metric:'revenue_cloud',     lag:1, direction:'positive', weight:0.35,
+        desc:'Microsoft cloud + enterprise tech spending → institutional crypto adoption budget',
+        logic:'MSFT cloud growth signals institutional technology budgets are healthy. Institutional crypto trading (Coinbase Advanced) follows enterprise IT spending — institutions allocate to crypto when overall tech investment is healthy.' },
+      { ticker:'GOOGL', metric:'revenue_ads',       lag:1, direction:'positive', weight:0.35,
+        desc:'Google ad revenue → retail investor sentiment and trading activity',
+        logic:'Google ad revenue reflects consumer spending and sentiment. Retail investor crypto trading activity on Coinbase correlates with consumer confidence — GOOGL ad beat is an indirect retail activity signal.' }
+    ]
+  },
+
 };
 
 // ── Finnhub basic-financials cache (2h TTL) ───────────────────
