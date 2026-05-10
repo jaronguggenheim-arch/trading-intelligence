@@ -2233,80 +2233,128 @@ function renderHotBar() {
 }
 // ── SAGE MODE ────────────────────────────────────────────────────────────────
 function getSagePick() {
+  // Signal-node stocks: leading indicators used to read other stocks, not primary actionable picks
+  const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
+
+  const ld = (typeof LAYER_DATA !== 'undefined') ? LAYER_DATA : {};
+  const cats = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS : {};
+
   const scored = Object.entries(SCORES)
-    .filter(([t, s]) => s && NAMES[t])
+    .filter(([t, s]) => s && NAMES[t] && ld[t] && !SIGNAL_NODES.has(t))
     .sort(([,a],[,b]) => b - a);
   if (!scored.length) return null;
+
   const [ticker, score] = scored[0];
-  // Pull top 2 signal layers by pts from LAYER_DATA
-  const layers = (typeof LAYER_DATA !== 'undefined' && LAYER_DATA[ticker]) || [];
-  const reasons = layers
-    .filter(l => l.desc)
-    .sort((a,b) => (b.pts||0) - (a.pts||0))
-    .slice(0, 2)
-    .map(l => l.desc);
-  return { ticker, score, reasons };
+  const runner = scored[1] ? { ticker: scored[1][0], score: scored[1][1] } : null;
+
+  // Build narrative: top 2 layers by pts, use first signal from each (most specific)
+  const layers = (ld[ticker] || []).filter(l => l.pts > 0);
+  const topLayers = [...layers].sort((a,b) => (b.pts||0) - (a.pts||0)).slice(0,2);
+  const reasons = topLayers.map(l =>
+    (l.signals && l.signals[0]) ? l.signals[0] : (l.desc || '')
+  ).filter(Boolean);
+
+  // Upcoming catalyst
+  const catalyst = cats[ticker] || null;
+
+  // Action label
+  const action = score >= 75 ? 'BUY' : score >= 60 ? 'WATCH' : 'MONITOR';
+  const actionColor = score >= 75 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--text3)';
+
+  return { ticker, score, reasons, catalyst, runner, action, actionColor };
 }
 
 function renderSageCard() {
   const el = document.getElementById('sage-mode-card');
   if (!el) return;
 
-  // Check if dismissed today
   const today = new Date().toISOString().slice(0,10);
   try { if (localStorage.getItem('sage_dismissed') === today) { el.innerHTML = ''; return; } } catch(e) {}
 
   const pick = getSagePick();
   if (!pick) { el.innerHTML = ''; return; }
 
-  const { ticker, score, reasons } = pick;
+  const { ticker, score, reasons, catalyst, runner, action, actionColor } = pick;
   const name = NAMES[ticker] || ticker;
-  const scoreColor = score >= 70 ? 'var(--green)' : score >= 50 ? '#e07b00' : 'var(--text3)';
+  const scoreColor = score >= 75 ? 'var(--green)' : score >= 60 ? '#e07b00' : 'var(--text3)';
+
   const reasonLines = reasons.map(r =>
-    `<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;">
-      <span style="color:var(--text3);margin-top:1px;flex-shrink:0;">›</span>
-      <span style="font-size:12px;color:var(--text2);line-height:1.5;">${r}</span>
+    `<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;">
+      <span style="color:#6366f1;margin-top:2px;flex-shrink:0;font-size:10px;">●</span>
+      <span style="font-size:12px;color:var(--text2);line-height:1.55;">${r}</span>
     </div>`
   ).join('');
 
+  // Catalyst row
+  const catHtml = catalyst
+    ? `<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:6px 9px;background:var(--bg3);border-radius:6px;border:0.5px solid var(--border);">
+        <span style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Next catalyst</span>
+        <span style="font-size:11px;color:var(--text2);font-weight:500;">${catalyst.date}</span>
+        <span style="font-size:11px;color:var(--text3);">·</span>
+        <span style="font-size:11px;color:var(--text2);">${catalyst.label}</span>
+       </div>`
+    : '';
+
+  // Runner-up row
+  const runnerHtml = runner
+    ? `<div style="display:flex;align-items:center;gap:7px;padding-top:10px;margin-top:10px;border-top:0.5px solid var(--border);">
+        <span style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;">Also watching</span>
+        <span onclick="openTicker('${runner.ticker}')" style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;cursor:pointer;color:var(--text);">${runner.ticker}</span>
+        <span style="font-size:11px;color:var(--text3);">${NAMES[runner.ticker] || ''}</span>
+        <span style="font-size:11px;font-weight:600;color:${runner.score >= 75 ? 'var(--green)' : '#e07b00'};margin-left:auto;">${runner.score}/100</span>
+       </div>`
+    : '';
+
   el.innerHTML = `
-    <div style="border:0.5px solid var(--border2);border-left:2px solid #6366f1;border-radius:10px;padding:14px 16px;background:var(--bg2);position:relative;">
+    <div style="border:0.5px solid var(--border2);border-left:3px solid #6366f1;border-radius:10px;padding:14px 16px;background:var(--bg2);position:relative;">
       <button onclick="(function(){try{localStorage.setItem('sage_dismissed','${today}');}catch(e){}; document.getElementById('sage-mode-card').innerHTML='';})()"
         style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;" title="Dismiss for today">×</button>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-        <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#6366f1;text-transform:uppercase;">🌿 Today's focus</span>
-        <span style="font-size:9px;color:var(--text3);">— highest signal convergence</span>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;">
+        <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#6366f1;text-transform:uppercase;">🌿 Sage Mode</span>
+        <span style="font-size:9px;color:var(--text3);">· highest signal convergence today</span>
       </div>
-      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;">
-        <span onclick="openTicker('${ticker}')" style="font-size:20px;font-weight:700;font-family:'DM Mono',monospace;cursor:pointer;letter-spacing:-.5px;">${ticker}</span>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap;">
+        <span onclick="openTicker('${ticker}')" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;cursor:pointer;letter-spacing:-.5px;color:var(--text);">${ticker}</span>
         <span style="font-size:12px;color:var(--text3);">${name}</span>
-        <span style="font-size:13px;font-weight:700;color:${scoreColor};margin-left:auto;padding-right:24px;">${score}/100</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:7px;padding-right:22px;">
+          <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${actionColor}22;color:${actionColor};letter-spacing:.3px;">${action}</span>
+          <span style="font-size:14px;font-weight:700;color:${scoreColor};">${score}/100</span>
+        </div>
       </div>
-      <div style="margin-bottom:12px;">${reasonLines}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="openTicker('${ticker}')" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid #6366f144;background:#6366f111;color:#a5b4fc;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">View full analysis →</button>
+
+      <div style="margin-bottom:10px;">${reasonLines}</div>
+      ${catHtml}
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:${runnerHtml ? '0' : '0'};">
+        <button onclick="openTicker('${ticker}')" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid #6366f144;background:#6366f111;color:#a5b4fc;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">Full analysis →</button>
         <button onclick="gT('convergence',document.querySelectorAll('.nt')[1])" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Signal Scores</button>
         <button onclick="gT('correlations',document.querySelectorAll('.nt')[2])" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Supply Chain</button>
         <button onclick="gT('deepedge',document.querySelectorAll('.nt')[3])" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Deep Edge</button>
       </div>
+      ${runnerHtml}
     </div>`;
 }
 
 function markSagePick() {
-  // Add a subtle 🌿 badge to the highest-score convergence card
   const pick = getSagePick();
   if (!pick) return;
-  // Remove existing badges
   document.querySelectorAll('.sage-badge').forEach(b => b.remove());
-  // Add to matching card in Signal Scores
-  document.querySelectorAll('.convergence-stock-card[data-ticker="' + pick.ticker + '"]').forEach(card => {
-    const badge = document.createElement('span');
-    badge.className = 'sage-badge';
-    badge.textContent = '🌿';
-    badge.title = 'Today\'s Sage pick — highest signal convergence';
-    badge.style.cssText = 'font-size:11px;margin-left:4px;opacity:.85;cursor:default;';
-    const sul = card.querySelector('.sul');
-    if (sul) sul.appendChild(badge);
+  // Badge both #1 and runner-up
+  const toBadge = [pick.ticker];
+  if (pick.runner) toBadge.push(pick.runner.ticker);
+  toBadge.forEach((t, i) => {
+    document.querySelectorAll('.convergence-stock-card[data-ticker="' + t + '"]').forEach(card => {
+      const badge = document.createElement('span');
+      badge.className = 'sage-badge';
+      badge.textContent = i === 0 ? '🌿' : '·2';
+      badge.title = i === 0 ? "Today's Sage pick — highest signal convergence" : "Sage runner-up";
+      badge.style.cssText = i === 0
+        ? 'font-size:11px;margin-left:4px;opacity:.85;cursor:default;'
+        : 'font-size:9px;margin-left:4px;opacity:.6;cursor:default;color:var(--text3);font-weight:600;';
+      const sul = card.querySelector('.sul');
+      if (sul) sul.appendChild(badge);
+    });
   });
 }
 
