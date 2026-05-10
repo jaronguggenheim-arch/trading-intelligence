@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Everything Is Just One Click Away</title>
+<meta name="description" content="We built this platform because we were tired of being one step behind. Here's how the signals work and why they matter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --bg4: #222222;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #888;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --indigo: #6366f1;
+    --teal: #14b8a6;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 64px;
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a { font-size: 14px; color: var(--muted); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); }
+  .nav-cta { background: var(--green); color: #000; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ─── LAYOUT ─── */
+  .page-header {
+    padding: 140px 5% 80px;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(99,102,241,0.07) 0%, transparent 60%);
+    text-align: center;
+  }
+  .page-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--indigo); margin-bottom: 16px; }
+  .page-title { font-size: clamp(32px, 5vw, 60px); font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
+  .page-sub { font-size: 18px; color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.8; }
+
+  .prose-section { max-width: 760px; margin: 0 auto; padding: 80px 5%; }
+  .prose-section h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; margin-top: 56px; }
+  .prose-section h2:first-child { margin-top: 0; }
+  .prose-section p { font-size: 16px; color: #bbb; line-height: 1.9; margin-bottom: 18px; }
+  .prose-section p strong { color: var(--text); }
+  .prose-section p a { color: var(--blue); text-decoration: underline; }
+
+  /* ─── SIGNAL EXPLAINERS ─── */
+  .signal-explainers { max-width: 900px; margin: 0 auto; padding: 0 5% 80px; }
+  .signal-explainers h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 32px; }
+  .explainer {
+    display: grid; grid-template-columns: 200px 1fr; gap: 0;
+    border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    margin-bottom: 16px; background: var(--bg2);
+    transition: border-color 0.2s;
+  }
+  .explainer:hover { border-color: #3a3a3a; }
+  .explainer-left {
+    padding: 24px 20px;
+    background: var(--bg3);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+  }
+  .explainer-icon { font-size: 28px; margin-bottom: 8px; }
+  .explainer-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .explainer-weight {
+    font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;
+    background: var(--bg4); padding: 2px 8px; border-radius: 4px;
+  }
+  .explainer-right { padding: 24px; }
+  .explainer-right h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .explainer-right p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+  .explainer-example {
+    background: var(--bg3); border-left: 2px solid var(--border);
+    padding: 10px 14px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #aaa; font-style: italic; line-height: 1.6;
+  }
+
+  /* ─── SAGE EXPLAINER ─── */
+  .sage-section {
+    background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 80px 5%;
+  }
+  .sage-inner { max-width: 760px; margin: 0 auto; }
+  .sage-inner h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 20px; }
+  .sage-inner p { font-size: 16px; color: #bbb; line-height: 1.9; margin-bottom: 18px; }
+  .sage-inner strong { color: var(--text); }
+  .sage-callout {
+    background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.05) 100%);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 14px; padding: 24px; margin: 28px 0;
+    font-size: 15px; color: var(--text); line-height: 1.8; font-style: italic;
+  }
+
+  /* ─── DISCLAIMER ─── */
+  .disclaimer {
+    max-width: 760px; margin: 0 auto; padding: 0 5% 80px;
+    font-size: 13px; color: #555; line-height: 1.8;
+  }
+  .disclaimer strong { color: #777; }
+
+  /* ─── CTA ─── */
+  .about-cta { text-align: center; padding: 80px 5%; }
+  .about-cta h2 { font-size: clamp(26px,4vw,44px); font-weight: 700; letter-spacing: -1px; margin-bottom: 14px; }
+  .about-cta p { font-size: 16px; color: var(--muted); margin-bottom: 32px; }
+  .btn-primary { background: var(--green); color: #000; padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  /* ─── FOOTER ─── */
+  footer { border-top: 1px solid var(--border); padding: 40px 5%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-brand { font-size: 13px; font-weight: 600; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: var(--muted); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  .footer-legal { font-size: 12px; color: #555; }
+
+  @media (max-width: 768px) {
+    .explainer { grid-template-columns: 1fr; }
+    .explainer-left { border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; gap: 12px; text-align: left; justify-content: flex-start; }
+    .nav-links { display: none; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="landing.html" class="nav-brand">
+    <div class="nav-dot"></div>
+    everything is just one click away
+  </a>
+  <div class="nav-links">
+    <a href="about.html" class="active">About</a>
+    <a href="landing.html">Home</a>
+    <a href="index.html" class="nav-cta">Open Dashboard →</a>
+  </div>
+</nav>
+
+<!-- ─── HEADER ─── -->
+<div class="page-header">
+  <div class="page-label">About this platform</div>
+  <h1 class="page-title">We were tired of being<br>one step behind.</h1>
+  <p class="page-sub">So we built the tool we wish had existed — institutional signals, plain-English explanations, and one clear daily decision.</p>
+</div>
+
+<!-- ─── STORY ─── -->
+<div class="prose-section">
+  <h2>The frustration that started this</h2>
+  <p>Every market participant has had this experience: you watch a stock climb for weeks, finally read an article explaining why, and realize — the smart money was in this trade a month ago. The insider filing happened. The large options sweep happened. The dark pool block printed. Everything was in the public record. You just didn't have the tools to see it.</p>
+  <p>That gap isn't about intelligence. It's about access to aggregated, interpreted, actionable signal data — the kind of infrastructure that institutional desks have built over decades. We built this platform to close that gap.</p>
+
+  <h2>Who this is for</h2>
+  <p>We built this for the person who takes their investing seriously but doesn't have six hours a day to read SEC filings, scan options chains, and parse analyst upgrades. Someone who understands that there's a difference between reading the news and reading the signals — but has never had the tools to act on that difference.</p>
+  <p><strong>Not for day traders.</strong> Not for people trying to get rich overnight. This is for investors building long-term conviction positions, informed by the same data that moves institutional money — interpreted and distilled so you can make a confident decision in ten minutes each morning.</p>
+
+  <h2>Our philosophy</h2>
+  <p>We believe that <strong>transparency about what we know and don't know</strong> is the most important thing we can offer. Every signal card shows its source. Every score shows its components. Every plain-English summary is a translation, not a recommendation.</p>
+  <p>The decision is always yours. We're just making sure you're making it with the same information as everyone else in the room.</p>
+</div>
+
+<!-- ─── SIGNALS ─── -->
+<div class="signal-explainers">
+  <h2>How the signals work</h2>
+
+  <div class="explainer">
+    <div class="explainer-left">
+      <div class="explainer-icon">🏦</div>
+      <div class="explainer-name">Insider Cluster Buys</div>
+      <div class="explainer-weight">up to +40 pts</div>
+    </div>
+    <div class="explainer-right">
+      <h4>What it is</h4>
+      <p>When corporate insiders (executives, board members, 10% owners) buy shares with their own money and file a Form 4 with the SEC, it's public record. A single insider buy is moderately meaningful. A <em>cluster</em> — three or more buys from different executives in the same 30-day window — is one of the most reliably bullish signals in the market.</p>
+      <p>Insiders can sell for many reasons (tax, diversification, estate planning). But they buy for one reason: they believe the stock is going higher.</p>
+      <div class="explainer-example">"3 ASML executives purchased a combined $2.4M in shares over 8 days — a rare cluster buy that historically precedes a 12–18% move over the following 60 days."</div>
+    </div>
+  </div>
+
+  <div class="explainer">
+    <div class="explainer-left">
+      <div class="explainer-icon">🌊</div>
+      <div class="explainer-name">Dark Pool Prints</div>
+      <div class="explainer-weight">up to +30 pts</div>
+    </div>
+    <div class="explainer-right">
+      <h4>What it is</h4>
+      <p>Dark pools are private, off-exchange trading venues where institutional investors execute large block trades without publicly impacting the market. These trades are reported to FINRA and become visible, just with a delay. A large block printed at or above the ask price signals institutional accumulation — someone wants in, and they're not waiting for a dip.</p>
+      <p>Dark pool data doesn't tell you why an institution is buying. But it tells you that a major player with serious research behind them made a big bet.</p>
+      <div class="explainer-example">"$340M dark pool block on NVDA printed at $870 — above the current ask. Unusual size suggests an institution accumulated a new or expanded position."</div>
+    </div>
+  </div>
+
+  <div class="explainer">
+    <div class="explainer-left">
+      <div class="explainer-icon">⚡</div>
+      <div class="explainer-name">Options Flow</div>
+      <div class="explainer-weight">up to +25 pts</div>
+    </div>
+    <div class="explainer-right">
+      <h4>What it is</h4>
+      <p>Options sweep detection identifies large, aggressive options orders that sweep multiple exchanges — meaning the buyer needed to fill immediately regardless of price. Sweeps above a certain size relative to average daily volume, especially out-of-the-money calls with 30–60 day expiry, often front-run catalysts by days or weeks.</p>
+      <p>This doesn't mean the trade will always pay off. But when options flow aligns with insider buys and dark pool prints on the same ticker, the signal convergence is meaningful.</p>
+      <div class="explainer-example">"$2.1M call sweep on PLTR, 45-day expiry, 12× average daily options volume. Multi-exchange sweep suggests urgency — someone expects a move before May 16th."</div>
+    </div>
+  </div>
+
+  <div class="explainer">
+    <div class="explainer-left">
+      <div class="explainer-icon">📊</div>
+      <div class="explainer-name">Analyst Upgrades</div>
+      <div class="explainer-weight">up to +20 pts</div>
+    </div>
+    <div class="explainer-right">
+      <h4>What it is</h4>
+      <p>Analyst revisions from Tier 1 institutions (Goldman Sachs, Morgan Stanley, JPMorgan, etc.) carry more weight than consensus moves, especially when a price target moves significantly above the current stock price. The signal value increases when multiple analysts move in the same direction within a short window — a revision cluster.</p>
+      <p>Analyst downgrades are weighted negatively in the score. A strong buy from Goldman after a period of muted analyst activity is one of the cleaner momentum triggers.</p>
+      <div class="explainer-example">"Goldman Sachs upgraded ASML to Strong Buy, raising PT from $720 → $850. 5th analyst upgrade this quarter; consensus PT now $30 above current price."</div>
+    </div>
+  </div>
+
+  <div class="explainer">
+    <div class="explainer-left">
+      <div class="explainer-icon">🧮</div>
+      <div class="explainer-name">GEX / Gamma Exposure</div>
+      <div class="explainer-weight">up to +20 pts</div>
+    </div>
+    <div class="explainer-right">
+      <h4>What it is</h4>
+      <p>Gamma Exposure (GEX) measures how much market makers need to hedge their options books as price moves. When GEX flips from negative to positive, market makers switch from amplifying moves to dampening them — which creates a magnetic effect toward key levels. A positive GEX flip above a key technical level often precedes a squeeze or breakout.</p>
+      <p>GEX is a directional signal for short-term price behavior. We use it as a momentum confirmation layer rather than a primary signal.</p>
+      <div class="explainer-example">"NVDA crossed into positive GEX at $880. Dealers are now net long gamma — they buy dips and sell rallies, which stabilizes price and can support a grind higher."</div>
+    </div>
+  </div>
+
+  <div class="explainer">
+    <div class="explainer-left">
+      <div class="explainer-icon">🔗</div>
+      <div class="explainer-name">Supply Chain Correlation</div>
+      <div class="explainer-weight">up to +15 pts</div>
+    </div>
+    <div class="explainer-right">
+      <h4>What it is</h4>
+      <p>Key nodes in a supply chain tend to move in correlated fashion, but with lag — when ASML (lithography) beats on orders, TSM (fabrication) typically follows 3–7 trading days later as the market reprices upstream demand. We map 6 supply chains and use historical lag data to score whether a chain move is likely to propagate downstream.</p>
+      <p>This signal adds conviction when combined with insider or options data on the downstream ticker.</p>
+      <div class="explainer-example">"ASML reported record Q1 bookings. Based on historical correlation, TSM and NVDA have followed with 3–7 day lag in 7 of the last 9 instances."</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SAGE ─── -->
+<div class="sage-section">
+  <div class="sage-inner">
+    <h2>🌿 Sage Mode: the 10-second morning ritual</h2>
+    <p>All of the signals above feed into a 0–100 conviction score for each ticker in our watchlist. Sage Mode takes the ticker with the highest signal convergence each morning and presents it as a single decision card.</p>
+    <div class="sage-callout">
+      "Three ASML executives bought with their own money this week — that's rare and historically bullish. Goldman raised their price target to $850 this morning. Conviction score: 91. Do you want in?"
+    </div>
+    <p>There are no charts to interpret. No data tables. No jargon. Just the signal, the reason it matters, and two buttons: <strong>I'm in</strong> or <strong>Skip today</strong>.</p>
+    <p>Sage is designed for the moments when you have 10 minutes before work and want to know: <em>is there something worth acting on today?</em> It doesn't replace deeper research — it surfaces the one opportunity most worth spending that research time on.</p>
+    <p>Think of it as a distillation, not a shortcut. The full signal stack is always accessible in the Deep Edge, Signal Scores, and Smart Money tabs. Sage just answers the first question: <strong>is today worth looking at ASML?</strong></p>
+  </div>
+</div>
+
+<!-- ─── DISCLAIMER ─── -->
+<div class="disclaimer">
+  <p><strong>A note on what this is not.</strong> Everything on this platform is informational and educational. Signal scores, plain-English summaries, and Sage Mode suggestions are not financial advice, investment recommendations, or solicitations to buy or sell any security. Past signal performance does not guarantee future results. All investing involves risk, including the possible loss of principal.</p>
+  <p>Insider trade data is sourced from public SEC Form 4 filings. Options flow data is aggregated from public exchange reporting. Dark pool data is reported to FINRA and made publicly available. Analyst ratings are sourced from publicly available research summaries. We don't have access to non-public material information, and we don't want it.</p>
+  <p>Use this platform as one input in your own research process. Always size positions appropriately for your risk tolerance, consult a licensed financial advisor for personalized advice, and never invest money you can't afford to lose.</p>
+</div>
+
+<!-- ─── CTA ─── -->
+<div class="about-cta">
+  <h2>Ready to see it in action?</h2>
+  <p>The full dashboard is free to explore. No account required.</p>
+  <a href="index.html" class="btn-primary">Open the Dashboard →</a>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-brand">everything is just one click away</div>
+  <div class="footer-links">
+    <a href="index.html">Dashboard</a>
+    <a href="landing.html">Home</a>
+  </div>
+  <div class="footer-legal">Market intelligence platform. Not financial advice. Trade at your own risk.</div>
+</footer>
+
+</body>
+</html>

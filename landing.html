@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everything Is Just One Click Away — Market Intelligence for Everyone</title>
+<meta name="description" content="Institutional-grade market signals — insider trades, dark pool activity, options flow — explained in plain English. Stop being one step behind.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --bg4: #222222;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #888;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --indigo: #6366f1;
+    --teal: #14b8a6;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    height: 64px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-brand .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a { font-size: 14px; color: var(--muted); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--green); color: #000;
+    padding: 8px 18px; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 100px 5%; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ─── HERO ─── */
+  #hero {
+    padding-top: 160px; padding-bottom: 120px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34,197,94,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 30% at 80% 60%, rgba(99,102,241,0.05) 0%, transparent 50%);
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 100px; padding: 5px 14px;
+    font-size: 12px; font-weight: 500; color: var(--green);
+    margin-bottom: 28px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .hero-h1 {
+    font-size: clamp(38px, 6vw, 72px);
+    font-weight: 700; line-height: 1.08; letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  .hero-h1 .accent { color: var(--green); }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--muted); max-width: 580px; margin: 0 auto 44px;
+    font-weight: 400; line-height: 1.7;
+  }
+  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green); color: #000;
+    padding: 14px 28px; border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(34,197,94,0.25); }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    padding: 14px 28px; border-radius: 10px;
+    font-size: 15px; font-weight: 500; border: 1px solid var(--border);
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { border-color: #555; background: var(--bg3); }
+
+  /* ─── TICKER STRIP ─── */
+  .ticker-strip {
+    background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    overflow: hidden; padding: 12px 0;
+  }
+  .ticker-inner {
+    display: flex; gap: 48px; white-space: nowrap;
+    animation: scroll-left 30s linear infinite;
+    width: max-content;
+  }
+  @keyframes scroll-left { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .ticker-item {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'DM Mono', monospace; font-size: 13px;
+  }
+  .ticker-sym { color: var(--muted); font-weight: 500; }
+  .ticker-price { color: var(--text); font-weight: 600; }
+  .ticker-chg.up { color: var(--green); }
+  .ticker-chg.dn { color: var(--red); }
+  .ticker-score {
+    background: rgba(34,197,94,0.12); color: var(--green);
+    border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 600;
+  }
+
+  /* ─── PROBLEM ─── */
+  #problem { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .problem-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 16px;
+  }
+  .problem-h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -1px; line-height: 1.2; margin-bottom: 20px; }
+  .problem-p { color: var(--muted); font-size: 16px; line-height: 1.8; margin-bottom: 16px; }
+  .pain-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .pain-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+    font-size: 14px; line-height: 1.5;
+  }
+  .pain-list li .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .pain-list li span { color: var(--muted); }
+  .pain-list li strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 14px; }
+
+  /* ─── SIGNALS / FEATURES ─── */
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 12px; text-align: center;
+  }
+  .section-h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -1px; text-align: center; margin-bottom: 14px; }
+  .section-sub { font-size: 16px; color: var(--muted); text-align: center; max-width: 520px; margin: 0 auto 60px; line-height: 1.7; }
+
+  .signals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .signal-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .signal-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .signal-card:hover { border-color: #3a3a3a; transform: translateY(-3px); }
+  .signal-card:hover::before { opacity: 1; }
+  .signal-card.green::before { background: var(--green); }
+  .signal-card.blue::before { background: var(--blue); }
+  .signal-card.purple::before { background: var(--purple); }
+  .signal-card.amber::before { background: var(--amber); }
+  .signal-card.teal::before { background: var(--teal); }
+  .signal-card.indigo::before { background: var(--indigo); }
+  .signal-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 16px;
+  }
+  .signal-icon.green { background: rgba(34,197,94,0.1); }
+  .signal-icon.blue { background: rgba(59,130,246,0.1); }
+  .signal-icon.purple { background: rgba(168,85,247,0.1); }
+  .signal-icon.amber { background: rgba(245,158,11,0.1); }
+  .signal-icon.teal { background: rgba(20,184,166,0.1); }
+  .signal-icon.indigo { background: rgba(99,102,241,0.1); }
+  .signal-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .signal-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .signal-example {
+    margin-top: 14px; padding: 10px 12px;
+    background: var(--bg3); border-radius: 8px;
+    font-size: 12px; color: #aaa; font-style: italic; line-height: 1.5;
+    border-left: 2px solid var(--border);
+  }
+
+  /* ─── SCORE DEMO ─── */
+  #demo { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 60px; align-items: center; }
+  .score-cards { display: flex; flex-direction: column; gap: 14px; }
+  .score-card {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; display: flex; align-items: center; gap: 16px;
+    transition: border-color 0.2s;
+  }
+  .score-card:hover { border-color: #3a3a3a; }
+  .score-pill {
+    width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 600;
+  }
+  .score-pill.high { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .score-pill.mid { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+  .score-pill.low { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.18); }
+  .score-info { flex: 1; }
+  .score-info .sym { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+  .score-info .name { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .score-bar-wrap { height: 4px; background: var(--bg4); border-radius: 2px; }
+  .score-bar { height: 4px; border-radius: 2px; transition: width 1s ease; }
+  .score-signals { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .score-signals span { color: var(--green); font-weight: 500; }
+  .demo-explain h3 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; line-height: 1.3; }
+  .demo-explain p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+  .signal-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .tag.green { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+  .tag.blue { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+  .tag.purple { background: rgba(168,85,247,0.1); color: var(--purple); border: 1px solid rgba(168,85,247,0.2); }
+  .tag.amber { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+  /* ─── SAGE ─── */
+  #sage {
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(99,102,241,0.06) 0%, transparent 70%);
+  }
+  .sage-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .sage-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px; max-width: 380px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  }
+  .sage-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+  }
+  .sage-logo {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .sage-header h4 { font-size: 15px; font-weight: 700; }
+  .sage-header span { font-size: 12px; color: var(--muted); }
+  .sage-date { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+  .sage-ticker { font-size: 28px; font-weight: 700; letter-spacing: -1px; margin-bottom: 4px; }
+  .sage-ticker .ticker-sub { font-size: 13px; color: var(--muted); font-weight: 400; letter-spacing: 0; }
+  .sage-score-row { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+  .sage-score-badge {
+    background: rgba(34,197,94,0.12); color: var(--green);
+    border: 1px solid rgba(34,197,94,0.25); border-radius: 8px;
+    padding: 4px 12px; font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 600;
+  }
+  .sage-score-label { font-size: 13px; color: var(--muted); }
+  .sage-reason {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px; font-size: 13px; line-height: 1.7; color: #bbb;
+    margin-bottom: 20px;
+  }
+  .sage-reason strong { color: var(--text); }
+  .sage-actions { display: flex; gap: 10px; }
+  .sage-btn-in {
+    flex: 1; background: var(--green); color: #000;
+    border: none; border-radius: 10px; padding: 13px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .sage-btn-in:hover { opacity: 0.85; }
+  .sage-btn-skip {
+    flex: 1; background: var(--bg4); color: var(--muted);
+    border: 1px solid var(--border); border-radius: 10px; padding: 13px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .sage-btn-skip:hover { background: var(--bg3); color: var(--text); }
+  .sage-explain h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; line-height: 1.3; }
+  .sage-explain p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+  .sage-steps { display: flex; flex-direction: column; gap: 14px; }
+  .sage-step { display: flex; gap: 14px; align-items: flex-start; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    background: rgba(99,102,241,0.15); color: var(--indigo);
+    border: 1px solid rgba(99,102,241,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; margin-top: 2px;
+  }
+  .sage-step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .sage-step strong { color: var(--text); }
+
+  /* ─── SOCIAL PROOF / HOW IT WORKS ─── */
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .how-card {
+    text-align: center; padding: 32px 20px;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+  }
+  .how-num {
+    width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700;
+  }
+  .how-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+  .how-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* ─── CTA ─── */
+  #cta {
+    text-align: center;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 50%, rgba(34,197,94,0.06) 0%, transparent 70%);
+  }
+  #cta h2 { font-size: clamp(30px, 5vw, 56px); font-weight: 700; letter-spacing: -1.5px; margin-bottom: 16px; line-height: 1.1; }
+  #cta p { font-size: 17px; color: var(--muted); max-width: 480px; margin: 0 auto 40px; line-height: 1.7; }
+  .cta-note { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand { font-size: 13px; font-weight: 600; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: var(--muted); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  .footer-legal { font-size: 12px; color: #555; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .problem-grid, .demo-grid, .sage-wrapper { grid-template-columns: 1fr; }
+    .signals-grid, .how-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .sage-card { max-width: 100%; }
+    .problem-grid > div:first-child { order: 2; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-brand">
+    <div class="dot"></div>
+    everything is just one click away
+  </div>
+  <div class="nav-links">
+    <a href="about.html">About</a>
+    <a href="#sage">Sage Mode</a>
+    <a href="index.html" class="nav-cta">Open Dashboard →</a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="dot" style="width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 5px var(--green);animation:pulse 2s ease-in-out infinite;display:inline-block;"></span>
+      Live signals · Updated daily
+    </div>
+    <h1 class="hero-h1">
+      Stop being one step<br>
+      <span class="accent">behind the market.</span>
+    </h1>
+    <p class="hero-sub">
+      Institutional-grade signals — insider trades, dark pool activity, options flow, analyst moves — translated into plain English. One decision. Every morning.
+    </p>
+    <div class="hero-actions">
+      <a href="index.html" class="btn-primary">Open the Dashboard →</a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TICKER STRIP ─── -->
+<div class="ticker-strip">
+  <div class="ticker-inner" id="strip">
+    <!-- repeated twice for seamless loop -->
+    <div class="ticker-item"><span class="ticker-sym">NVDA</span><span class="ticker-price">$876.40</span><span class="ticker-chg up">+2.1%</span><span class="ticker-score">91</span></div>
+    <div class="ticker-item"><span class="ticker-sym">ASML</span><span class="ticker-price">$734.20</span><span class="ticker-chg up">+0.8%</span><span class="ticker-score">87</span></div>
+    <div class="ticker-item"><span class="ticker-sym">PLTR</span><span class="ticker-price">$24.60</span><span class="ticker-chg up">+3.4%</span><span class="ticker-score">73</span></div>
+    <div class="ticker-item"><span class="ticker-sym">AMD</span><span class="ticker-price">$162.80</span><span class="ticker-chg dn">-1.2%</span><span class="ticker-score">31</span></div>
+    <div class="ticker-item"><span class="ticker-sym">RKLB</span><span class="ticker-price">$7.84</span><span class="ticker-chg up">+5.6%</span><span class="ticker-score">67</span></div>
+    <div class="ticker-item"><span class="ticker-sym">META</span><span class="ticker-price">$501.30</span><span class="ticker-chg up">+1.9%</span><span class="ticker-score">79</span></div>
+    <div class="ticker-item"><span class="ticker-sym">TSM</span><span class="ticker-price">$142.50</span><span class="ticker-chg dn">-0.4%</span><span class="ticker-score">62</span></div>
+    <div class="ticker-item"><span class="ticker-sym">SMCI</span><span class="ticker-price">$88.20</span><span class="ticker-chg up">+4.1%</span><span class="ticker-score">55</span></div>
+    <!-- repeat -->
+    <div class="ticker-item"><span class="ticker-sym">NVDA</span><span class="ticker-price">$876.40</span><span class="ticker-chg up">+2.1%</span><span class="ticker-score">91</span></div>
+    <div class="ticker-item"><span class="ticker-sym">ASML</span><span class="ticker-price">$734.20</span><span class="ticker-chg up">+0.8%</span><span class="ticker-score">87</span></div>
+    <div class="ticker-item"><span class="ticker-sym">PLTR</span><span class="ticker-price">$24.60</span><span class="ticker-chg up">+3.4%</span><span class="ticker-score">73</span></div>
+    <div class="ticker-item"><span class="ticker-sym">AMD</span><span class="ticker-price">$162.80</span><span class="ticker-chg dn">-1.2%</span><span class="ticker-score">31</span></div>
+    <div class="ticker-item"><span class="ticker-sym">RKLB</span><span class="ticker-price">$7.84</span><span class="ticker-chg up">+5.6%</span><span class="ticker-score">67</span></div>
+    <div class="ticker-item"><span class="ticker-sym">META</span><span class="ticker-price">$501.30</span><span class="ticker-chg up">+1.9%</span><span class="ticker-score">79</span></div>
+    <div class="ticker-item"><span class="ticker-sym">TSM</span><span class="ticker-price">$142.50</span><span class="ticker-chg dn">-0.4%</span><span class="ticker-score">62</span></div>
+    <div class="ticker-item"><span class="ticker-sym">SMCI</span><span class="ticker-price">$88.20</span><span class="ticker-chg up">+4.1%</span><span class="ticker-score">55</span></div>
+  </div>
+</div>
+
+<!-- ─── PROBLEM ─── -->
+<section id="problem">
+  <div class="container">
+    <div class="problem-grid">
+      <div>
+        <div class="problem-label">The problem</div>
+        <h2 class="problem-h2">Hedge funds read the signals. You read the headlines — 48 hours later.</h2>
+        <p class="problem-p">By the time a stock makes the news, the smart money already moved. Insiders filed. Dark pools printed. Options swept. The institutions have had their meal. You're getting the leftovers.</p>
+        <p class="problem-p">It's not about being smarter. It's about having the same information — translated into something you can act on before the crowd catches up.</p>
+      </div>
+      <div>
+        <ul class="pain-list">
+          <li>
+            <span class="icon">📰</span>
+            <div><strong>Reading news after it's priced in</strong><span>By the time Bloomberg or CNBC covers a move, institutional money has already positioned. You're reacting, not anticipating.</span></div>
+          </li>
+          <li>
+            <span class="icon">🌊</span>
+            <div><strong>Missing insider conviction signals</strong><span>When 3 executives buy their own stock in the same week, that's a cluster buy — one of the most reliable bullish signals in the market. Most people never see it.</span></div>
+          </li>
+          <li>
+            <span class="icon">🎲</span>
+            <div><strong>Making decisions on gut feel</strong><span>Without a systematic signal framework, every trade feels like a guess. You second-guess entries, exit too early, and hold losers too long.</span></div>
+          </li>
+          <li>
+            <span class="icon">⏱️</span>
+            <div><strong>Spending hours on research that goes nowhere</strong><span>Parsing SEC filings, scanning options chains, reading analyst reports — it's a full-time job. Most retail investors don't have the time or tools.</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SIGNALS ─── -->
+<section id="signals">
+  <div class="container">
+    <div class="section-label">The solution</div>
+    <h2 class="section-h2">Every edge. In plain English.</h2>
+    <p class="section-sub">We aggregate 6 institutional signal types, score them 0–100, and tell you what they mean for your watchlist — in one sentence.</p>
+    <div class="signals-grid">
+      <div class="signal-card green">
+        <div class="signal-icon green">🏦</div>
+        <h3>Insider Cluster Buys</h3>
+        <p>When multiple executives buy their own company stock in a short window, it signals unusual conviction from people with the best information.</p>
+        <div class="signal-example">"3 ASML executives bought $2.4M with their own money this week — that's rare and historically bullish."</div>
+      </div>
+      <div class="signal-card blue">
+        <div class="signal-icon blue">🌊</div>
+        <h3>Dark Pool Prints</h3>
+        <p>Off-exchange block trades that institutions use to move large positions without tipping off the market. Big prints often precede big moves.</p>
+        <div class="signal-example">"$340M dark pool block printed on NVDA at $870 — above current ask, suggesting accumulation."</div>
+      </div>
+      <div class="signal-card purple">
+        <div class="signal-icon purple">⚡</div>
+        <h3>Options Flow</h3>
+        <p>Large, sweeping call or put orders that are too big to ignore. Unusual options activity often front-runs catalysts by days or weeks.</p>
+        <div class="signal-example">"$2.1M call sweep on PLTR, 45-day expiry — far above average daily volume. Someone expects a move."</div>
+      </div>
+      <div class="signal-card amber">
+        <div class="signal-icon amber">📊</div>
+        <h3>Analyst Upgrades</h3>
+        <p>Institutional analyst revisions from top-tier banks carry weight, especially when price targets move significantly above consensus.</p>
+        <div class="signal-example">"Goldman upgraded ASML to Strong Buy, raising PT from $720 → $850. 5th analyst upgrade this quarter."</div>
+      </div>
+      <div class="signal-card teal">
+        <div class="signal-icon teal">🧮</div>
+        <h3>GEX / Gamma Exposure</h3>
+        <p>Market maker gamma positioning reveals where price is likely to be pinned — or where it could accelerate dramatically.</p>
+        <div class="signal-example">"NVDA flipped to positive GEX at $880. Dealers are now long gamma — price acceleration likely above this level."</div>
+      </div>
+      <div class="signal-card indigo">
+        <div class="signal-icon indigo">🔗</div>
+        <h3>Supply Chain Correlation</h3>
+        <p>When a key supplier moves, the downstream stocks often follow within days. We map 6 chains so you can see the ripple before it hits.</p>
+        <div class="signal-example">"ASML booked record lithography orders. NVDA, TSM, and SMCI historically follow with 3–7 day lag."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SCORE DEMO ─── -->
+<section id="demo">
+  <div class="container">
+    <div class="demo-grid">
+      <div class="score-cards">
+        <div class="score-card">
+          <div class="score-pill high">91</div>
+          <div class="score-info">
+            <div class="sym">ASML</div>
+            <div class="name">ASML Holding N.V.</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:91%;background:var(--green);"></div></div>
+            <div class="score-signals">Insider cluster <span>+35</span> · Analyst upgrade <span>+20</span> · Dark pool <span>+22</span> · Options <span>+14</span></div>
+          </div>
+        </div>
+        <div class="score-card">
+          <div class="score-pill high" style="background:rgba(34,197,94,0.12);color:var(--green);">87</div>
+          <div class="score-info">
+            <div class="sym">NVDA</div>
+            <div class="name">NVIDIA Corporation</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:87%;background:var(--green);"></div></div>
+            <div class="score-signals">Dark pool <span>+30</span> · GEX flip <span>+25</span> · Options flow <span>+20</span> · Analysts <span>+12</span></div>
+          </div>
+        </div>
+        <div class="score-card">
+          <div class="score-pill mid">67</div>
+          <div class="score-info">
+            <div class="sym">RKLB</div>
+            <div class="name">Rocket Lab USA</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:67%;background:var(--amber);"></div></div>
+            <div class="score-signals">Options momentum <span>+28</span> · Insider buy <span>+22</span> · Analyst neutral <span>+17</span></div>
+          </div>
+        </div>
+        <div class="score-card">
+          <div class="score-pill low">31</div>
+          <div class="score-info">
+            <div class="sym">AMD</div>
+            <div class="name">Advanced Micro Devices</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:31%;background:var(--red);"></div></div>
+            <div class="score-signals">Insider selling <span style="color:var(--red);">−18</span> · Analyst downgrades <span style="color:var(--red);">−12</span> · Weak flow</div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-explain">
+        <div class="section-label" style="text-align:left;">Signal scores</div>
+        <h3>Every ticker. One number. Zero guesswork.</h3>
+        <p>We roll up insider activity, options flow, dark pool prints, analyst sentiment, gamma exposure, and supply chain signals into a single 0–100 conviction score — recalculated daily.</p>
+        <p>High score: multiple signal types aligning. Worth a closer look. Low score: signals are diverging or turning bearish. Hold off.</p>
+        <div class="signal-tags">
+          <span class="tag green">🏦 Insider activity</span>
+          <span class="tag blue">🌊 Dark pool</span>
+          <span class="tag purple">⚡ Options flow</span>
+          <span class="tag amber">📊 Analyst moves</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SAGE MODE ─── -->
+<section id="sage">
+  <div class="container">
+    <div class="sage-wrapper">
+      <div class="sage-card">
+        <div class="sage-header">
+          <div class="sage-logo">🌿</div>
+          <div>
+            <h4>Sage Mode</h4>
+            <span>Today's decision — May 7</span>
+          </div>
+        </div>
+        <div class="sage-date">THURSDAY · MARKET OPENS IN 2h 14m</div>
+        <div class="sage-ticker">ASML <span class="ticker-sub">· $734.20</span></div>
+        <div class="sage-score-row">
+          <span class="sage-score-badge">91</span>
+          <span class="sage-score-label">Conviction score · Very strong</span>
+        </div>
+        <div class="sage-reason">
+          <strong>Why today?</strong> Three ASML executives bought shares with their own money this week — a rare cluster buy that historically precedes a 12–18% run over the following 60 days. Goldman raised their price target to $850 this morning.
+        </div>
+        <div class="sage-actions">
+          <button class="sage-btn-in" onclick="sageDemo(this)">✓ I'm in</button>
+          <button class="sage-btn-skip">Skip today</button>
+        </div>
+      </div>
+      <div class="sage-explain">
+        <div class="section-label" style="text-align:left;">Sage Mode</div>
+        <h3>One screen. One decision. Every morning.</h3>
+        <p>Most platforms overwhelm you with data and leave the decision to you. Sage flips that. It surfaces one high-conviction opportunity each morning, explains it in two sentences, and asks: <em>in or out?</em></p>
+        <p>No charts to decipher. No options chains to parse. No second-guessing. Just the signal, the reason, and your move.</p>
+        <div class="sage-steps">
+          <div class="sage-step">
+            <div class="step-num">1</div>
+            <p><strong>Signals converge overnight.</strong> We scan insider filings, options sweeps, dark pool prints, and analyst notes while you sleep.</p>
+          </div>
+          <div class="sage-step">
+            <div class="step-num">2</div>
+            <p><strong>One pick surfaces each morning.</strong> The ticker with the highest signal convergence appears in your Sage card — with a plain-English reason.</p>
+          </div>
+          <div class="sage-step">
+            <div class="step-num">3</div>
+            <p><strong>You decide in 10 seconds.</strong> Tap "I'm in" to add it to your watchlist and set a budget. Tap "Skip" to pass. That's it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ─── -->
+<section id="how" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2 class="section-h2">From signal to action in minutes</h2>
+    <p class="section-sub">Built for people with a day job who still want an institutional edge.</p>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">1</div>
+        <h3>Signals aggregated overnight</h3>
+        <p>We pull SEC Form 4 filings, options order flow, dark pool prints, analyst revisions, and gamma exposure data — updated before market open.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">2</div>
+        <h3>Scores calculated, plain English written</h3>
+        <p>Each signal is weighted and rolled into a 0–100 conviction score. A one-sentence plain-English explanation is generated for every signal card.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">3</div>
+        <h3>You open the dashboard, make a call</h3>
+        <p>Open Sage Mode for a single decision. Or dive into Deep Edge, Signal Scores, and the Earnings Playbook if you want the full picture.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section id="cta">
+  <div class="container">
+    <h2>Ready to stop being<br><span style="color:var(--green);">one step behind?</span></h2>
+    <p>The dashboard is free to explore. No account required to start.</p>
+    <a href="index.html" class="btn-primary" style="font-size:16px;padding:16px 36px;">Open the Dashboard →</a>
+    <p class="cta-note">Or <a href="about.html" style="color:var(--blue);text-decoration:underline;">read more about how the signals work →</a></p>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-brand">everything is just one click away</div>
+  <div class="footer-links">
+    <a href="index.html">Dashboard</a>
+    <a href="about.html">About</a>
+    <a href="index.html">Watchlist</a>
+  </div>
+  <div class="footer-legal">Market intelligence platform. Not financial advice. Trade at your own risk.</div>
+</footer>
+
+<script>
+function sageDemo(btn){
+  const card=btn.closest('.sage-card');
+  card.innerHTML=`
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-size:48px;margin-bottom:16px;">✅</div>
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;">ASML added to watchlist</h3>
+      <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;">Smart call. Insider cluster buys + Goldman upgrade is a powerful combo. See the full signal breakdown in the dashboard.</p>
+      <a href="index.html" style="background:var(--green);color:#000;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;display:inline-block;">Open Dashboard →</a>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

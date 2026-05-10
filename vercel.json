@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/fh.js":  { "memory": 128, "maxDuration": 10 },
+    "api/td.js":  { "memory": 128, "maxDuration": 10 }
+  }
+}
