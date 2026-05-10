@@ -487,6 +487,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button type="button" class="hbtn" onclick="gT('landing',null)">Home</button>
     <button type="button" class="hbtn" onclick="gT('about',null)">About</button>
     <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
+    <span class="plan-chip" onclick="showProModal()" id="hdr-pro-chip" style="display:none;">✦ Pro</span>
     <button type="button" class="hbtn pri" onclick="showPinSetup()" id="pinLbl">Set PIN</button>
     <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
@@ -502,7 +503,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- STOCK FOCUS BAR -->
-<div id="stock-focus-bar" style="display:none;background:var(--bg2);border-bottom:0.5px solid var(--border);padding:7px 16px;position:sticky;top:92px;z-index:97;">
+<div id="stock-focus-bar" style="display:none;background:var(--bg2);border-bottom:0.5px solid var(--border);padding:7px 16px;position:sticky;top:90px;z-index:97;">
   <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;">
     <button id="focus-all-btn" onclick="setFocusTicker(null)"
       style="font-size:11px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s;">
@@ -806,7 +807,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- GLOBAL MARKETS -->
-  <div style="text-align:center;padding:28px 0 8px;"><span class="plan-chip" onclick="showProModal()">✨ Pro is coming — join the waitlist</span></div>
 
 <div class="sec" id="tab-markets">
   <div class="markets-panel">
@@ -4365,6 +4365,9 @@ function enterApp(){
   var nav=document.getElementById('app-nav');
   if(hdr)hdr.style.display='flex';
   if(nav)nav.style.display='flex';
+  /* Show Pro chip in header */
+  var proChip=document.getElementById('hdr-pro-chip');
+  if(proChip)proChip.style.display='inline-flex';
   document.body.classList.remove('mkt-mode');
   /* Hide ALL tabs explicitly */
   document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active');s.style.display='none';});
