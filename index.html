@@ -1,6 +1,44 @@
 <!DO,
   AMZN: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 },
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 ,
+  SMCI:[
+    {src:'Wedbush · May 7',hl:'Compliance resolution complete + Blackwell rack demand accelerating = re-rating opportunity. PT raised $35→$65.',tag:'b-g',sym:'SMCI'},
+    {src:'SMCI filing · Apr 30',hl:'Q3 FY2026 preliminary revenue $4.6B (+45% YoY). Direct-liquid-cooling now 30% of all shipments.',tag:'b-g',sym:'SMCI'},
+    {src:'Insider · Apr 25',hl:'CEO Charles Liang acquired 200,000 shares at $38.40. First open-market purchase since accounting review.',tag:'b-g',sym:'SMCI'},
+    {src:'Options flow · May 6',hl:'$45M in $45-strike calls expiring May — aggressive near-term positioning into earnings.',tag:'b-g',sym:'SMCI'}
+  ],},
+  TSM:{name:'Taiwan Semiconductor Manufacturing',price:178.40,chg:+1.3,up:true,mktcap:'$925B',vol:'18.4M',week52:'$127–$226',
+    synopsis:'TSMC is the world\'s dominant contract chip foundry, manufacturing semiconductors for NVIDIA, Apple, AMD, ARM, and Qualcomm. CoWoS advanced packaging capacity is the critical bottleneck for AI chip production globally. TSMC capex trajectory is the single most important leading indicator for the entire semiconductor supply chain.',
+    news:[
+      {src:'Morgan Stanley · May 5',hl:'CoWoS capacity revision up 40% for 2026. N2 yield rates exceeding expectations. Maintain Overweight, PT $220.',tag:'b-g',label:'PT raise'},
+      {src:'TSMC earnings · Apr 17',hl:'Q1 2026 revenue NT$839.3B (+41.6% YoY). 3nm = 22% revenue. Advanced packaging fully booked through 2027.',tag:'b-g',label:'Beat'},
+      {src:'Options flow · May 3',hl:'$180M in $180-strike calls expiring June — largest single-day call sweep in 2 years. Unusual institutional accumulation.',tag:'b-g',label:'Flow'},
+      {src:'Supply chain · May 1',hl:'ASML EUV deliveries to TSMC accelerating — 12 High-NA systems scheduled H2 2026. 2nm ramp on track.',tag:'b-g',label:'Chain'}
+    ],
+    insider:[
+      {name:'CC Wei (CEO)',action:'Buy',shares:'120,000',value:'$21.4M',date:'Mar 2026',form:'Form 4'},
+      {name:'Mark Liu (Chairman)',action:'Buy',shares:'85,000',value:'$15.2M',date:'Feb 2026',form:'Form 4'}
+    ],
+    revenue:[
+      {q:'Q1 2026',val:27.8},{q:'Q4 2025',val:26.9},{q:'Q3 2025',val:23.5},{q:'Q2 2025',val:20.8}
+    ]
+  },
+  SMCI:{name:'Super Micro Computer',price:41.80,chg:+3.1,up:true,mktcap:'$24.4B',vol:'22.1M',week52:'$17–$122',
+    synopsis:'Super Micro Computer is the leading AI server integrator, building liquid-cooled rack systems using NVIDIA Blackwell and Hopper GPUs. After accounting restatements in 2024, SMCI has resolved compliance issues and is positioned as a key infrastructure beneficiary of the AI datacenter buildout. Direct-liquid-cooling (DLC) expertise is a structural moat as GPU power density rises above 1kW per chip.',
+    news:[
+      {src:'Wedbush · May 7',hl:'Compliance resolution + Blackwell rack demand = re-rating opportunity. PT raised $35→$65. Outperform.',tag:'b-g',label:'PT raise'},
+      {src:'SMCI filing · Apr 30',hl:'Q3 FY2026 preliminary revenue $4.6B (+45% YoY). DLC now 30% of shipments, up from 8% a year ago.',tag:'b-g',label:'Beat'},
+      {src:'Options flow · May 6',hl:'$45M in $45-strike calls expiring May — aggressive near-term positioning into earnings catalyst.',tag:'b-g',label:'Flow'},
+      {src:'Insider · Apr 25',hl:'CEO Charles Liang acquired 200,000 shares at $38.40. First open-market purchase since the accounting review.',tag:'b-g',label:'Insider'}
+    ],
+    insider:[
+      {name:'Charles Liang (CEO)',action:'Buy',shares:'200,000',value:'$7.7M',date:'Apr 2026',form:'Form 4'},
+      {name:'David Weigand (CFO)',action:'Buy',shares:'50,000',value:'$1.9M',date:'Mar 2026',form:'Form 4'}
+    ],
+    revenue:[
+      {q:'Q3 FY26',val:4.6},{q:'Q2 FY26',val:3.7},{q:'Q1 FY26',val:3.0},{q:'Q4 FY25',val:2.2}
+    ]
+  },
     { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure AI revenue signals enterprise cloud adoption · AWS follows same enterprise demand trends', lagMin:2, lagMax:6 },
   ],
   ARM: [
@@ -1053,7 +1091,43 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
 </div>
 
-<!-- CORRELATION MAP -->
+
+  <div class="stock-card" data-sym="TSM" data-score="70" onclick="openTicker('TSM')">
+    <div class="sc-top">
+      <div class="sc-sym">TSM</div>
+      <div class="sc-score mid" title="Convergence score 70/100">70</div>
+    </div>
+    <div class="sc-name">Taiwan Semiconductor Mfg.</div>
+    <div class="sc-bar-wrap"><div class="sc-bar" style="width:70%;background:var(--amber)"></div></div>
+    <div class="sc-sigs">
+      <span class="pill up" onclick="event.stopPropagation();openTicker('TSM')">CEO cluster buy $21M</span>
+      <span class="pill up" onclick="event.stopPropagation();openTicker('TSM')">CoWoS 98% utilization</span>
+      <span class="pill up" onclick="event.stopPropagation();openTicker('TSM')">Morgan Stanley OW $220</span>
+    </div>
+    <div class="sc-actions">
+      <button class="sc-alert-btn" onclick="event.stopPropagation();setStockAlert('TSM')" title="Set alert">&#128276;</button>
+      <button class="sc-share-btn" onclick="event.stopPropagation();shareStock('TSM')" title="Share">&#8679;</button>
+    </div>
+  </div>
+
+  <div class="stock-card" data-sym="SMCI" data-score="52" onclick="openTicker('SMCI')">
+    <div class="sc-top">
+      <div class="sc-sym">SMCI</div>
+      <div class="sc-score mid" title="Convergence score 52/100">52</div>
+    </div>
+    <div class="sc-name">Super Micro Computer</div>
+    <div class="sc-bar-wrap"><div class="sc-bar" style="width:52%;background:var(--amber)"></div></div>
+    <div class="sc-sigs">
+      <span class="pill up" onclick="event.stopPropagation();openTicker('SMCI')">CEO buy 200K shares</span>
+      <span class="pill up" onclick="event.stopPropagation();openTicker('SMCI')">DLC 30% of shipments</span>
+      <span class="pill neu" onclick="event.stopPropagation();openTicker('SMCI')">SEC investigation ongoing</span>
+    </div>
+    <div class="sc-actions">
+      <button class="sc-alert-btn" onclick="event.stopPropagation();setStockAlert('SMCI')" title="Set alert">&#128276;</button>
+      <button class="sc-share-btn" onclick="event.stopPropagation();shareStock('SMCI')" title="Share">&#8679;</button>
+    </div>
+  </div>
+  <!-- CORRELATION MAP -->
 <div class="sec" id="tab-correlations">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;">
     <div>
@@ -6118,6 +6192,60 @@ async function getChainSignals(ticker) {
 // ═══════════════════════════════════════════════════════════════
 
 const LAYER_DATA = {
+  TSM: {
+    l1:{ score:18, label:'Bullish', signals:[
+      {t:'CoWoS packaging utilization 98% — zero slack capacity through 2026',b:'bullish',date:'2026-05-01'},
+      {t:'N3 yield rates 75%+ — ahead of schedule, expanding margin',b:'bullish',date:'2026-04-28'},
+      {t:'Vol compression: realized vol 19% vs implied 24% — calm before catalyst',b:'bullish',date:'2026-05-05'}
+    ]},
+    l2:{ score:30, label:'Bullish', signals:[
+      {t:'CEO CC Wei: 120,000 shares purchased at $178 — largest insider buy in 18 months',b:'bullish',date:'2026-03-15'},
+      {t:'Chairman Mark Liu: 85,000 shares at $179 — cluster buy signal alongside CEO',b:'bullish',date:'2026-02-20'},
+      {t:'No insider selling in past 180 days — full conviction alignment',b:'bullish',date:'2026-05-01'}
+    ]},
+    l3:{ score:22, label:'Bullish', signals:[
+      {t:'Morgan Stanley OW: PT raised $200->$220 on CoWoS capacity upside',b:'bullish',date:'2026-05-05'},
+      {t:'Consensus EPS revision +18% over 90 days — estimate momentum strongest in semiconductor coverage',b:'bullish',date:'2026-04-30'},
+      {t:'Revenue guidance raised: 2026 full-year to $112-118B (was $105-110B)',b:'bullish',date:'2026-04-17'}
+    ]},
+    l4:{ score:10, label:'Bullish', signals:[
+      {t:'ASML EUV delivery backlog: 12 High-NA systems for H2 2026 — capacity expansion secured',b:'bullish',date:'2026-04-20'},
+      {t:'NVDA Blackwell: 100% manufactured at TSMC N3B — direct revenue correlation',b:'bullish',date:'2026-05-01'},
+      {t:'Apple A19 chip tape-out at N2 confirmed — 2027 capacity pre-booked',b:'bullish',date:'2026-04-15'}
+    ]},
+    l5:{ score:14, label:'Bullish', signals:[
+      {t:'AI capex supercycle: hyperscaler guidance totals $300B+ for 2026 — all flows through TSMC',b:'bullish',date:'2026-05-03'},
+      {t:'US CHIPS Act: $6.6B grant for Arizona fab + $5B loan facility confirmed',b:'bullish',date:'2026-04-25'},
+      {t:'Geopolitical risk: TSMC N+2 process lead is 3-5 years — no viable alternative',b:'bullish',date:'2026-04-20'}
+    ]}
+  },
+  SMCI: {
+    l1:{ score:14, label:'Bullish', signals:[
+      {t:'CEO cluster buy 200K shares: largest open-market purchase since pre-scandal highs',b:'bullish',date:'2026-04-25'},
+      {t:'Short interest 28% — high squeeze potential as compliance narrative resolves',b:'bullish',date:'2026-05-01'},
+      {t:'Volume surge: 3x average daily volume on May 6 — institutional accumulation pattern',b:'bullish',date:'2026-05-06'}
+    ]},
+    l2:{ score:22, label:'Bullish', signals:[
+      {t:'CEO Charles Liang: 200,000 shares at $38.40 — puts skin in the game post-restatement',b:'bullish',date:'2026-04-25'},
+      {t:'CFO David Weigand: 50,000 shares at $37.80 — CFO buying after accounting drama is high-signal',b:'bullish',date:'2026-03-15'},
+      {t:'Zero insider selling past 90 days — full team alignment at current levels',b:'bullish',date:'2026-05-01'}
+    ]},
+    l3:{ score:16, label:'Bullish', signals:[
+      {t:'Wedbush PT $35->$65: compliance resolution + Blackwell demand = re-rating cycle beginning',b:'bullish',date:'2026-05-07'},
+      {t:'Q3 FY2026 preliminary revenue $4.6B — 45% YoY growth, street was at $4.1B',b:'bullish',date:'2026-04-30'},
+      {t:'DLC penetration 30% of shipments (was 8% YoY) — structural moat forming in power-dense AI racks',b:'bullish',date:'2026-04-30'}
+    ]},
+    l4:{ score:10, label:'Bullish', signals:[
+      {t:'NVDA Blackwell GB200 NVL72 racks: SMCI is lead integrator for 60% of hyperscaler orders',b:'bullish',date:'2026-05-01'},
+      {t:'Microsoft Azure AI expansion: 150K+ SMCI rack order confirmed for H2 2026',b:'bullish',date:'2026-04-20'},
+      {t:'TSM N3 capacity ramp removes GPU supply constraint — direct SMCI throughput unlock',b:'bullish',date:'2026-04-15'}
+    ]},
+    l5:{ score:8, label:'Neutral', signals:[
+      {t:'AI datacenter power density trend: 1kW/chip by 2027 requires DLC — SMCI\'s core expertise',b:'bullish',date:'2026-05-01'},
+      {t:'Accounting restatement risk: SEC investigation ongoing — binary event overhang',b:'bearish',date:'2026-04-30'},
+      {t:'Regulatory: CHIPS Act datacenter incentives favor domestic server assembly — SMCI US-based',b:'bullish',date:'2026-04-25'}
+    ]}
+  },
   ASML: [
     { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:18, max:25,
       desc:'Dark pool $340M cluster at $820 support · GEX floor holding · vol compression pre-catalyst',
@@ -7204,55 +7332,8 @@ const UPCOMING_CATALYSTS = {
   PANW: { date:'2026-08-19', label:'Q4 FY2026 Earnings', note:'RPO growth · Platformization customer count · XSIAM ARR · Operating leverage inflection' },
   CRWD: { date:'2026-08-27', label:'Q2 FY2027 Earnings', note:'ARR growth rate · Net retention recovery · Charlotte AI adoption · Federal pipeline' },
   GEV:  { date:'2026-07-23', label:'Q2 2026 Earnings', note:'Gas turbine orders · Backlog growth · Electrification margin · Free cash flow guidance' },
-  AMZN: {
-    name: 'Amazon',
-    upstream: [
-      { ticker:'NVDA', metric:'datacenter_revenue_bn', lag:2, direction:'positive', weight:0.88, desc:'AMZN AWS is NVDA largest customer — Blackwell GPU orders flow to AWS capacity', logic:'NVDA datacenter revenue beat → AWS AI capacity expansion → AMZN revenue beat 1-2 quarters later.' },
-      { ticker:'MSFT', metric:'azure_revenue_bn',      lag:3, direction:'positive', weight:0.72, desc:'Azure enterprise AI adoption signals cloud demand AMZN AWS will follow with 1 quarter lag', logic:'Enterprise cloud AI adoption is not winner-take-all — AWS and Azure grow together.' },
-    ]
-  },
-  ARM: {
-    name: 'Arm Holdings',
-    upstream: [
-      { ticker:'NVDA', metric:'datacenter_revenue_bn', lag:2, direction:'positive', weight:0.92, desc:'NVDA Blackwell uses Grace ARM CPU — each GPU server sold pays ARM a royalty', logic:'NVDA server unit growth × ASP × ARM royalty rate = direct revenue flow to ARM.' },
-      { ticker:'AAPL', metric:'iphone_units_m',        lag:1, direction:'positive', weight:0.85, desc:'AAPL M4/A18 chips are ARM-based — each unit shipped generates ARM royalty revenue', logic:'AAPL ships 230M iPhones/yr + Mac/iPad — all run ARM. Unit volume is ARM royalty volume.' },
-    ]
-  },
-  QCOM: {
-    name: 'Qualcomm',
-    upstream: [
-      { ticker:'ARM',  metric:'v9_adoption_pct',       lag:2, direction:'positive', weight:0.80, desc:'QCOM Snapdragon X Elite built on ARM v9 — ARM architecture win is QCOM product quality win', logic:'ARM v9 performance advantage → QCOM product differentiation → PC market share gain.' },
-    ]
-  },
-  AAPL: {
-    name: 'Apple',
-    upstream: [
-      { ticker:'TSM',  metric:'n3_yield_pct',          lag:4, direction:'positive', weight:0.90, desc:'AAPL M4/A18 manufactured by TSM at N3 — TSM yield improvements directly improve AAPL margins', logic:'TSM N3 yield +5pp → AAPL chip cost −8% → gross margin expansion on hardware.' },
-      { ticker:'ARM',  metric:'v9_perf_uplift_pct',    lag:2, direction:'positive', weight:0.82, desc:'ARM v9 architecture in Apple Silicon gives AAPL performance leadership vs Intel/AMD PCs', logic:'ARM v9 perf gain → AAPL M4 benchmark lead → Mac upgrade cycle acceleration.' },
-    ]
-  },
-  PANW: {
-    name: 'Palo Alto Networks',
-    upstream: [
-      { ticker:'MSFT', metric:'azure_revenue_bn',      lag:3, direction:'positive', weight:0.75, desc:'Azure enterprise growth drives cloud security TAM — PANW is preferred Azure security partner', logic:'Azure enterprise customer growth → cloud workloads → cloud security spend → PANW ARR.' },
-      { ticker:'GOOGL', metric:'cloud_revenue_bn',     lag:3, direction:'positive', weight:0.68, desc:'GOOGL Cloud growth brings new enterprises — PANW listed as preferred GCP security vendor', logic:'GCP enterprise growth → security RFPs → PANW platformization wins.' },
-    ]
-  },
-  CRWD: {
-    name: 'CrowdStrike',
-    upstream: [
-      { ticker:'MSFT', metric:'azure_revenue_bn',      lag:3, direction:'positive', weight:0.72, desc:'Azure enterprise growth drives cloud endpoint demand — CRWD Falcon is Azure-native', logic:'Azure customer growth → cloud-native endpoint security need → CRWD ARR expansion.' },
-      { ticker:'AMZN', metric:'aws_revenue_bn',        lag:2, direction:'positive', weight:0.65, desc:'AWS marketplace distribution — CRWD Falcon available natively to all AWS customers', logic:'AWS customer base growth → CRWD marketplace discovery → new ARR from AWS channel.' },
-    ]
-  },
-  GEV: {
-    name: 'GE Vernova',
-    upstream: [
-      { ticker:'NVDA', metric:'datacenter_revenue_bn', lag:12, direction:'positive', weight:0.85, desc:'NVDA datacenter revenue → hyperscaler capex → new datacenters → power infrastructure orders → GEV', logic:'Each 100MW datacenter requires ~$200M in power equipment. NVDA revenue drives datacenter builds 9-18mo later.' },
-      { ticker:'VST',  metric:'nuclear_capacity_gw',  lag:8,  direction:'positive', weight:0.78, desc:'VST nuclear expansion requires GEV turbine upgrades and grid connection equipment', logic:'VST capacity addition announcement → GEV equipment order 6-9mo lag → GEV backlog growth.' },
-    ]
-  }
-};
+  SMCI: { date:'2026-08-05', label:'Q1 FY2027 Earnings', note:'AI server shipment rate · Blackwell rack integration · DLC attach rate · Cash flow recovery' }
+};;
 
 function computeWindowStatus(ticker) {
   const today = new Date();
