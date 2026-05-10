@@ -300,6 +300,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button onclick="renderLayerAnalysis('AMAT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMAT</button>
       <button onclick="renderLayerAnalysis('LRCX',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LRCX</button>
       <button onclick="renderLayerAnalysis('MU',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MU</button>
+      <button onclick="renderLayerAnalysis('LMT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LMT</button>
+      <button onclick="renderLayerAnalysis('NOC',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOC</button>
+      <button onclick="renderLayerAnalysis('RTX',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RTX</button>
     </div>
   </div>
 </div>
@@ -571,6 +574,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="sc sc-a convergence-stock-card" data-ticker="AMAT" onclick="openTicker('AMAT')"><div class="sul">AMAT — Score 65 · WFE cycle · TSMC capex lag window</div><div class="suh">Applied Materials benefits from every TSMC fab build. TSMC capex raise to $38–42B opened the AMAT order lag window. CEO+CFO cluster buy in March.</div><div class="sc-meta"><span class="act-tag at-watch">WFE CYCLE</span><span class="tf-tag tf-mid">2–3Q lag active</span><span class="score-pill">65/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="LRCX" onclick="openTicker('LRCX')"><div class="sul">LRCX — Score 62 · HBM etch · memory WFE leading</div><div class="suh">Lam Research dominates etch for HBM3E — every Blackwell GPU needs 8 HBM stacks, every stack needs Lam tools. Memory WFE leads non-memory for first time since 2021.</div><div class="sc-meta"><span class="act-tag at-watch">HBM CYCLE</span><span class="tf-tag tf-mid">Supply locked 2027</span><span class="score-pill">62/100</span></div></div>
         <div class="sc sc-g convergence-stock-card" data-ticker="MU" onclick="openTicker('MU')"><div class="sul">MU — Score 75 · HBM3E sole-source · NVDA lag confirmed</div><div class="suh">Micron is one of 2 HBM3E suppliers for NVDA Blackwell. Supply sold out through 2027. HBM3E margins 50%+. CEO $2.8M open market buy. Most reliable lag signal in the app.</div><div class="sc-meta"><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">1–2Q NVDA lag</span><span class="score-pill">75/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="LMT" onclick="openTicker('LMT')"><div class="sul">LMT — Score 68 · F-35 backlog · NATO allied spending</div><div class="suh">Lockheed Martin has 500+ F-35 aircraft in backlog and is sole-source on hypersonic programs. NATO allies accelerating defense spending lifts LMT directly. CEO insider cluster buy February 2026.</div><div class="sc-meta"><span class="act-tag at-watch">DEFENSE PRIME</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">68/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="NOC" onclick="openTicker('NOC')"><div class="sul">NOC — Score 64 · B-21 sole source · nuclear deterrence</div><div class="suh">Northrop is sole-source on B-21 Raider bomber and Sentinel ICBM — two of the three legs of US nuclear deterrence modernization. No competition. Budget protected from sequestration.</div><div class="sc-meta"><span class="act-tag at-watch">SOLE SOURCE</span><span class="tf-tag tf-long">Nuclear modernization</span><span class="score-pill">64/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="RTX" onclick="openTicker('RTX')"><div class="sul">RTX — Score 61 · Patriot demand · missile backlog 2yr+</div><div class="suh">Raytheon Patriot systems have 2+ year production backlog driven by Ukraine and NATO ally demand. Missile production running at capacity. Pratt & Whitney GTF engine issue is the key risk to monitor.</div><div class="sc-meta"><span class="act-tag at-watch">MISSILE CYCLE</span><span class="tf-tag tf-mid">2yr backlog</span><span class="score-pill">61/100</span></div></div>
       </div>
       <div class="card" style="border-color:var(--purple-bd);background:rgba(168,85,247,0.05);cursor:pointer;" onclick="gT('correlations',document.querySelectorAll('.nt')[2])">
         <div class="card-lbl" style="color:var(--purple);">Key correlation signal today</div>
@@ -790,6 +796,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="convergence-stock-card" data-ticker="MU" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('MU')">
         <div class="ring ring-g">75</div>
         <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">MU</span><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">1–2Q NVDA lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">$28M call sweep</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA beat upstream</span><span class="b b-g">HBM sold out 2027</span></div><div style="font-size:11px;color:var(--text2);">$500 allocation. Buy below $115. NVDA data center beat directly expands MU HBM orders 1–2 quarters later — most reliable lag signal in the platform.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+    </div>
+      <div style="font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin:14px 0 8px;padding:0 2px;">Defense / Space</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div class="convergence-stock-card" data-ticker="LMT" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('LMT')">
+        <div class="ring ring-a">68</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">LMT</span><span class="act-tag at-watch">DEFENSE PRIME</span><span class="tf-tag tf-long">Structural</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">F-35 500+ backlog</span><span class="b b-r">CEO cluster buy</span><span class="b b-g">NATO spending +$200B</span><span class="b b-b" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR downstream</span></div><div style="font-size:11px;color:var(--text2);">Add on dips. F-35 backlog provides 5+ years of production visibility. NATO 2% GDP commitment = structural revenue floor lift. Hypersonics is optionality.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <div class="convergence-stock-card" data-ticker="NOC" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('NOC')">
+        <div class="ring ring-a">64</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NOC</span><span class="act-tag at-watch">SOLE SOURCE</span><span class="tf-tag tf-long">Nuclear modernization</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">B-21 Raider sole-source</span><span class="b b-g">Sentinel ICBM $13B</span><span class="b b-r">CFO open market buy</span><span class="b b-g">Space systems backlog</span></div><div style="font-size:11px;color:var(--text2);">Hold and add. B-21 + Sentinel are sequestration-proof programs — two of three legs of nuclear triad. No competitive risk. Revenue locked for decade+.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <div class="convergence-stock-card" data-ticker="RTX" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('RTX')">
+        <div class="ring ring-a">61</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">RTX</span><span class="act-tag at-watch">MISSILE CYCLE</span><span class="tf-tag tf-mid">2yr backlog</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Patriot 2yr backlog</span><span class="b b-r">AMRAAM demand surge</span><span class="b b-g">Collins Aerospace growing</span><span class="b b-r">GTF engine risk</span></div><div style="font-size:11px;color:var(--text2);">Hold current. Patriot and AMRAAM backlogs are structural multi-year tailwinds. GTF engine inspection program is a 12–18 month headwind — monitor for resolution.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -1313,6 +1337,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div>
           <div class="supplier-col-lbl">Etch equipment beneficiary</div>
           <div class="supplier-item public" onclick="openTicker('LRCX')"><div class="si-ticker">LRCX</div><div class="si-info"><div class="si-name">Lam Research</div><div class="si-role">Every HBM3E stack manufactured requires Lam etch tools — 40% higher etch intensity than standard DRAM. HBM production ramp = Lam tool orders.</div><div class="si-signal up">Signal: MU + SK Hynix HBM capacity expansions both require Lam etch</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chain-card" data-chain-ticker="LMT">
+    <div class="chain-header">
+      <div class="chain-upstream">
+        <div class="cu-node" style="background:var(--bg3);border:0.5px solid var(--border);">DoD Budget</div>
+        <div class="cu-arrow">→</div>
+        <div class="cu-metric">+6% real growth<br><span style="font-size:9px;color:var(--text3);">FY2027 request</span></div>
+        <div class="cu-arrow">→</div>
+        <div class="cu-node cu-target" onclick="openTicker('LMT')" style="cursor:pointer;">LMT</div>
+        <div class="cu-lag">0–12 month lag</div>
+      </div>
+    </div>
+    <div><div class="chain-title">Defense budget elevation → prime contractor revenue → PLTR AI platform embedding</div><div class="chain-lag">Lag: 0–12 months for prime awards · PLTR follows with 1–3Q lag · Active now</div></div>
+    <div class="evidence-row"><span class="b b-g">DoD FY2027 +6% real growth</span><span class="b b-g">NATO 2% GDP commitment: +$200B</span><span class="b b-r" onclick="openTicker('LMT')" style="cursor:pointer;" title="Open LMT">LMT CEO+CFO $2.5M buy</span><span class="b b-b" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR embedded in all three primes</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> Defense budget increases flow to prime contractors (LMT, NOC, RTX) within 6–12 months via contract awards. PLTR is embedded as the AI/data platform across all three — PLTR US Government growth follows defense prime program growth with 1–3 quarter lag. Monitor quarterly PLTR US Government revenue for confirmation. <em>The key risk:</em> Continuing resolution (CR) budget environment delays new program starts — watch Congress appropriations calendar.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">Defense Prime Chain</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">Prime contractors</div>
+          <div class="supplier-item public" onclick="openTicker('LMT')"><div class="si-ticker">LMT</div><div class="si-info"><div class="si-name">Lockheed Martin</div><div class="si-role">F-35 + hypersonics. NATO allied spending creates structural demand floor for decade. Sole-source on critical programs.</div><div class="si-signal up">Signal: NATO 2% commitment → F-35 allied orders → LMT revenue floor lift</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('NOC')"><div class="si-ticker">NOC</div><div class="si-info"><div class="si-name">Northrop Grumman</div><div class="si-role">B-21 Raider + Sentinel ICBM — two of three nuclear triad legs. Budget-protected, no competitive risk.</div><div class="si-signal up">Signal: Nuclear triad modernization is sequestration-proof — NOC revenue locked for decade</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('RTX')"><div class="si-ticker">RTX</div><div class="si-info"><div class="si-name">RTX Corp</div><div class="si-role">Patriot + AMRAAM + SM-3. Ukraine/NATO demand created 2yr+ production backlog across all missile lines.</div><div class="si-signal up">Signal: NATO restocking + Ukraine replenishment → RTX missile backlog 2yr+</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Downstream AI beneficiary</div>
+          <div class="supplier-item public" onclick="openTicker('PLTR')"><div class="si-ticker">PLTR</div><div class="si-info"><div class="si-name">Palantir Technologies</div><div class="si-role">AI/data platform embedded across LMT F-35 logistics, NOC B-21 mission planning, RTX targeting systems. US Government revenue (42% of total) grows with defense prime program growth.</div><div class="si-signal up">Signal: Defense prime program growth → PLTR AI embedding → US Gov revenue 1–3Q lag</div></div></div>
         </div>
       </div>
     </div>
@@ -1929,7 +1984,7 @@ const S=(function(){
     };
   }catch(e){return def;}
 })();
-const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SNPS:58,SMCI:52,AMAT:65,BAH:54,INTC:35,DELL:48,ANET:56,LRCX:62};
+const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SNPS:58,SMCI:52,AMAT:65,BAH:54,INTC:35,DELL:48,ANET:56,LRCX:62,LMT:68,NOC:64,RTX:61};
 
 // ── LIVE SCORE ENGINE ─────────────────────────────────────────────────────────
 // Computes a dynamic convergence score from Finnhub data (requires API key).
@@ -2002,7 +2057,7 @@ async function initLiveScores() {
   if (!S.fh) return;
   // All featured tickers — compute L1 (price momentum) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU'];
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX'];
   // Fire sequentially with 300ms gap — well within Finnhub 60 req/min free tier
   for (const t of tickers) {
     await computeLiveScore(t);
@@ -2256,7 +2311,7 @@ function markSagePick() {
 }
 
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
-const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks'};
+const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
 const MARKETS={
   indices:[
@@ -2438,7 +2493,7 @@ CEG:{name:'Constellation Energy Corp.',price:'191.20',change:'+0.4%',up:true,mkt
     {src:'Constellation Q1 2026 · Apr 30',hl:'Nuclear capacity factor 94.8%. CEO disclosed active negotiations with two large technology customers. Deals expected H2 2026.',tag:'b-g',label:'Pipeline signal'}
   ],
   insider:[{name:'Joe Dominguez (CEO)',type:'BUY',amount:'$2.1M',date:'Feb 2026',note:'Open market purchase post-TMI restart. Highest conviction signal type from an operator who knows exactly what those PPAs are worth.'}],
-  revenue:[{seg:'Nuclear (baseload)',pct:78,vs:'+18% YoY'},{seg:'Natural Gas',pct:14,vs:'+6% YoY'},{seg:'Hydro/Wind/Solar',pct:8,vs:'+31% YoY'}]},AMAT:{name:'Applied Materials',price:'168.40',change:'+0.9%',up:true,mktcap:'$143B',vol:'8.2M',week52:'$138–$255',synopsis:'Applied Materials is the largest wafer fabrication equipment (WFE) company by revenue. Every advanced fab TSMC builds requires AMAT deposition and etch tools alongside ASML lithography. The TSMC capex raise to $38–42B directly translates to AMAT tool orders 2–3 quarters out — that window opened March 2026. Score 65 driven by WFE cycle inflection, CEO+CFO cluster buy, and Goldman PT raise to $210.',news:[{src:'Goldman Sachs · Apr 28',hl:'PT raised $185→$210. WFE cycle recovery ahead of schedule. TSMC N2 ramp driving deposition tool orders.',tag:'b-g',label:'PT raise'},{src:'AMAT · May 8',hl:'CEO Gary Dickerson: demand signals from TSMC, Intel, Samsung all inflecting simultaneously. Order book strongest since 2021.',tag:'b-g',label:'CEO commentary'},{src:'Options flow · May 6',hl:'$18M in call sweeps at $180 strike — two weeks before earnings. Institutional positioning ahead of WFE cycle confirmation.',tag:'b-r',label:'Bullish sweep'}],insider:[{name:'Gary Dickerson (CEO)',type:'BUY',amount:'$1.2M',date:'Mar 2026',note:'Open market — bought during TSMC capex raise announcement period'},{name:'Brice Hill (CFO)',type:'BUY',amount:'$380K',date:'Mar 2026',note:'Open market — cluster with CEO confirms conviction'}],revenue:[{seg:'Semiconductor Systems',pct:74,vs:'+18% YoY'},{seg:'Applied Global Services',pct:22,vs:'+9% YoY'},{seg:'Display & Adjacent',pct:4,vs:'-12% YoY'}]},LRCX:{name:'Lam Research',price:'82.40',change:'+1.1%',up:true,mktcap:'$108B',vol:'3.4M',week52:'$69–$115',synopsis:'Lam Research dominates etch and deposition equipment for memory chips — NAND, DRAM, and critically HBM3E. Every NVDA Blackwell GPU requires 8 HBM stacks from Micron or SK Hynix, and every HBM stack requires Lam etch tools to manufacture. The HBM production ramp through 2027 is the most durable order pipeline in semiconductor equipment. Score 62 driven by HBM cycle, Morgan Stanley upgrade, and Q3 earnings beat.',news:[{src:'Morgan Stanley · May 2',hl:'Upgrades LRCX Neutral→Overweight. HBM3E etch intensity 40% higher than standard DRAM. Pricing power sustained.',tag:'b-r',label:'Upgrade'},{src:'LRCX · Apr 24',hl:'Q3 earnings beat: revenue $3.98B vs $3.76B est. Memory WFE leading non-memory for first time since 2021.',tag:'b-g',label:'Earnings beat'},{src:'SK Hynix · May 5',hl:'HBM3E supply sold out through 2027. Capacity expansions require Lam etch tools — committed capex pipeline visible.',tag:'b-g',label:'Supply signal'}],insider:[],revenue:[{seg:'Memory (NAND/DRAM/HBM)',pct:68,vs:'+31% YoY'},{seg:'Foundry (TSMC/Samsung)',pct:24,vs:'+14% YoY'},{seg:'Logic/Other',pct:8,vs:'+7% YoY'}]},MU:{name:'Micron Technology',price:'118.60',change:'+2.3%',up:true,mktcap:'$131B',vol:'22.4M',week52:'$84–$158',synopsis:'Micron is one of only two companies (with SK Hynix) supplying HBM3E memory to NVIDIA. Every NVDA Blackwell GPU requires 8 stacks of HBM — and supply is sold out through 2027. HBM3E sells for 5–8x the price of standard DRAM with margins exceeding 50%. NVDA data center beats translate to MU order expansion with 1–2 quarter lag — the most reliable lag signal in this platform. Score 75.',news:[{src:'NVDA Q1 2026 · May 22',hl:'NVDA data center revenue $35.6B — beat. Every incremental Blackwell GPU = incremental HBM demand. MU supply contract expanded.',tag:'b-r',label:'Upstream beat'},{src:'Micron · Jun 2025',hl:'HBM3E allocated to NVDA through 2027. 6-quarter forward order book locked — unprecedented visibility for a memory company.',tag:'b-g',label:'Supply locked'},{src:'Options flow · May 6',hl:'$28M in call sweeps at $120 strike expiring May 30. Largest single-day MU options flow this year.',tag:'b-r',label:'Bullish sweep'}],insider:[{name:'Sanjay Mehrotra (CEO)',type:'BUY',amount:'$2.8M',date:'Apr 2026',note:'Open market during HBM supply negotiation period — highest conviction signal type'}],revenue:[{seg:'Compute & Networking (HBM/server)',pct:52,vs:'+93% YoY'},{seg:'Storage (NAND)',pct:30,vs:'+18% YoY'},{seg:'Mobile DRAM',pct:18,vs:'+7% YoY'}]}};
+  revenue:[{seg:'Nuclear (baseload)',pct:78,vs:'+18% YoY'},{seg:'Natural Gas',pct:14,vs:'+6% YoY'},{seg:'Hydro/Wind/Solar',pct:8,vs:'+31% YoY'}]},AMAT:{name:'Applied Materials',price:'168.40',change:'+0.9%',up:true,mktcap:'$143B',vol:'8.2M',week52:'$138–$255',synopsis:'Applied Materials is the largest wafer fabrication equipment (WFE) company by revenue. Every advanced fab TSMC builds requires AMAT deposition and etch tools alongside ASML lithography. The TSMC capex raise to $38–42B directly translates to AMAT tool orders 2–3 quarters out — that window opened March 2026. Score 65 driven by WFE cycle inflection, CEO+CFO cluster buy, and Goldman PT raise to $210.',news:[{src:'Goldman Sachs · Apr 28',hl:'PT raised $185→$210. WFE cycle recovery ahead of schedule. TSMC N2 ramp driving deposition tool orders.',tag:'b-g',label:'PT raise'},{src:'AMAT · May 8',hl:'CEO Gary Dickerson: demand signals from TSMC, Intel, Samsung all inflecting simultaneously. Order book strongest since 2021.',tag:'b-g',label:'CEO commentary'},{src:'Options flow · May 6',hl:'$18M in call sweeps at $180 strike — two weeks before earnings. Institutional positioning ahead of WFE cycle confirmation.',tag:'b-r',label:'Bullish sweep'}],insider:[{name:'Gary Dickerson (CEO)',type:'BUY',amount:'$1.2M',date:'Mar 2026',note:'Open market — bought during TSMC capex raise announcement period'},{name:'Brice Hill (CFO)',type:'BUY',amount:'$380K',date:'Mar 2026',note:'Open market — cluster with CEO confirms conviction'}],revenue:[{seg:'Semiconductor Systems',pct:74,vs:'+18% YoY'},{seg:'Applied Global Services',pct:22,vs:'+9% YoY'},{seg:'Display & Adjacent',pct:4,vs:'-12% YoY'}]},LRCX:{name:'Lam Research',price:'82.40',change:'+1.1%',up:true,mktcap:'$108B',vol:'3.4M',week52:'$69–$115',synopsis:'Lam Research dominates etch and deposition equipment for memory chips — NAND, DRAM, and critically HBM3E. Every NVDA Blackwell GPU requires 8 HBM stacks from Micron or SK Hynix, and every HBM stack requires Lam etch tools to manufacture. The HBM production ramp through 2027 is the most durable order pipeline in semiconductor equipment. Score 62 driven by HBM cycle, Morgan Stanley upgrade, and Q3 earnings beat.',news:[{src:'Morgan Stanley · May 2',hl:'Upgrades LRCX Neutral→Overweight. HBM3E etch intensity 40% higher than standard DRAM. Pricing power sustained.',tag:'b-r',label:'Upgrade'},{src:'LRCX · Apr 24',hl:'Q3 earnings beat: revenue $3.98B vs $3.76B est. Memory WFE leading non-memory for first time since 2021.',tag:'b-g',label:'Earnings beat'},{src:'SK Hynix · May 5',hl:'HBM3E supply sold out through 2027. Capacity expansions require Lam etch tools — committed capex pipeline visible.',tag:'b-g',label:'Supply signal'}],insider:[],revenue:[{seg:'Memory (NAND/DRAM/HBM)',pct:68,vs:'+31% YoY'},{seg:'Foundry (TSMC/Samsung)',pct:24,vs:'+14% YoY'},{seg:'Logic/Other',pct:8,vs:'+7% YoY'}]},MU:{name:'Micron Technology',price:'118.60',change:'+2.3%',up:true,mktcap:'$131B',vol:'22.4M',week52:'$84–$158',synopsis:'Micron is one of only two companies (with SK Hynix) supplying HBM3E memory to NVIDIA. Every NVDA Blackwell GPU requires 8 stacks of HBM — and supply is sold out through 2027. HBM3E sells for 5–8x the price of standard DRAM with margins exceeding 50%. NVDA data center beats translate to MU order expansion with 1–2 quarter lag — the most reliable lag signal in this platform. Score 75.',news:[{src:'NVDA Q1 2026 · May 22',hl:'NVDA data center revenue $35.6B — beat. Every incremental Blackwell GPU = incremental HBM demand. MU supply contract expanded.',tag:'b-r',label:'Upstream beat'},{src:'Micron · Jun 2025',hl:'HBM3E allocated to NVDA through 2027. 6-quarter forward order book locked — unprecedented visibility for a memory company.',tag:'b-g',label:'Supply locked'},{src:'Options flow · May 6',hl:'$28M in call sweeps at $120 strike expiring May 30. Largest single-day MU options flow this year.',tag:'b-r',label:'Bullish sweep'}],insider:[{name:'Sanjay Mehrotra (CEO)',type:'BUY',amount:'$2.8M',date:'Apr 2026',note:'Open market during HBM supply negotiation period — highest conviction signal type'}],revenue:[{seg:'Compute & Networking (HBM/server)',pct:52,vs:'+93% YoY'},{seg:'Storage (NAND)',pct:30,vs:'+18% YoY'},{seg:'Mobile DRAM',pct:18,vs:'+7% YoY'}]},LMT:{name:'Lockheed Martin',price:'468.20',change:'+1.4%',up:true,mktcap:'$111B',vol:'1.2M',week52:'$412–$618',synopsis:'Lockheed Martin is the world\'s largest defense contractor and sole manufacturer of the F-35 — 500+ aircraft in backlog across US and allied air forces. NATO allies raising defense spending to 2% GDP creates a structural revenue floor expansion that will sustain for 10+ years. The company is also sole-source on hypersonic weapons programs (ARRW, LRHW) and next-gen space systems. Score 68 driven by NATO spending acceleration, F-35 international demand, and CEO+board cluster buy.',news:[{src:'DoD · Apr 14',hl:'$14.2B F-35 Lot 18–19 contract awarded. 145 aircraft. Largest single F-35 award. Sole-source — no competition.',tag:'b-g',label:'Contract'},{src:'NATO Summit · Apr 25',hl:'All 32 NATO members commit to 2% GDP defense spending. Implies +$200B annual NATO defense spend vs 2023 baseline. Direct LMT addressable market expansion.',tag:'b-g',label:'Structural'},{src:'SEC EDGAR · Feb 12',hl:'CEO Jim Taiclet $2.1M open market purchase. CFO Ken Possenriede $480K. Both bought within 48 hours — cluster signal.',tag:'b-r',label:'Cluster buy'}],insider:[{name:'Jim Taiclet (CEO)',type:'BUY',amount:'$2.1M',date:'Feb 2026',note:'Open market — bought alongside CFO within 48hr. Cluster confirmation.'},{name:'Ken Possenriede (CFO)',type:'BUY',amount:'$480K',date:'Feb 2026',note:'Open market — cluster with CEO'}],revenue:[{seg:'Aeronautics (F-35/F-22)',pct:40,vs:'+8% YoY'},{seg:'Missiles & Fire Control',pct:18,vs:'+14% YoY'},{seg:'Rotary & Mission Systems',pct:26,vs:'+6% YoY'},{seg:'Space',pct:16,vs:'+11% YoY'}]},NOC:{name:'Northrop Grumman',price:'492.80',change:'+0.9%',up:true,mktcap:'$74B',vol:'0.8M',week52:'$421–$549',synopsis:'Northrop Grumman is sole-source on two of the three legs of US nuclear deterrence modernization: the B-21 Raider stealth bomber (100+ aircraft planned) and the Sentinel ICBM program ($13B sole-source award). These are sequestration-proof programs — no Congress has cut nuclear modernization programs, ever. Score 64 driven by nuclear triad budget protection, B-21 production ramp, and CFO open market purchase.',news:[{src:'DoD · Mar 2026',hl:'B-21 Raider enters low-rate initial production. Northrop confirmed as sole manufacturer. First operational aircraft delivery 2027.',tag:'b-g',label:'Production'},{src:'DoD · Jan 2026',hl:'Sentinel ICBM program: Northrop sole-source contract extended. Total program value $13B through 2030. No competitive rebid.',tag:'b-g',label:'Contract'},{src:'SEC EDGAR · Mar 8',hl:'CFO David Keffer $620K open market purchase. No 10b5-1 plan — discretionary buy signals personal conviction.',tag:'b-r',label:'Insider buy'}],insider:[{name:'David Keffer (CFO)',type:'BUY',amount:'$620K',date:'Mar 2026',note:'Open market — no pre-arranged plan, discretionary purchase signals genuine conviction'}],revenue:[{seg:'Aeronautics Systems (B-21)',pct:22,vs:'+18% YoY'},{seg:'Defense Systems (Sentinel/missiles)',pct:21,vs:'+9% YoY'},{seg:'Mission Systems (electronics)',pct:32,vs:'+7% YoY'},{seg:'Space Systems',pct:25,vs:'+12% YoY'}]},RTX:{name:'RTX Corp',price:'126.40',change:'+0.8%',up:true,mktcap:'$169B',vol:'4.8M',week52:'$104–$141',synopsis:'RTX Corp (formerly Raytheon Technologies) manufactures Patriot missile systems, AMRAAM air-to-air missiles, SM-3 ship defense, and Pratt & Whitney aircraft engines. Ukraine demand has created a 2+ year Patriot production backlog. NATO ally restocking of AMRAAM and SM-3 adds further queue. Score 61 — the Pratt & Whitney GTF engine inspection program is a 12–18 month drag on commercial aerospace, partially offsetting the missile upside.',news:[{src:'RTX · Apr 22',hl:'Patriot system: order backlog now exceeds 2 years of production capacity. Poland, Germany, Romania all new orders. Production rate increase approved.',tag:'b-g',label:'Backlog'},{src:'NATO · Apr 25',hl:'NATO replenishment program: 14 allies ordering AMRAAM restocks. $3.2B in orders. RTX is sole AMRAAM manufacturer.',tag:'b-g',label:'Missiles'},{src:'RTX · Feb 2026',hl:'Pratt & Whitney GTF engine: 600–700 aircraft still require inspection. Expected resolution Q4 2026. Headwind acknowledged.',tag:'b-r',label:'GTF risk'}],insider:[],revenue:[{seg:'Collins Aerospace (avionics)',pct:34,vs:'+12% YoY'},{seg:'Pratt & Whitney (engines)',pct:30,vs:'+4% YoY'},{seg:'Raytheon (missiles/Patriot)',pct:36,vs:'+16% YoY'}]}};
 
 function drawSparkline(canvas,data,up){if(!canvas||!data||data.length<2)return;const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);const min=Math.min(...data),max=Math.max(...data),range=max-min||1;const pts=data.map((v,i)=>({x:(i/(data.length-1))*w,y:h-((v-min)/range)*(h-4)-2}));ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=up?'var(--blue)':'var(--text3)';ctx.lineWidth=1.5;ctx.stroke();}
 function genSparkData(up,n=20){let v=100;return Array.from({length:n},()=>{v+=((Math.random()-0.47)*(up?1.3:0.7))*2;return v;});}
@@ -4258,7 +4313,10 @@ const EDGAR_CIKS = {
   PLTR: '0001321655',
   META: '0001326801',
   TSM:  '0001046179',
-  SMCI: '0000886136'
+  SMCI: '0000886136',
+  LMT:  '0000936468',
+  NOC:  '0001133421',
+  RTX:  '0000101830'
 };
 
 let edgarActiveTicker = 'NVDA';
@@ -4976,13 +5034,64 @@ const LAYER_DATA = {
       desc:'HBM supercycle · memory content per AI chip growing · supply constrained',
       signals:['HBM per GPU growing: H100=80GB, H200=141GB, Blackwell=192GB — content per chip growing 2.4x each generation','MU capex to expand HBM capacity is running 18 months behind demand — supply constraint is structural not cyclical','AI inference requires large memory bandwidth — every new AI application increases memory TAM permanently'] },
   ],
+  LMT: [
+    { id:'L1', name:'Market structure',    horizon:'1–14 days',  pts:17, max:25,
+      desc:'Defense budget momentum · institutional rotation · low volatility accumulation',
+      signals:['LMT relative strength vs S&P: defense sector leading in geopolitical risk-on environment','Options flow: $12M in call spreads at $480 strike — 3-month time horizon, institutional sizing','Institutional 13F: defense ETFs (XAR, ITA) seeing highest inflows since Ukraine invasion 2022'] },
+    { id:'L2', name:'Insider & regulatory', horizon:'2–8 weeks',  pts:22, max:35,
+      desc:'CEO + CFO cluster buy · $2.5M combined · open market within 48hr',
+      signals:['CEO Jim Taiclet $2.1M open market purchase February 2026 — no pre-arranged 10b5-1 plan','CFO Ken Possenriede $480K within 48 hours — cluster buy confirms shared conviction at price level','Combined $2.58M is the largest LMT insider cluster since 2019 — historically preceded 20%+ 12-month returns'] },
+    { id:'L3', name:'Corporate intel',     horizon:'4–12 weeks', pts:17, max:25,
+      desc:'$14.2B F-35 Lot 18-19 contract · NATO spending commitment · hypersonics optionality',
+      signals:['DoD $14.2B F-35 Lot 18-19 contract: 145 aircraft, sole-source, no competitive risk','NATO 2% GDP commitment: +$200B annual allied defense spend — F-35 is primary allied fighter platform','Hypersonic programs (ARRW, LRHW) are revenue optionality: not priced in at current multiple'] },
+    { id:'L4', name:'Supply chain',        horizon:'6–18 weeks', pts:8,  max:10,
+      desc:'F-35 supply chain stability · allied order conversion · PLTR embedded downstream',
+      signals:['F-35 international orders (Japan, Germany, Poland, Belgium) converting to production slots 2026–2028','PLTR Gotham AI platform embedded in LMT F-35 maintenance and logistics — PLTR revenue follows LMT program growth','Pratt & Whitney F135 engine (F-35 sole source) supply secured — no LMT production risk from engine supply'] },
+    { id:'L5', name:'Macro / structural',  horizon:'60–365 days', pts:4,  max:5,
+      desc:'NATO 2% GDP mandate · great power competition · 10yr defense budget floor',
+      signals:['NATO 2% GDP defense spending commitment is legally binding — creates 10-year revenue floor for prime contractors','China-Taiwan tension and Russia-Ukraine war create bipartisan US defense budget consensus — no sequestration risk','F-35 is the defining Western 5th-gen platform — every allied air force modernization flows through LMT'] },
+  ],
+  NOC: [
+    { id:'L1', name:'Market structure',    horizon:'1–14 days',  pts:15, max:25,
+      desc:'Defense rotation · sole-source premium · steady accumulation',
+      signals:['NOC trades at premium to defense peers — sole-source nuclear programs justify elevated multiple','Relative strength: NOC outperforming during geopolitical escalation events — flight to nuclear certainty','Low short interest (1.8%) reflects institutional recognition of sequestration-proof revenue base'] },
+    { id:'L2', name:'Insider & regulatory', horizon:'2–8 weeks',  pts:18, max:35,
+      desc:'CFO open market buy · $620K · no pre-arranged plan',
+      signals:['CFO David Keffer $620K open market purchase March 2026 — discretionary, no 10b5-1 plan','Timing: bought 3 weeks before B-21 production milestone announcement — implies forward visibility','No insider selling in 18 months across all named officers — full alignment with shareholders'] },
+    { id:'L3', name:'Corporate intel',     horizon:'4–12 weeks', pts:18, max:25,
+      desc:'B-21 LRIP confirmed · Sentinel sole-source extended · space backlog growing',
+      signals:['B-21 Raider enters low-rate initial production — first operational delivery 2027, 100+ aircraft planned','Sentinel ICBM $13B sole-source contract extended through 2030 — zero competitive risk','Space Systems: classified satellite constellation programs growing at classified growth rates — disclosed backlog $12B+'] },
+    { id:'L4', name:'Supply chain',        horizon:'6–18 weeks', pts:9,  max:10,
+      desc:'Nuclear triad programs are budget-protected · no supply chain risk at program level',
+      signals:['Nuclear deterrence spending is Congressionally protected — cannot be cut under current defense authorization structure','B-21 and Sentinel are multi-decade programs: revenue locked regardless of budget fluctuation','PLTR AI platform contracted for B-21 mission planning systems — PLTR downstream from NOC program growth'] },
+    { id:'L5', name:'Macro / structural',  horizon:'60–365 days', pts:4,  max:5,
+      desc:'Nuclear triad modernization · great power deterrence · decade-long program',
+      signals:['US nuclear triad modernization is a 30-year $1.7T program — NOC captures B-21 + Sentinel, roughly $300B over program life','Russia and China nuclear buildup creates bipartisan consensus for US nuclear modernization spending','Space-based ISR (intelligence, surveillance, reconnaissance) spending accelerating — NOC is primary beneficiary'] },
+  ],
+  RTX: [
+    { id:'L1', name:'Market structure',    horizon:'1–14 days',  pts:14, max:25,
+      desc:'Missile demand cycle · Patriot backlog premium · commercial aerospace recovery',
+      signals:['Patriot system 2yr+ backlog being recognized by equity market — institutional rotation into RTX','Collins Aerospace commercial aviation recovery: +12% YoY as air travel exceeds pre-COVID levels','GTF engine inspection program: 600–700 aircraft still pending — known headwind, resolution Q4 2026'] },
+    { id:'L2', name:'Insider & regulatory', horizon:'2–8 weeks',  pts:14, max:35,
+      desc:'No recent insider cluster · monitoring for activity near GTF resolution',
+      signals:['No significant insider buys or sells in past 90 days — neutral signal','Share repurchase: $3B buyback program active, $1.8B remaining — management returning capital at current price','GTF resolution expected Q4 2026 — insider buying ahead of that announcement would be highly meaningful'] },
+    { id:'L3', name:'Corporate intel',     horizon:'4–12 weeks', pts:18, max:25,
+      desc:'Patriot backlog 2yr+ · AMRAAM sole-source · NATO ally orders accelerating',
+      signals:['Patriot: 14 allied nations have active orders — production rate increase approved, still 2yr backlog at higher rate','AMRAAM: $3.2B in NATO restocking orders Q1 2026 alone — RTX is sole AMRAAM manufacturer globally','SM-3 ship defense: Japan AEGIS program expansion adds $1.8B to backlog'] },
+    { id:'L4', name:'Supply chain',        horizon:'6–18 weeks', pts:9,  max:10,
+      desc:'Missile supply chain at capacity · allied demand pipeline visible 3+ years',
+      signals:['Patriot + AMRAAM combined production cannot be surged quickly — demand exceeds capacity for 2+ years','Collins Aerospace: GE partnership on RISE engine program provides 2030s revenue visibility','Ukraine replenishment pipeline: US + allies replacing Patriot batteries sent to Ukraine — each replacement = new production'] },
+    { id:'L5', name:'Macro / structural',  horizon:'60–365 days', pts:6,  max:5,
+      desc:'NATO restocking cycle · missile demand secular growth · defense aviation recovery',
+      signals:['NATO 2% GDP commitment requires massive missile restocking — RTX is primary allied missile supplier','Precision-guided munitions consumption in modern warfare vastly exceeds pre-Ukraine assumptions — budgets repricing','Commercial aviation recovery sustains Collins Aerospace and Pratt & Whitney civilian engine revenue long-term'] },
+  ],
 };
 
 // ─── SECTOR HEATMAP ──────────────────────────────────────────────
 const SECTORS = {
   Semis:        { label:'Semiconductors',    tickers:['NVDA','ASML','AMD','TSM','SMCI','AMAT','LRCX','MU'], color:'var(--blue)' },
   Hyperscalers: { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL'],           color:'var(--purple,#a855f7)' },
-  Defense:      { label:'Defense / Space',   tickers:['PLTR','RKLB'],                   color:'var(--amber)' },
+  Defense:      { label:'Defense / Space',   tickers:['PLTR','RKLB','LMT','NOC','RTX'], color:'var(--amber)' },
   Energy:       { label:'Energy / Nuclear',  tickers:['VST','CEG'],                     color:'var(--green)' },
 };
 
@@ -5482,6 +5591,17 @@ const SIGNAL_EVENTS = {
     { upstream:'NVDA', date:'2025-11-20', desc:'NVDA Q3 FY2026: H200 demand strong · Blackwell production beginning · HBM allocation for FY2027 secured', lagMin:2, lagMax:4 },
     { upstream:'NVDA', date:'2026-02-26', desc:'NVDA Q4 FY2026: data center $35.6B beat · Blackwell ramp confirmed · HBM demand letter sent to MU and SK Hynix', lagMin:4, lagMax:8 },
   ],
+  LMT: [
+    { upstream:'__BUDGET__', date:'2026-03-14', desc:'US DoD FY2027 budget request: +6% real growth · F-35 procurement rate increase · hypersonics fully funded · LMT addressable market expands $8B', lagMin:0, lagMax:12 },
+    { upstream:'__NATO__',   date:'2026-04-25', desc:'NATO summit: all 32 members commit to 2% GDP defense spend · allied F-35 orders accelerating · direct LMT demand signal', lagMin:0, lagMax:24 },
+  ],
+  NOC: [
+    { upstream:'__BUDGET__', date:'2026-03-14', desc:'US DoD FY2027 budget: nuclear triad modernization fully funded · B-21 production rate increase approved · Sentinel on schedule', lagMin:0, lagMax:12 },
+  ],
+  RTX: [
+    { upstream:'__NATO__',   date:'2026-04-25', desc:'NATO restocking program: 14 allies ordering Patriot/AMRAAM · $3.2B AMRAAM orders Q1 2026 · production rate increase approved', lagMin:0, lagMax:16 },
+    { upstream:'PLTR',       date:'2026-04-30', desc:'PLTR US Government Q1 2026: +38% growth · DoD AI contracts expanding · defense prime ecosystem growth', lagMin:0, lagMax:8 },
+  ],
 };
 
 const UPCOMING_CATALYSTS = {
@@ -5495,6 +5615,9 @@ const UPCOMING_CATALYSTS = {
   AMAT:  { date:'2026-08-14', label:'Q3 FY2026 earnings', note:'WFE order book · TSMC lag window validation · N2 ramp update' },
   LRCX:  { date:'2026-07-23', label:'Q4 FY2026 earnings', note:'HBM etch intensity update · memory WFE outlook 2027' },
   MU:    { date:'2026-06-25', label:'Q3 FY2026 earnings', note:'HBM3E revenue mix · NVDA supply contract update · margin trajectory' },
+  LMT:   { date:'2026-07-22', label:'Q2 2026 earnings', note:'F-35 delivery cadence · NATO allied order update · hypersonics program status' },
+  NOC:   { date:'2026-07-24', label:'Q2 2026 earnings', note:'B-21 LRIP progress · Sentinel milestones · space backlog update' },
+  RTX:   { date:'2026-07-24', label:'Q2 2026 earnings', note:'Patriot backlog update · GTF inspection progress · Collins commercial recovery' },
 };
 
 function computeWindowStatus(ticker) {
