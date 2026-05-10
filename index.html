@@ -169,7 +169,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .tk{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;cursor:pointer;white-space:nowrap;}.tk:hover strong{color:var(--green);}.tk strong{font-weight:500;color:var(--text);}
 .hdr-r{display:flex;gap:6px;flex-shrink:0;align-items:center;}
 .hbtn{font-size:11px;padding:5px 11px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s,color .15s;}.hbtn:hover{background:var(--bg3);color:var(--text);}.hbtn.pri{background:var(--text);color:var(--bg);border-color:transparent;font-weight:600;}
-.nav{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;}.nav::-webkit-scrollbar{display:none;}
+.nav{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:50px;z-index:98;}.nav::-webkit-scrollbar{display:none;}
 #live-ticker-strip{flex:1;overflow:hidden;min-width:0;height:100%;display:none;}
 #ticker-track{display:flex;align-items:center;height:100%;animation:ticker-run 80s linear infinite;width:max-content;}
 #ticker-track:hover{animation-play-state:paused;}
@@ -262,7 +262,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- STOCK FOCUS BAR -->
-<div id="stock-focus-bar" style="display:none;background:var(--bg2);border-bottom:0.5px solid var(--border);padding:7px 16px;position:sticky;top:0;z-index:99;">
+<div id="stock-focus-bar" style="display:none;background:var(--bg2);border-bottom:0.5px solid var(--border);padding:7px 16px;position:sticky;top:92px;z-index:97;">
   <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:nowrap;overflow-x:auto;">
     <button id="focus-all-btn" onclick="setFocusTicker(null)"
       style="font-size:11px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s;">
@@ -762,7 +762,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-g" onclick="openTicker('CEG')">CEG</div>
       <div class="cnode cn-g" onclick="openTicker('OKLO')">OKLO</div>
     </div>
-    <div class="evidence-row"><span class="b b-r">NVDA guidance raised Q1 2025</span><span class="b b-b">MSFT 20yr nuclear PPA</span><span class="b b-g">Druckenmiller rotated → VST + CEG</span><span class="b b-a">US power grid backlog 3–5yr</span></div>
+    <div class="evidence-row"><span class="b b-r" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA guidance raised Q1 2025</span><span class="b b-b">MSFT 20yr nuclear PPA</span><span class="b b-g">Druckenmiller rotated → VST + CEG</span><span class="b b-a">US power grid backlog 3–5yr</span></div>
     <div class="chain-insight"><strong>What to do:</strong> VST and CEG are the cleanest second-order plays from your NVDA position. Druckenmiller already made this rotation — you have 6–9 months before consensus catches up. Nuclear (CEG, OKLO) benefits most because new gas plants take too long to permit.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:3px;font-size:10px;">NVDA Supplier Chain</span></div>
@@ -802,7 +802,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-a" onclick="openTicker('ASML')" title="EUV machine demand drives ASML">EUV machine demand</div><span class="carr">→</span>
       <div class="cnode cn-g" onclick="openTicker('ASML')">ASML revenue +</div>
     </div>
-    <div class="evidence-row"><span class="b b-g">TSMC Q1 2025: capex +15% YoY</span><span class="b b-r">ASML CEO bought €800K open market</span><span class="b b-b">Intel 18A: High-NA EUV required</span><span class="b b-g">Samsung Arizona fab: EUV ordered</span></div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC Q1 2025: capex +15% YoY</span><span class="b b-r" onclick="openTicker('ASML')" style="cursor:pointer;" title="Open ASML">ASML CEO bought €800K open market</span><span class="b b-b">Intel 18A: High-NA EUV required</span><span class="b b-g">Samsung Arizona fab: EUV ordered</span></div>
     <div class="chain-insight"><strong>What to do:</strong> Current ASML dip (-8%) is China restriction headlines — not structural EUV demand. TSMC capex increase in January means order book fills Q3–Q4 2025. CEO buying €800K personally = management sees dip as noise. Score 91 from 5 independent signals simultaneously.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:3px;font-size:10px;">ASML Supplier Chain</span></div>
@@ -841,7 +841,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-b" onclick="openTicker('PLTR')">PLTR</div>
       <div class="cnode cn-gray" onclick="openTicker('CRWD')">CRWD</div>
     </div>
-    <div class="evidence-row"><span class="b b-r">Aschenbrenner: AGI by 2027</span><span class="b b-b">PLTR board cluster buy — 14mo gap</span><span class="b b-b">US DoD AI budget +40% YoY</span><span class="b b-p">Friday 8-K: new government AI contract</span></div>
+    <div class="evidence-row"><span class="b b-r">Aschenbrenner: AGI by 2027</span><span class="b b-b" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR board cluster buy — 14mo gap</span><span class="b b-b">US DoD AI budget +40% YoY</span><span class="b b-p" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">Friday 8-K: new government AI contract</span></div>
     <div class="chain-insight"><strong>What to do:</strong> PLTR is the only public company with both government clearances and deployed AI at scale. Size as a long-term hold in your high-risk tranche. Board insider cluster after 14-month silence = insiders see next government contract cycle clearly.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--purple-bg);color:var(--purple);padding:2px 8px;border-radius:3px;font-size:10px;">PLTR Ecosystem</span></div>
@@ -912,7 +912,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-a" onclick="openTicker('SMCI')">SMCI integrates racks</div><span class="carr">→</span>
       <div class="cnode cn-a">Revenue same quarter</div>
     </div>
-    <div class="evidence-row"><span class="b b-r">CEO $2.8M open market buy (Apr 2026)</span><span class="b b-r">CFO $380K buy (Apr 2026)</span><span class="b b-g">Accounting resolved — BDO reinstated</span><span class="b b-a">Q3 FY2026: $4.2B rev +18% YoY</span></div>
+    <div class="evidence-row"><span class="b b-r" onclick="openTicker('SMCI')" style="cursor:pointer;" title="Open SMCI">CEO $2.8M open market buy (Apr 2026)</span><span class="b b-r" onclick="openTicker('SMCI')" style="cursor:pointer;" title="Open SMCI">CFO $380K buy (Apr 2026)</span><span class="b b-g" onclick="openTicker('SMCI')" style="cursor:pointer;" title="Open SMCI">Accounting resolved — BDO reinstated</span><span class="b b-a" onclick="openTicker('SMCI')" style="cursor:pointer;" title="Open SMCI">Q3 FY2026: $4.2B rev +18% YoY</span></div>
     <div class="chain-insight"><strong>What to do:</strong> SMCI is the highest-beta play on an NVDA data center beat — but comes with elevated execution risk post-accounting crisis. Size small (speculative tranche only). CEO and CFO buying personally in April = management conviction on recovery. Watch next NVDA earnings as the primary catalyst: NVDA data center beat → SMCI order book confirmation within one quarter.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">SMCI Supplier Chain</span></div>
@@ -948,7 +948,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-a" onclick="openTicker('ASML')" title="TSMC capex flows to ASML orders 6-9mo lag">Capex → ASML orders</div><span class="carr">→</span>
       <div class="cnode cn-g" onclick="openTicker('ASML')">ASML EUV demand</div>
     </div>
-    <div class="evidence-row"><span class="b b-g">Q1 2026: +33% YoY revenue</span><span class="b b-g">Capex raised $38–42B</span><span class="b b-b">Goldman PT $185→$220</span><span class="b b-a">Arizona Fab 21 in production</span></div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">Q1 2026: +33% YoY revenue</span><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">Capex raised $38–42B</span><span class="b b-b" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">Goldman PT $185→$220</span><span class="b b-a">Arizona Fab 21 in production</span></div>
     <div class="chain-insight"><strong>What to do:</strong> TSMC is structurally irreplaceable — no semiconductor customer can manufacture advanced chips anywhere else. The Taiwan geopolitical risk premium creates a persistent discount to intrinsic value: every time Taiwan headlines spike, it's a buying opportunity for long-term holders. TSMC capex raise signals two things simultaneously: more ASML orders incoming (6–9 month lag) and more NVDA production capacity confirmed for H2 2026.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:3px;font-size:10px;">TSMC Chain</span></div>
@@ -966,6 +966,42 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         </div>
       </div>
       <div class="supplier-legend"><div class="leg-item"><div class="leg-dot" style="background:var(--green);"></div>Public</div><div class="leg-item"><div class="leg-dot" style="background:var(--amber);"></div>Foreign listed</div><div class="leg-item"><div class="leg-dot" style="background:var(--border2);"></div>Private</div></div>
+    </div>
+  </div>
+
+  <!-- CHAIN 7 — AMD -->
+  <div class="chain-card" data-chain-ticker="AMD">
+    <div class="chain-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chain-num" style="background:var(--bg4);color:var(--text3);">7</div>
+        <div><div class="chain-title">TSMC N4 → AMD MI300X → hyperscaler AI inference</div><div class="chain-lag">Lag: 1–2 quarters · Low conviction this week · Score 31</div></div>
+      </div>
+      <div class="chain-action" style="background:var(--bg4);color:var(--text3);border:0.5px solid var(--border);">Watch</div>
+    </div>
+    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">No insider buys in 90 days. Solo analyst downgrade (Citi). Mixed options flow. Supply chain intact but thesis needs a catalyst — NVDA earnings or MI300X market share data are the triggers to watch.</span></div>
+    <div class="node-flow">
+      <div class="cnode cn-g" onclick="openTicker('TSM')">TSMC N4 capacity</div><span class="carr">→</span>
+      <div class="cnode cn-gray" onclick="openTicker('AMD')">AMD MI300X production</div><span class="carr">→</span>
+      <div class="cnode cn-b">Hyperscaler AI inference</div><span class="carr">→</span>
+      <div class="cnode cn-b">MSFT · META · GOOGL</div>
+    </div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC N4 allocation locked through Q3 2026</span><span class="b b-b" onclick="openTicker('AMD')" style="cursor:pointer;" title="Open AMD">Azure MI300X deployment confirmed</span><span class="b b-a" onclick="openTicker('NVDA')" style="cursor:pointer;" title="NVDA is AMD's key competitor here">MI300X gains vs NVDA in inference workloads</span><span class="b b-gray">Solo Citi downgrade — not a trend</span></div>
+    <div class="chain-insight"><strong>What to do:</strong> AMD's supply chain is structurally sound — TSMC N4 allocation confirmed, and MI300X is the primary NVDA alternative for AI inference. But no insider conviction signal, mixed options flow, and a solo analyst cut mean this is a wait-and-watch. The catalyst gate is NVDA earnings: if NVDA data center beats big, AMD MI300X orders accelerate in the same quarter as hyperscalers diversify GPU vendors. Do not add until that signal fires.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--bg4);color:var(--text2);padding:2px 8px;border-radius:3px;font-size:10px;">AMD Supplier Chain</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">AMD depends on</div>
+          <div class="supplier-item public" onclick="openTicker('TSM')"><div class="si-ticker">TSM</div><div class="si-info"><div class="si-name">TSMC</div><div class="si-role">Manufactures 100% of AMD CPUs (Genoa/Bergamo) and MI300X AI GPUs on N4/N3 process. No alternative foundry at this node.</div><div class="si-signal up">Signal: TSMC N4 allocation locked through Q3 2026 → AMD production ceiling removed</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('AMAT')"><div class="si-ticker">AMAT</div><div class="si-info"><div class="si-name">Applied Materials</div><div class="si-role">Deposition and etch tools used in TSMC fabs where all AMD chips are made. Indirect dependency via TSMC.</div><div class="si-signal up">Signal: Same TSMC capex cycle that lifts ASML also benefits AMAT</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">AMD competes with</div>
+          <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Competes directly for hyperscaler AI accelerator budget. MI300X vs H100/Blackwell. NVDA dominates training; AMD gaining in inference.</div><div class="si-signal watch">Watch: NVDA data center beat → hyperscalers diversify → AMD MI300X orders follow 1Q lag</div></div></div>
+          <div class="supplier-item public"><div class="si-ticker" style="color:var(--text2);">INTC</div><div class="si-info"><div class="si-name">Intel Corporation</div><div class="si-role">x86 server CPU competition (Granite Rapids vs EPYC Genoa/Bergamo). AMD gaining share — Intel competitive pressure declining.</div><div class="si-signal up">Signal: Intel data center CPU share loss confirmed → AMD EPYC server share growing</div></div></div>
+        </div>
+      </div>
+      <div class="supplier-legend"><div class="leg-item"><div class="leg-dot" style="background:var(--green);"></div>Public ticker</div><div class="leg-item"><div class="leg-dot" style="background:var(--amber);"></div>Foreign listed</div><div class="leg-item"><div class="leg-dot" style="background:var(--border2);"></div>Private</div></div>
     </div>
   </div>
 
@@ -1003,19 +1039,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div style="font-size:9px;font-weight:800;color:#6366f1;font-family:'DM Mono',monospace;">L1</div>
     </div>
     <div style="font-size:11px;font-weight:700;color:var(--text);">Market structure <span style="font-weight:400;color:var(--text3);">· 0–5 day signals</span></div>
+    <div style="font-size:9px;color:var(--text3);margin-left:auto;">Research-captured · GEX resets each Friday</div>
   </div>
   <div class="g2" style="margin-bottom:16px;">
     <div class="card">
       <div class="card-lbl">Dark pool clustering — institutional accumulation</div>
-      <div class="sc sc-r sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — $340M cluster at $820–835 (5 days)</div><div class="suh">11 prints at same price. 4.2x average dark pool volume. Institution building cost basis — $820 is now mechanical support.</div><div class="sc-meta"><span class="act-tag at-buy">CONFIRMS BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">ASML</span></div></div>
-      <div class="sc sc-a sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — $180M above VWAP pre-earnings (48h)</div><div class="suh">2.3x average volume. Above VWAP = paying up = urgency. Independently confirms $47M call sweep.</div><div class="sc-meta"><span class="act-tag at-add">CONFIRMS ADD</span><span class="tf-tag tf-short">Pre-earnings</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">NVDA</span></div></div>
-      <div class="sc sc-b sc-na de-card" data-tickers="PLTR"><div class="sul">PLTR — Distributed $22M/day (vs $8M avg)</div><div class="suh">Small prints spread over 14 days = sophisticated hiding. Aligns with board cluster buy timing.</div><div class="sc-meta"><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Structural</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">PLTR</span></div></div>
+      <div class="sc sc-r sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — $340M cluster at $820–835 (5 days)</div><div class="suh">11 prints at same price. 4.2x average dark pool volume. Institution building cost basis — $820 is now mechanical support.</div><div class="sc-meta"><span class="act-tag at-buy">CONFIRMS BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">ASML</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Signal captured: May 7, 2026</span></div></div>
+      <div class="sc sc-a sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — $180M above VWAP pre-earnings (48h)</div><div class="suh">2.3x average volume. Above VWAP = paying up = urgency. Independently confirms $47M call sweep.</div><div class="sc-meta"><span class="act-tag at-add">CONFIRMS ADD</span><span class="tf-tag tf-short">Pre-earnings</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">NVDA</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Signal captured: May 8, 2026</span></div></div>
+      <div class="sc sc-b sc-na de-card" data-tickers="PLTR"><div class="sul">PLTR — Distributed $22M/day (vs $8M avg)</div><div class="suh">Small prints spread over 14 days = sophisticated hiding. Aligns with board cluster buy timing.</div><div class="sc-meta"><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Structural</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">PLTR</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Signal captured: May 6, 2026</span></div></div>
     </div>
     <div class="card">
       <div class="card-lbl">GEX — gamma exposure price gravity</div>
-      <div class="sc sc-b sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — Magnet $580 · Floor $540 · Ceiling $620</div><div class="suh">GEX mechanics this week only. Below $540 volatility accelerates mechanically — use to time entries, not thesis.</div><div class="sc-meta"><span class="tf-tag tf-short">Resets Friday</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">NVDA</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — GEX floor at $820</div><div class="suh">Heavy call OI at $850. Dealers mechanically buy near $820. Physics, not fundamental thesis.</div><div class="sc-meta"><span class="tf-tag tf-short">This week</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">ASML</span></div></div>
-      <div class="sc sc-gray sc-na de-card" data-tickers="AMD"><div class="sul">AMD — GEX neutral zone $155–170</div><div class="suh">No significant gamma concentration. Price free to drift. Avoid short-term options plays until thesis strengthens.</div><div class="sc-meta"><span class="tf-tag tf-mixed">Neutral</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">AMD</span></div></div>
+      <div class="sc sc-b sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — Magnet $580 · Floor $540 · Ceiling $620</div><div class="suh">GEX mechanics for week of May 5–9 only. Below $540 volatility accelerates mechanically — use to time entries, not thesis.</div><div class="sc-meta"><span class="tf-tag tf-short">Week of May 5–9</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">NVDA</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Resets Fri May 9</span></div></div>
+      <div class="sc sc-g sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — GEX floor at $820</div><div class="suh">Heavy call OI at $850. Dealers mechanically buy near $820. Physics, not fundamental thesis.</div><div class="sc-meta"><span class="tf-tag tf-short">Week of May 5–9</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">ASML</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Resets Fri May 9</span></div></div>
+      <div class="sc sc-gray sc-na de-card" data-tickers="AMD"><div class="sul">AMD — GEX neutral zone $155–170</div><div class="suh">No significant gamma concentration. Price free to drift. Avoid short-term options plays until thesis strengthens.</div><div class="sc-meta"><span class="tf-tag tf-mixed">Neutral</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);">AMD</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Week of May 5–9</span></div></div>
     </div>
   </div>
 
@@ -2622,8 +2659,8 @@ function gT(n,btn){
   const isMkt=mktTabs.includes(n);
   const hdr=document.getElementById('app-hdr');
   const nav=document.getElementById('app-nav');
-  /* Show/hide stock focus bar */
-  try{const fb=document.getElementById('stock-focus-bar');if(fb)fb.style.display=(typeof FOCUS_TABS!=='undefined'&&FOCUS_TABS.has(n))?'block':'none';}catch(e){}
+  /* Show/hide stock focus bar — always show on app tabs, hide on marketing pages */
+  try{const fb=document.getElementById('stock-focus-bar');if(fb)fb.style.display=isMkt?'none':'block';}catch(e){}
   /* Show or hide chrome — explicit inline styles, no CSS class dependency */
   if(isMkt){
     if(hdr)hdr.style.display='none';
@@ -2676,6 +2713,9 @@ function enterApp(){
   document.querySelectorAll('.nt').forEach(function(t){t.classList.remove('active');});
   var firstNt=document.querySelector('#app-nav .nt');
   if(firstNt)firstNt.classList.add('active');
+  /* Always show stock focus bar when entering app */
+  var fb=document.getElementById('stock-focus-bar');
+  if(fb)fb.style.display='block';
   try{S.activeTab='morning';S.prevTab='morning';}catch(e){}
   window.scrollTo(0,0);
   /* Render hot bar immediately on enter */
@@ -3218,6 +3258,24 @@ const _origGT = typeof gT === 'function' ? gT : null;
 
 // ── FOCUS-AWARE RENDER FUNCTIONS ─────────────────────────────────────────────
 
+function sortConvergenceCards() {
+  // Collect all unique parent containers
+  const containers = new Set();
+  document.querySelectorAll('.convergence-stock-card').forEach(card => {
+    containers.add(card.parentElement);
+  });
+  containers.forEach(container => {
+    const cards = Array.from(container.querySelectorAll(':scope > .convergence-stock-card'));
+    if (cards.length < 2) return;
+    cards.sort((a, b) => {
+      const sA = SCORES[a.dataset.ticker] || 0;
+      const sB = SCORES[b.dataset.ticker] || 0;
+      return sB - sA;
+    });
+    cards.forEach(card => container.appendChild(card));
+  });
+}
+
 function renderConvergence() {
   const ft = S.focusTicker;
   // Show/hide each stock card in the signal scores list
@@ -3225,6 +3283,8 @@ function renderConvergence() {
     const ticker = card.dataset.ticker;
     card.style.display = (!ft || ft === ticker) ? '' : 'none';
   });
+  // Sort cards by score (highest first)
+  sortConvergenceCards();
   // Auto-select matching layer analysis button — or call directly if ticker not in preset list
   if (ft) {
     let found = false;
