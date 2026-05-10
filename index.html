@@ -325,7 +325,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .hdr-r{display:flex;gap:6px;flex-shrink:0;align-items:center;}
 .hbtn{font-size:11px;padding:5px 11px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s,color .15s;}.hbtn:hover{background:var(--bg3);color:var(--text);}.hbtn.pri{background:var(--text);color:var(--bg);border-color:transparent;font-weight:600;}
 .nav{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 20px;display:flex;align-items:center;height:40px;overflow-x:auto;scrollbar-width:none;position:sticky;top:50px;z-index:98;box-sizing:border-box;}.nav::-webkit-scrollbar{display:none;}
-#live-ticker-strip{flex:1;overflow:hidden;min-width:0;height:100%;display:none;}
+#live-ticker-strip{flex:1;overflow:hidden;min-width:0;height:100%;display:none;mask-image:linear-gradient(to right,transparent 0%,black 60px,black calc(100% - 60px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 60px,black calc(100% - 60px),transparent 100%);}
 #ticker-track{display:flex;align-items:center;height:100%;animation:ticker-run 80s linear infinite;width:max-content;}
 #ticker-track:hover{animation-play-state:paused;}
 @keyframes ticker-run{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
@@ -2580,7 +2580,7 @@ function startGlobalRefresh() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── LIVE TICKER STRIP ───────────────────────────────────────────────────────
-const _tickerStripTickers = ['ASML','NVDA','PLTR','RKLB','AMD','TSM','SMCI'];
+const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','MU','AMAT','LRCX','ARM','GEV','PANW','NOW','AAPL','CRWD','QCOM','CRM','CCJ','UEC','LMT','SNOW','VST','CEG','NOC','RTX','AMZN','META','MSFT','GOOGL'];
 let _tickerStripTimer = null;
 
 async function renderLiveTickerStrip() {
@@ -2626,6 +2626,10 @@ async function renderLiveTickerStrip() {
   const items = _tickerStripTickers.map(makeItem).join('');
   // Duplicate for seamless infinite scroll
   track.innerHTML = items + items;
+  // Set duration proportional to item count so scroll speed stays constant (~25px/s)
+  // Each item ~150px wide, two sets duplicated
+  const _tickerDuration = Math.round(_tickerStripTickers.length * 2 * 150 / 25);
+  track.style.animationDuration = _tickerDuration + 's';
   strip.style.display = 'flex';
 
   // Restart auto-refresh timer
@@ -2675,22 +2679,33 @@ function getSagePick() {
   const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
 
   const ld = (typeof LAYER_DATA !== 'undefined') ? LAYER_DATA : {};
+  const td = (typeof TICKER_DATA !== 'undefined') ? TICKER_DATA : {};
   const cats = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS : {};
 
-  const scored = Object.entries(SCORES)
-    .filter(([t, s]) => s && NAMES[t] && ld[t] && !SIGNAL_NODES.has(t))
+  // All eligible stocks sorted by score — no LAYER_DATA filter so all 30 can be picked
+  const allScored = Object.entries(SCORES)
+    .filter(([t, s]) => s && NAMES[t] && !SIGNAL_NODES.has(t))
     .sort(([,a],[,b]) => b - a);
-  if (!scored.length) return null;
+  if (!allScored.length) return null;
 
-  const [ticker, score] = scored[0];
-  const runner = scored[1] ? { ticker: scored[1][0], score: scored[1][1] } : null;
+  const [ticker, score] = allScored[0];
+  // Runner = #2 from all stocks (not just LAYER_DATA-filtered)
+  const runnerEntry = allScored.find(([t]) => t !== ticker);
+  const runner = runnerEntry ? { ticker: runnerEntry[0], score: runnerEntry[1] } : null;
 
-  // Build narrative: top 2 layers by pts, use first signal from each (most specific)
-  const layers = (ld[ticker] || []).filter(l => l.pts > 0);
-  const topLayers = [...layers].sort((a,b) => (b.pts||0) - (a.pts||0)).slice(0,2);
-  const reasons = topLayers.map(l =>
-    (l.signals && l.signals[0]) ? l.signals[0] : (l.desc || '')
-  ).filter(Boolean);
+  // Build narrative: prefer LAYER_DATA layers, fall back to TICKER_DATA.news headlines
+  let reasons = [];
+  if (ld[ticker]) {
+    const layers = (ld[ticker] || []).filter(l => l.pts > 0);
+    const topLayers = [...layers].sort((a,b) => (b.pts||0) - (a.pts||0)).slice(0,2);
+    reasons = topLayers.map(l =>
+      (l.signals && l.signals[0]) ? l.signals[0] : (l.desc || '')
+    ).filter(Boolean);
+  }
+  // Fallback: use top news headlines from TICKER_DATA
+  if (reasons.length === 0 && td[ticker] && td[ticker].news) {
+    reasons = td[ticker].news.slice(0, 2).map(n => n.hl).filter(Boolean);
+  }
 
   // Upcoming catalyst
   const catalyst = cats[ticker] || null;
