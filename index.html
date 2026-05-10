@@ -157,6 +157,68 @@ body.mkt-mode .main{padding:0;max-width:none;}
   .lp-footer-links{justify-content:center;}
 }
 
+@media(max-width:600px){
+  /* ── Layout ─────────────────────────────── */
+  .main{padding:10px 10px;}
+  .hdr{padding:0 12px;gap:8px;}
+  .brand-sub{display:none;}
+  .live-p{display:none;}
+
+  /* ── Grids collapse to single column ─────── */
+  .g13,.g2{grid-template-columns:1fr !important;}
+  .g3{grid-template-columns:1fr 1fr !important;}
+  .g4{grid-template-columns:1fr 1fr !important;}
+
+  /* ── Cards ───────────────────────────────── */
+  .card{padding:12px 12px;}
+
+  /* ── Modal ───────────────────────────────── */
+  .modal{width:calc(100vw - 24px);max-width:100%;padding:18px 16px;}
+
+  /* ── Nav scrolls horizontally ───────────── */
+  .nav{padding:0 10px;}
+
+  /* ── Focus/stock bar ────────────────────── */
+  #stock-focus-bar{padding:6px 10px;}
+  #focus-search-input{font-size:11px;}
+
+  /* ── Ticker modal / score pill ──────────── */
+  .score-pill{font-size:10px;padding:2px 7px;}
+
+  /* ── Supply chain nodes ─────────────────── */
+  .node-flow{flex-wrap:wrap;gap:5px;}
+  .chain-card{padding:12px;}
+  .supplier-grid{grid-template-columns:1fr !important;}
+
+  /* ── Heatmap: horizontal scroll ──────────── */
+  #sector-heatmap-el{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+  /* ── Morning brief picks grid ────────────── */
+  #morning-picks-card .g2,
+  #morning-picks-card .g13{grid-template-columns:1fr !important;}
+
+  /* ── Convergence / signal cards ─────────── */
+  .convergence-stock-card .sc-meta{flex-wrap:wrap;gap:4px;}
+
+  /* ── Budget split grid ──────────────────── */
+  #bud-split-rows .mrow{flex-direction:column;}
+
+  /* ── Budget input row: 1fr 1fr 1fr auto → stack ─ */
+  #bud-split-rows div[style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr 1fr !important;}
+
+  /* ── Ticker tab: score section flex-wrap ─────── */
+  #ticker-content div[style*="display:flex"][style*="gap:10px"]{flex-wrap:wrap;}
+
+  /* ── Chain cards: evidence row wraps ────────── */
+  .evidence-row{flex-wrap:wrap;}
+
+  /* ── Sage card: don't let it overflow ───────── */
+  #sage-card-el{overflow:hidden;}
+
+  /* ── Focus bar layer buttons: hide on very small ─ */
+  #layer-ticker-btns{display:none !important;}
+}
+
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;}
 .hdr{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:50px;position:sticky;top:0;z-index:100;gap:16px;}
 .hdr-left{display:flex;align-items:center;gap:10px;flex-shrink:0;}
@@ -268,7 +330,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       style="font-size:11px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s;">
       All stocks
     </button>
-    <div style="position:relative;width:220px;flex-shrink:0;">
+    <div style="position:relative;width:min(220px,45vw);flex-shrink:0;">
       <input id="focus-search-input" type="text" autocomplete="off" spellcheck="false"
         placeholder="Search ticker or company…"
         oninput="focusSearchInput(this.value)"
@@ -859,7 +921,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="card" style="margin-bottom:12px;">
     <div class="card-lbl">Sector signal heatmap — avg signal strength by layer</div>
     <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each cell = average L1–L5 score across sector tickers. <span style="color:var(--green);font-weight:600;">Green ≥75</span> · <span style="color:var(--amber);font-weight:600;">Amber 55–74</span> · <span style="color:var(--text3);font-weight:600;">Gray &lt;55</span>. Click any cell to drill in — opens score breakdown for each stock in that sector.</div>
-    <div id="sector-heatmap-el"></div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><div id="sector-heatmap-el" style="min-width:540px;"></div></div>
     <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
   </div>
 
