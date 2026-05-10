@@ -1758,6 +1758,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="smc"><div class="smn" id="bud-trades">0</div><div class="sml-lbl">Trades this week</div></div>
   </div>
 
+  <!-- MY INTEL PERSONALIZED BRIEF -->
+  <div id="my-intel-brief" style="margin-bottom:20px;"></div>
+
   <!-- WATCHLIST SECTION -->
   <div id="pt-watchlist" style="margin-bottom:24px;">
     <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Watchlist</div>
@@ -1958,6 +1961,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:6px;">SAM.gov · Government contracts</div>
       <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">Free key at <a href="https://open.gsa.gov/api/get-started/" target="_blank" style="color:var(--blue);">sam.gov</a> — tracks PLTR + RKLB contract awards (optional)</div>
       <input type="text" id="sam-in" placeholder="SAM.gov API key (optional)" style="margin-bottom:0;">
+    </div>
+
+    <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;margin-bottom:14px;border:0.5px solid var(--border);">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:6px;">Google Sign-In <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional · personalized My Intel)</span></div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">Free OAuth Client ID at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--blue);">console.cloud.google.com</a> — enables personalized greeting &amp; watchlist analysis</div>
+      <input type="text" id="inp-gsi" placeholder="xxxxxxxx.apps.googleusercontent.com" style="margin-bottom:0;">
     </div>
 
     <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;margin-bottom:12px;border:0.5px solid var(--border);">
@@ -2452,6 +2461,188 @@ function renderSageCard() {
       </div>
       ${runnerHtml}
     </div>`;
+}
+
+// ── MY INTEL — PERSONALIZED WATCHLIST INTELLIGENCE ──────────────────────────
+
+function _gsiInit() {
+  const gsiId = S.gsi || localStorage.getItem('ti72_gsi');
+  if (!gsiId || typeof google === 'undefined') return;
+  try {
+    google.accounts.id.initialize({
+      client_id: gsiId,
+      callback: _gsiCallback,
+      auto_select: true,
+    });
+    // Render sign-in button if not already signed in
+    const btnEl = document.getElementById('gsi-btn');
+    if (btnEl && !S.gUser) {
+      google.accounts.id.renderButton(btnEl, {
+        theme: 'outline', size: 'small', type: 'standard', shape: 'pill',
+        logo_alignment: 'left', text: 'signin_with', locale: 'en'
+      });
+    }
+  } catch(e) { console.warn('GSI init:', e); }
+}
+
+function _gsiCallback(response) {
+  try {
+    // Decode JWT payload (no verification needed client-side — trust Google)
+    const parts = response.credential.split('.');
+    const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+    S.gUser = { name: payload.name, email: payload.email, picture: payload.picture, given_name: payload.given_name };
+    try { localStorage.setItem('ti72_gUser', JSON.stringify(S.gUser)); } catch(e) {}
+    renderMyIntelBrief();
+  } catch(e) { console.warn('GSI callback:', e); }
+}
+
+function gsiSignOut() {
+  S.gUser = null;
+  try { localStorage.removeItem('ti72_gUser'); } catch(e) {}
+  if (typeof google !== 'undefined') try { google.accounts.id.disableAutoSelect(); } catch(e) {}
+  renderMyIntelBrief();
+}
+
+// Load saved Google user on startup
+try {
+  const saved = localStorage.getItem('ti72_gUser');
+  if (saved) S.gUser = JSON.parse(saved);
+} catch(e) {}
+
+function renderMyIntelBrief() {
+  const el = document.getElementById('my-intel-brief');
+  if (!el) return;
+
+  const wl = (S.wl && S.wl.length) ? S.wl : [];
+  const ld   = (typeof LAYER_DATA !== 'undefined') ? LAYER_DATA : {};
+  const cats = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS : {};
+  const user = S.gUser || null;
+
+  // ── Header ─────────────────────────────────────────────────────────────────
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const firstName = user ? (user.given_name || user.name.split(' ')[0]) : null;
+  const greetLine = firstName ? `${greeting}, ${firstName}` : greeting;
+  const avatar = user
+    ? `<img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;border:2px solid var(--border2);" onerror="this.style.display='none'">`
+    : `<div id="gsi-btn" style="min-width:160px;"></div>`;
+  const signOutBtn = user
+    ? `<button onclick="gsiSignOut()" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;">Sign out</button>`
+    : '';
+
+  // ── Watchlist signals (sorted by score) ────────────────────────────────────
+  const wlSignals = wl.map(t => {
+    const score = SCORES[t] || 0;
+    const layers = (ld[t] || []).filter(l => l.pts > 0).sort((a,b) => (b.pts||0)-(a.pts||0));
+    const top = layers[0] || null;
+    const signal = top ? ((top.signals && top.signals[0]) || top.desc || '') : '';
+    const cat = cats[t] || null;
+    const action = score >= 75 ? 'BUY' : score >= 60 ? 'WATCH' : score >= 45 ? 'HOLD' : 'SKIP';
+    const acls   = score >= 75 ? 'at-buy' : score >= 60 ? 'at-watch' : score >= 45 ? 'at-hold' : 'at-skip';
+    const scls   = score >= 75 ? 'sc-r'   : score >= 60 ? 'sc-a'    : score >= 45 ? 'sc-g'   : 'sc-gray';
+    return { t, score, signal, cat, action, acls, scls, layerDesc: top ? (top.desc||'') : '' };
+  }).sort((a,b) => b.score - a.score);
+
+  const topPick = wlSignals[0] || null;
+  const buys    = wlSignals.filter(s => s.score >= 75).length;
+  const watches = wlSignals.filter(s => s.score >= 60 && s.score < 75).length;
+
+  // ── Sector exposure ────────────────────────────────────────────────────────
+  const SECT = (typeof SECTORS !== 'undefined') ? SECTORS : {};
+  const exp = {};
+  wl.forEach(t => {
+    for (const [sec, data] of Object.entries(SECT)) {
+      if (data.tickers && data.tickers.includes(t)) {
+        if (!exp[sec]) exp[sec] = { count: 0, color: data.color || 'var(--blue)', label: data.label || sec };
+        exp[sec].count++;
+      }
+    }
+  });
+
+  // ── HTML ───────────────────────────────────────────────────────────────────
+  if (!wl.length) {
+    el.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">${greetLine}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Add stocks to your watchlist for personalized intel</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">${avatar}${signOutBtn}</div>
+      </div>`;
+    setTimeout(_gsiInit, 200);
+    return;
+  }
+
+  const signalCards = wlSignals.map(p => {
+    const catNote = p.cat ? ` · ${p.cat.label} ${p.cat.date}` : '';
+    return `<div class="sc ${p.scls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}')" style="margin-bottom:6px;">
+      <div class="sul">${p.t} — Score ${p.score}${p.layerDesc ? ' · ' + p.layerDesc : ''}</div>
+      <div class="suh">${p.signal || (NAMES[p.t] || p.t)}${catNote}</div>
+      <div class="sc-meta"><span class="act-tag ${p.acls}">${p.action}</span><span class="score-pill">${p.score}/100</span></div>
+    </div>`;
+  }).join('');
+
+  const catalystRows = wlSignals.filter(p => p.cat).map(p => `
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('${p.t}')">
+      <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;width:42px;flex-shrink:0;color:var(--text);">${p.t}</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);">${p.cat.label}</div>
+        <div style="font-size:10px;color:var(--text3);">${p.cat.date}${p.cat.note ? ' · ' + p.cat.note : ''}</div>
+      </div>
+      <span class="act-tag ${p.acls}" style="flex-shrink:0;">${p.action}</span>
+    </div>`).join('');
+
+  const exposureRows = Object.entries(exp).sort((a,b) => b[1].count - a[1].count).map(([sec, d]) => {
+    const pct = Math.round(d.count / wl.length * 100);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;">
+      <span style="font-size:11px;color:var(--text2);width:110px;flex-shrink:0;">${d.label}</span>
+      <div style="flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;">
+        <div style="width:${pct}%;height:4px;background:${d.color};border-radius:2px;transition:width .4s;"></div>
+      </div>
+      <span style="font-size:10px;color:var(--text3);width:55px;text-align:right;">${d.count}/${wl.length} · ${pct}%</span>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">${greetLine}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${wl.length} stocks · ${buys > 0 ? `<span style="color:var(--green);font-weight:600;">${buys} buy</span>` : '0 buy'} · ${watches} watch signal${watches!==1?'s':''} today</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">${avatar}${signOutBtn}</div>
+    </div>
+    <div class="g13">
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-lbl">Your watchlist · ranked by signal strength</div>
+          ${signalCards}
+        </div>
+        ${Object.keys(exp).length ? `<div class="card">
+          <div class="card-lbl">Sector exposure</div>
+          ${exposureRows}
+        </div>` : ''}
+      </div>
+      <div>
+        ${topPick ? `<div class="card" style="margin-bottom:12px;border-left:3px solid #6366f1;">
+          <div class="card-lbl" style="color:#6366f1;">Top pick in your watchlist</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
+            <span onclick="openTicker('${topPick.t}')" style="font-size:20px;font-weight:700;font-family:'DM Mono',monospace;cursor:pointer;">${topPick.t}</span>
+            <span style="font-size:11px;color:var(--text3);">${NAMES[topPick.t]||''}</span>
+            <span style="font-size:13px;font-weight:700;color:${topPick.score>=75?'var(--green)':'#e07b00'};margin-left:auto;">${topPick.score}/100</span>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">${topPick.signal || topPick.layerDesc || (NAMES[topPick.t]||topPick.t)}</div>
+          ${topPick.cat ? `<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">Next catalyst: <strong style="color:var(--text2);">${topPick.cat.label}</strong> · ${topPick.cat.date}</div>` : ''}
+          <button onclick="openTicker('${topPick.t}')" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid #6366f144;background:#6366f111;color:#a5b4fc;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">Full analysis →</button>
+        </div>` : ''}
+        <div class="card">
+          <div class="card-lbl">Upcoming catalysts</div>
+          ${catalystRows || '<div style="font-size:11px;color:var(--text3);padding:6px 0;">No upcoming catalysts for your watchlist</div>'}
+        </div>
+      </div>
+    </div>`;
+
+  // Init Google Sign-In button (if gsi-btn rendered and client ID configured)
+  setTimeout(_gsiInit, 100);
 }
 
 function renderMorningBriefDynamic() {
@@ -3374,8 +3565,8 @@ const bwl=document.getElementById('brief-wl');if(bwl)bwl.innerHTML=S.wl.slice(0,
 document.getElementById('comm-wl').innerHTML=COMMUNITY.map(sym=>`<div class="wl-item" onclick="openTicker('${sym}')"><div><div class="wl-ticker">${sym}</div><div style="font-size:10px;color:var(--text3);">${Math.floor(Math.random()*900+80)} watching</div></div><button onclick="event.stopPropagation();addSym('${sym}')" style="font-size:10px;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Add</button></div>`).join('');}
 
 function addWL(){const s=document.getElementById('wl-input').value.toUpperCase().trim();if(!s)return;addSym(s);document.getElementById('wl-input').value='';}
-function addSym(s){if(!S.wl.includes(s)){S.wl.push(s);saveWL();renderWL();}}
-function rmWL(s){S.wl=S.wl.filter(x=>x!==s);saveWL();renderWL();}
+function addSym(s){if(!S.wl.includes(s)){S.wl.push(s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){}}}
+function rmWL(s){S.wl=S.wl.filter(x=>x!==s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){}}
 function toggleWL(sym,btn){if(S.wl.includes(sym)){rmWL(sym);btn.textContent='+ Add to watchlist';btn.classList.remove('watching');}else{addSym(sym);btn.textContent='Watching ✓';btn.classList.add('watching');}}
 function saveWL(){localStorage.setItem('ti72_wl',JSON.stringify(S.wl));}
 
@@ -3440,7 +3631,7 @@ function gT(n,btn){
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
   if(n==='smart'){setTimeout(function(){try{renderSmartMoney&&renderSmartMoney();}catch(e){}},80);}
   if(n==='portfolio'){setTimeout(function(){try{
-    renderWL();renderBudgetTab();
+    renderWL();renderBudgetTab();renderMyIntelBrief();
   }catch(e){}},50);}
 }
 function enterApp(){
@@ -3475,6 +3666,15 @@ function enterApp(){
   },200);
   // Kick off live score computation in background
   if(S.fh)setTimeout(function(){try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},1500);
+  // Load Google Sign-In script if client ID is saved
+  const _gsiKey = S.gsi || (function(){try{return localStorage.getItem('ti72_gsi');}catch(e){return null;}}());
+  if (_gsiKey && !document.getElementById('gsi-script')) {
+    S.gsi = _gsiKey;
+    const _sc = document.createElement('script'); _sc.id = 'gsi-script';
+    _sc.src = 'https://accounts.google.com/gsi/client'; _sc.async = true; _sc.defer = true;
+    _sc.onload = function() { setTimeout(function(){ try{_gsiInit();}catch(e){} }, 400); };
+    document.head.appendChild(_sc);
+  }
   // Render live ticker strip (shows immediately with fallback prices, updates with live data)
   setTimeout(function(){try{renderLiveTickerStrip();}catch(e){console.warn('tickerStrip',e);}},300);
 }
@@ -3488,6 +3688,8 @@ function showAPI(){
   document.getElementById('td-in').value=S.td||'';
   document.getElementById('fred-in').value=localStorage.getItem('ti72_fred')||'';
   document.getElementById('sam-in').value=localStorage.getItem('ti72_sam')||'';
+  const _gsiInp=document.getElementById('inp-gsi');
+  if(_gsiInp)_gsiInp.value=S.gsi||(function(){try{return localStorage.getItem('ti72_gsi')||'';}catch(e){return '';}}());
   document.getElementById('av-err').style.display='none';
   document.getElementById('m-api').style.display='flex';
 }
@@ -3505,6 +3707,9 @@ function saveAllAPIKeys(){
   if(tdk){S.td=tdk;localStorage.setItem('ti72_td',tdk);}
   if(fredk){localStorage.setItem('ti72_fred',fredk);}
   if(samk){localStorage.setItem('ti72_sam',samk);}
+  const _gsiEl=document.getElementById('inp-gsi');
+  const _gsik=_gsiEl?_gsiEl.value.trim():'';
+  if(_gsik){S.gsi=_gsik;localStorage.setItem('ti72_gsi',_gsik);if(!document.getElementById('gsi-script')){const _sc=document.createElement('script');_sc.id='gsi-script';_sc.src='https://accounts.google.com/gsi/client';_sc.async=true;_sc.defer=true;_sc.onload=function(){setTimeout(function(){try{_gsiInit();}catch(e){}},300);};document.head.appendChild(_sc);}}
   cM('m-api');
   fetchPrices();
   if(S.fh||S.av){window._avNewsFetched=false;sessionStorage.removeItem('ti_news_cache');fetchAVNews(true);}
