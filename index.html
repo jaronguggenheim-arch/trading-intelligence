@@ -1091,42 +1091,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
 </div>
 
-
-  <div class="stock-card" data-sym="TSM" data-score="70" onclick="openTicker('TSM')">
-    <div class="sc-top">
-      <div class="sc-sym">TSM</div>
-      <div class="sc-score mid" title="Convergence score 70/100">70</div>
-    </div>
-    <div class="sc-name">Taiwan Semiconductor Mfg.</div>
-    <div class="sc-bar-wrap"><div class="sc-bar" style="width:70%;background:var(--amber)"></div></div>
-    <div class="sc-sigs">
-      <span class="pill up" onclick="event.stopPropagation();openTicker('TSM')">CEO cluster buy $21M</span>
-      <span class="pill up" onclick="event.stopPropagation();openTicker('TSM')">CoWoS 98% utilization</span>
-      <span class="pill up" onclick="event.stopPropagation();openTicker('TSM')">Morgan Stanley OW $220</span>
-    </div>
-    <div class="sc-actions">
-      <button class="sc-alert-btn" onclick="event.stopPropagation();setStockAlert('TSM')" title="Set alert">&#128276;</button>
-      <button class="sc-share-btn" onclick="event.stopPropagation();shareStock('TSM')" title="Share">&#8679;</button>
-    </div>
-  </div>
-
-  <div class="stock-card" data-sym="SMCI" data-score="52" onclick="openTicker('SMCI')">
-    <div class="sc-top">
-      <div class="sc-sym">SMCI</div>
-      <div class="sc-score mid" title="Convergence score 52/100">52</div>
-    </div>
-    <div class="sc-name">Super Micro Computer</div>
-    <div class="sc-bar-wrap"><div class="sc-bar" style="width:52%;background:var(--amber)"></div></div>
-    <div class="sc-sigs">
-      <span class="pill up" onclick="event.stopPropagation();openTicker('SMCI')">CEO buy 200K shares</span>
-      <span class="pill up" onclick="event.stopPropagation();openTicker('SMCI')">DLC 30% of shipments</span>
-      <span class="pill neu" onclick="event.stopPropagation();openTicker('SMCI')">SEC investigation ongoing</span>
-    </div>
-    <div class="sc-actions">
-      <button class="sc-alert-btn" onclick="event.stopPropagation();setStockAlert('SMCI')" title="Set alert">&#128276;</button>
-      <button class="sc-share-btn" onclick="event.stopPropagation();shareStock('SMCI')" title="Share">&#8679;</button>
-    </div>
-  </div>
   <!-- CORRELATION MAP -->
 <div class="sec" id="tab-correlations">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;">
@@ -2509,7 +2473,7 @@ async function initLiveScores() {
   if (!S.fh) return;
   // All featured tickers — compute L1 (price momentum, RSI, volume) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW'];
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV'];
   // Stamp live scores indicator in morning brief picks card
   const lbl = document.getElementById('morning-picks-lbl');
   if (lbl) lbl.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● computing live scores…</span>';
