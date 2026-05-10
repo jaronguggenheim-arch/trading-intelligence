@@ -784,6 +784,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button onclick="globalRefresh()" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
     </div>
   </div>
+
+  <!-- SECTOR HEATMAP -->
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-lbl">Sector signal heatmap — avg signal strength by layer</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each cell = average L1–L5 score across sector tickers. <span style="color:var(--green);font-weight:600;">Green ≥75</span> · <span style="color:var(--amber);font-weight:600;">Amber 55–74</span> · <span style="color:var(--text3);font-weight:600;">Gray &lt;55</span>. Click any cell to drill in — opens score breakdown for each stock in that sector.</div>
+    <div id="sector-heatmap-el"></div>
+    <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
+  </div>
+
 <!-- CHAIN 1 -->
   <div class="chain-card" data-chain-ticker="NVDA">
     <div class="chain-header">
@@ -4835,6 +4844,88 @@ const LAYER_DATA = {
   ],
 };
 
+// ─── SECTOR HEATMAP ──────────────────────────────────────────────
+const SECTORS = {
+  Semis:        { label:'Semiconductors',    tickers:['NVDA','ASML','AMD','TSM','SMCI'], color:'var(--blue)' },
+  Hyperscalers: { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL'],           color:'var(--purple,#a855f7)' },
+  Defense:      { label:'Defense / Space',   tickers:['PLTR','RKLB'],                   color:'var(--amber)' },
+  Energy:       { label:'Energy / Nuclear',  tickers:['VST','CEG'],                     color:'var(--green)' },
+};
+
+function heatColor(score) {
+  if (score >= 75) return { bg:'var(--green-bg)', fg:'var(--green)' };
+  if (score >= 55) return { bg:'var(--amber-bg)', fg:'var(--amber)' };
+  return { bg:'var(--bg4)', fg:'var(--text3)' };
+}
+
+function renderSectorHeatmap() {
+  const el = document.getElementById('sector-heatmap-el');
+  if (!el) return;
+  const layers = ['L1','L2','L3','L4','L5'];
+  const lNames = { L1:'Market', L2:'Insider', L3:'Corporate', L4:'Supply Chain', L5:'Macro' };
+  const cols = '130px 168px repeat(5,1fr) 52px';
+  let h = '<div style="display:grid;grid-template-columns:' + cols + ';gap:5px;align-items:center;padding-bottom:6px;">';
+  h += '<div></div><div></div>';
+  layers.forEach(function(l){ h += '<div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;text-align:center;">' + lNames[l] + '</div>'; });
+  h += '<div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;text-align:center;">Avg</div></div>';
+
+  Object.keys(SECTORS).forEach(function(key) {
+    var sector = SECTORS[key];
+    var tickers = sector.tickers.filter(function(t){ return LAYER_DATA[t]; });
+    if (!tickers.length) return;
+    var layerAvgs = layers.map(function(lid) {
+      var sum = 0, cnt = 0;
+      tickers.forEach(function(t) {
+        var layer = (LAYER_DATA[t]||[]).find(function(l){ return l.id === lid; });
+        if (layer) { sum += Math.min((layer.pts / layer.max) * 100, 100); cnt++; }
+      });
+      return cnt ? sum / cnt : 0;
+    });
+    var overall = tickers.map(function(t){ return SCORES[t]||0; }).reduce(function(a,b){ return a+b; },0) / tickers.length;
+    var oc = heatColor(overall);
+    h += '<div style="display:grid;grid-template-columns:' + cols + ';gap:5px;align-items:center;padding:9px 0;border-top:0.5px solid var(--border2);">';
+    h += '<div style="font-size:12px;font-weight:600;color:var(--text);">' + sector.label + '</div>';
+    h += '<div style="display:flex;gap:3px;flex-wrap:wrap;">';
+    tickers.forEach(function(t) {
+      h += '<span onclick="openTicker(\'' + t + '\')" style="cursor:pointer;font-size:10px;font-weight:700;font-family:\'DM Mono\',monospace;padding:1px 5px;border-radius:3px;background:var(--bg4);color:' + sector.color + ';border:0.5px solid var(--border2);" title="Open ' + t + '">' + t + '</span>';
+    });
+    h += '</div>';
+    layerAvgs.forEach(function(score, i) {
+      var c = heatColor(score);
+      var lid = layers[i];
+      var breakdown = tickers.map(function(t){ var lr=(LAYER_DATA[t]||[]).find(function(l){return l.id===lid;}); return lr ? t+':'+Math.round(Math.min((lr.pts/lr.max)*100,100)) : null; }).filter(Boolean).join(' ');
+      h += '<div onclick="openSectorCell(\'' + key + '\',\'' + lid + '\')" style="cursor:pointer;background:' + c.bg + ';color:' + c.fg + ';border-radius:6px;padding:7px 3px;text-align:center;font-size:11px;font-weight:700;" title="' + breakdown + '">' + Math.round(score) + '</div>';
+    });
+    h += '<div style="background:' + oc.bg + ';color:' + oc.fg + ';border-radius:6px;padding:7px 3px;text-align:center;font-size:13px;font-weight:700;">' + Math.round(overall) + '</div>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function openSectorCell(sectorKey, lid) {
+  var sector = SECTORS[sectorKey];
+  var lName = { L1:'Market Structure', L2:'Insider / Regulatory', L3:'Corporate Intel', L4:'Supply Chain / Contracts', L5:'Macro / Structural' }[lid];
+  var el = document.getElementById('sector-drill-el');
+  if (!el) return;
+  var tickers = sector.tickers.filter(function(t){ return LAYER_DATA[t]; });
+  var h = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div><div style="font-size:12px;font-weight:600;color:var(--text);">' + sector.label + ' — ' + lName + '</div><div style="font-size:10px;color:var(--text3);">Click any stock to open full ticker intel</div></div><span onclick="document.getElementById(\'sector-drill-el\').style.display=\'none\'" style="cursor:pointer;font-size:20px;color:var(--text3);line-height:1;">&#215;</span></div>';
+  tickers.forEach(function(t) {
+    var layer = (LAYER_DATA[t]||[]).find(function(l){ return l.id === lid; });
+    if (!layer) return;
+    var score = Math.min(Math.round((layer.pts/layer.max)*100), 100);
+    var fg = score >= 75 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
+    var totalScore = SCORES[t] || 0;
+    h += '<div onclick="openTicker(\'' + t + '\')" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-top:0.5px solid var(--border2);">';
+    h += '<div style="flex-shrink:0;text-align:center;min-width:38px;"><div style="font-family:\'DM Mono\',monospace;font-weight:700;font-size:15px;color:' + fg + ';">' + score + '</div><div style="font-size:9px;color:var(--text3);">layer</div></div>';
+    h += '<div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--text);">' + t + '</span><span style="font-size:10px;color:var(--text3);">Overall: ' + totalScore + '/100</span></div>';
+    h += '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + layer.desc + '</div></div>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+  el.style.display = '';
+}
+// ─── END SECTOR HEATMAP ──────────────────────────────────────────
+
 // Auto-link known tickers mentioned in plain text to openTicker()
 function linkTickers(text) {
   const tickers = Object.keys(SCORES).concat(['MU','AMAT','SNPS','BAH','CRWD','ANET','LMT','NOC','RTX','DELL','INTC','AMZN','BBAI','SAIC','HPE']);
@@ -5329,6 +5420,7 @@ function refreshChainStatuses() {
 function initCorrTab() {
   // Compute and render dynamic lag window statuses for all chain cards
   try { refreshChainStatuses(); } catch(e) { console.warn('refreshChainStatuses:', e); }
+  try { renderSectorHeatmap(); } catch(e) { console.warn('renderSectorHeatmap:', e); }
 
   const ft = S.focusTicker;
   const cards = document.querySelectorAll('.chain-card[data-chain-ticker]');
