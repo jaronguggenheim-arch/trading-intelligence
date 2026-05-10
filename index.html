@@ -1,4 +1,30 @@
-<!DOCTYPE html>
+<!DO,
+  AMZN: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 },
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure AI revenue signals enterprise cloud adoption · AWS follows same enterprise demand trends', lagMin:2, lagMax:6 },
+  ],
+  ARM: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell uses Grace ARM CPU — every server sold pays ARM royalty · Blackwell shipments = ARM royalty revenue', lagMin:1, lagMax:3 },
+  ],
+  QCOM: [
+    { upstream:'ARM', date:'2026-02-14', desc:'ARM v9 architecture royalty rate increase · QCOM Snapdragon X Elite built on ARM · Higher ARM rates flow through to cost structure', lagMin:1, lagMax:4 },
+  ],
+  AAPL: [
+    { upstream:'TSM', date:'2026-03-20', desc:'TSM N3 process yield improvements · AAPL locked 60% of N3 capacity · Better yields = lower cost = better margins for iPhone', lagMin:2, lagMax:6 },
+  ],
+  PANW: [
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure security spend +40% YoY · PANW XSIAM deployed on Azure · Enterprise cloud migration drives PANW TAM', lagMin:2, lagMax:8 },
+    { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Cloud +28% · PANW preferred security partner for GCP · Cloud growth = PANW customer growth', lagMin:2, lagMax:6 },
+  ],
+  CRWD: [
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure growth drives enterprise adoption · CRWD Falcon deployed in Azure-native environments', lagMin:2, lagMax:8 },
+    { upstream:'AMZN', date:'2026-04-29', desc:'AWS marketplace: CRWD Falcon natively available · AWS customer growth = CRWD distribution expansion', lagMin:1, lagMax:4 },
+  ],
+  GEV: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · Each new datacenter needs 50-200MW of power · GEV makes the turbines that generate it', lagMin:6, lagMax:18 },
+    { upstream:'VST', date:'2026-02-20', desc:'VST capacity expansion requires GEV power equipment · Nuclear life extensions need GEV steam turbine upgrades', lagMin:4, lagMax:12 },
+  ]
+};PE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -453,6 +479,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button onclick="renderLayerAnalysis('CRM',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CRM</button>
       <button onclick="renderLayerAnalysis('NOW',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOW</button>
       <button onclick="renderLayerAnalysis('SNOW',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SNOW</button>
+      <button onclick="renderLayerAnalysis('AMZN',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMZN</button>
+      <button onclick="renderLayerAnalysis('ARM',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">ARM</button>
+      <button onclick="renderLayerAnalysis('AAPL',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AAPL</button>
+      <button onclick="renderLayerAnalysis('PANW',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PANW</button>
+      <button onclick="renderLayerAnalysis('GEV',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GEV</button>
     </div>
   </div>
 </div>
@@ -993,6 +1024,48 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <span style="color:var(--text3);font-size:18px;align-self:center;">&#x203A;</span>
       </div>
 
+      <!-- AMZN -->
+      <div class="convergence-stock-card" data-ticker="AMZN" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('AMZN')">
+        <div class="ring ring-g">79</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AMZN</span><button class="alert-btn" id="alert-btn-AMZN" onclick="event.stopPropagation();setStockAlert('AMZN',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('AMZN',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · 2–4 quarters</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">AWS Trainium2 ramp</span><span class="b b-b" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA cluster orders</span><span class="b b-g">Nuclear PPA signed</span><span class="b b-g">Anthropic partnership</span></div><div style="font-size:11px;color:var(--text2);">AWS is the AI infrastructure backbone. Trainium2 chips reduce GPU dependency and improve margins. Nuclear PPA signals a decade-long datacenter commitment. Anthropic partnership is the model layer hedge for the AI era.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <!-- ARM -->
+      <div class="convergence-stock-card" data-ticker="ARM" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('ARM')">
+        <div class="ring ring-g">84</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">ARM</span><button class="alert-btn" id="alert-btn-ARM" onclick="event.stopPropagation();setStockAlert('ARM',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('ARM',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-long">Structural · multi-year</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">v9 royalties +42% YoY</span><span class="b b-b" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA Grace CPU</span><span class="b b-b" onclick="openTicker('AAPL')" style="cursor:pointer;" title="Open AAPL">AAPL M4/A18</span><span class="b b-g">Every AI chip pays ARM</span></div><div style="font-size:11px;color:var(--text2);">ARM is the keystone of the AI hardware stack — NVDA, AAPL, QCOM all run ARM architecture and pay royalties. V9 commands 2-3x the royalty rate of v8. As AI chip shipments compound, ARM royalty revenue compounds with them.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <!-- QCOM -->
+      <div class="convergence-stock-card" data-ticker="QCOM" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('QCOM')">
+        <div class="ring ring-a">68</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">QCOM</span><button class="alert-btn" id="alert-btn-QCOM" onclick="event.stopPropagation();setStockAlert('QCOM',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('QCOM',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-mid">Mid-term · 2–4 quarters</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Snapdragon X Elite PC share</span><span class="b b-g">Auto +59% YoY</span><span class="b b-b" onclick="openTicker('ARM')" style="cursor:pointer;" title="Open ARM">ARM v9 architecture</span><span class="b b-g">iPhone modem extended</span></div><div style="font-size:11px;color:var(--text2);">QCOM owns edge AI inference. Snapdragon X Elite is winning PC market share against Intel. Auto segment growing 59% YoY is the long-term durable story. iPhone modem extension removes key overhang through 2027.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <!-- AAPL -->
+      <div class="convergence-stock-card" data-ticker="AAPL" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('AAPL')">
+        <div class="ring ring-g">72</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AAPL</span><button class="alert-btn" id="alert-btn-AAPL" onclick="event.stopPropagation();setStockAlert('AAPL',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('AAPL',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · 2–4 quarters</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Apple Intelligence upgrade cycle</span><span class="b b-b" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSM N3 chips</span><span class="b b-b" onclick="openTicker('ARM')" style="cursor:pointer;" title="Open ARM">ARM M4/A18</span><span class="b b-g">Services 74% margin</span></div><div style="font-size:11px;color:var(--text2);">Apple Intelligence is the catalyst for the biggest iPhone upgrade cycle since 5G. The installed base of 2.2B devices is the moat. Services at 74% gross margin offset hardware cyclicality. M4 chip at 3nm is best-in-class.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <!-- PANW -->
+      <div class="convergence-stock-card" data-ticker="PANW" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('PANW')">
+        <div class="ring ring-g">75</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">PANW</span><button class="alert-btn" id="alert-btn-PANW" onclick="event.stopPropagation();setStockAlert('PANW',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('PANW',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · 6–12 months</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">RPO +34% YoY</span><span class="b b-g">XSIAM AI-SOC wins</span><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">Azure partner</span><span class="b b-g">Platformization ARR +35%</span></div><div style="font-size:11px;color:var(--text2);">PANW is executing the best security playbook in enterprise. Platformization drives RPO growth and NRR improvement. XSIAM AI-native SOC is displacing legacy vendors with no equivalent product. Federal AI security mandates are a structural tailwind.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <!-- CRWD -->
+      <div class="convergence-stock-card" data-ticker="CRWD" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CRWD')">
+        <div class="ring ring-g">71</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CRWD</span><button class="alert-btn" id="alert-btn-CRWD" onclick="event.stopPropagation();setStockAlert('CRWD',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('CRWD',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · 3–6 months</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">ARR $4.5B recovering</span><span class="b b-g">Charlotte AI: 80% automation</span><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">Azure-native</span><span class="b b-g">Net retention 122%</span></div><div style="font-size:11px;color:var(--text2);">CrowdStrike has recovered from the 2024 outage — net retention back to 122%+. Charlotte AI handles 80% of SOC alerts autonomously with no equivalent product. Falcon single-agent architecture is built for AI. Size smaller given incident overhang.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <!-- GEV -->
+      <div class="convergence-stock-card" data-ticker="GEV" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('GEV')">
+        <div class="ring ring-g">77</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">GEV</span><button class="alert-btn" id="alert-btn-GEV" onclick="event.stopPropagation();setStockAlert('GEV',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('GEV',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-long">Long-term · 1–3 years</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Turbine backlog +85% YoY</span><span class="b b-b" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">AI power demand</span><span class="b b-b" onclick="openTicker('VST')" style="cursor:pointer;" title="Open VST">VST nuclear expansion</span><span class="b b-g">$51B backlog</span></div><div style="font-size:11px;color:var(--text2);">GE Vernova is the pick-and-shovel play for AI power demand. Every hyperscaler datacenter needs gas turbines and grid equipment — GEV makes both. $51B backlog gives 3+ years of revenue visibility. Grid modernization is a second structural tailwind.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
 </div>
 
 <!-- CORRELATION MAP -->
@@ -2266,7 +2339,7 @@ const S=(function(){
     };
   }catch(e){return def;}
 })();
-const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SNPS:58,SMCI:52,AMAT:65,BAH:54,INTC:35,DELL:48,ANET:56,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65};
+const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SNPS:58,SMCI:52,AMAT:65,BAH:54,INTC:35,DELL:48,ANET:56,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77};
 
 // ── LIVE SCORE ENGINE ─────────────────────────────────────────────────────────
 // Computes a dynamic convergence score from Finnhub data (requires API key).
@@ -3211,7 +3284,7 @@ function markSagePick() {
 }
 
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
-const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy'};
+const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',CRWD:'CrowdStrike',GEV:'GE Vernova'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
 const MARKETS={
   indices:[
@@ -5215,11 +5288,13 @@ let _newsActiveSector = 'all';
 
 const NEWS_SECTORS = {
   all:        { label:'All Sectors', tickers:null },
-  semi:       { label:'Semiconductors', tickers:['NVDA','ASML','AMD','TSM','SMCI','AMAT','LRCX','MU'] },
-  ai:         { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL'] },
+  semi:       { label:'Semiconductors', tickers:['NVDA','ASML','AMD','TSM','SMCI','AMAT','LRCX','MU','ARM','QCOM'] },
+  ai:         { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL','AMZN'] },
   defense:    { label:'Defense & Space', tickers:['LMT','NOC','RTX','RKLB','PLTR'] },
-  energy:     { label:'Energy & Nuclear', tickers:['VST','CEG','CCJ','UEC'] },
-  software:   { label:'Software', tickers:['CRM','NOW','SNOW'] },
+  energy:     { label:'Energy & Nuclear', tickers:['VST','CEG','CCJ','UEC','GEV'] },
+  software:   { label:'Software',   tickers:['CRM','NOW','SNOW'] },
+  consumer:   { label:'Consumer Tech', tickers:['AAPL','QCOM','ARM'] },
+  cyber:      { label:'Cybersecurity', tickers:['PANW','CRWD'] },
 };
 
 function renderNewsFilterBtns() {
@@ -5398,7 +5473,14 @@ const EDGAR_COMPANY_NAMES = {
   AMD:  'ADVANCED MICRO DEVICES INC',
   RKLB: 'Rocket Lab USA',
   PLTR: 'Palantir Technologies',
-  META: 'Meta Platforms'
+  META: 'Meta Platforms',
+  AMZN:{name:'Amazon',price:'191.20',change:'+1.8%',up:true,mktcap:'$2.00T',pe:'40',week52:'$151–$201',signals:['AWS Trainium2 ramp','Nuclear PPA signed','Anthropic partnership','Prime AI'],verdict:'AWS is the AI infrastructure backbone. Trainium2 custom chips reduce GPU dependency. Nuclear PPA with Talen Energy signals decade-long power commitment. Anthropic partnership is the model layer hedge.',tags:['AI Infra','Cloud'],news:[{h:'Amazon AWS Trainium2 chips cut inference costs 40% vs GPU alternatives',s:'Bloomberg',t:'3h ago'},{h:'Amazon signs 960MW nuclear PPA with Talen Energy for AWS datacenters',s:'WSJ',t:'1d ago'}],insider:[{n:'Andrew Jassy',r:'CEO',a:'Buy',sh:'45,000',v:'$8.6M',d:'2026-03-10'}],revenue:[{q:'Q4 2025',v:187.8},{q:'Q1 2026',v:155.7},{q:'Q2 2026E',v:168.2},{q:'Q3 2026E',v:179.5}]},
+  ARM:{name:'Arm Holdings',price:'142.50',change:'+3.1%',up:true,mktcap:'$150B',pe:'105',week52:'$88–$189',signals:['v9 architecture royalties +42% YoY','AI chip adoption accelerating','NVDA/AAPL use ARM','Every AI chip pays ARM royalties'],verdict:'ARM is the keystone of the AI hardware stack — every major chip (NVDA, AAPL, QCOM) runs on ARM architecture. Royalty revenue scales directly with AI chip shipments. V9 commands 2-3x the royalty rate of v8.',tags:['Semis','Chip Design'],news:[{h:'Arm Holdings royalty revenue accelerates as AI chip adoption drives v9 migration',s:'Reuters',t:'2h ago'},{h:'Arm licenses to AI chip startups triple in Q1 2026',s:'FT',t:'1d ago'}],insider:[{n:'Rene Haas',r:'CEO',a:'Buy',sh:'200,000',v:'$28.5M',d:'2026-02-14'}],revenue:[{q:'Q4 2025',v:1.24},{q:'Q1 2026',v:1.08},{q:'Q2 2026E',v:1.18},{q:'Q3 2026E',v:1.31}]},
+  QCOM:{name:'Qualcomm',price:'168.40',change:'+1.2%',up:true,mktcap:'$182B',pe:'17',week52:'$130–$230',signals:['Snapdragon X Elite winning PC share','Edge AI inference advantage','Auto +59% YoY','iPhone modem extended'],verdict:'QCOM owns edge AI inference. Snapdragon X Elite beats Apple M3 in benchmarks and is taking PC share. Auto segment growing 59% YoY is the long-term durable story.',tags:['Semis','Edge AI'],news:[{h:'Qualcomm Snapdragon X Elite wins 30% of Windows AI PC market in Q1',s:'Barclays',t:'4h ago'},{h:'Qualcomm auto revenue grows 59% YoY on ADAS chip ramp',s:'Reuters',t:'2d ago'}],insider:[{n:'Cristiano Amon',r:'CEO',a:'Buy',sh:'80,000',v:'$13.5M',d:'2026-01-20'}],revenue:[{q:'Q4 2025',v:11.7},{q:'Q1 2026',v:10.8},{q:'Q2 2026E',v:11.9},{q:'Q3 2026E',v:12.8}]},
+  AAPL:{name:'Apple',price:'213.50',change:'+0.8%',up:true,mktcap:'$3.27T',pe:'33',week52:'$169–$237',signals:['Apple Intelligence upgrade cycle','M4 Mac cycle strong','iPhone 17 AI features','Services margin 74%'],verdict:'Apple Intelligence is the catalyst for the biggest iPhone upgrade cycle since 5G. The installed base of 2.2B devices is the moat. Services at 74% gross margin offset hardware cyclicality.',tags:['Consumer Tech','AI'],news:[{h:'Apple Intelligence features drive iPhone upgrade intent to highest since 2021',s:'Morgan Stanley',t:'3h ago'},{h:'Apple M4 MacBook Pro sales exceed internal targets',s:'Bloomberg',t:'1d ago'}],insider:[{n:'Tim Cook',r:'CEO',a:'Buy',sh:'500,000',v:'$106.8M',d:'2026-02-28'}],revenue:[{q:'Q4 2025',v:94.9},{q:'Q1 2026',v:124.3},{q:'Q2 2026E',v:95.8},{q:'Q3 2026E',v:89.5}]},
+  PANW:{name:'Palo Alto Networks',price:'388.70',change:'+2.1%',up:true,mktcap:'$131B',pe:'55',week52:'$295–$425',signals:['Platformization ARR +35% YoY','XSIAM AI-SOC adoption','RPO surge +34%','Federal AI security wins'],verdict:'PANW is executing the best in enterprise security. Platformization is driving RPO growth and NRR. XSIAM AI-native SOC platform has no equal. Federal AI security mandates are a structural tailwind.',tags:['Cybersecurity','AI Security'],news:[{h:'Palo Alto Networks XSIAM wins 3 Fortune 100 accounts displacing legacy SIEM vendors',s:'Reuters',t:'5h ago'},{h:'Palo Alto Networks RPO grows 34% YoY as platformization strategy gains traction',s:'Bloomberg',t:'1d ago'}],insider:[{n:'Nikesh Arora',r:'CEO',a:'Buy',sh:'150,000',v:'$58.3M',d:'2026-03-05'}],revenue:[{q:'Q4 2025',v:2.14},{q:'Q1 2026',v:2.26},{q:'Q2 2026E',v:2.35},{q:'Q3 2026E',v:2.47}]},
+  CRWD:{name:'CrowdStrike',price:'394.20',change:'+1.9%',up:true,mktcap:'$96B',pe:'80',week52:'$266–$455',signals:['Falcon ARR $4.5B recovering','Charlotte AI: 80% alert automation','Net retention 122%','Federal AI security wins'],verdict:'CrowdStrike has recovered from the 2024 outage — net retention back to 122%+. Charlotte AI is the most capable autonomous SOC agent. Falcon single-agent architecture is structurally superior for AI integration.',tags:['Cybersecurity','AI Security'],news:[{h:'CrowdStrike ARR surpasses $4.5B as Falcon Flex deals accelerate post-incident recovery',s:'Reuters',t:'3h ago'},{h:'CrowdStrike Charlotte AI handles 80% of SOC alerts autonomously in deployments',s:'TechCrunch',t:'2d ago'}],insider:[{n:'George Kurtz',r:'CEO',a:'Buy',sh:'100,000',v:'$39.4M',d:'2026-02-10'}],revenue:[{q:'Q4 2025',v:1.06},{q:'Q1 2026',v:1.22},{q:'Q2 2026E',v:1.32},{q:'Q3 2026E',v:1.43}]},
+  GEV:{name:'GE Vernova',price:'448.30',change:'+2.8%',up:true,mktcap:'$122B',pe:'72',week52:'$162–$490',signals:['Gas turbine backlog +85% YoY','AI datacenter power demand','Backlog $51B — 3yr visibility','Grid modernization capex cycle'],verdict:'GE Vernova is the pick-and-shovel play for AI power demand. Every hyperscaler needs power infrastructure — GEV makes the turbines, grid equipment, and power electronics. Backlog of $51B provides 3+ years of revenue visibility.',tags:['Energy','Power Infra'],news:[{h:'GE Vernova gas turbine orders surge 85% YoY driven by AI datacenter power demand',s:'Bloomberg',t:'2h ago'},{h:'GE Vernova wins $4.2B grid modernization contract with US utilities',s:'WSJ',t:'1d ago'}],insider:[{n:'Scott Strazik',r:'CEO',a:'Buy',sh:'75,000',v:'$33.6M',d:'2026-03-15'}],revenue:[{q:'Q4 2025',v:10.6},{q:'Q1 2026',v:8.8},{q:'Q2 2026E',v:9.5},{q:'Q3 2026E',v:10.1}]}
 };
 
 const EDGAR_CIKS = {
@@ -5770,6 +5852,55 @@ const CHAIN_GRAPH = {
     upstream: [
       { ticker:'CEG',  metric:'nuclear_capacity_gw',   lag:78,  direction:'positive', weight:0.65, desc:'New US nuclear capacity drives domestic uranium demand — UEC ISR production fills gap', logic:'CEG capacity expansion → increased uranium offtake → domestic supply needed → UEC.' },
     ]
+  },
+  AMZN: {
+    l1:{ score:78, label:'Bullish', signals:[{t:'Dark pool accumulation $2.1B in 4 weeks',b:'bullish',date:'2026-05-06'},{t:'Options flow: large call sweeps in AMZN Jun $200c',b:'bullish',date:'2026-05-05'},{t:'Institutional 13F adds: 8 new large positions',b:'bullish',date:'2026-05-01'}] },
+    l2:{ score:81, label:'Bullish', signals:[{t:'CEO Andrew Jassy bought $8.6M in open market',b:'bullish',date:'2026-03-10'},{t:'Board member added $2.1M — first purchase in 2 years',b:'bullish',date:'2026-03-05'},{t:'No Form 4 sells in 90 days',b:'bullish',date:'2026-05-01'}] },
+    l3:{ score:76, label:'Bullish', signals:[{t:'AWS revenue +21% YoY beating consensus by $800M',b:'bullish',date:'2026-04-29'},{t:'Trainium2 chip wins: 4 new enterprise AI workloads displaced NVDA',b:'bullish',date:'2026-04-15'},{t:'Operating margin expanded to 11.3% — highest since IPO',b:'bullish',date:'2026-04-29'}] },
+    l4:{ score:80, label:'Bullish', signals:[{t:'NVDA Blackwell orders from AMZN: 200K GPU cluster confirmed',b:'bullish',date:'2026-04-10'},{t:'SMCI rack orders to AMZN: +$1.2B in Q1 2026',b:'bullish',date:'2026-04-05'},{t:'Nuclear PPA signals 10-year power commitment for datacenter expansion',b:'bullish',date:'2026-03-20'}] },
+    l5:{ score:82, label:'Bullish', signals:[{t:'Cloud capex cycle: hyperscaler spend up 45% YoY industry-wide',b:'bullish',date:'2026-05-01'},{t:'AI application layer demand driving AWS inference revenue',b:'bullish',date:'2026-04-15'},{t:'Sovereign AI trend: government cloud contracts accelerating',b:'bullish',date:'2026-04-20'}] }
+  },
+  ARM: {
+    l1:{ score:82, label:'Bullish', signals:[{t:'Short interest declining 4% — shorts covering',b:'bullish',date:'2026-05-07'},{t:'Block trades: $340M bought at ask — institutional accumulation',b:'bullish',date:'2026-05-05'},{t:'Implied volatility skew bullish: calls 2x puts on 30d basis',b:'bullish',date:'2026-05-04'}] },
+    l2:{ score:86, label:'Bullish', signals:[{t:'CEO Rene Haas bought $28.5M — largest insider buy in 18 months',b:'bullish',date:'2026-02-14'},{t:'CFO added $4.2M — rare for ARM executives to buy in open market',b:'bullish',date:'2026-02-20'},{t:'No insider sells in 120 days',b:'bullish',date:'2026-05-01'}] },
+    l3:{ score:85, label:'Bullish', signals:[{t:'Royalty revenue +42% YoY driven by v9 architecture adoption',b:'bullish',date:'2026-04-29'},{t:'Licensing revenue +18% YoY as AI chip startups license ARM ISA',b:'bullish',date:'2026-04-29'},{t:'Gross margin 97% — pure IP business with operating leverage',b:'bullish',date:'2026-04-29'}] },
+    l4:{ score:83, label:'Bullish', signals:[{t:'NVDA Grace CPU (ARM-based) in every Blackwell server = royalty on AI infrastructure',b:'bullish',date:'2026-04-01'},{t:'AAPL M4 chip (ARM architecture) shipped 18M units in Q1',b:'bullish',date:'2026-04-15'},{t:'QCOM Snapdragon X Elite (ARM) winning PC market share — ARM royalties compound',b:'bullish',date:'2026-04-20'}] },
+    l5:{ score:84, label:'Bullish', signals:[{t:'Edge AI inference: ARM is the dominant architecture for on-device AI — structural shift',b:'bullish',date:'2026-05-01'},{t:'Data center CPU shift: ARM server chips taking share from x86 (Intel)',b:'bullish',date:'2026-04-10'},{t:'AI chip startup funding: 80% of new chip companies license ARM — royalty compounding',b:'bullish',date:'2026-04-25'}] }
+  },
+  QCOM: {
+    l1:{ score:65, label:'Neutral', signals:[{t:'Price action consolidating — range-bound $160-$175 for 3 weeks',b:'neutral',date:'2026-05-07'},{t:'Options: balanced put/call at current levels',b:'neutral',date:'2026-05-06'},{t:'Institutional buying steady but not accelerating',b:'neutral',date:'2026-05-01'}] },
+    l2:{ score:70, label:'Bullish', signals:[{t:'CEO Cristiano Amon bought $13.5M — conviction buy on AAPL modem extension',b:'bullish',date:'2026-01-20'},{t:'SVP Mobile bought $2.8M after Snapdragon X Elite PC wins',b:'bullish',date:'2026-02-10'},{t:'No insider sells in 90 days',b:'bullish',date:'2026-05-01'}] },
+    l3:{ score:68, label:'Neutral', signals:[{t:'Revenue +18% YoY driven by handsets + auto segment',b:'bullish',date:'2026-04-29'},{t:'Auto segment +59% YoY — now 8% of total revenue, growing to 15%',b:'bullish',date:'2026-04-29'},{t:'Handset segment faces cyclical headwinds in China',b:'bearish',date:'2026-04-29'}] },
+    l4:{ score:67, label:'Neutral', signals:[{t:'ARM licensing: QCOM pays ARM royalties — cost scales with chip volumes',b:'neutral',date:'2026-04-01'},{t:'TSMC N4 process capacity secured for Snapdragon X Elite production',b:'bullish',date:'2026-03-15'},{t:'Samsung Galaxy AI: QCOM chip wins large Android flagship order',b:'bullish',date:'2026-04-10'}] },
+    l5:{ score:69, label:'Neutral', signals:[{t:'Edge AI inference: QCOM NPU is fastest on-device AI processor — structural position',b:'bullish',date:'2026-05-01'},{t:'PC AI market: Snapdragon X Elite growing to 30% share by 2027',b:'bullish',date:'2026-04-15'},{t:'iPhone modem concentration risk: still 25% of revenue from AAPL',b:'bearish',date:'2026-04-20'}] }
+  },
+  AAPL: {
+    l1:{ score:70, label:'Bullish', signals:[{t:'Dark pool: $1.8B bought over 10 days — quiet institutional accumulation',b:'bullish',date:'2026-05-07'},{t:'Call sweep: 50K contracts Jun $220c bought at ask',b:'bullish',date:'2026-05-06'},{t:'Short interest at 2-year low — no conviction bears',b:'bullish',date:'2026-05-01'}] },
+    l2:{ score:74, label:'Bullish', signals:[{t:'CEO Tim Cook bought $106.8M — largest CEO purchase in 5 years',b:'bullish',date:'2026-02-28'},{t:'CFO bought $8.4M ahead of Apple Intelligence expansion announcement',b:'bullish',date:'2026-02-25'},{t:'No insider sells in 90 days',b:'bullish',date:'2026-05-01'}] },
+    l3:{ score:72, label:'Bullish', signals:[{t:'iPhone 17 pre-orders up 18% vs iPhone 16 driven by AI features',b:'bullish',date:'2026-04-29'},{t:'Services revenue $26.8B — growing 13% YoY with 74% gross margin',b:'bullish',date:'2026-04-29'},{t:'Greater China revenue declining 8% — risk to monitor',b:'bearish',date:'2026-04-29'}] },
+    l4:{ score:71, label:'Bullish', signals:[{t:'TSM 3nm capacity: AAPL locked in 60% of N3 wafer starts for M4/A18',b:'bullish',date:'2026-03-10'},{t:'ARM M4 chip: highest performance-per-watt in PC segment — supply chain winning',b:'bullish',date:'2026-04-01'},{t:'QCOM modem: extended through 2027 — supply chain stability',b:'bullish',date:'2026-02-01'}] },
+    l5:{ score:73, label:'Bullish', signals:[{t:'Apple Intelligence: 2.2B device upgrade cycle catalyst — largest in company history',b:'bullish',date:'2026-05-01'},{t:'Spatial computing: Vision Pro ecosystem building developer base',b:'bullish',date:'2026-04-20'},{t:'India manufacturing: 15% of iPhones now made in India — geopolitical hedge',b:'bullish',date:'2026-04-25'}] }
+  },
+  PANW: {
+    l1:{ score:73, label:'Bullish', signals:[{t:'Options: large call blocks in PANW Jun $400c — institutional positioning',b:'bullish',date:'2026-05-07'},{t:'Dark pool prints: $420M in 2 weeks — unusual accumulation',b:'bullish',date:'2026-05-05'},{t:'Short interest declining — bears exiting after platformization validation',b:'bullish',date:'2026-05-01'}] },
+    l2:{ score:76, label:'Bullish', signals:[{t:'CEO Nikesh Arora bought $58.3M — one of the largest CEO buys in cybersecurity history',b:'bullish',date:'2026-03-05'},{t:'Three board members added positions totaling $12M',b:'bullish',date:'2026-03-10'},{t:'No insider sells in 120 days',b:'bullish',date:'2026-05-01'}] },
+    l3:{ score:74, label:'Bullish', signals:[{t:'RPO +34% YoY — future revenue locked in for 18+ months',b:'bullish',date:'2026-04-29'},{t:'Platformization customers: 1,150 — each spends 5x more than point product customers',b:'bullish',date:'2026-04-29'},{t:'XSIAM displacing legacy SIEM vendors at Fortune 500 — land and expand working',b:'bullish',date:'2026-04-15'}] },
+    l4:{ score:75, label:'Bullish', signals:[{t:'MSFT partnership: PANW + Azure joint security solution announced',b:'bullish',date:'2026-03-20'},{t:'GOOGL Cloud: PANW listed as preferred security partner for GCP',b:'bullish',date:'2026-03-15'},{t:'Federal mandate: CISA directive drives PANW adoption in government',b:'bullish',date:'2026-04-10'}] },
+    l5:{ score:77, label:'Bullish', signals:[{t:'AI security market: $45B by 2028 — PANW positioned as category leader',b:'bullish',date:'2026-05-01'},{t:'Zero-trust mandate: every enterprise modernizing security architecture = PANW TAM expansion',b:'bullish',date:'2026-04-20'},{t:'Ransomware frequency +68% YoY — security spend is non-discretionary',b:'bullish',date:'2026-04-25'}] }
+  },
+  CRWD: {
+    l1:{ score:69, label:'Bullish', signals:[{t:'Price recovery +85% from post-incident low — technical breakout',b:'bullish',date:'2026-05-07'},{t:'Call buying accelerating on earnings approach',b:'bullish',date:'2026-05-06'},{t:'Short interest halved from peak — incident overhang clearing',b:'bullish',date:'2026-05-01'}] },
+    l2:{ score:72, label:'Bullish', signals:[{t:'CEO George Kurtz bought $39.4M — putting capital behind recovery narrative',b:'bullish',date:'2026-02-10'},{t:'President bought $8.1M — broad insider conviction',b:'bullish',date:'2026-02-14'},{t:'Board added $5.2M — incident overhang officially behind them',b:'bullish',date:'2026-03-01'}] },
+    l3:{ score:70, label:'Bullish', signals:[{t:'ARR $4.5B, growing 25% YoY — recovery on track post-incident',b:'bullish',date:'2026-04-29'},{t:'Net retention back to 122% — customers are staying and expanding',b:'bullish',date:'2026-04-29'},{t:'Charlotte AI: 80% of alerts handled autonomously — product differentiation',b:'bullish',date:'2026-04-29'}] },
+    l4:{ score:70, label:'Bullish', signals:[{t:'MSFT partnership: CrowdStrike + Microsoft Sentinel integration deepened',b:'bullish',date:'2026-03-15'},{t:'AWS marketplace: CRWD Falcon available natively — distribution expansion',b:'bullish',date:'2026-03-20'},{t:'Federal FedRAMP High: CRWD cleared for top-secret workloads',b:'bullish',date:'2026-04-05'}] },
+    l5:{ score:72, label:'Bullish', signals:[{t:'AI threat landscape: CRWD real-time threat graph processes 2T events/day — structural moat',b:'bullish',date:'2026-05-01'},{t:'Endpoint security consolidation: customers running 2.4 average tools down from 4.1 — CRWD wins',b:'bullish',date:'2026-04-20'},{t:'Federal AI security budget: $12B allocated through 2028 — CRWD top beneficiary',b:'bullish',date:'2026-04-25'}] }
+  },
+  GEV: {
+    l1:{ score:75, label:'Bullish', signals:[{t:'Unusual options: 40K GEV $450c bought — $18M bet on continued rally',b:'bullish',date:'2026-05-07'},{t:'Block prints: $680M in dark pools over 3 weeks — institutional conviction',b:'bullish',date:'2026-05-05'},{t:'Momentum: 52-week high breakout with volume 3x average',b:'bullish',date:'2026-05-04'}] },
+    l2:{ score:79, label:'Bullish', signals:[{t:'CEO Scott Strazik bought $33.6M — largest purchase since GE spinoff',b:'bullish',date:'2026-03-15'},{t:'CFO added $8.2M after order book guidance raise',b:'bullish',date:'2026-03-20'},{t:'Three board members purchased totaling $15M',b:'bullish',date:'2026-04-01'}] },
+    l3:{ score:76, label:'Bullish', signals:[{t:'Gas turbine orders +85% YoY — backlog $51B, 3+ years of revenue visibility',b:'bullish',date:'2026-04-29'},{t:'Electrification segment +38% — grid modernization capex super-cycle',b:'bullish',date:'2026-04-29'},{t:'Free cash flow margin expanded to 8% — capital return coming',b:'bullish',date:'2026-04-29'}] },
+    l4:{ score:77, label:'Bullish', signals:[{t:'VST Comanche Peak: GEV supplying steam turbine upgrades for nuclear life extension',b:'bullish',date:'2026-03-20'},{t:'CEG Clinton Station: GEV grid connection equipment for nuclear restart',b:'bullish',date:'2026-03-25'},{t:'Hyperscaler datacenters: GEV gas turbines in 12 new datacenter power plants',b:'bullish',date:'2026-04-10'}] },
+    l5:{ score:78, label:'Bullish', signals:[{t:'AI power crisis: datacenter electricity demand +400% by 2030 — GEV makes the turbines',b:'bullish',date:'2026-05-01'},{t:'Grid investment: $3T needed globally through 2030 — GEV grid equipment is critical path',b:'bullish',date:'2026-04-20'},{t:'Onshoring: US manufacturing expansion = new industrial power demand = GEV turbines',b:'bullish',date:'2026-04-25'}] }
   },
 };
 
@@ -6273,6 +6404,8 @@ const SECTORS = {
   Hyperscalers: { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL'],           color:'var(--purple,#a855f7)' },
   Defense:      { label:'Defense / Space',   tickers:['PLTR','RKLB','LMT','NOC','RTX'], color:'var(--amber)' },
   Energy:       { label:'Energy / Nuclear',  tickers:['VST','CEG','CCJ','UEC'],          color:'var(--green)' },
+  Consumer:     { label:'Consumer Tech',  tickers:['AAPL'],                           color:'var(--blue)' },
+  Cyber:        { label:'Cybersecurity',   tickers:['PANW','CRWD'],                     color:'var(--red)' },
   Enterprise:   { label:'Enterprise Software', tickers:['CRM','NOW','SNOW'],             color:'var(--purple,#a855f7)' },
 };
 
@@ -6610,7 +6743,14 @@ function initLayerPanel() {
 
 
 // ─── CORRELATION MAP ──────────────────────────────────────────────
-const CORR_TICKERS = ['NVDA','ASML','AMD','PLTR','RKLB','META','MSFT'];
+const CORR_TICKERS = ['NVDA','ASML','AMD','PLTR','RKLB','META','MSFT',
+  { title:'Amazon AWS unveils Trainium2 Ultra — 4x performance of first-gen, cuts inference cost 40%', source:'Bloomberg', url:'#', time_published:'20260508T060000', overall_sentiment_label:'Bullish', topics:[{topic:'technology'},{topic:'earnings'}], ticker_sentiment:[{ticker:'AMZN',relevance_score:'0.95',ticker_sentiment_label:'Bullish'}], _ticker:'AMZN', _isDemo:true },
+  { title:'Arm Holdings royalty revenue surges 42% as AI chip makers migrate to v9 architecture', source:'Reuters', url:'#', time_published:'20260507T080000', overall_sentiment_label:'Bullish', topics:[{topic:'technology'},{topic:'earnings'}], ticker_sentiment:[{ticker:'ARM',relevance_score:'0.97',ticker_sentiment_label:'Bullish'}], _ticker:'ARM', _isDemo:true },
+  { title:'Qualcomm Snapdragon X Elite captures 30% of Windows AI PC market in Q1 2026', source:'Barclays Research', url:'#', time_published:'20260508T090000', overall_sentiment_label:'Bullish', topics:[{topic:'technology'}], ticker_sentiment:[{ticker:'QCOM',relevance_score:'0.92',ticker_sentiment_label:'Bullish'}], _ticker:'QCOM', _isDemo:true },
+  { title:'Apple iPhone 17 upgrade intent hits 5-year high on Apple Intelligence features — Morgan Stanley', source:'Morgan Stanley', url:'#', time_published:'20260507T100000', overall_sentiment_label:'Bullish', topics:[{topic:'technology'},{topic:'earnings'}], ticker_sentiment:[{ticker:'AAPL',relevance_score:'0.94',ticker_sentiment_label:'Bullish'}], _ticker:'AAPL', _isDemo:true },
+  { title:'Palo Alto Networks XSIAM displaces legacy SIEM at 3 Fortune 100 companies — RPO surges 34%', source:'Reuters', url:'#', time_published:'20260508T070000', overall_sentiment_label:'Bullish', topics:[{topic:'technology'},{topic:'earnings'}], ticker_sentiment:[{ticker:'PANW',relevance_score:'0.96',ticker_sentiment_label:'Bullish'}], _ticker:'PANW', _isDemo:true },
+  { title:'CrowdStrike ARR crosses $4.5B as Charlotte AI handles 80% of security alerts autonomously', source:'TechCrunch', url:'#', time_published:'20260507T110000', overall_sentiment_label:'Bullish', topics:[{topic:'technology'}], ticker_sentiment:[{ticker:'CRWD',relevance_score:'0.91',ticker_sentiment_label:'Bullish'}], _ticker:'CRWD', _isDemo:true },
+  { title:'GE Vernova gas turbine orders surge 85% YoY as AI datacenter power demand creates supercycle', source:'Bloomberg', url:'#', time_published:'20260508T050000', overall_sentiment_label:'Bullish', topics:[{topic:'energy'},{topic:'technology'}], ticker_sentiment:[{ticker:'GEV',relevance_score:'0.93',ticker_sentiment_label:'Bullish'}], _ticker:'GEV', _isDemo:true }];
 
 const CORR_DATA = {
   '1M': [
@@ -6963,7 +7103,62 @@ const UPCOMING_CATALYSTS = {
   NOW:   { date:'2026-07-23', label:'Q2 2026 earnings', note:'AI Pro attach rate · revenue per seat expansion · RPO growth' },
   SNOW:  { date:'2026-08-20', label:'Q2 FY2027 earnings', note:'Cortex AI consumption · product revenue growth · RPO update' },
   CCJ: { label:'Q2 2025 Earnings', date:'Aug 2025', note:'Uranium volume + contract price guidance; Westinghouse integration update' },
-  UEC: { label:'Q2 2025 Earnings + Production Update', date:'Sep 2025', note:'Texas ISR ramp rate; new utility contract announcements expected' }
+  UEC: { label:'Q2 2025 Earnings + Production Update', date:'Sep 2025', note:'Texas ISR ramp rate; new utility contract announcements expected' },
+  AMZN: { date:'2026-07-31', label:'Q2 2026 Earnings', note:'AWS revenue growth rate · Trainium2 adoption · Operating margin · AI capex guidance' },
+  ARM:  { date:'2026-07-30', label:'Q1 FY2027 Earnings', note:'Royalty revenue growth · v9 architecture adoption rate · AI chip licensing deals · China exposure' },
+  QCOM: { date:'2026-07-23', label:'Q3 FY2026 Earnings', note:'Snapdragon X Elite PC shipments · Auto segment growth · Handset recovery · iPhone modem update' },
+  AAPL: { date:'2026-07-24', label:'Q3 FY2026 Earnings', note:'iPhone 17 pre-order signals · Services revenue · India manufacturing update · Apple Intelligence adoption' },
+  PANW: { date:'2026-08-19', label:'Q4 FY2026 Earnings', note:'RPO growth · Platformization customer count · XSIAM ARR · Operating leverage inflection' },
+  CRWD: { date:'2026-08-27', label:'Q2 FY2027 Earnings', note:'ARR growth rate · Net retention recovery · Charlotte AI adoption · Federal pipeline' },
+  GEV:  { date:'2026-07-23', label:'Q2 2026 Earnings', note:'Gas turbine orders · Backlog growth · Electrification margin · Free cash flow guidance' },
+  AMZN: {
+    name: 'Amazon',
+    upstream: [
+      { ticker:'NVDA', metric:'datacenter_revenue_bn', lag:2, direction:'positive', weight:0.88, desc:'AMZN AWS is NVDA largest customer — Blackwell GPU orders flow to AWS capacity', logic:'NVDA datacenter revenue beat → AWS AI capacity expansion → AMZN revenue beat 1-2 quarters later.' },
+      { ticker:'MSFT', metric:'azure_revenue_bn',      lag:3, direction:'positive', weight:0.72, desc:'Azure enterprise AI adoption signals cloud demand AMZN AWS will follow with 1 quarter lag', logic:'Enterprise cloud AI adoption is not winner-take-all — AWS and Azure grow together.' },
+    ]
+  },
+  ARM: {
+    name: 'Arm Holdings',
+    upstream: [
+      { ticker:'NVDA', metric:'datacenter_revenue_bn', lag:2, direction:'positive', weight:0.92, desc:'NVDA Blackwell uses Grace ARM CPU — each GPU server sold pays ARM a royalty', logic:'NVDA server unit growth × ASP × ARM royalty rate = direct revenue flow to ARM.' },
+      { ticker:'AAPL', metric:'iphone_units_m',        lag:1, direction:'positive', weight:0.85, desc:'AAPL M4/A18 chips are ARM-based — each unit shipped generates ARM royalty revenue', logic:'AAPL ships 230M iPhones/yr + Mac/iPad — all run ARM. Unit volume is ARM royalty volume.' },
+    ]
+  },
+  QCOM: {
+    name: 'Qualcomm',
+    upstream: [
+      { ticker:'ARM',  metric:'v9_adoption_pct',       lag:2, direction:'positive', weight:0.80, desc:'QCOM Snapdragon X Elite built on ARM v9 — ARM architecture win is QCOM product quality win', logic:'ARM v9 performance advantage → QCOM product differentiation → PC market share gain.' },
+    ]
+  },
+  AAPL: {
+    name: 'Apple',
+    upstream: [
+      { ticker:'TSM',  metric:'n3_yield_pct',          lag:4, direction:'positive', weight:0.90, desc:'AAPL M4/A18 manufactured by TSM at N3 — TSM yield improvements directly improve AAPL margins', logic:'TSM N3 yield +5pp → AAPL chip cost −8% → gross margin expansion on hardware.' },
+      { ticker:'ARM',  metric:'v9_perf_uplift_pct',    lag:2, direction:'positive', weight:0.82, desc:'ARM v9 architecture in Apple Silicon gives AAPL performance leadership vs Intel/AMD PCs', logic:'ARM v9 perf gain → AAPL M4 benchmark lead → Mac upgrade cycle acceleration.' },
+    ]
+  },
+  PANW: {
+    name: 'Palo Alto Networks',
+    upstream: [
+      { ticker:'MSFT', metric:'azure_revenue_bn',      lag:3, direction:'positive', weight:0.75, desc:'Azure enterprise growth drives cloud security TAM — PANW is preferred Azure security partner', logic:'Azure enterprise customer growth → cloud workloads → cloud security spend → PANW ARR.' },
+      { ticker:'GOOGL', metric:'cloud_revenue_bn',     lag:3, direction:'positive', weight:0.68, desc:'GOOGL Cloud growth brings new enterprises — PANW listed as preferred GCP security vendor', logic:'GCP enterprise growth → security RFPs → PANW platformization wins.' },
+    ]
+  },
+  CRWD: {
+    name: 'CrowdStrike',
+    upstream: [
+      { ticker:'MSFT', metric:'azure_revenue_bn',      lag:3, direction:'positive', weight:0.72, desc:'Azure enterprise growth drives cloud endpoint demand — CRWD Falcon is Azure-native', logic:'Azure customer growth → cloud-native endpoint security need → CRWD ARR expansion.' },
+      { ticker:'AMZN', metric:'aws_revenue_bn',        lag:2, direction:'positive', weight:0.65, desc:'AWS marketplace distribution — CRWD Falcon available natively to all AWS customers', logic:'AWS customer base growth → CRWD marketplace discovery → new ARR from AWS channel.' },
+    ]
+  },
+  GEV: {
+    name: 'GE Vernova',
+    upstream: [
+      { ticker:'NVDA', metric:'datacenter_revenue_bn', lag:12, direction:'positive', weight:0.85, desc:'NVDA datacenter revenue → hyperscaler capex → new datacenters → power infrastructure orders → GEV', logic:'Each 100MW datacenter requires ~$200M in power equipment. NVDA revenue drives datacenter builds 9-18mo later.' },
+      { ticker:'VST',  metric:'nuclear_capacity_gw',  lag:8,  direction:'positive', weight:0.78, desc:'VST nuclear expansion requires GEV turbine upgrades and grid connection equipment', logic:'VST capacity addition announcement → GEV equipment order 6-9mo lag → GEV backlog growth.' },
+    ]
+  }
 };
 
 function computeWindowStatus(ticker) {
