@@ -291,6 +291,68 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .cc-weight{font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;}
 .mkt-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .mkt-region{display:inline-block;font-size:9px;background:var(--bg3);color:var(--text2);padding:2px 6px;border-radius:3px;font-weight:600;letter-spacing:.05em;margin-right:5px;font-family:'DM Mono',monospace;}
+
+/* ═══ Freemium / Plan styles ══════════════════════════════════════ */
+.hdr-user-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#34d399;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap}
+.hdr-user-chip:hover{background:rgba(16,185,129,.22)}
+.hdr-signin-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--text);font-size:11px;font-weight:600;padding:4px 13px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap}
+.hdr-signin-btn:hover{background:rgba(255,255,255,.13)}
+.pro-badge{display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:9px;font-weight:800;letter-spacing:.07em;padding:2px 6px;border-radius:8px;vertical-align:middle;margin-left:5px;text-transform:uppercase}
+.plan-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.28);color:#f59e0b;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:.2s}
+.plan-chip:hover{background:rgba(245,158,11,.2)}
+.alert-btn{display:inline-flex;align-items:center;gap:4px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.28);color:#818cf8;font-size:10px;font-weight:600;padding:3px 9px;border-radius:10px;cursor:pointer;transition:.2s}
+.alert-btn:hover{background:rgba(99,102,241,.25)}
+.alert-btn.set{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.28);color:#34d399}
+/* Pro modal */
+.pro-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9800;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.25s ease}
+.pro-overlay.open{opacity:1;pointer-events:all}
+.pro-sheet{background:var(--card);border-radius:22px 22px 0 0;padding:28px 24px 42px;width:100%;max-width:500px;transform:translateY(48px);transition:.28s ease;max-height:86vh;overflow-y:auto}
+.pro-overlay.open .pro-sheet{transform:translateY(0)}
+.pro-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:0 auto 20px}
+.pro-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}
+.pro-row:last-child{border:none}
+.pro-row .pr-icon{font-size:15px;width:22px;flex-shrink:0;margin-top:1px}
+.pro-row .pr-label{color:var(--text);line-height:1.4}
+.pro-row .pr-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.pro-row.locked .pr-label{color:var(--muted)}
+.pro-waitlist-row{margin-top:22px}
+.pro-waitlist-row input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;box-sizing:border-box}
+.pro-waitlist-row input:focus{border-color:rgba(245,158,11,.5)}
+.pro-waitlist-row button{width:100%;margin-top:8px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:11px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.pro-waitlist-row button:hover{opacity:.88}
+.pro-free-note{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
+
+
+/* ═══ Freemium / Plan styles ══════════════════════════════════════ */
+.hdr-user-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#34d399;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap}
+.hdr-user-chip:hover{background:rgba(16,185,129,.22)}
+.hdr-signin-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--text);font-size:11px;font-weight:600;padding:4px 13px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap}
+.hdr-signin-btn:hover{background:rgba(255,255,255,.13)}
+.pro-badge{display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:9px;font-weight:800;letter-spacing:.07em;padding:2px 6px;border-radius:8px;vertical-align:middle;margin-left:5px;text-transform:uppercase}
+.plan-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.28);color:#f59e0b;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:.2s}
+.plan-chip:hover{background:rgba(245,158,11,.2)}
+.alert-btn{display:inline-flex;align-items:center;gap:4px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.28);color:#818cf8;font-size:10px;font-weight:600;padding:3px 9px;border-radius:10px;cursor:pointer;transition:.2s}
+.alert-btn:hover{background:rgba(99,102,241,.25)}
+.alert-btn.set{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.28);color:#34d399}
+/* Pro modal */
+.pro-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9800;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.25s ease}
+.pro-overlay.open{opacity:1;pointer-events:all}
+.pro-sheet{background:var(--card);border-radius:22px 22px 0 0;padding:28px 24px 42px;width:100%;max-width:500px;transform:translateY(48px);transition:.28s ease;max-height:86vh;overflow-y:auto}
+.pro-overlay.open .pro-sheet{transform:translateY(0)}
+.pro-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:0 auto 20px}
+.pro-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}
+.pro-row:last-child{border:none}
+.pro-row .pr-icon{font-size:15px;width:22px;flex-shrink:0;margin-top:1px}
+.pro-row .pr-label{color:var(--text);line-height:1.4}
+.pro-row .pr-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.pro-row.locked .pr-label{color:var(--muted)}
+.pro-waitlist-row{margin-top:22px}
+.pro-waitlist-row input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;box-sizing:border-box}
+.pro-waitlist-row input:focus{border-color:rgba(245,158,11,.5)}
+.pro-waitlist-row button{width:100%;margin-top:8px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:11px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.pro-waitlist-row button:hover{opacity:.88}
+.pro-free-note{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
+
 </style>
 </head>
 <body>
@@ -311,6 +373,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button type="button" class="hbtn" onclick="gT('about',null)">About</button>
     <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
     <button type="button" class="hbtn pri" onclick="showPinSetup()" id="pinLbl">Set PIN</button>
+    <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
 </div>
 
@@ -680,6 +743,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- GLOBAL MARKETS -->
+  <div style="text-align:center;padding:28px 0 8px;"><span class="plan-chip" onclick="showProModal()">✨ Pro is coming — join the waitlist</span></div>
+
 <div class="sec" id="tab-markets">
   <div class="markets-panel">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:10px;">
@@ -786,64 +851,64 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="display:flex;flex-direction:column;gap:9px;">
       <div class="convergence-stock-card" data-ticker="ASML" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('ASML')">
         <div class="ring ring-g">91</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">ASML</span><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · weeks to months</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">Insider cluster (3)</span><span class="b b-r">CEO buy</span><span class="b b-g">MS upgrade</span><span class="b b-g">Dark pool $340M</span><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC lag window</span></div><div style="font-size:11px;color:var(--text2);">$350 allocation. Buy dip toward $800. Exit if China restrictions materially impact order book.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">ASML</span><button class="alert-btn" id="alert-btn-ASML" onclick="event.stopPropagation();setStockAlert('ASML',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · weeks to months</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">Insider cluster (3)</span><span class="b b-r">CEO buy</span><span class="b b-g">MS upgrade</span><span class="b b-g">Dark pool $340M</span><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC lag window</span></div><div style="font-size:11px;color:var(--text2);">$350 allocation. Buy dip toward $800. Exit if China restrictions materially impact order book.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="NVDA" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('NVDA')">
         <div class="ring ring-g">78</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NVDA</span><span class="act-tag at-add">ADD 50%</span><span class="tf-tag tf-short">Short · pre-earnings</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">$47M call sweep</span><span class="b b-g">Goldman PT raise</span><span class="b b-g">Druckenmiller core</span><span class="b b-a">Earnings risk ±11.4%</span></div><div style="font-size:11px;color:var(--text2);">$125 now, $125 post-earnings. Never all-in pre-earnings at any score.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NVDA</span><button class="alert-btn" id="alert-btn-NVDA" onclick="event.stopPropagation();setStockAlert('NVDA',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-add">ADD 50%</span><span class="tf-tag tf-short">Short · pre-earnings</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">$47M call sweep</span><span class="b b-g">Goldman PT raise</span><span class="b b-g">Druckenmiller core</span><span class="b b-a">Earnings risk ±11.4%</span></div><div style="font-size:11px;color:var(--text2);">$125 now, $125 post-earnings. Never all-in pre-earnings at any score.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="RKLB" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('RKLB')">
         <div class="ring ring-a">67</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">RKLB</span><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · months</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">First bank initiation</span><span class="b b-b">Soros position</span><span class="b b-b">ARK adding</span></div><div style="font-size:11px;color:var(--text2);">$200 high-risk tranche. Small cap inflection pattern.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">RKLB</span><button class="alert-btn" id="alert-btn-RKLB" onclick="event.stopPropagation();setStockAlert('RKLB',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term · months</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">First bank initiation</span><span class="b b-b">Soros position</span><span class="b b-b">ARK adding</span></div><div style="font-size:11px;color:var(--text2);">$200 high-risk tranche. Small cap inflection pattern.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="PLTR" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('PLTR')">
         <div class="ring ring-a">62</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">PLTR</span><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Long · structural</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">Board cluster</span><span class="b b-b">Soros new position</span><span class="b b-g">AI defense secular</span></div><div style="font-size:11px;color:var(--text2);">Structural multi-year. AGI timeline = PLTR TAM expanding non-linearly.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">PLTR</span><button class="alert-btn" id="alert-btn-PLTR" onclick="event.stopPropagation();setStockAlert('PLTR',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Long · structural</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">Board cluster</span><span class="b b-b">Soros new position</span><span class="b b-g">AI defense secular</span></div><div style="font-size:11px;color:var(--text2);">Structural multi-year. AGI timeline = PLTR TAM expanding non-linearly.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="AMD" style="display:flex;gap:12px;padding:12px;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;" onclick="openTicker('AMD')">
         <div class="ring ring-gray">31</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AMD</span><span class="act-tag at-skip">SKIP</span><span class="tf-tag tf-mixed">Revisit Jul 30</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="b b-gray">Mixed options flow</span><span class="b b-r">Solo Citi downgrade</span></div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AMD</span><button class="alert-btn" id="alert-btn-AMD" onclick="event.stopPropagation();setStockAlert('AMD',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-skip">SKIP</span><span class="tf-tag tf-mixed">Revisit Jul 30</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="b b-gray">Mixed options flow</span><span class="b b-r">Solo Citi downgrade</span></div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="TSM" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('TSM')">
         <div class="ring ring-g">70</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">TSM</span><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Long · foundry backbone</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Capex raised +15%</span><span class="b b-g">Revenue +33% YoY</span><span class="b b-g">CoWoS yield improving</span><span class="b b-b">Goldman PT $220</span></div><div style="font-size:11px;color:var(--text2);">Every chip below 7nm runs through TSMC. When TSMC raises capex, ASML and NVDA follow. Primary upstream signal node.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">TSM</span><button class="alert-btn" id="alert-btn-TSM" onclick="event.stopPropagation();setStockAlert('TSM',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Long · foundry backbone</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Capex raised +15%</span><span class="b b-g">Revenue +33% YoY</span><span class="b b-g">CoWoS yield improving</span><span class="b b-b">Goldman PT $220</span></div><div style="font-size:11px;color:var(--text2);">Every chip below 7nm runs through TSMC. When TSMC raises capex, ASML and NVDA follow. Primary upstream signal node.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="SMCI" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('SMCI')">
         <div class="ring ring-a">52</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">SMCI</span><span class="act-tag at-watch">SPECULATIVE</span><span class="tf-tag tf-short">Recovery play</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">CFO buy</span><span class="b b-g">Accounting resolved</span><span class="b b-a">+124% from 52W low</span></div><div style="font-size:11px;color:var(--text2);">Highest-beta NVDA play. 40% revenue from GPU ecosystem. Accounting crisis resolved — insiders buying recovery.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">SMCI</span><button class="alert-btn" id="alert-btn-SMCI" onclick="event.stopPropagation();setStockAlert('SMCI',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">SPECULATIVE</span><span class="tf-tag tf-short">Recovery play</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">CFO buy</span><span class="b b-g">Accounting resolved</span><span class="b b-a">+124% from 52W low</span></div><div style="font-size:11px;color:var(--text2);">Highest-beta NVDA play. 40% revenue from GPU ecosystem. Accounting crisis resolved — insiders buying recovery.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:8px 2px 4px;">Hyperscaler signal nodes — capex drives downstream</div>
       <div class="convergence-stock-card" data-ticker="META" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('META')">
         <div class="ring ring-a">55</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">META</span><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-mid">Capex signal</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$65B capex raised</span><span class="b b-b">~350K Blackwell ordered</span><span class="b b-g">Meta AI: 1B users</span></div><div style="font-size:11px;color:var(--text2);">Second-largest NVDA buyer. Every Meta capex raise = NVDA revenue beat 1–2Q later. Watch quarterly guidance as leading indicator.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">META</span><button class="alert-btn" id="alert-btn-META" onclick="event.stopPropagation();setStockAlert('META',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-mid">Capex signal</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$65B capex raised</span><span class="b b-b">~350K Blackwell ordered</span><span class="b b-g">Meta AI: 1B users</span></div><div style="font-size:11px;color:var(--text2);">Second-largest NVDA buyer. Every Meta capex raise = NVDA revenue beat 1–2Q later. Watch quarterly guidance as leading indicator.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="MSFT" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('MSFT')">
         <div class="ring ring-a">52</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">MSFT</span><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-long">Largest buyer</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$80B capex — #1 globally</span><span class="b b-g">Azure +33% YoY</span><span class="b b-b">OpenAI exclusive to 2030</span></div><div style="font-size:11px;color:var(--text2);">Largest single NVDA GPU buyer. Azure "capacity constrained" = more orders imminent. OpenAI = every ChatGPT query is NVDA compute.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">MSFT</span><button class="alert-btn" id="alert-btn-MSFT" onclick="event.stopPropagation();setStockAlert('MSFT',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-long">Largest buyer</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$80B capex — #1 globally</span><span class="b b-g">Azure +33% YoY</span><span class="b b-b">OpenAI exclusive to 2030</span></div><div style="font-size:11px;color:var(--text2);">Largest single NVDA GPU buyer. Azure "capacity constrained" = more orders imminent. OpenAI = every ChatGPT query is NVDA compute.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="GOOGL" style="display:flex;gap:12px;padding:12px;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;" onclick="openTicker('GOOGL')">
         <div class="ring ring-gray">48</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">GOOGL</span><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mixed">TPU vs GPU</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$75B capex FY2026</span><span class="b b-a">TPU Trillium: 4x H100</span><span class="b b-g">Cloud +28% YoY</span></div><div style="font-size:11px;color:var(--text2);">TPU self-build reduces NVDA dependency long-term. But TSMC fabricates TPUs — so ASML and TSM benefit regardless of GPU/TPU split.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">GOOGL</span><button class="alert-btn" id="alert-btn-GOOGL" onclick="event.stopPropagation();setStockAlert('GOOGL',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mixed">TPU vs GPU</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$75B capex FY2026</span><span class="b b-a">TPU Trillium: 4x H100</span><span class="b b-g">Cloud +28% YoY</span></div><div style="font-size:11px;color:var(--text2);">TPU self-build reduces NVDA dependency long-term. But TSMC fabricates TPUs — so ASML and TSM benefit regardless of GPU/TPU split.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:8px 2px 4px;">Energy infrastructure — AI power demand signal</div>
       <div class="convergence-stock-card" data-ticker="VST" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('VST')">
         <div class="ring ring-a">58</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">VST</span><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI demand tailwind</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">Druckenmiller position</span><span class="b b-r">CEO + CFO buying</span><span class="b b-g">Q1 beat · guidance raised</span><span class="b b-g">Goldman PT $170</span></div><div style="font-size:11px;color:var(--text2);">Every $1B of hyperscaler capex = +2.5GW power demand. Vistra is the largest Texas generator — primary beneficiary of data center buildout in the primary US data center corridor.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">VST</span><button class="alert-btn" id="alert-btn-VST" onclick="event.stopPropagation();setStockAlert('VST',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI demand tailwind</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">Druckenmiller position</span><span class="b b-r">CEO + CFO buying</span><span class="b b-g">Q1 beat · guidance raised</span><span class="b b-g">Goldman PT $170</span></div><div style="font-size:11px;color:var(--text2);">Every $1B of hyperscaler capex = +2.5GW power demand. Vistra is the largest Texas generator — primary beneficiary of data center buildout in the primary US data center corridor.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="CEG" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CEG')">
         <div class="ring ring-a">55</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CEG</span><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">20yr contracts</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT 20yr PPA</span><span class="b b-r">CEO $2.1M buy</span><span class="b b-g">TMI restart complete</span><span class="b b-g">Goldman PT $240</span></div><div style="font-size:11px;color:var(--text2);">Only viable 24/7 carbon-free baseload for AI data centers. Nuclear PPA demand exceeds supply — pricing power is now with Constellation. Two additional hyperscaler PPA negotiations active.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CEG</span><button class="alert-btn" id="alert-btn-CEG" onclick="event.stopPropagation();setStockAlert('CEG',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">20yr contracts</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT 20yr PPA</span><span class="b b-r">CEO $2.1M buy</span><span class="b b-g">TMI restart complete</span><span class="b b-g">Goldman PT $240</span></div><div style="font-size:11px;color:var(--text2);">Only viable 24/7 carbon-free baseload for AI data centers. Nuclear PPA demand exceeds supply — pricing power is now with Constellation. Two additional hyperscaler PPA negotiations active.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -851,17 +916,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="display:flex;flex-direction:column;gap:9px;">
       <div class="convergence-stock-card" data-ticker="AMAT" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('AMAT')">
         <div class="ring ring-a">65</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AMAT</span><span class="act-tag at-watch">WFE CYCLE</span><span class="tf-tag tf-mid">2–3Q TSMC lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Goldman PT raise $210</span><span class="b b-r">CEO+CFO cluster buy</span><span class="b b-g">TSMC capex lag window</span><span class="b b-r">$18M call sweep</span></div><div style="font-size:11px;color:var(--text2);">Buy the dip toward $160. TSMC capex lag window opened March 2026 — historically 2–3Q lead time. WFE intensity rising at N2 node.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AMAT</span><button class="alert-btn" id="alert-btn-AMAT" onclick="event.stopPropagation();setStockAlert('AMAT',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">WFE CYCLE</span><span class="tf-tag tf-mid">2–3Q TSMC lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Goldman PT raise $210</span><span class="b b-r">CEO+CFO cluster buy</span><span class="b b-g">TSMC capex lag window</span><span class="b b-r">$18M call sweep</span></div><div style="font-size:11px;color:var(--text2);">Buy the dip toward $160. TSMC capex lag window opened March 2026 — historically 2–3Q lead time. WFE intensity rising at N2 node.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="LRCX" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('LRCX')">
         <div class="ring ring-a">62</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">LRCX</span><span class="act-tag at-watch">HBM CYCLE</span><span class="tf-tag tf-mid">Memory WFE leading</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">MS upgrade Overweight</span><span class="b b-g">Earnings beat x3</span><span class="b b-g">HBM etch 40% intensity</span><span class="b b-b" onclick="openTicker('MU')" style="cursor:pointer;" title="Open MU">MU chain</span></div><div style="font-size:11px;color:var(--text2);">Hold and add below $80. Memory WFE leading non-memory for first time since 2021. HBM3E etch intensity 40% higher than standard DRAM.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">LRCX</span><button class="alert-btn" id="alert-btn-LRCX" onclick="event.stopPropagation();setStockAlert('LRCX',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">HBM CYCLE</span><span class="tf-tag tf-mid">Memory WFE leading</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">MS upgrade Overweight</span><span class="b b-g">Earnings beat x3</span><span class="b b-g">HBM etch 40% intensity</span><span class="b b-b" onclick="openTicker('MU')" style="cursor:pointer;" title="Open MU">MU chain</span></div><div style="font-size:11px;color:var(--text2);">Hold and add below $80. Memory WFE leading non-memory for first time since 2021. HBM3E etch intensity 40% higher than standard DRAM.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="MU" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('MU')">
         <div class="ring ring-g">75</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">MU</span><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">1–2Q NVDA lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">$28M call sweep</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA beat upstream</span><span class="b b-g">HBM sold out 2027</span></div><div style="font-size:11px;color:var(--text2);">$500 allocation. Buy below $115. NVDA data center beat directly expands MU HBM orders 1–2 quarters later — most reliable lag signal in the platform.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">MU</span><button class="alert-btn" id="alert-btn-MU" onclick="event.stopPropagation();setStockAlert('MU',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">1–2Q NVDA lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">$28M call sweep</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA beat upstream</span><span class="b b-g">HBM sold out 2027</span></div><div style="font-size:11px;color:var(--text2);">$500 allocation. Buy below $115. NVDA data center beat directly expands MU HBM orders 1–2 quarters later — most reliable lag signal in the platform.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -869,17 +934,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="display:flex;flex-direction:column;gap:9px;">
       <div class="convergence-stock-card" data-ticker="LMT" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('LMT')">
         <div class="ring ring-a">68</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">LMT</span><span class="act-tag at-watch">DEFENSE PRIME</span><span class="tf-tag tf-long">Structural</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">F-35 500+ backlog</span><span class="b b-r">CEO cluster buy</span><span class="b b-g">NATO spending +$200B</span><span class="b b-b" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR downstream</span></div><div style="font-size:11px;color:var(--text2);">Add on dips. F-35 backlog provides 5+ years of production visibility. NATO 2% GDP commitment = structural revenue floor lift. Hypersonics is optionality.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">LMT</span><button class="alert-btn" id="alert-btn-LMT" onclick="event.stopPropagation();setStockAlert('LMT',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">DEFENSE PRIME</span><span class="tf-tag tf-long">Structural</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">F-35 500+ backlog</span><span class="b b-r">CEO cluster buy</span><span class="b b-g">NATO spending +$200B</span><span class="b b-b" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR downstream</span></div><div style="font-size:11px;color:var(--text2);">Add on dips. F-35 backlog provides 5+ years of production visibility. NATO 2% GDP commitment = structural revenue floor lift. Hypersonics is optionality.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="NOC" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('NOC')">
         <div class="ring ring-a">64</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NOC</span><span class="act-tag at-watch">SOLE SOURCE</span><span class="tf-tag tf-long">Nuclear modernization</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">B-21 Raider sole-source</span><span class="b b-g">Sentinel ICBM $13B</span><span class="b b-r">CFO open market buy</span><span class="b b-g">Space systems backlog</span></div><div style="font-size:11px;color:var(--text2);">Hold and add. B-21 + Sentinel are sequestration-proof programs — two of three legs of nuclear triad. No competitive risk. Revenue locked for decade+.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NOC</span><button class="alert-btn" id="alert-btn-NOC" onclick="event.stopPropagation();setStockAlert('NOC',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">SOLE SOURCE</span><span class="tf-tag tf-long">Nuclear modernization</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">B-21 Raider sole-source</span><span class="b b-g">Sentinel ICBM $13B</span><span class="b b-r">CFO open market buy</span><span class="b b-g">Space systems backlog</span></div><div style="font-size:11px;color:var(--text2);">Hold and add. B-21 + Sentinel are sequestration-proof programs — two of three legs of nuclear triad. No competitive risk. Revenue locked for decade+.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="RTX" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('RTX')">
         <div class="ring ring-a">61</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">RTX</span><span class="act-tag at-watch">MISSILE CYCLE</span><span class="tf-tag tf-mid">2yr backlog</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Patriot 2yr backlog</span><span class="b b-r">AMRAAM demand surge</span><span class="b b-g">Collins Aerospace growing</span><span class="b b-r">GTF engine risk</span></div><div style="font-size:11px;color:var(--text2);">Hold current. Patriot and AMRAAM backlogs are structural multi-year tailwinds. GTF engine inspection program is a 12–18 month headwind — monitor for resolution.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">RTX</span><button class="alert-btn" id="alert-btn-RTX" onclick="event.stopPropagation();setStockAlert('RTX',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">MISSILE CYCLE</span><span class="tf-tag tf-mid">2yr backlog</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Patriot 2yr backlog</span><span class="b b-r">AMRAAM demand surge</span><span class="b b-g">Collins Aerospace growing</span><span class="b b-r">GTF engine risk</span></div><div style="font-size:11px;color:var(--text2);">Hold current. Patriot and AMRAAM backlogs are structural multi-year tailwinds. GTF engine inspection program is a 12–18 month headwind — monitor for resolution.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -887,21 +952,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="display:flex;flex-direction:column;gap:9px;">
       <div class="convergence-stock-card" data-ticker="NOW" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('NOW')">
         <div class="ring ring-g">76</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NOW</span><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">AI monetization</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $4.2M buy</span><span class="b b-g">98% renewal rate</span><span class="b b-g">AI Pro $120/user premium</span><span class="b b-r">Goldman upgrade</span></div><div style="font-size:11px;color:var(--text2);">$400 allocation. Add on dips. Every enterprise on ServiceNow will pay the AI Pro premium. 98% renewal rate means revenue compounds — AI is pure incremental margin.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">NOW</span><button class="alert-btn" id="alert-btn-NOW" onclick="event.stopPropagation();setStockAlert('NOW',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">AI monetization</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $4.2M buy</span><span class="b b-g">98% renewal rate</span><span class="b b-g">AI Pro $120/user premium</span><span class="b b-r">Goldman upgrade</span></div><div style="font-size:11px;color:var(--text2);">$400 allocation. Add on dips. Every enterprise on ServiceNow will pay the AI Pro premium. 98% renewal rate means revenue compounds — AI is pure incremental margin.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="CRM" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CRM')">
         <div class="ring ring-a">72</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CRM</span><span class="act-tag at-watch">AGENTFORCE</span><span class="tf-tag tf-mid">AI cycle</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">3,000 Agentforce customers</span><span class="b b-g">$10B AI pipeline</span><span class="b b-r">CEO $1.8M buy</span><span class="b b-g">Morgan Stanley upgrade</span></div><div style="font-size:11px;color:var(--text2);">Hold and add below $270. Agentforce 3,000 customers in 90 days is fastest enterprise adoption in CRM history. AI agent revenue begins converting pipeline to ARR in H2 2026.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CRM</span><button class="alert-btn" id="alert-btn-CRM" onclick="event.stopPropagation();setStockAlert('CRM',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">AGENTFORCE</span><span class="tf-tag tf-mid">AI cycle</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">3,000 Agentforce customers</span><span class="b b-g">$10B AI pipeline</span><span class="b b-r">CEO $1.8M buy</span><span class="b b-g">Morgan Stanley upgrade</span></div><div style="font-size:11px;color:var(--text2);">Hold and add below $270. Agentforce 3,000 customers in 90 days is fastest enterprise adoption in CRM history. AI agent revenue begins converting pipeline to ARR in H2 2026.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="SNOW" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('SNOW')">
         <div class="ring ring-a">65</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">SNOW</span><span class="act-tag at-watch">AI DATA</span><span class="tf-tag tf-mid">Cloud integration</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Cortex AI +400% YoY</span><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT Azure partner</span><span class="b b-b" onclick="openTicker('GOOGL')" style="cursor:pointer;" title="Open GOOGL">GOOGL Cloud partner</span><span class="b b-g">New CEO accelerating</span></div><div style="font-size:11px;color:var(--text2);">Watch and size small. Cortex AI consumption-based revenue growing fast but Databricks competition is real. MSFT/GOOGL cloud partnerships are the key differentiator — monitor for expansion.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">SNOW</span><button class="alert-btn" id="alert-btn-SNOW" onclick="event.stopPropagation();setStockAlert('SNOW',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><span class="act-tag at-watch">AI DATA</span><span class="tf-tag tf-mid">Cloud integration</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Cortex AI +400% YoY</span><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT Azure partner</span><span class="b b-b" onclick="openTicker('GOOGL')" style="cursor:pointer;" title="Open GOOGL">GOOGL Cloud partner</span><span class="b b-g">New CEO accelerating</span></div><div style="font-size:11px;color:var(--text2);">Watch and size small. Cortex AI consumption-based revenue growing fast but Databricks competition is real. MSFT/GOOGL cloud partnerships are the key differentiator — monitor for expansion.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
   </div>
+
+      <div class="convergence-stock-card" data-ticker="CCJ" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CCJ')">
+        <div class="ring ring-g">72</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CCJ</span><button class="alert-btn" id="alert-btn-CCJ" onclick="event.stopPropagation();setStockAlert('CCJ',this)" style="margin-left:auto;flex-shrink:0">&#128276; Alert</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-long">Long-term · 3-7 years</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">AI nuclear PPAs surge</span><span class="b b-b" onclick="openTicker('CEG')" style="cursor:pointer;" title="Open CEG">CEG capacity +40GW</span><span class="b b-b" onclick="openTicker('VST')" style="cursor:pointer;" title="Open VST">VST fleet expansion</span><span class="b b-g">Uranium supply constrained</span></div><div style="font-size:11px;color:var(--text2);">Structural uranium bull thesis: AI datacenters driving nuclear PPA signings → 10-year reactor pipeline → uranium demand outpaces supply. CCJ is the purest large-cap play with long-term supply contracts.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">&#x203A;</span>
+      </div>
+      <div class="convergence-stock-card" data-ticker="UEC" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('UEC')">
+        <div class="ring ring-a">65</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">UEC</span><button class="alert-btn" id="alert-btn-UEC" onclick="event.stopPropagation();setStockAlert('UEC',this)" style="margin-left:auto;flex-shrink:0">&#128276; Alert</button><span class="act-tag at-watch">HIGH BETA</span><span class="tf-tag tf-long">Long-term · 3-5 years</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">US domestic uranium play</span><span class="b b-b" onclick="openTicker('CEG')" style="cursor:pointer;" title="Open CEG">CEG nuclear buildout</span><span class="b b-g">ISR low-cost production</span><span class="b b-g">IRA tailwinds</span></div><div style="font-size:11px;color:var(--text2);">Higher-beta uranium play. US domestic ISR production uniquely positioned as policy pushes nuclear sourcing onshore. More volatile than CCJ — size smaller and treat as a structural tail position.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">&#x203A;</span>
+      </div>
+
 </div>
 
 <!-- CORRELATION MAP -->
@@ -1865,7 +1942,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="smc"><div class="smn" id="bud-deployed">$0</div><div class="sml-lbl">Deployed</div></div>
     <div class="smc"><div class="smn" id="bud-remain" style="color:var(--amber);">$1,000</div><div class="sml-lbl">Remaining</div></div>
     <div class="smc"><div class="smn" id="bud-trades">0</div><div class="sml-lbl">Trades this week</div></div>
+  
+  <!-- PRO PREVIEW CARD -->
+  <div style="margin-top:24px;background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(217,119,6,.04));border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:18px 18px 14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Everything is free. <span style="color:#f59e0b">Pro is coming.</span></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Real-time signals · Email alerts · Portfolio tracking</div>
+      </div>
+      <span class="pro-badge" style="font-size:10px;padding:3px 9px;">SOON</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">⚡ Real-time signals</span>
+      <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">🔔 Email alerts</span>
+      <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">📊 P&L tracking</span>
+      <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">🔌 API access</span>
+    </div>
+    <button onclick="showProModal()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Join the Pro waitlist — free, no spam</button>
   </div>
+
+</div>
 
   <!-- MY INTEL PERSONALIZED BRIEF -->
   <div id="my-intel-brief" style="margin-bottom:20px;"></div>
@@ -2602,6 +2698,7 @@ function _gsiCallback(response) {
     S.gUser = { name: payload.name, email: payload.email, picture: payload.picture, given_name: payload.given_name };
     try { localStorage.setItem('ti72_gUser', JSON.stringify(S.gUser)); } catch(e) {}
     renderMyIntelBrief();
+    updateHeaderUser();
   } catch(e) { console.warn('GSI callback:', e); }
 }
 
@@ -2609,6 +2706,8 @@ function gsiSignOut() {
   S.gUser = null;
   try { localStorage.removeItem('ti72_gUser'); } catch(e) {}
   if (typeof google !== 'undefined') try { google.accounts.id.disableAutoSelect(); } catch(e) {}
+  updateHeaderUser();
+  updateHeaderUser();
   renderMyIntelBrief();
 }
 
@@ -2617,6 +2716,148 @@ try {
   const saved = localStorage.getItem('ti72_gUser');
   if (saved) S.gUser = JSON.parse(saved);
 } catch(e) {}
+
+
+// ══ Freemium plan system ═════════════════════════════════════════
+
+// ══ Freemium plan system ═════════════════════════════════════════
+function showProModal() {
+  const el = document.getElementById('pro-overlay');
+  if (!el) return;
+  // Pre-fill email if signed in
+  const u = S.gUser;
+  if (u && u.email) {
+    const inp = document.getElementById('pro-waitlist-email');
+    if (inp && !inp.value) inp.value = u.email;
+  }
+  el.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeProModal() {
+  const el = document.getElementById('pro-overlay');
+  if (el) el.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function joinProWaitlist() {
+  const inp = document.getElementById('pro-waitlist-email');
+  const email = inp ? inp.value.trim() : '';
+  if (!email || !email.includes('@')) { if (inp) inp.focus(); return; }
+  // Save locally — backend comes later
+  try {
+    const wl = JSON.parse(localStorage.getItem('ti_pro_waitlist') || '[]');
+    if (!wl.includes(email)) { wl.push(email); localStorage.setItem('ti_pro_waitlist', JSON.stringify(wl)); }
+  } catch(e) {}
+  const btn = document.querySelector('.pro-waitlist-row button');
+  if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.style.background = '#059669'; }
+  const conf = document.getElementById('pro-waitlist-confirm');
+  if (conf) conf.style.display = 'block';
+  if (inp) inp.style.display = 'none';
+}
+
+function setStockAlert(ticker, btn) {
+  // If not signed in, prompt sign-in
+  if (!S.gUser) {
+    _gsiInit();
+    // show a quick tooltip
+    if (btn) { const orig = btn.textContent; btn.textContent = 'Sign in first →'; setTimeout(()=>{ btn.textContent = orig; }, 2000); }
+    return;
+  }
+  // Toggle alert saved state
+  try {
+    const alerts = JSON.parse(localStorage.getItem('ti_alerts') || '{}');
+    if (alerts[ticker]) {
+      delete alerts[ticker];
+      localStorage.setItem('ti_alerts', JSON.stringify(alerts));
+      if (btn) { btn.textContent = '🔔 Set Alert'; btn.classList.remove('set'); }
+    } else {
+      alerts[ticker] = { set: Date.now(), threshold: 80 };
+      localStorage.setItem('ti_alerts', JSON.stringify(alerts));
+      if (btn) { btn.textContent = '✓ Alert set'; btn.classList.add('set'); }
+    }
+  } catch(e) {}
+}
+
+function updateHeaderUser() {
+  const area = document.getElementById('hdr-auth-area');
+  if (!area) return;
+  const u = S.gUser;
+  if (u) {
+    const initial = (u.given_name || u.name || '?')[0].toUpperCase();
+    area.innerHTML = '<span class="hdr-user-chip" onclick="gT(\'portfolio\',document.querySelector(\'.nt[onclick*=portfolio]\'))" title="' + (u.email||'') + '">' + initial + ' ' + (u.given_name || u.name || 'Me') + '</span>';
+  } else {
+    area.innerHTML = '<button class="hdr-signin-btn" onclick="_gsiInit()">Sign in free</button>';
+  }
+}
+
+
+function showProModal() {
+  const el = document.getElementById('pro-overlay');
+  if (!el) return;
+  // Pre-fill email if signed in
+  const u = S.gUser;
+  if (u && u.email) {
+    const inp = document.getElementById('pro-waitlist-email');
+    if (inp && !inp.value) inp.value = u.email;
+  }
+  el.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeProModal() {
+  const el = document.getElementById('pro-overlay');
+  if (el) el.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function joinProWaitlist() {
+  const inp = document.getElementById('pro-waitlist-email');
+  const email = inp ? inp.value.trim() : '';
+  if (!email || !email.includes('@')) { if (inp) inp.focus(); return; }
+  // Save locally — backend comes later
+  try {
+    const wl = JSON.parse(localStorage.getItem('ti_pro_waitlist') || '[]');
+    if (!wl.includes(email)) { wl.push(email); localStorage.setItem('ti_pro_waitlist', JSON.stringify(wl)); }
+  } catch(e) {}
+  const btn = document.querySelector('.pro-waitlist-row button');
+  if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.style.background = '#059669'; }
+  const conf = document.getElementById('pro-waitlist-confirm');
+  if (conf) conf.style.display = 'block';
+  if (inp) inp.style.display = 'none';
+}
+
+function setStockAlert(ticker, btn) {
+  // If not signed in, prompt sign-in
+  if (!S.gUser) {
+    _gsiInit();
+    // show a quick tooltip
+    if (btn) { const orig = btn.textContent; btn.textContent = 'Sign in first →'; setTimeout(()=>{ btn.textContent = orig; }, 2000); }
+    return;
+  }
+  // Toggle alert saved state
+  try {
+    const alerts = JSON.parse(localStorage.getItem('ti_alerts') || '{}');
+    if (alerts[ticker]) {
+      delete alerts[ticker];
+      localStorage.setItem('ti_alerts', JSON.stringify(alerts));
+      if (btn) { btn.textContent = '🔔 Set Alert'; btn.classList.remove('set'); }
+    } else {
+      alerts[ticker] = { set: Date.now(), threshold: 80 };
+      localStorage.setItem('ti_alerts', JSON.stringify(alerts));
+      if (btn) { btn.textContent = '✓ Alert set'; btn.classList.add('set'); }
+    }
+  } catch(e) {}
+}
+
+function updateHeaderUser() {
+  const area = document.getElementById('hdr-auth-area');
+  if (!area) return;
+  const u = S.gUser;
+  if (u) {
+    const initial = (u.given_name || u.name || '?')[0].toUpperCase();
+    area.innerHTML = '<span class="hdr-user-chip" onclick="gT(\'portfolio\',document.querySelector(\'.nt[onclick*=portfolio]\'))" title="' + (u.email||'') + '">' + initial + ' ' + (u.given_name || u.name || 'Me') + '</span>';
+  } else {
+    area.innerHTML = '<button class="hdr-signin-btn" onclick="_gsiInit()">Sign in free</button>';
+  }
+}
+
 
 function renderMyIntelBrief() {
   const el = document.getElementById('my-intel-brief');
@@ -3744,6 +3985,8 @@ function gT(n,btn){
   }catch(e){}},50);}
 }
 function enterApp(){
+  updateHeaderUser();
+  updateHeaderUser();
   try{localStorage.setItem('ti72_visited','1');}catch(e){}
   /* Direct DOM manipulation — show app chrome */
   var hdr=document.getElementById('app-hdr');
@@ -6774,5 +7017,77 @@ function saveBudget(){
   if(btn){ const orig=btn.textContent; btn.textContent='✓ Saved'; btn.style.background='var(--blue)'; setTimeout(()=>{btn.textContent=orig;btn.style.background='var(--green)';},1500); }
 }
 </script>
+
+<!-- PRO MODAL -->
+<div class="pro-overlay" id="pro-overlay" onclick="if(event.target===this)closeProModal()">
+  <div class="pro-sheet" id="pro-sheet">
+    <div class="pro-sheet-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <div style="font-size:18px;font-weight:800;color:var(--text)">Everything is free. <span style="color:#f59e0b">Pro is coming.</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Join the waitlist — first access, no spam</div>
+      </div>
+      <button onclick="closeProModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px">&times;</button>
+    </div>
+
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Free forever</div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 23+ stocks &amp; signal scores</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Morning Brief &amp; Sage Mode picks</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Supply chain &amp; correlation maps</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">My Intel watchlist (Google login)</div></div></div>
+
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">Pro — coming soon</div>
+    <div class="pro-row locked"><div class="pr-icon">🔔</div><div><div class="pr-label">Email alerts when score crosses threshold</div><div class="pr-sub">Get notified when NVDA hits 90+ or PLTR spikes</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">⚡</div><div><div class="pr-label">Real-time signals <span class="pro-badge">PRO</span></div><div class="pr-sub">Live data vs 15-min delay on free tier</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">📊</div><div><div class="pr-label">Portfolio P&amp;L tracking</div><div class="pr-sub">Enter positions, track against signals over time</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">🕐</div><div><div class="pr-label">90-day signal history</div><div class="pr-sub">See how scores moved before earnings, catalysts</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">🔌</div><div><div class="pr-label">API access</div><div class="pr-sub">Pull scores and signals into your own tools</div></div></div>
+
+    <div class="pro-waitlist-row">
+      <input type="email" id="pro-waitlist-email" placeholder="your@email.com — join the Pro waitlist">
+      <button onclick="joinProWaitlist()">Join waitlist — free, no spam</button>
+    </div>
+    <div class="pro-free-note" id="pro-waitlist-confirm" style="display:none;color:#34d399;font-weight:600">✓ You're on the list — we'll reach out when Pro launches</div>
+    <div class="pro-free-note">No credit card. No paywall. Just signals.</div>
+  </div>
+</div>
+
+
+<!-- PRO MODAL -->
+<div class="pro-overlay" id="pro-overlay" onclick="if(event.target===this)closeProModal()">
+  <div class="pro-sheet" id="pro-sheet">
+    <div class="pro-sheet-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <div style="font-size:18px;font-weight:800;color:var(--text)">Everything is free. <span style="color:#f59e0b">Pro is coming.</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Join the waitlist — first access, no spam</div>
+      </div>
+      <button onclick="closeProModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px">&times;</button>
+    </div>
+
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Free forever</div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 23+ stocks &amp; signal scores</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Morning Brief &amp; Sage Mode picks</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Supply chain &amp; correlation maps</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">My Intel watchlist (Google login)</div></div></div>
+
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">Pro — coming soon</div>
+    <div class="pro-row locked"><div class="pr-icon">🔔</div><div><div class="pr-label">Email alerts when score crosses threshold</div><div class="pr-sub">Get notified when NVDA hits 90+ or PLTR spikes</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">⚡</div><div><div class="pr-label">Real-time signals <span class="pro-badge">PRO</span></div><div class="pr-sub">Live data vs 15-min delay on free tier</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">📊</div><div><div class="pr-label">Portfolio P&amp;L tracking</div><div class="pr-sub">Enter positions, track against signals over time</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">🕐</div><div><div class="pr-label">90-day signal history</div><div class="pr-sub">See how scores moved before earnings, catalysts</div></div></div>
+    <div class="pro-row locked"><div class="pr-icon">🔌</div><div><div class="pr-label">API access</div><div class="pr-sub">Pull scores and signals into your own tools</div></div></div>
+
+    <div class="pro-waitlist-row">
+      <input type="email" id="pro-waitlist-email" placeholder="your@email.com — join the Pro waitlist">
+      <button onclick="joinProWaitlist()">Join waitlist — free, no spam</button>
+    </div>
+    <div class="pro-free-note" id="pro-waitlist-confirm" style="display:none;color:#34d399;font-weight:600">✓ You're on the list — we'll reach out when Pro launches</div>
+    <div class="pro-free-note">No credit card. No paywall. Just signals.</div>
+  </div>
+</div>
+
 </body>
 </html>
