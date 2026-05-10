@@ -1908,13 +1908,15 @@ async function computeLiveScore(ticker) {
 
 async function initLiveScores() {
   if (!S.fh) return;
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI'];
-  // Fire sequentially with small delay to respect rate limits
+  // All featured tickers — compute L1 (price momentum) + L3 (analyst consensus) live
+  // L2/L4/L5 remain manually curated (insider + supply chain + macro)
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG'];
+  // Fire sequentially with 300ms gap — well within Finnhub 60 req/min free tier
   for (const t of tickers) {
     await computeLiveScore(t);
-    await new Promise(r => setTimeout(r, 200)); // 200ms gap = max 5/sec well within 60/min
+    await new Promise(r => setTimeout(r, 300));
   }
-  // Refresh convergence tab score display if it's active
+  // Refresh all score displays
   _refreshLiveScoreUI();
 }
 
