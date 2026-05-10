@@ -2051,32 +2051,72 @@ async function computeLiveScore(ticker) {
   const cached = _liveScoreCache[ticker];
   if (cached && Date.now() - cached.ts < _LIVE_SCORE_TTL) return cached.score;
   try {
-    const [recRes, metricRes] = await Promise.all([
+    const [recRes, metricRes, quoteRes] = await Promise.all([
       fetch(fhURL('stock/recommendation', {symbol: ticker})),
-      fetch(fhURL('stock/metric', {symbol: ticker, metric: 'all'}))
+      fetch(fhURL('stock/metric', {symbol: ticker, metric: 'all'})),
+      fetch(fhURL('quote', {symbol: ticker}))
     ]);
-    const recs   = recRes.ok   ? await recRes.json()          : [];
-    const mObj   = metricRes.ok ? (await metricRes.json())    : {};
-    const m      = mObj.metric || {};
+    const recs  = recRes.ok   ? await recRes.json()       : [];
+    const mObj  = metricRes.ok ? (await metricRes.json()) : {};
+    const quote = quoteRes.ok  ? (await quoteRes.json())  : {};
+    const m     = mObj.metric || {};
 
-    // L1: Price vs 52W range (0–25 pts)
+    // ── L1: Price momentum (0–25 pts) ────────────────────────────────────────
+    // Uses: RSI14, 52W range position, volume ratio, day change %
+    let l1pts = 10; // default neutral
+
+    // (a) RSI14: ideal 45–65 (constructive), >75 overbought, <30 oversold
+    const rsi = m['rsi14'] || m['rsi'] || null;
+    let rsiScore = 6; // neutral
+    if (rsi != null) {
+      if      (rsi >= 50 && rsi <= 65) rsiScore = 10; // sweet spot: momentum without overbought
+      else if (rsi >= 45 && rsi < 50)  rsiScore = 8;
+      else if (rsi > 65 && rsi <= 75)  rsiScore = 7;
+      else if (rsi > 75)               rsiScore = 4;  // overbought risk
+      else if (rsi >= 35 && rsi < 45)  rsiScore = 5;
+      else                             rsiScore = 3;  // oversold / weak
+    }
+
+    // (b) 52W range position: 40–70% = constructive momentum
     const hi52 = m['52WeekHigh'] || 0;
     const lo52 = m['52WeekLow']  || 0;
-    let l1pts  = 12;
-    if (hi52 && lo52 && hi52 > lo52) {
-      const rsi52 = (hi52 - lo52) > 0
-        ? Math.round(((hi52 - lo52 * 1.05) / (hi52 - lo52)) * 100) / 100 // rough proxy
-        : 0.5;
-      // Price momentum: if well off 52W low but not at 52W high = constructive
-      const hiDrop = m['52WeekHighDate'] ? 1 : 0; // placeholder
-      const pctFromLo = m['monthToDatePriceReturnDaily'] != null
-        ? Math.min(1, Math.max(0, (m['monthToDatePriceReturnDaily'] + 20) / 40))
-        : 0.5;
-      l1pts = Math.round(8 + pctFromLo * 14);
+    let rangeScore = 4;
+    const curPrice = quote.c || 0;
+    if (hi52 && lo52 && hi52 > lo52 && curPrice) {
+      const pos = (curPrice - lo52) / (hi52 - lo52); // 0=at low, 1=at high
+      if      (pos >= 0.40 && pos <= 0.70) rangeScore = 7; // ideal: off lows, not extended
+      else if (pos >= 0.70 && pos <= 0.85) rangeScore = 5; // extended but still trending
+      else if (pos >= 0.25 && pos < 0.40)  rangeScore = 4; // recovering
+      else if (pos > 0.85)                 rangeScore = 3; // stretched
+      else                                 rangeScore = 2; // near 52W low (weak)
     }
-    l1pts = Math.min(25, Math.max(4, l1pts));
 
-    // L3: Analyst consensus (0–25 pts)
+    // (c) Volume ratio: 10D avg vs 3M avg — >1.2 = institutional accumulation
+    const vol10 = m['10DayAverageTradingVolume'] || 0;
+    const vol3m = m['3MonthAverageTradingVolume'] || 0;
+    let volScore = 2;
+    if (vol10 && vol3m && vol3m > 0) {
+      const ratio = vol10 / vol3m;
+      if      (ratio >= 1.4) volScore = 5; // clear volume surge
+      else if (ratio >= 1.2) volScore = 4;
+      else if (ratio >= 1.0) volScore = 3;
+      else                   volScore = 1; // volume declining
+    }
+
+    // (d) Day price change %: momentum confirmation
+    const dp = quote.dp != null ? quote.dp : null; // percent change today
+    let dayScore = 2;
+    if (dp != null) {
+      if      (dp >= 2.5)  dayScore = 4;
+      else if (dp >= 1.0)  dayScore = 3;
+      else if (dp >= 0)    dayScore = 2;
+      else if (dp >= -1.5) dayScore = 1;
+      else                 dayScore = 0;
+    }
+
+    l1pts = Math.min(25, Math.max(4, rsiScore + rangeScore + volScore + dayScore));
+
+    // ── L3: Analyst consensus (0–25 pts) ─────────────────────────────────────
     let l3pts = 12;
     if (Array.isArray(recs) && recs.length > 0) {
       const r = recs[0];
@@ -2089,17 +2129,15 @@ async function computeLiveScore(ticker) {
       }
     }
 
-    // L2: Use hardcoded from LAYER_DATA (insider signals need manual review)
-    const ld      = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
-    const l2pts   = ld ? (ld.find(l => l.id==='L2')?.pts || 15) : 15;
-    // L4: Use hardcoded (supply chain fetch is separate, triggered lazily)
-    const l4pts   = ld ? (ld.find(l => l.id==='L4')?.pts || 5)  : 5;
-    // L5: Use hardcoded macro layer
-    const l5pts   = ld ? (ld.find(l => l.id==='L5')?.pts || 5)  : 5;
+    // ── L2/L4/L5: Manual curation (insider, supply chain, macro) ─────────────
+    const ld    = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
+    const l2pts = ld ? (ld.find(l => l.id==='L2')?.pts || 15) : 15;
+    const l4pts = ld ? (ld.find(l => l.id==='L4')?.pts || 5)  : 5;
+    const l5pts = ld ? (ld.find(l => l.id==='L5')?.pts || 5)  : 5;
 
     const score = Math.min(99, Math.max(1, l1pts + l2pts + l3pts + l4pts + l5pts));
-    _liveScoreCache[ticker] = { score, ts: Date.now() };
-    SCORES[ticker] = score; // update in place so focus search + all renders get live value
+    _liveScoreCache[ticker] = { score, l1pts, l3pts, rsi, rangePos: hi52 ? (curPrice-lo52)/(hi52-lo52) : null, dp, ts: Date.now() };
+    SCORES[ticker] = score; // update in place — all renders get live value
     return score;
   } catch(e) {
     console.warn('computeLiveScore error', ticker, e);
@@ -2109,16 +2147,28 @@ async function computeLiveScore(ticker) {
 
 async function initLiveScores() {
   if (!S.fh) return;
-  // All featured tickers — compute L1 (price momentum) + L3 (analyst consensus) live
+  // All featured tickers — compute L1 (price momentum, RSI, volume) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
   const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW'];
-  // Fire sequentially with 300ms gap — well within Finnhub 60 req/min free tier
+  // Stamp live scores indicator in morning brief picks card
+  const lbl = document.getElementById('morning-picks-lbl');
+  if (lbl) lbl.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● computing live scores…</span>';
+  // Fire sequentially with 350ms gap — 3 calls/ticker × 350ms = ~1/sec = within Finnhub free tier
   for (const t of tickers) {
     await computeLiveScore(t);
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 350));
   }
   // Refresh all score displays
   _refreshLiveScoreUI();
+  // Re-render morning brief with freshly computed scores
+  try { renderMorningBriefDynamic(); } catch(e) {}
+  try { renderSageCard(); markSagePick(); } catch(e) {}
+  // Update picks card label to confirm live scores
+  const lbl2 = document.getElementById('morning-picks-lbl');
+  if (lbl2) {
+    const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    lbl2.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● live · ' + now + '</span>';
+  }
 }
 
 function _refreshLiveScoreUI() {
@@ -2134,7 +2184,11 @@ function _refreshLiveScoreUI() {
   // Sync card colors to live scores
   syncSignalScoreCards();
   // Refresh hot bar if morning brief is active
-  if (S.activeTab === 'morning') renderHotBar();
+  if (S.activeTab === 'morning') {
+    renderHotBar();
+    try { renderMorningBriefDynamic(); } catch(e) {}
+    try { renderSageCard(); markSagePick(); } catch(e) {}
+  }
   // Refresh ticker strip score badges (prices already cached, just re-render)
   try { renderLiveTickerStrip(); } catch(e) {}
   // Update focus search dropdown if open
@@ -2163,6 +2217,16 @@ function syncSignalScoreCards() {
       card.style.background = 'var(--bg3)';
       card.style.border = '0.5px solid var(--border)';
       if (ring) ring.className = 'ring ring-gray';
+    }
+    // Annotate score pill with live breakdown if available
+    const cached = _liveScoreCache[t];
+    const pill = card.querySelector('.score-pill');
+    if (pill && cached) {
+      const rsiStr = cached.rsi != null ? ` RSI ${Math.round(cached.rsi)}` : '';
+      const dpStr  = cached.dp  != null ? ` ${cached.dp>=0?'+':''}${cached.dp.toFixed(1)}%` : '';
+      const lbl = cached.l1pts != null ? `L1:${cached.l1pts} L3:${cached.l3pts}${rsiStr}${dpStr}` : '';
+      if (lbl) pill.title = lbl;
+      pill.style.cursor = 'help';
     }
   });
   // Mark the top pick with a sage badge
