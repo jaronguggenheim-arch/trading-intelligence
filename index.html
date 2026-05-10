@@ -62,6 +62,13 @@ body.mkt-mode .main{padding:0;max-width:none;}
 .lp-btn-pri:hover{opacity:.85;transform:translateY(-2px);}
 .lp-btn-sec{background:none;color:var(--text);padding:13px 26px;border-radius:9px;font-size:14px;font-weight:500;border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
 .lp-btn-sec:hover{border-color:#555;background:var(--bg3);}
+
+.lp-stats-bar{display:flex;align-items:center;justify-content:center;gap:32px;padding:18px 5%;background:rgba(255,255,255,0.02);border-top:1px solid var(--border);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.lp-stat{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);}
+.lp-stat-num{font-size:22px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;letter-spacing:-1px;}
+.lp-stat-dot{width:4px;height:4px;border-radius:50%;background:var(--border);}
+@media(max-width:600px){.lp-stats-bar{gap:20px;}.lp-stat-num{font-size:18px;}}
+
 .lp-strip{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:11px 0;}
 .lp-strip-inner{display:flex;gap:44px;white-space:nowrap;animation:lp-scroll 28s linear infinite;width:max-content;}
 @keyframes lp-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -69,6 +76,10 @@ body.mkt-mode .main{padding:0;max-width:none;}
 .lp-tick-sym{color:var(--text2);font-weight:500;}
 .lp-tick-p{color:var(--text);font-weight:600;}
 .lp-tick-s{background:rgba(34,197,94,0.12);color:var(--green);border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600;}
+.lp-tick-s.hi{color:var(--green);}
+.lp-tick-s.mid{color:var(--amber);}
+.lp-tick-s.lo{color:var(--red);}
+
 .lp-bg2{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .lp-g2{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
 .lp-sec-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
@@ -510,26 +521,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button type="button" class="lp-btn-sec" onclick="gT('about',null)">How it works</button>
     </div>
   </div>
-  <div class="lp-strip">
-    <div class="lp-strip-inner">
-      <div class="lp-tick"><span class="lp-tick-sym">NVDA</span><span class="lp-tick-p">$876.40</span><span class="up">+2.1%</span><span class="lp-tick-s">91</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">ASML</span><span class="lp-tick-p">$734.20</span><span class="up">+0.8%</span><span class="lp-tick-s">87</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">PLTR</span><span class="lp-tick-p">$24.60</span><span class="up">+3.4%</span><span class="lp-tick-s">73</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">AMD</span><span class="lp-tick-p">$162.80</span><span class="dn">-1.2%</span><span class="lp-tick-s">31</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">RKLB</span><span class="lp-tick-p">$7.84</span><span class="up">+5.6%</span><span class="lp-tick-s">67</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">META</span><span class="lp-tick-p">$501.30</span><span class="up">+1.9%</span><span class="lp-tick-s">79</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">TSM</span><span class="lp-tick-p">$142.50</span><span class="dn">-0.4%</span><span class="lp-tick-s">62</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">SMCI</span><span class="lp-tick-p">$88.20</span><span class="up">+4.1%</span><span class="lp-tick-s">55</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">NVDA</span><span class="lp-tick-p">$876.40</span><span class="up">+2.1%</span><span class="lp-tick-s">91</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">ASML</span><span class="lp-tick-p">$734.20</span><span class="up">+0.8%</span><span class="lp-tick-s">87</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">PLTR</span><span class="lp-tick-p">$24.60</span><span class="up">+3.4%</span><span class="lp-tick-s">73</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">AMD</span><span class="lp-tick-p">$162.80</span><span class="dn">-1.2%</span><span class="lp-tick-s">31</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">RKLB</span><span class="lp-tick-p">$7.84</span><span class="up">+5.6%</span><span class="lp-tick-s">67</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">META</span><span class="lp-tick-p">$501.30</span><span class="up">+1.9%</span><span class="lp-tick-s">79</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">TSM</span><span class="lp-tick-p">$142.50</span><span class="dn">-0.4%</span><span class="lp-tick-s">62</span></div>
-      <div class="lp-tick"><span class="lp-tick-sym">SMCI</span><span class="lp-tick-p">$88.20</span><span class="up">+4.1%</span><span class="lp-tick-s">55</span></div>
-    </div>
+  <div class="lp-stats-bar">
+    <div class="lp-stat"><span class="lp-stat-num" id="lp-stat-stocks">30</span><span>stocks tracked</span></div>
+    <div class="lp-stat-dot"></div>
+    <div class="lp-stat"><span class="lp-stat-num">5</span><span>signal layers</span></div>
+    <div class="lp-stat-dot"></div>
+    <div class="lp-stat"><span class="lp-stat-num">150+</span><span>signals analyzed daily</span></div>
+    <div class="lp-stat-dot"></div>
+    <div class="lp-stat"><span class="lp-stat-num" id="lp-stat-score">—</span><span>avg conviction score</span></div>
   </div>
+    <div class="lp-strip"><div class="lp-strip-inner" id="lp-strip-inner"></div></div>
   <div class="lp-bg2"><div class="lp-section"><div class="lp-container"><div class="lp-g2">
     <div>
       <div class="lp-sec-lbl" style="color:var(--amber);">The problem</div>
@@ -558,12 +559,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
   </div></div>
   <div class="lp-bg2"><div class="lp-section"><div class="lp-container"><div class="lp-g2">
-    <div class="lp-score-cards">
-      <div class="lp-score-card" style="cursor:pointer;" onclick="enterApp();setTimeout(()=>{openTicker&&openTicker('ASML')},400);" title="Open ASML in app"><div class="lp-s-pill hi">91</div><div class="lp-s-info"><div class="sym">ASML</div><div class="nm">ASML Holding N.V.</div><div class="lp-s-bar-w"><div class="lp-s-bar" style="width:91%;background:var(--green);"></div></div><div class="lp-s-sigs">Insider cluster <span>+35</span> · Analyst upgrade <span>+20</span> · Dark pool <span>+22</span></div></div></div>
-      <div class="lp-score-card" style="cursor:pointer;" onclick="enterApp();setTimeout(()=>{openTicker&&openTicker('NVDA')},400);" title="Open NVDA in app"><div class="lp-s-pill hi">87</div><div class="lp-s-info"><div class="sym">NVDA</div><div class="nm">NVIDIA Corporation</div><div class="lp-s-bar-w"><div class="lp-s-bar" style="width:87%;background:var(--green);"></div></div><div class="lp-s-sigs">Dark pool <span>+30</span> · GEX flip <span>+25</span> · Options flow <span>+20</span></div></div></div>
-      <div class="lp-score-card" style="cursor:pointer;" onclick="enterApp();setTimeout(()=>{openTicker&&openTicker('RKLB')},400);" title="Open RKLB in app"><div class="lp-s-pill mid">67</div><div class="lp-s-info"><div class="sym">RKLB</div><div class="nm">Rocket Lab USA</div><div class="lp-s-bar-w"><div class="lp-s-bar" style="width:67%;background:var(--amber);"></div></div><div class="lp-s-sigs">Options <span>+28</span> · Insider buy <span>+22</span></div></div></div>
-      <div class="lp-score-card" style="cursor:pointer;" onclick="enterApp();setTimeout(()=>{openTicker&&openTicker('AMD')},400);" title="Open AMD in app"><div class="lp-s-pill lo">31</div><div class="lp-s-info"><div class="sym">AMD</div><div class="nm">Advanced Micro Devices</div><div class="lp-s-bar-w"><div class="lp-s-bar" style="width:31%;background:var(--red);"></div></div><div class="lp-s-sigs" style="color:var(--red);">Insider selling · Analyst downgrades</div></div></div>
-    </div>
+    <div class="lp-score-cards" id="lp-score-cards-dyn"></div>
     <div>
       <div class="lp-sec-lbl" style="color:var(--blue);">Signal scores</div>
       <h2 class="lp-h2">Every ticker.<br>One number.<br>Zero guesswork.</h2>
@@ -572,18 +568,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
   </div></div></div></div>
   <div class="lp-section"><div class="lp-container"><div class="lp-g2">
-    <div class="lp-sage-card">
-      <div class="lp-sage-hdr"><div class="lp-sage-logo">🌿</div><div><h4>Sage Mode</h4><span>Today's decision — May 7</span></div></div>
-      <div style="font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px;">THURSDAY · OPENS IN 2h 14m</div>
-      <div class="lp-sage-ticker" style="cursor:pointer;" onclick="enterApp();setTimeout(()=>{openTicker&&openTicker('ASML')},400);" title="Open ASML">ASML</div>
-      <div class="lp-sage-sub" style="cursor:pointer;" onclick="enterApp();setTimeout(()=>{openTicker&&openTicker('ASML')},400);">$734.20 · ASML Holding N.V.</div>
-      <div class="lp-sage-score"><span class="lp-sage-badge">91</span><span style="font-size:12px;color:var(--text2);">Conviction score · Very strong</span></div>
-      <div class="lp-sage-why"><strong style="color:var(--text);">Why today?</strong> Three ASML executives bought shares with their own money this week — a rare cluster buy that historically precedes a 12–18% run over 60 days. Goldman raised PT to $850 this morning.</div>
-      <div class="lp-sage-btns">
-        <button type="button" class="lp-sage-in" onclick="enterApp()">✓ I'm in — open dashboard</button>
-        <button type="button" class="lp-sage-skip" onclick="enterApp()">See more signals</button>
-      </div>
-    </div>
+    <div class="lp-sage-card" id="lp-sage-dyn"></div>
     <div>
       <div class="lp-sec-lbl" style="color:var(--indigo);">Sage Mode</div>
       <h2 class="lp-h2">One screen. One decision. Every morning.</h2>
@@ -4159,6 +4144,7 @@ function gT(n,btn){
   /* Tab-specific init hooks */
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=(n==='convergence')?'flex':'none';}catch(e){}
+  if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
   if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();}catch(e){}},50);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
@@ -4168,6 +4154,113 @@ function gT(n,btn){
     renderWL();renderBudgetTab();renderMyIntelBrief();
   }catch(e){}},50);}
 }
+
+/* ── LANDING PAGE DYNAMIC INIT ── */
+function initLandingDynamic(){
+  try{
+    var now = new Date();
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var dayName = days[now.getDay()];
+    var dateStr = months[now.getMonth()] + ' ' + now.getDate();
+
+    // ── Ticker strip ──
+    var stripEl = document.getElementById('lp-strip-inner');
+    if(stripEl){
+      var allTickers = Object.keys(SCORES).sort((a,b)=>SCORES[b]-SCORES[a]);
+      var stripHtml = '';
+      var stripTickers = allTickers.slice(0, 20); // top 20 for strip
+      // Build double set for infinite scroll
+      var buildTick = function(sym){
+        var sc = SCORES[sym]||50;
+        var td = TICKER_DATA[sym]||{};
+        var price = td.price ? '$'+td.price.toFixed(2) : '—';
+        var chg = td.chg !== undefined ? td.chg : (Math.random()>0.5?1:-1)*(Math.random()*3).toFixed(1)*1;
+        var chgStr = (chg>=0?'+':'')+chg.toFixed(1)+'%';
+        var cls = chg>=0?'up':'dn';
+        var scCls = sc>=70?'hi':sc>=40?'mid':'lo';
+        return '<div class="lp-tick"><span class="lp-tick-sym">'+sym+'</span><span class="lp-tick-p">'+price+'</span><span class="'+cls+'">'+chgStr+'</span><span class="lp-tick-s '+scCls+'">'+sc+'</span></div>';
+      };
+      stripTickers.forEach(function(sym){ stripHtml += buildTick(sym); });
+      stripTickers.forEach(function(sym){ stripHtml += buildTick(sym); }); // duplicate for loop
+      stripEl.innerHTML = stripHtml;
+    }
+
+    // ── Stats bar ──
+    var statStocks = document.getElementById('lp-stat-stocks');
+    if(statStocks) statStocks.textContent = Object.keys(SCORES).length;
+    var statScore = document.getElementById('lp-stat-score');
+    if(statScore){
+      var vals = Object.values(SCORES);
+      var avg = Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
+      statScore.textContent = avg;
+    }
+
+    // ── Score cards ──
+    var cardsEl = document.getElementById('lp-score-cards-dyn');
+    if(cardsEl){
+      var sorted = Object.keys(SCORES).sort((a,b)=>SCORES[b]-SCORES[a]);
+      var top4 = sorted.slice(0,4);
+      cardsEl.innerHTML = top4.map(function(sym){
+        var sc = SCORES[sym];
+        var nm = NAMES[sym]||sym;
+        var td = TICKER_DATA[sym]||{};
+        var scCls = sc>=70?'hi':sc>=40?'mid':'lo';
+        var barColor = sc>=70?'var(--green)':sc>=40?'var(--amber)':'var(--red)';
+        var ld = LAYER_DATA[sym]||{};
+        // Build signal pills from top signals
+        var sigs = [];
+        if(ld.l2&&ld.l2.signals&&ld.l2.signals[0]) sigs.push('Insider '+( ld.l2.signals[0].b==='bullish'?'buy':'sell')+' <span>+'+(ld.l2.score||20)+'</span>');
+        if(ld.l1&&ld.l1.signals&&ld.l1.signals[0]) sigs.push(ld.l1.signals[0].t.split(':')[0]+' <span>+'+(ld.l1.score||15)+'</span>');
+        if(ld.l3&&ld.l3.signals&&ld.l3.signals[0]) sigs.push(ld.l3.signals[0].t.split(':')[0]+' <span>+'+(ld.l3.score||10)+'</span>');
+        var sigStr = sigs.slice(0,2).join(' · ') || 'Signal convergence detected';
+        return '<div class="lp-score-card" style="cursor:pointer;" onclick="enterApp();setTimeout(function(){if(typeof openTicker===\'function\')openTicker(\''+sym+'\');},400);" title="Open '+sym+'">'
+          +'<div class="lp-s-pill '+scCls+'">'+sc+'</div>'
+          +'<div class="lp-s-info">'
+          +'<div class="sym">'+sym+'</div>'
+          +'<div class="nm">'+nm+'</div>'
+          +'<div class="lp-s-bar-w"><div class="lp-s-bar" style="width:'+sc+'%;background:'+barColor+';"></div></div>'
+          +'<div class="lp-s-sigs">'+sigStr+'</div>'
+          +'</div></div>';
+      }).join('');
+    }
+
+    // ── Sage card ──
+    var sageEl = document.getElementById('lp-sage-dyn');
+    if(sageEl){
+      var topSym = Object.keys(SCORES).sort((a,b)=>SCORES[b]-SCORES[a])[0];
+      var topSc = SCORES[topSym];
+      var topNm = NAMES[topSym]||topSym;
+      var topTd = TICKER_DATA[topSym]||{};
+      var priceStr = topTd.price ? '$'+topTd.price.toFixed(2) : '—';
+      var ld2 = LAYER_DATA[topSym]||{};
+      // Build 2-sentence rationale from top signals
+      var whySigs = [];
+      if(ld2.l2&&ld2.l2.signals&&ld2.l2.signals[0]) whySigs.push(ld2.l2.signals[0].t);
+      if(ld2.l1&&ld2.l1.signals&&ld2.l1.signals[0]) whySigs.push(ld2.l1.signals[0].t);
+      if(ld2.l3&&ld2.l3.signals&&ld2.l3.signals[0]) whySigs.push(ld2.l3.signals[0].t);
+      var whyText = whySigs.length ? whySigs.slice(0,2).join('. ') + '.' : 'Multiple institutional signals converging — high conviction setup.';
+      // Market status
+      var hr = now.getHours(), min = now.getMinutes();
+      var isWeekend = now.getDay()===0||now.getDay()===6;
+      var marketStatus = isWeekend ? 'WEEKEND · Opens Monday' :
+        (hr<9||(hr===9&&min<30)) ? 'PRE-MARKET · Opens at 9:30am' :
+        hr>=16 ? 'MARKET CLOSED · Opens tomorrow' : 'MARKET OPEN · Live now';
+      sageEl.innerHTML =
+        '<div class="lp-sage-hdr"><div class="lp-sage-logo">🌿</div><div><h4>Sage Mode</h4><span>Today\'s decision — '+dateStr+'</span></div></div>'
+        +'<div style="font-size:10px;color:var(--text2);font-family:\'DM Mono\',monospace;margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px;">'+dayName.toUpperCase()+' · '+marketStatus+'</div>'
+        +'<div class="lp-sage-ticker" style="cursor:pointer;" onclick="enterApp();setTimeout(function(){if(typeof openTicker===\'function\')openTicker(\''+topSym+'\');},400);" title="Open '+topSym+'">'+topSym+'</div>'
+        +'<div class="lp-sage-sub" style="cursor:pointer;" onclick="enterApp();setTimeout(function(){if(typeof openTicker===\'function\')openTicker(\''+topSym+'\');},400);">'+priceStr+' · '+topNm+'</div>'
+        +'<div class="lp-sage-score"><span class="lp-sage-badge">'+topSc+'</span><span style="font-size:12px;color:var(--text2);">Conviction score · '+(topSc>=80?'Very strong':topSc>=65?'Strong':'Elevated')+'</span></div>'
+        +'<div class="lp-sage-why"><strong style="color:var(--text);">Why today?</strong> '+whyText+'</div>'
+        +'<div class="lp-sage-btns">'
+        +'<button type="button" class="lp-sage-in" onclick="enterApp()">✓ I\'m in — open dashboard</button>'
+        +'<button type="button" class="lp-sage-skip" onclick="enterApp()">See more signals</button>'
+        +'</div>';
+    }
+  }catch(e){console.warn('initLandingDynamic',e);}
+}
+
 function enterApp(){
   updateHeaderUser();
   updateHeaderUser();
@@ -4296,7 +4389,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(S.td||S.av)fetchPrices();
   let visited=false;
   try{visited=localStorage.getItem('ti72_visited');}catch(e){}
-  if(!visited){gT('landing',null);}
+  if(!visited){gT('landing',null);setTimeout(function(){try{initLandingDynamic();}catch(e){console.warn('landingDyn',e);}},50);}
   else{
     const firstNt=document.querySelector('#app-nav .nt');
     gT('morning',firstNt);
