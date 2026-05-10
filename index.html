@@ -1779,7 +1779,7 @@ async function renderLiveTickerStrip() {
   const items = _tickerStripTickers.map(makeItem).join('');
   // Duplicate for seamless infinite scroll
   track.innerHTML = items + items;
-  strip.style.display = '';
+  strip.style.display = 'flex';
 
   // Restart auto-refresh timer
   if (_tickerStripTimer) clearTimeout(_tickerStripTimer);
