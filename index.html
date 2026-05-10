@@ -6233,60 +6233,6 @@ async function getChainSignals(ticker) {
 // ═══════════════════════════════════════════════════════════════
 
 const LAYER_DATA = {
-  TSM: {
-    l1:{ score:18, label:'Bullish', signals:[
-      {t:'CoWoS packaging utilization 98% — zero slack capacity through 2026',b:'bullish',date:'2026-05-01'},
-      {t:'N3 yield rates 75%+ — ahead of schedule, expanding margin',b:'bullish',date:'2026-04-28'},
-      {t:'Vol compression: realized vol 19% vs implied 24% — calm before catalyst',b:'bullish',date:'2026-05-05'}
-    ]},
-    l2:{ score:30, label:'Bullish', signals:[
-      {t:'CEO CC Wei: 120,000 shares purchased at $178 — largest insider buy in 18 months',b:'bullish',date:'2026-03-15'},
-      {t:'Chairman Mark Liu: 85,000 shares at $179 — cluster buy signal alongside CEO',b:'bullish',date:'2026-02-20'},
-      {t:'No insider selling in past 180 days — full conviction alignment',b:'bullish',date:'2026-05-01'}
-    ]},
-    l3:{ score:22, label:'Bullish', signals:[
-      {t:'Morgan Stanley OW: PT raised $200->$220 on CoWoS capacity upside',b:'bullish',date:'2026-05-05'},
-      {t:'Consensus EPS revision +18% over 90 days — estimate momentum strongest in semiconductor coverage',b:'bullish',date:'2026-04-30'},
-      {t:'Revenue guidance raised: 2026 full-year to $112-118B (was $105-110B)',b:'bullish',date:'2026-04-17'}
-    ]},
-    l4:{ score:10, label:'Bullish', signals:[
-      {t:'ASML EUV delivery backlog: 12 High-NA systems for H2 2026 — capacity expansion secured',b:'bullish',date:'2026-04-20'},
-      {t:'NVDA Blackwell: 100% manufactured at TSMC N3B — direct revenue correlation',b:'bullish',date:'2026-05-01'},
-      {t:'Apple A19 chip tape-out at N2 confirmed — 2027 capacity pre-booked',b:'bullish',date:'2026-04-15'}
-    ]},
-    l5:{ score:14, label:'Bullish', signals:[
-      {t:'AI capex supercycle: hyperscaler guidance totals $300B+ for 2026 — all flows through TSMC',b:'bullish',date:'2026-05-03'},
-      {t:'US CHIPS Act: $6.6B grant for Arizona fab + $5B loan facility confirmed',b:'bullish',date:'2026-04-25'},
-      {t:'Geopolitical risk: TSMC N+2 process lead is 3-5 years — no viable alternative',b:'bullish',date:'2026-04-20'}
-    ]}
-  },
-  SMCI: {
-    l1:{ score:14, label:'Bullish', signals:[
-      {t:'CEO cluster buy 200K shares: largest open-market purchase since pre-scandal highs',b:'bullish',date:'2026-04-25'},
-      {t:'Short interest 28% — high squeeze potential as compliance narrative resolves',b:'bullish',date:'2026-05-01'},
-      {t:'Volume surge: 3x average daily volume on May 6 — institutional accumulation pattern',b:'bullish',date:'2026-05-06'}
-    ]},
-    l2:{ score:22, label:'Bullish', signals:[
-      {t:'CEO Charles Liang: 200,000 shares at $38.40 — puts skin in the game post-restatement',b:'bullish',date:'2026-04-25'},
-      {t:'CFO David Weigand: 50,000 shares at $37.80 — CFO buying after accounting drama is high-signal',b:'bullish',date:'2026-03-15'},
-      {t:'Zero insider selling past 90 days — full team alignment at current levels',b:'bullish',date:'2026-05-01'}
-    ]},
-    l3:{ score:16, label:'Bullish', signals:[
-      {t:'Wedbush PT $35->$65: compliance resolution + Blackwell demand = re-rating cycle beginning',b:'bullish',date:'2026-05-07'},
-      {t:'Q3 FY2026 preliminary revenue $4.6B — 45% YoY growth, street was at $4.1B',b:'bullish',date:'2026-04-30'},
-      {t:'DLC penetration 30% of shipments (was 8% YoY) — structural moat forming in power-dense AI racks',b:'bullish',date:'2026-04-30'}
-    ]},
-    l4:{ score:10, label:'Bullish', signals:[
-      {t:'NVDA Blackwell GB200 NVL72 racks: SMCI is lead integrator for 60% of hyperscaler orders',b:'bullish',date:'2026-05-01'},
-      {t:'Microsoft Azure AI expansion: 150K+ SMCI rack order confirmed for H2 2026',b:'bullish',date:'2026-04-20'},
-      {t:'TSM N3 capacity ramp removes GPU supply constraint — direct SMCI throughput unlock',b:'bullish',date:'2026-04-15'}
-    ]},
-    l5:{ score:8, label:'Neutral', signals:[
-      {t:'AI datacenter power density trend: 1kW/chip by 2027 requires DLC — SMCI\'s core expertise',b:'bullish',date:'2026-05-01'},
-      {t:'Accounting restatement risk: SEC investigation ongoing — binary event overhang',b:'bearish',date:'2026-04-30'},
-      {t:'Regulatory: CHIPS Act datacenter incentives favor domestic server assembly — SMCI US-based',b:'bullish',date:'2026-04-25'}
-    ]}
-  },
   ASML: [
     { id:'L1', name:'Market structure',     horizon:'0–5 days',    pts:18, max:25,
       desc:'Dark pool $340M cluster at $820 support · GEX floor holding · vol compression pre-catalyst',
@@ -6657,6 +6603,125 @@ const LAYER_DATA = {
     { id:'L3', label:'Corporate Intel',          pts:16, max:25, desc:'Production restart at Texas ISR hub; DOE contract win; Wyoming resource acquisition doubles inventory', signals:['Texas ISR Hub 1 back in production — first US output since 2018','DOE strategic reserve contract awarded Q4 2024','Wyoming acquisition: +45M lbs measured resource added'] },
     { id:'L4', label:'Supply Chain / Contracts', pts:17, max:25, desc:'Direct beneficiary of US utility demand for domestic supply; Russian ban creates structural demand for ISR', signals:['Russian uranium import ban Jan 2025 — UEC primary domestic substitute','3 long-term utility contracts signed past 6 months','ISR cost $20–25/lb vs spot $82 → margin expansion'] },
     { id:'L5', label:'Macro / Structural',       pts:20, max:25, desc:'Purest play on US nuclear policy: domestic sourcing mandate, strategic reserve, IRA credits, bipartisan support', signals:['American Uranium Independence Act — domestic sourcing preference','DOE $2.7B uranium reserve fund: UEC approved supplier','SMR buildout requires enriched domestic uranium'] },
+  ],
+  AMZN: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:14, max:25,
+      desc:'Dark pool accumulation $2.1B over 4 weeks · call sweeps Jun $200c · short interest at 3yr low',
+      signals:['Dark pool: $2.1B bought across 4 weeks — unusual block accumulation','Large call sweep: 50K Jun $200c contracts bought at ask — institutional directional bet','Short interest 1.2% of float — near 3-year low, minimal downside pressure'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:22, max:35,
+      desc:'CEO Jassy $8.6M open market buy — Amazon CEOs almost never buy in the open market',
+      signals:['CEO Andy Jassy: $8.6M open-market purchase (Mar 10) — extremely rare for AMZN leadership','Board member added $2.1M — first board purchase in 2 years, adds cluster confirmation','No Form 4 selling in trailing 90 days — full insider alignment at current levels'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:20, max:25,
+      desc:'AWS +21% YoY · Trainium2 displacing NVDA workloads on cost · operating margin 11.3% all-time high',
+      signals:['AWS revenue +21% YoY — beat consensus by $800M, re-accelerating after 2023 pause','Trainium2 chip wins: 4 new enterprise AI workloads moved off NVDA H100 on cost efficiency','Operating margin 11.3% — highest since IPO; structural shift from investment to harvest phase'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:8, max:10,
+      desc:'Nuclear PPA signals decade-long datacenter expansion · 200K NVDA GPU cluster confirmed',
+      signals:['Nuclear PPA: 10-year power commitment for new datacenter campus — secular capex locked in','NVDA Blackwell cluster: 200K GPU confirmed order — largest single order disclosed publicly','SMCI rack orders +$1.2B Q1 2026 — AI server buildout accelerating within AWS'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:4, max:5,
+      desc:'Cloud AI capex supercycle · sovereign AI demand · inference compute is the next S-curve',
+      signals:['Hyperscaler cloud capex industry-wide +45% YoY — AMZN AWS captures 30% of market','Sovereign AI: government cloud contracts (US, EU, Gulf) accelerating in 2026','AI inference compute demand is the next S-curve — AWS inference revenue is early-stage compounding'] },
+  ],
+  ARM: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:20, max:25,
+      desc:'Short interest declining sharply · $340M block bought at ask · bullish IV skew 2x vs puts',
+      signals:['Short interest declined 4pp in 30 days — shorts covering as royalty ramp becomes visible','Block trades: $340M bought at ask over 2 sessions — institutional conviction accumulation','Implied vol skew: 30-day calls 2x more expensive than puts — market pricing upside breakout'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:28, max:35,
+      desc:'CEO Haas $28.5M — largest insider buy in 18 months · CFO $4.2M — rare for ARM execs',
+      signals:['CEO Rene Haas: $28.5M open-market purchase (Feb 14) — largest CEO buy since IPO','CFO added $4.2M — CFO open-market purchases at ARM are historically rare and high-conviction','Zero insider sells in trailing 120 days — full leadership team aligned with share price'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:22, max:25,
+      desc:'Royalty revenue +42% YoY · gross margin 97% · AI chip startups universally license ARM ISA',
+      signals:['Royalty revenue +42% YoY driven by v9 architecture adoption across AI chips','Gross margin 97% — pure IP business model with near-infinite operating leverage on incremental royalties','80% of AI chip startups license ARM ISA — creates royalty compounding regardless of who wins chip wars'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:9, max:10,
+      desc:'NVDA Grace CPU · AAPL M4 · QCOM Snapdragon X Elite — ARM royalties on every AI server',
+      signals:['NVDA Grace CPU (ARM Neoverse N2) in every Blackwell GB200 server — royalty on all AI infrastructure','AAPL M4 chip shipped 18M units Q1 2026 — ARM royalty at highest-volume premium device segment','QCOM Snapdragon X Elite winning PC market share — ARM royalties now compounding across 3 device categories'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:4, max:5,
+      desc:'Edge AI inference structural shift to ARM · data center CPU: ARM taking x86 share from Intel',
+      signals:['On-device AI inference: ARM NPU is power-efficiency leader — every AI smartphone runs ARM','Data center CPU: ARM server chips (AWS Graviton, NVDA Grace) taking x86 share — 25%+ by 2027','AI chip startup ecosystem: all new entrants license ARM — royalty base compounds with industry growth'] },
+  ],
+  QCOM: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:14, max:25,
+      desc:'Consolidating at $160–175 range for 3 weeks · options balanced · institutional steady accumulation',
+      signals:['Price action: tight range $160–175 for 21 trading days — compression before move','Options: balanced put/call ratio at 0.95 — no directional conviction from options market','Institutional ownership steady with no large exits — base building pattern'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:22, max:35,
+      desc:'CEO Amon $13.5M buy on AAPL modem extension clarity · SVP Mobile $2.8M after PC wins',
+      signals:['CEO Cristiano Amon: $13.5M open-market purchase (Jan 20) — timed after AAPL modem extension','SVP Mobile: $2.8M purchase after Snapdragon X Elite PC market share announcement','No insider selling in trailing 90 days — management conviction at current valuation'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:16, max:25,
+      desc:'Revenue +18% YoY · auto segment +59% · handset recovery · China softness a known risk',
+      signals:['Revenue +18% YoY — beat driven by auto (+59% YoY) and IoT segments, not just handsets','Auto segment now 8% of revenue growing to 15% by 2028 — structural diversification de-risks AAPL concentration','China handset market softness: -12% in China mobile revenues — disclosed risk, no new deterioration'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:7, max:10,
+      desc:'ARM architecture licensing + TSMC N4 secured · Samsung Android flagship order win',
+      signals:['ARM v9 licensing: QCOM pays royalties → rising volumes = rising ARM costs, offset by ASP expansion','TSMC N4 wafer allocation secured for Snapdragon X Elite through H2 2026','Samsung Galaxy S26: Snapdragon 8 Elite chosen over Exynos for all markets — QCOM wins back unit share'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:3, max:5,
+      desc:'Edge AI NPU leadership · PC market growing · AAPL modem concentration risk declining',
+      signals:['Snapdragon X Elite NPU: fastest on-device AI inference — structural position as AI moves to edge','PC market: ARM-based laptops growing to 30% share by 2027 — QCOM Snapdragon X is category leader','AAPL modem concentration declining from 35% to 20% of revenue as auto/IoT grows — de-risking in progress'] },
+  ],
+  AAPL: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:16, max:25,
+      desc:'Dark pool $1.8B accumulation over 10 days · 50K call sweep Jun $220c · short interest 2yr low',
+      signals:['Dark pool: $1.8B bought across 10 sessions — quiet institutional accumulation before product catalyst','Call sweep: 50K Jun $220c contracts bought at ask — $42M bet on upside through options expiry','Short interest at 2-year low (0.6% float) — bears have effectively exited the stock'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:22, max:35,
+      desc:'CEO Cook $106.8M — largest CEO open market purchase in 5 years · CFO $8.4M alongside',
+      signals:['CEO Tim Cook: $106.8M open-market purchase (Feb 28) — largest Cook purchase in 5+ years, high signal','CFO Luca Maestri: $8.4M purchase (Feb 25) ahead of Apple Intelligence expansion announcement','No insider selling in trailing 90 days — full senior leadership aligned with price'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:18, max:25,
+      desc:'iPhone 17 pre-orders +18% YoY · Services $26.8B at 74% margin · China -8% is known risk',
+      signals:['iPhone 17 pre-orders +18% vs iPhone 16 — Apple Intelligence driving upgrade cycle','Services revenue $26.8B TTM, growing 13% YoY at 74% gross margin — pure recurring earnings stream','Greater China revenue -8% YoY — disclosed risk; India now 15% of iPhone production as geopolitical hedge'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:7, max:10,
+      desc:'TSM 3nm locked: 60% of N3 wafer starts for M4/A18 · ARM royalties on every device',
+      signals:['TSMC N3 capacity: AAPL locks 60% of all N3 wafer starts through 2026 — supply chain certainty','ARM M4 chip achieves highest performance-per-watt in PC segment — supply chain competitive moat','QCOM modem extended to 2027 — reduces risk of supply disruption during in-house modem ramp'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:3, max:5,
+      desc:'Apple Intelligence drives 2.2B device upgrade cycle · India manufacturing hedge to China risk',
+      signals:['Apple Intelligence: 2.2B installed base devices eligible for upgrade — largest upgrade cycle in history','Spatial computing: Vision Pro establishing developer ecosystem for next platform before volume scaling','India manufacturing: 15% of iPhones now made in India — structural geopolitical risk mitigation underway'] },
+  ],
+  PANW: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:18, max:25,
+      desc:'Dark pool $420M in 2 weeks · call blocks Jun $400c · short interest declining as thesis validates',
+      signals:['Dark pool prints: $420M bought across 8 sessions — unusual accumulation as platformization data lands','Call blocks: large institutional Jun $400c — positioning for further re-rating as billings inflect','Short interest declining 3pp in 30 days — bears exiting as platformization revenue conversion data validates'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:24, max:35,
+      desc:'CEO Arora $58.3M — one of the largest CEO buys in cybersecurity history · board adds $12M',
+      signals:['CEO Nikesh Arora: $58.3M open-market purchase (Mar 5) — one of the largest CEO buys in cybersecurity history','Three board members added positions totaling $12M — cluster buy confirms conviction at current levels','No insider selling in trailing 120 days — complete alignment between insiders and shareholders'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:20, max:25,
+      desc:'RPO +34% · 1,150 platformization customers · XSIAM displacing Splunk, IBM SIEM',
+      signals:['RPO +34% YoY — future contracted revenue locked for 18+ months = earnings visibility','Platformization customers: 1,150 (was 1,020 prior quarter) — each spends 5x more than point-product customers','XSIAM: displacing Splunk and IBM SIEM at Fortune 500 — land-and-expand working at scale'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:8, max:10,
+      desc:'MSFT + GOOGL partnerships · CISA federal mandate drives government pipeline',
+      signals:['MSFT partnership: PANW + Microsoft Sentinel integration announced — extends into Azure-native workloads','GOOGL Cloud: PANW named preferred security partner for GCP — distribution moat expanding','Federal mandate: CISA directive on zero-trust architecture drives PANW adoption in all federal agencies'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:4, max:5,
+      desc:'AI security $45B by 2028 · zero-trust mandate · ransomware +68% = non-discretionary spend',
+      signals:['AI security market: $45B by 2028 (Gartner) — PANW is the consensus enterprise category leader','Zero-trust mandate: every enterprise modernizing security architecture over 3–5 years = secular TAM expansion','Ransomware frequency +68% YoY — enterprise security budget is non-discretionary regardless of macro cycle'] },
+  ],
+  CRWD: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:15, max:25,
+      desc:'+85% recovery from post-incident low · technical breakout on volume · shorts halved',
+      signals:['Price +85% from post-incident low of $210 — technical breakout confirms incident overhang cleared','Short interest halved from 8.5% to 4.2% of float — shorts covering as recovery narrative takes hold','Volume: above-average on up days vs down days for 6 consecutive weeks — accumulation in progress'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:22, max:35,
+      desc:'CEO Kurtz $39.4M · President $8.1M · Board $5.2M — cluster buy as incident chapter closes',
+      signals:['CEO George Kurtz: $39.4M open-market purchase (Feb 10) — putting capital behind recovery narrative','President Michael Sentonas: $8.1M purchase (Feb 14) — broad insider conviction at recovery levels','Three board members: $5.2M combined — confirms incident overhang officially behind them, chapter closed'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:18, max:25,
+      desc:'ARR $4.5B +25% · net retention 122% · Charlotte AI handling 80% of alerts autonomously',
+      signals:['ARR $4.5B growing 25% YoY — incident had no material customer churn, recovery is structural','Net retention rate 122% — customers expanding spend 22% above base; churn narrative was wrong','Charlotte AI: 80% of security alerts handled autonomously — product differentiation widening vs competitors'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:7, max:10,
+      desc:'MSFT Sentinel integration · AWS Marketplace native · FedRAMP High = top-secret clearance',
+      signals:['MSFT Sentinel integration deepened — CrowdStrike + Microsoft is enterprise security reference architecture','AWS Marketplace: Falcon available natively — distribution at scale, frictionless procurement for cloud-native buyers','FedRAMP High authorization: cleared for top-secret federal workloads — unlocks 18-month pipeline'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:4, max:5,
+      desc:'Threat graph 2T events/day · endpoint consolidation · federal AI security $12B through 2028',
+      signals:['Real-time threat graph processes 2T security events per day — structural moat impossible to replicate quickly','Endpoint consolidation: average enterprise running 2.4 security tools (was 4.1) — CRWD wins the consolidation','Federal AI security budget: $12B allocated through 2028 — CRWD is top contract recipient in category'] },
+  ],
+  GEV: [
+    { id:'L1', name:'Market structure',         horizon:'0–5 days',    pts:18, max:25,
+      desc:'52W high breakout 3x avg volume · 40K $450c options bet $18M · $680M dark pool blocks',
+      signals:['52-week high breakout on volume 3x the 90-day average — institutional momentum confirmation','Unusual options: 40,000 $450c contracts bought for $18M — single directional bet on continued rally','Dark pool block prints: $680M across 3 weeks — largest dark pool accumulation since GE spinoff'] },
+    { id:'L2', name:'Insider / regulatory',     horizon:'5–30 days',   pts:26, max:35,
+      desc:'CEO Strazik $33.6M — largest purchase since GE spinoff · CFO $8.2M · Board $15M cluster',
+      signals:['CEO Scott Strazik: $33.6M open-market purchase (Mar 15) — largest CEO purchase since GE Vernova IPO','CFO Ken Parks: $8.2M purchase (Mar 20) after order book guidance raise — timing is significant','Three board members: $15M combined — cluster buy at all-time highs signals confidence in order pipeline'] },
+    { id:'L3', name:'Corporate intel',          horizon:'14–60 days',  pts:20, max:25,
+      desc:'Gas turbine orders +85% YoY · backlog $51B = 3+ years visible · FCF margin reached 8%',
+      signals:['Gas turbine orders +85% YoY — driven by AI datacenter power plant buildout and industrial electrification','Order backlog $51B — 3+ years of revenue already contracted, creates earnings visibility not seen since GE prime','Free cash flow margin 8% — capital return program imminent; buyback authorization expected Q3 2026'] },
+    { id:'L4', name:'Supply chain / contracts', horizon:'30–120 days', pts:8, max:10,
+      desc:'VST nuclear upgrades · CEG grid equipment · hyperscaler datacenter power plants',
+      signals:['Vistra Energy: GEV supplying steam turbine equipment for nuclear life-extension programs at multiple plants','Constellation Energy: GEV grid connection and power conversion equipment for nuclear restart projects','12 hyperscaler datacenter power plants announced in 2026 — all require GEV gas turbines or grid equipment'] },
+    { id:'L5', name:'Macro / structural',       horizon:'60–365 days', pts:4, max:5,
+      desc:'AI datacenter power demand +400% by 2030 · $3T global grid investment · onshoring industrial capex',
+      signals:['AI power crisis: datacenter electricity demand +400% by 2030 (IEA) — GEV makes the turbines that run them','Grid investment: $3T needed globally through 2030 — GEV power conversion and grid equipment is critical path','US onshoring: manufacturing renaissance + reshoring creates new industrial power demand wave for GEV turbines'] },
   ],
 };
 
