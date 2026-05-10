@@ -555,14 +555,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:14px 18px;margin-bottom:14px;border:0.5px solid var(--border);">
-    <div><div style="font-size:38px;font-weight:700;letter-spacing:-2px;color:var(--green);">74</div><div class="sml-lbl">Signal score</div></div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">3 active buy signals. ASML leads at 91. AMD: skip this week.</div><div style="font-size:12px;color:var(--text2);">Click sector cells to drill into constituent stocks. Use Correlation Map to explore supplier chains. Click any signal card to open full ticker intelligence.</div></div>
-  </div>
+  <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
   <div class="g13">
     <div>
+      <div id="morning-picks-card" class="card" style="margin-bottom:12px;"></div>
       <div class="card">
-        <div class="card-lbl">Act today — click for full ticker page</div>
+        <div class="card-lbl">All signal scores — full ranked list</div>
         <div class="sc sc-r convergence-stock-card" data-ticker="ASML" onclick="openTicker('ASML')"><div class="sul">ASML — Score 91 · Triple insider cluster</div><div class="suh">CEO + CFO + Board bought open market same week. Rarest signal type available.</div><div class="sc-meta"><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="score-pill">91/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="NVDA" onclick="openTicker('NVDA')"><div class="sul">NVDA — Score 78 · $47M call sweep + dark pool</div><div class="suh">Institutional pre-earnings positioning. Implied move ±11.4%. Earnings May 22.</div><div class="sc-meta"><span class="act-tag at-add">ADD 50%</span><span class="tf-tag tf-short">Pre-earnings</span><span class="score-pill">78/100</span></div></div>
         <div class="sc sc-g convergence-stock-card" data-ticker="RKLB" onclick="openTicker('RKLB')"><div class="sul">RKLB — Score 67 · First bank initiation</div><div class="suh">Bernstein Outperform $30 PT. Soros position. Unlocks institutional buyer pool.</div><div class="sc-meta"><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="score-pill">67/100</span></div></div>
@@ -2392,6 +2390,89 @@ function renderSageCard() {
     </div>`;
 }
 
+function renderMorningBriefDynamic() {
+  try {
+    _renderMorningSummaryBanner();
+    _renderMorningPicksCard();
+  } catch(e) { console.warn('renderMorningBriefDynamic:', e); }
+}
+
+function _renderMorningSummaryBanner() {
+  const el = document.getElementById('morning-summary-banner');
+  if (!el) return;
+  const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
+  const ld = (typeof LAYER_DATA !== 'undefined') ? LAYER_DATA : {};
+  const ranked = Object.entries(SCORES)
+    .filter(([t, s]) => s && NAMES[t])
+    .sort(([,a],[,b]) => b - a);
+  if (!ranked.length) { el.innerHTML = ''; return; }
+  const actionable = ranked.filter(([t]) => !SIGNAL_NODES.has(t));
+  const buys = actionable.filter(([,s]) => s >= 75).length;
+  const watches = actionable.filter(([,s]) => s >= 60 && s < 75).length;
+  const [topTicker, topScore] = actionable[0] || ranked[0];
+  const topLayers = (ld[topTicker] || []).filter(l => l.pts > 0).sort((a,b) => (b.pts||0)-(a.pts||0));
+  const topDesc = topLayers[0] ? (topLayers[0].desc || '') : '';
+  const scoreColor = topScore >= 75 ? 'var(--green)' : topScore >= 60 ? '#e07b00' : 'var(--text3)';
+  const signalSummary = buys > 0
+    ? `${buys} buy signal${buys>1?'s':''}, ${watches} watch${watches!==1?'es':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}.`
+    : `${watches} watch signal${watches!==1?'s':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}. No high-conviction buys today.`;
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:14px 18px;margin-bottom:14px;border:0.5px solid var(--border);">
+    <div><div style="font-size:38px;font-weight:700;letter-spacing:-2px;color:${scoreColor};font-family:'DM Mono',monospace;">${topScore}</div><div class="sml-lbl">Top signal</div></div>
+    <div style="flex:1;"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);">${topDesc ? topDesc + '. ' : ''}Click any card below for full analysis. Sector heatmap updates live.</div></div>
+  </div>`;
+}
+
+function _renderMorningPicksCard() {
+  const el = document.getElementById('morning-picks-card');
+  if (!el) return;
+  const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
+  const ld = (typeof LAYER_DATA !== 'undefined') ? LAYER_DATA : {};
+  const cats = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS : {};
+  const ranked = Object.entries(SCORES)
+    .filter(([t, s]) => s && NAMES[t] && !SIGNAL_NODES.has(t))
+    .sort(([,a],[,b]) => b - a);
+  if (!ranked.length) { el.innerHTML = ''; return; }
+
+  function getLayerInfo(t) {
+    const layers = (ld[t] || []).filter(l => l.pts > 0).sort((a,b) => (b.pts||0)-(a.pts||0));
+    const top = layers[0] || null;
+    if (!top) return { desc: '', signal: '' };
+    const signal = (top.signals && top.signals[0]) ? top.signals[0] : '';
+    return { desc: top.desc || '', signal };
+  }
+
+  // Build top 4: #1 BUY/best, #2 WATCH, #3 signal node highlight, #4 SKIP
+  const picks = [];
+  const used = new Set();
+
+  // #1: highest actionable
+  const p1 = ranked[0]; if (p1) { picks.push({ t: p1[0], s: p1[1], cat: p1[1]>=75?'BUY':p1[1]>=60?'WATCH':'MONITOR', cls: p1[1]>=75?'sc-r':p1[1]>=60?'sc-a':'sc-gray', tag: p1[1]>=75?'at-buy':p1[1]>=60?'at-add':'at-skip' }); used.add(p1[0]); }
+  // #2: second best
+  const p2 = ranked.find(([t]) => !used.has(t)); if (p2) { picks.push({ t: p2[0], s: p2[1], cat: p2[1]>=75?'BUY':p2[1]>=60?'WATCH':'MONITOR', cls: p2[1]>=75?'sc-r':p2[1]>=60?'sc-a':'sc-gray', tag: p2[1]>=75?'at-buy':p2[1]>=60?'at-add':'at-skip' }); used.add(p2[0]); }
+  // #3: third
+  const p3 = ranked.find(([t]) => !used.has(t)); if (p3) { picks.push({ t: p3[0], s: p3[1], cat: p3[1]>=75?'BUY':p3[1]>=60?'WATCH':'MONITOR', cls: p3[1]>=75?'sc-r':p3[1]>=60?'sc-a':'sc-gray', tag: p3[1]>=75?'at-buy':p3[1]>=60?'at-add':'at-skip' }); used.add(p3[0]); }
+  // #4: lowest (skip)
+  const worst = [...ranked].reverse().find(([t]) => !used.has(t)); if (worst) { picks.push({ t: worst[0], s: worst[1], cat: 'SKIP', cls: 'sc-gray', tag: 'at-skip' }); }
+
+  const cardsHtml = picks.map(p => {
+    const info = getLayerInfo(p.t);
+    const cat = cats[p.t];
+    const catNote = cat ? ` · ${cat.label} ${cat.date}` : '';
+    const skipText = p.cat === 'SKIP' ? `Mixed or weak signals this week. Hold existing only. Do not add.${catNote}` : (info.signal || info.desc || NAMES[p.t] || p.t) + catNote;
+    const tf = p.s >= 75 ? 'Mid-term' : p.s >= 60 ? 'Mid-term' : p.cat === 'SKIP' ? 'Revisit next week' : 'Monitor';
+    return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}')">
+      <div class="sul">${p.t} — Score ${p.s} · ${info.desc || NAMES[p.t] || ''}</div>
+      <div class="suh">${skipText}</div>
+      <div class="sc-meta"><span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span></div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="card-lbl">Today's top picks — click for full analysis</div>${cardsHtml}
+    <div style="padding:8px 0 2px;display:flex;justify-content:flex-end;">
+      <span style="font-size:10px;color:var(--text3);cursor:pointer;" onclick="document.getElementById('morning-picks-card').nextElementSibling.scrollIntoView({behavior:'smooth'})">See all ${ranked.length} stocks ↓</span>
+    </div>`;
+}
+
 function markSagePick() {
   const pick = getSagePick();
   if (!pick) return;
@@ -3289,7 +3370,7 @@ function gT(n,btn){
   /* Tab-specific init hooks */
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=(n==='convergence')?'flex':'none';}catch(e){}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();}catch(e){}},50);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();}catch(e){}},50);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
@@ -3321,7 +3402,7 @@ function enterApp(){
   try{S.activeTab='morning';S.prevTab='morning';}catch(e){}
   window.scrollTo(0,0);
   /* Render hot bar immediately on enter */
-  setTimeout(function(){try{renderHotBar();}catch(e){}},100);
+  setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();}catch(e){}},100);
   /* Auto-fetch news on first open if AV key exists */
   setTimeout(function(){
     try{if((S.fh||S.av)&&!window._avNewsFetched)fetchAVNews();}catch(e){}
@@ -3679,6 +3760,94 @@ const DEMO_NEWS = [
     topics:[{topic:'financial_markets'},{topic:'energy_transportation'}],
     ticker_sentiment:[{ticker:'VST',relevance_score:'0.88',ticker_sentiment_label:'Bullish'},{ticker:'CEG',relevance_score:'0.75',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.5',ticker_sentiment_label:'Neutral'}],
     summary:"Stanley Druckenmiller's Duquesne Family Office Q1 2026 13F filing shows a strategic rotation: a partial reduction in NVDA from 3.8M to 2.9M shares, and simultaneous new positions in Vistra Energy (2.1M shares) and Constellation Energy (1.4M shares). The thesis, confirmed in a recent interview, is that the AI compute build-out has a well-understood primary beneficiary in NVDA, but the power infrastructure necessary to run that compute is underappreciated and less fully priced. Druckenmiller's energy infrastructure bet is not a trade against NVDA — it is a second-order play on the same thesis. The power demand math supports his view: the 500,000 GPU data centers currently under construction across Texas, Virginia, and Arizona will collectively require approximately 15 gigawatts of new baseload power by 2028, equivalent to adding 15 new nuclear reactors to the US grid capacity. VST and CEG are the two companies best positioned to supply it."
+  },
+  {
+    title:'Applied Materials Q2 beats estimates — TSMC capex raise opens 2-quarter equipment lag window',
+    source:'AMAT Earnings', url:'#', time_published:'20260514T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'AMAT',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'LRCX',relevance_score:'0.55',ticker_sentiment_label:'Bullish'},{ticker:'TSM',relevance_score:'0.45',ticker_sentiment_label:'Bullish'}],
+    summary:"Applied Materials reported Q2 FY2026 revenue of $7.4B, up 18% year-over-year, beating consensus of $7.1B, driven by CVD and PVD tool demand for advanced packaging and gate-all-around transistor formation at TSMC's 2nm node. CEO Gary Dickerson raised full-year guidance to $29–30B, citing a 'multi-year equipment supercycle' driven by TSMC's $42–44B capex program. The key insight for investors: semiconductor equipment orders placed today convert to revenue 2–3 quarters later, meaning TSMC's Q1 capex raise is now flowing directly into AMAT's order book and will appear in reported revenue through Q3 2026. Applied Materials also disclosed a CEO and CFO open-market share purchase cluster in March 2026, totaling $3.2M — a strong insider conviction signal given the 6-figure stock price. The WFE (wafer fabrication equipment) upcycle is historically the most reliable lag-to-earnings signal in the semiconductor supply chain."
+  },
+  {
+    title:'Lam Research: HBM3E etch demand extends backlog to mid-2027 — memory WFE leading semis',
+    source:'LRCX Investor Day', url:'#', time_published:'20260510T143000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'technology'},{topic:'financial_markets'}],
+    ticker_sentiment:[{ticker:'LRCX',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'MU',relevance_score:'0.6',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.5',ticker_sentiment_label:'Bullish'}],
+    summary:"Lam Research's annual investor day revealed that HBM3E memory etch capacity is fully committed through mid-2027, with SK Hynix, Micron, and Samsung all running Lam's ALTUS CVD and VECTOR etch tools at maximum utilization. Every NVIDIA Blackwell GPU requires 8 HBM3E memory stacks; every HBM stack requires Lam etch and deposition steps that no other equipment maker can perform at volume. Lam management described memory WFE as 'leading non-memory for the first time since 2021' — a significant cyclical signal that the memory investment wave is running ahead of the broader semiconductor equipment cycle. CEO Tim Archer specifically cited NVDA's Blackwell production targets as the demand anchor, noting that LRCX equipment backlog visibility now extends further than any point in the company's 40-year history. The etch-to-deposition duopoly that Lam shares with Applied Materials creates near-perfect pricing power in an undersupplied market."
+  },
+  {
+    title:'Micron HBM3E shipments to NVIDIA: supply committed through 2027, margins above 50%',
+    source:'MU Earnings Call', url:'#', time_published:'20260501T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'MU',relevance_score:'0.97',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.65',ticker_sentiment_label:'Bullish'},{ticker:'LRCX',relevance_score:'0.35',ticker_sentiment_label:'Bullish'}],
+    summary:"Micron's Q2 FY2026 earnings call confirmed that HBM3E is now the highest-margin product in the company's history, with gross margins above 50% — well above DRAM average margins of 35%. CEO Sanjay Mehrotra disclosed that all Micron HBM3E capacity is under long-term supply agreements with NVIDIA and committed through 2027, with pricing locked at a significant premium to commodity DRAM. The two-supplier structure for HBM3E (Micron and SK Hynix, with Samsung qualifying in late 2026) creates extraordinary pricing discipline — both suppliers are at full capacity, eliminating the traditional memory price war dynamic. Mehrotra's open-market share purchase of $2.8M in February 2026 — one of the largest in Micron's history — represents a highly specific insider bet on the HBM cycle sustaining well beyond consensus expectations. Micron's data center DRAM segment (including HBM) now represents 58% of total revenue, up from 31% two years ago."
+  },
+  {
+    title:'Lockheed Martin F-35 backlog surpasses 500 aircraft — NATO allies accelerating orders',
+    source:'LMT Defense Update', url:'#', time_published:'20260507T110000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'technology'},{topic:'financial_markets'}],
+    ticker_sentiment:[{ticker:'LMT',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'RTX',relevance_score:'0.4',ticker_sentiment_label:'Bullish'},{ticker:'NOC',relevance_score:'0.35',ticker_sentiment_label:'Bullish'}],
+    summary:"Lockheed Martin's F-35 production backlog has reached 508 aircraft — a record — driven by NATO ally order acceleration following Russia's Ukraine invasion and rising Indo-Pacific tensions. Germany, Poland, and the Netherlands each placed supplemental orders in Q1 2026, and Canada's 88-aircraft program entered full production phase. The F-35 is a 40-year program with no credible replacement on any defense ministry's roadmap, providing Lockheed with a revenue stream that outlasts any budget cycle. CEO James Taiclet disclosed a $1.4M open market share purchase in February 2026, alongside two board members — a cluster buy pattern that historically precedes a 12-month outperformance period. The classified hypersonic programs (ARRW follow-on, Mach-5+ tactical strike) represent upside optionality not in consensus estimates, as these programs are exempt from FOIA and congressional budget transparency requirements."
+  },
+  {
+    title:"Northrop Grumman B-21 Raider enters low-rate initial production — sole-source nuclear modernization",
+    source:'NOC Earnings', url:'#', time_published:'20260506T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'technology'},{topic:'earnings'}],
+    ticker_sentiment:[{ticker:'NOC',relevance_score:'0.97',ticker_sentiment_label:'Bullish'},{ticker:'LMT',relevance_score:'0.3',ticker_sentiment_label:'Bullish'}],
+    summary:"Northrop Grumman's B-21 Raider stealth bomber has entered LRIP (Low-Rate Initial Production) with a ceiling of 100 aircraft, representing a $203B program of record over 30 years — one of the largest in US defense history. The B-21 is sole-source: no other manufacturer has the B-2 derivative design authority, classified subsystem knowledge, or USAF certification required to compete. Simultaneously, Northrop's Sentinel ICBM program (replacement for Minuteman III) has cleared its CDR milestone and entered system development, representing another $100B+ sole-source program. Combined, these two programs provide Northrop with contract certainty well beyond a single administration's budget priorities — nuclear modernization has bipartisan political protection. Northrop's space segment (strategic missile defense, classified satellites) is the fastest-growing business unit and carries the highest classified program margins in the defense prime universe."
+  },
+  {
+    title:'RTX Raytheon Patriot backlog at record 2.5 years — missile production running at full capacity',
+    source:'RTX Q1 Earnings', url:'#', time_published:'20260430T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'RTX',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'LMT',relevance_score:'0.3',ticker_sentiment_label:'Bullish'}],
+    summary:"RTX's Raytheon segment reported Q1 2026 revenue of $7.2B, up 21% year-over-year, driven by Patriot Advanced Capability-3 (PAC-3) missile production running at maximum capacity with a 2.5-year order backlog — the longest in program history. NATO ally demand, accelerated by Ukraine consumption and allied deterrence restocking, has outpaced Raytheon's ability to expand production lines. CEO Chris Calio raised FY2026 defense segment guidance and disclosed $500M in new factory investments to expand PAC-3, AIM-120 AMRAAM, and StormBreaker production capacity by 40% over 24 months. Collins Aerospace (RTX's commercial aviation unit) contributed upside as well, with Pratt & Whitney GTF engine remediation costs now below prior estimates and the commercial aviation recovery driving aftermarket revenue to record levels. The GTF powder metal disk issue — the key risk that has weighed on RTX's multiple — is tracking ahead of schedule for resolution."
+  },
+  {
+    title:"Salesforce Agentforce signs 3,000 enterprise customers in 90 days — fastest AI adoption in SaaS history",
+    source:'CRM Earnings', url:'#', time_published:'20260430T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'CRM',relevance_score:'0.97',ticker_sentiment_label:'Bullish'},{ticker:'NOW',relevance_score:'0.4',ticker_sentiment_label:'Bullish'},{ticker:'SNOW',relevance_score:'0.35',ticker_sentiment_label:'Bullish'}],
+    summary:"Salesforce reported Q1 FY2027 revenue of $9.8B, up 9% year-over-year, with Agentforce AI agent conversions reaching 3,000 enterprise customers — a pace CEO Marc Benioff described as 'the fastest product adoption in our 25-year history.' The strategic moat behind Agentforce is the Data Cloud, which gives Salesforce's AI agents access to proprietary CRM data that competitors cannot replicate: customer histories, interaction records, and predictive scoring built on Salesforce's 150,000-customer base. CFO Amy Weaver disclosed a $10B Agentforce pipeline, converting at 18% — implying $1.8B in incremental contract value not yet in consensus estimates. The average Agentforce contract adds $140,000–$400,000 in annual recurring revenue per enterprise customer, a significant uplift on the base CRM subscription. Salesforce's $50/month per AI conversation pricing model creates usage-based revenue expansion that grows automatically as customer AI adoption increases."
+  },
+  {
+    title:'ServiceNow AI Pro reaches 30% enterprise attach rate — CEO Bill McDermott buys $4.2M in shares',
+    source:'NOW Earnings', url:'#', time_published:'20260425T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'NOW',relevance_score:'0.97',ticker_sentiment_label:'Bullish'},{ticker:'CRM',relevance_score:'0.4',ticker_sentiment_label:'Bullish'}],
+    summary:"ServiceNow reported Q1 2026 subscription revenue of $2.99B, up 22% year-over-year, beating consensus of $2.87B, with AI Pro SKU attach rate reaching 30% of eligible enterprise customers — ahead of the company's own internal target of 25% by mid-year. CEO Bill McDermott disclosed a $4.2M open-market share purchase in March 2026, one of the largest insider buys in ServiceNow's history and a significant personal bet on the AI Pro monetization trajectory. Each AI Pro seat adds $50–120/month in incremental revenue on top of the base platform fee, meaning the 30% attach rate already adds approximately $900M in annualized revenue that did not exist 18 months ago. The 98% enterprise renewal rate — the highest in large-cap SaaS — ensures that AI Pro revenue is additive rather than replacement: customers are not switching base subscriptions for AI Pro, they are paying for both. ServiceNow now has 8,100 enterprise customers, each of which represents a future AI Pro conversion opportunity as IT workflow automation ROI becomes measurable."
+  },
+  {
+    title:"Snowflake Cortex AI revenue +400% YoY — new CEO accelerates AI data platform strategy",
+    source:'SNOW Earnings', url:'#', time_published:'20260429T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'SNOW',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'MSFT',relevance_score:'0.45',ticker_sentiment_label:'Bullish'},{ticker:'GOOGL',relevance_score:'0.4',ticker_sentiment_label:'Bullish'}],
+    summary:"Snowflake reported Q1 FY2027 product revenue of $1.04B, up 28% year-over-year, with Cortex AI (Snowflake's in-database AI inference layer) growing 400% year-over-year from a small base but now generating meaningful revenue. New CEO Sridhar Ramaswamy — the architect of Google's search advertising product — has refocused Snowflake on becoming the AI data cloud, positioning Cortex as the layer between enterprise data (stored in Snowflake) and AI models (run in MSFT Azure or GOOGL Cloud). The Iceberg table format, which allows Snowflake data to be accessed directly by competing cloud AI services, has driven a 40% increase in new enterprise data platform contracts. The Microsoft and Google partnerships are particularly significant: both hyperscalers are referring enterprise AI workloads to Snowflake as the data management layer, turning potential competitors into distribution partners. Ramaswamy's background in search advertising — where data quality determines AI output quality — gives him a unique perspective on why the Snowflake data moat is more durable than consensus expects."
+  },
+  {
+    title:"TSMC 2nm node yields improving ahead of schedule — CoWoS packaging capacity tripling in 2026",
+    source:'DigiTimes', url:'#', time_published:'20260508T070000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'technology'},{topic:'financial_markets'}],
+    ticker_sentiment:[{ticker:'TSM',relevance_score:'0.97',ticker_sentiment_label:'Bullish'},{ticker:'ASML',relevance_score:'0.7',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.65',ticker_sentiment_label:'Bullish'},{ticker:'AMAT',relevance_score:'0.5',ticker_sentiment_label:'Bullish'}],
+    summary:"TSMC's 2nm (N2) process node is achieving 70%+ defect-free die yield in volume production — ahead of TSMC's own internal target and well above the 50–55% yield typical at early production ramp. This faster-than-expected maturation means TSMC can accelerate customer production starts for Apple (A20 chip), NVIDIA (Rubin architecture), and AMD (EPYC next-gen), compressing the timeline to TSMC revenue recognition. CoWoS advanced packaging — the process that bonds HBM3E memory to AI GPUs — is tripling in capacity through 2026 across new packaging facilities in Taiwan and Arizona. Every CoWoS unit requires ASML EUV lithography, AMAT CVD deposition, and Lam etch steps, making TSMC capex increases a direct read-through for all three equipment companies. TSMC's Arizona Fab 21 Phase 2 (3nm) is also on track, providing the first high-volume domestic US chip production and satisfying CHIPS Act compliance requirements for NVDA, AMD, and Apple customers with US supply chain mandates."
+  },
+  {
+    title:'Super Micro Computer clears accounting review — CEO and CFO buy $3.2M in open market',
+    source:'SMCI Earnings', url:'#', time_published:'20260501T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'SMCI',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.55',ticker_sentiment_label:'Bullish'}],
+    summary:"Super Micro Computer completed its independent accounting review (conducted by Deloitte) with no material restatements required and has now filed all outstanding SEC disclosures, clearing the path to Nasdaq compliance restoration. CEO Charles Liang purchased $2.8M in shares at open market prices in March 2026, followed by a $380K purchase by CFO David Weigand — a synchronized insider buy cluster that signals executive confidence in the recovery trajectory. SMCI is the highest-beta NVIDIA play available to investors: every NVDA Blackwell GPU shipped needs rack-level integration, thermal management, and server chassis that SMCI specializes in. SMCI's market share in AI server deployments has recovered from its accounting-related lows and is tracking toward 15% of the AI server total addressable market — a segment growing at 65% annually. Management guided Q3 FY2026 revenue of $6.0–6.5B, which would represent a return to pre-controversy growth rates and implies full-year FY2026 revenue of approximately $22–24B."
   },
   {
     title:'Microsoft Azure capacity constraints ease as Constellation power deal delivers',
