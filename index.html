@@ -3403,6 +3403,38 @@ const DEMO_NEWS = [
     ticker_sentiment:[{ticker:'NVDA',relevance_score:'0.35',ticker_sentiment_label:'Bullish'}],
     summary:"Microsoft, Amazon, and Google have each signed or expanded long-term power purchase agreements with nuclear operators in the past 60 days, responding to the energy intensity of GPU clusters: a single NVDA GB200 NVL72 rack draws 120kW, meaning a 100,000-GPU data center requires roughly 500MW of power — equivalent to a mid-size nuclear reactor. Constellation Energy and Vistra are the primary beneficiaries, with CEG signing a 20-year, 800MW agreement with Microsoft at above-market rates. The indirect signal for NVDA and AMD: hyperscaler willingness to lock in 20-year energy contracts is evidence that they view AI infrastructure investment as a multi-decade commitment, not a cyclical capex surge. This reduces the risk of an abrupt data center spending pullback and supports sustained GPU demand well beyond current analyst models."
   },
+  {
+    title:'Vistra Energy Q1 2026 beats estimates — CEO and CFO both bought shares in March',
+    source:'Vistra Earnings', url:'#', time_published:'20260501T210000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'earnings'},{topic:'energy_transportation'}],
+    ticker_sentiment:[{ticker:'VST',relevance_score:'0.97',ticker_sentiment_label:'Bullish'},{ticker:'CEG',relevance_score:'0.4',ticker_sentiment_label:'Bullish'}],
+    summary:"Vistra Corp reported Q1 2026 EPS of $2.14, beating consensus of $1.87 by 14.4%, driven by a nuclear capacity factor of 95.2% and record Texas ERCOT power prices during peak demand windows. CEO Jim Burke raised full-year guidance, citing an unprecedented pipeline of data center power purchase agreement inquiries. Two agreements are in active negotiation but have not yet been disclosed. The insider signal adds conviction: Burke purchased $1.8M of VST shares in the open market in March 2026 at approximately $112 per share — well below the current price — followed by a $380K open-market buy from CFO Christie in the same week. When a CEO and CFO buy simultaneously in the open market at the same price level, it is one of the highest-quality signals available to retail investors. The combination of earnings beat, guidance raise, and executive cluster buy has driven Druckenmiller's disclosed position of 2.1 million shares, representing one of his largest energy holdings."
+  },
+  {
+    title:'Constellation Energy restarts Three Mile Island for Microsoft — a historic first',
+    source:'WSJ Energy', url:'#', time_published:'20260415T120000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'energy_transportation'},{topic:'technology'}],
+    ticker_sentiment:[{ticker:'CEG',relevance_score:'0.96',ticker_sentiment_label:'Bullish'},{ticker:'MSFT',relevance_score:'0.7',ticker_sentiment_label:'Bullish'},{ticker:'VST',relevance_score:'0.3',ticker_sentiment_label:'Bullish'}],
+    summary:"Three Mile Island Unit 1 — the reactor that has been offline since 2019 — has been successfully restarted and is now feeding 835 megawatts of carbon-free power to the Pennsylvania grid, entirely dedicated to Microsoft's Azure data center network under a 20-year power purchase agreement at approximately $160 per megawatt-hour. This is the first time in US history that a nuclear reactor has been restarted specifically to power artificial intelligence infrastructure. The $160/MWh rate represents a significant premium over average spot power prices ($65–85/MWh in PJM) and locks in a price floor for Constellation's revenue for two decades. CEO Joe Dominguez disclosed on the Q1 2026 call that two additional technology company PPA negotiations are in advanced stages — widely expected to be Google and Amazon, both of whom have 24/7 carbon-free energy commitments. Goldman Sachs raised its price target for CEG to $240, arguing that nuclear PPA scarcity premium has not been fully priced into the stock."
+  },
+  {
+    title:'Druckenmiller portfolio: exits partial NVDA, adds VST and CEG as AI power plays',
+    source:'13F Analysis', url:'#', time_published:'20260515T090000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'financial_markets'},{topic:'energy_transportation'}],
+    ticker_sentiment:[{ticker:'VST',relevance_score:'0.88',ticker_sentiment_label:'Bullish'},{ticker:'CEG',relevance_score:'0.75',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.5',ticker_sentiment_label:'Neutral'}],
+    summary:"Stanley Druckenmiller's Duquesne Family Office Q1 2026 13F filing shows a strategic rotation: a partial reduction in NVDA from 3.8M to 2.9M shares, and simultaneous new positions in Vistra Energy (2.1M shares) and Constellation Energy (1.4M shares). The thesis, confirmed in a recent interview, is that the AI compute build-out has a well-understood primary beneficiary in NVDA, but the power infrastructure necessary to run that compute is underappreciated and less fully priced. Druckenmiller's energy infrastructure bet is not a trade against NVDA — it is a second-order play on the same thesis. The power demand math supports his view: the 500,000 GPU data centers currently under construction across Texas, Virginia, and Arizona will collectively require approximately 15 gigawatts of new baseload power by 2028, equivalent to adding 15 new nuclear reactors to the US grid capacity. VST and CEG are the two companies best positioned to supply it."
+  },
+  {
+    title:'Microsoft Azure capacity constraints ease as Constellation power deal delivers',
+    source:'Microsoft Investor Relations', url:'#', time_published:'20260503T143000',
+    overall_sentiment_label:'Bullish',
+    topics:[{topic:'technology'},{topic:'energy_transportation'}],
+    ticker_sentiment:[{ticker:'MSFT',relevance_score:'0.85',ticker_sentiment_label:'Bullish'},{ticker:'CEG',relevance_score:'0.7',ticker_sentiment_label:'Bullish'},{ticker:'NVDA',relevance_score:'0.4',ticker_sentiment_label:'Bullish'}],
+    summary:"Microsoft CFO Amy Hood indicated on the Q3 2026 earnings call that Azure capacity utilization has begun to ease from peak levels as the Pennsylvania data center expansion — powered by Three Mile Island nuclear energy — has come fully online. This is meaningful because Microsoft has cited data center capacity as the primary constraint on Azure revenue growth for three consecutive quarters. With TMI-sourced power now available, Microsoft can accelerate the deployment of NVDA Blackwell GPU clusters in the Philadelphia corridor. The read-through for NVDA is positive: when Microsoft's capacity constraint eases, the existing purchase orders for Blackwell systems move from backlog to revenue faster. For CEG, the operational success of the TMI restart validates the technical feasibility of nuclear PPA restarts, strengthening the case for additional reactor reactivations and reducing the negotiation risk on the two additional PPAs currently under discussion."
+  },
 ];
 // tag demo articles
 DEMO_NEWS.forEach(a => { a._cats = (a.topics||[]).map(t=>t.topic); a._isDemo = true; });
@@ -4065,19 +4097,27 @@ function renderNewsFilter(ticker) {
       .map(t=>{const tsl=t.ticker_sentiment_label||'Neutral';return `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${_sBg(tsl)};color:${_sColor(tsl)};border:0.5px solid ${_sBd(tsl)};font-family:'DM Mono',monospace;font-weight:600;">${t.ticker}</span>`;}).join('');
     const hasSummary = !!(a.summary && a.summary.length > 10);
     const isDemo = !!a._isDemo;
-    // Expanded body: summary + read link
-    const expandBody = `<div id="ni-${idx}" style="display:none;margin-top:9px;padding:10px 12px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
-      <p style="font-size:12px;color:var(--text2);line-height:1.65;margin:0 0 8px 0;">${a.summary||'No summary available for this article.'}</p>
-      ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — add Alpha Vantage key for live news with real links</span>` : ''}
+    // First article auto-expands; others start collapsed
+    const isFirst = (i === 0);
+    const expandedDefault = isFirst;
+    // Preview: first sentence shown inline for collapsed articles
+    const previewText = hasSummary && !expandedDefault
+      ? (a.summary.split('. ')[0] + (a.summary.indexOf('. ') > 0 ? '.' : ''))
+      : '';
+    // Full body panel
+    const expandBody = `<div id="ni-${idx}" style="display:${expandedDefault?'':'none'};margin-top:9px;padding:11px 13px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${a.summary||'No summary available for this article.'}</p>
+      ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — add Finnhub key for live news</span>` : ''}
     </div>`;
-    return divider + `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="toggleNewsItem(${idx}, this)">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:5px;">
-        <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1;">${a.title}</div>
+    return divider + `<div style="padding:11px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="toggleNewsItem(${idx}, this)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4;flex:1;">${a.title}</div>
         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
           <span style="font-size:10px;padding:3px 8px;border-radius:5px;background:${_sBg(sl)};color:${_sColor(sl)};border:0.5px solid ${_sBd(sl)};white-space:nowrap;font-weight:600;">${_sLabel(sl)}</span>
-          <span class="ni-chevron" style="font-size:10px;color:var(--text3);transition:transform .2s;">▾</span>
+          <span class="ni-chevron" style="font-size:10px;color:var(--text3);transition:transform .2s;${expandedDefault?'transform:rotate(180deg)':''}">▾</span>
         </div>
       </div>
+      ${previewText ? `<div style="font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:5px;">${previewText}</div>` : ''}
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
         <span style="font-size:10px;color:var(--text3);">${a.source||'\u2014'} \u00b7 ${_fmtTime(a.time_published)}</span>
         ${topicTags}${relTickers}
