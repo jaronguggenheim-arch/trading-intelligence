@@ -296,6 +296,21 @@ body.mkt-mode .main{padding:0;max-width:none;}
   #layer-ticker-btns{display:none !important;}
 }
 
+
+/* ── Focus bar: auto-scrolling ticker wheel ───────────────── */
+#ticker-scroll-wrap{flex:1;min-width:0;overflow:hidden;position:relative;mask-image:linear-gradient(to right,transparent 0%,black 40px,black calc(100% - 40px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 40px,black calc(100% - 40px),transparent 100%);}
+#ticker-scroll-track{display:flex;gap:6px;width:max-content;animation:focus-ticker-scroll 40s linear infinite;align-items:center;}
+#ticker-scroll-track:hover,#ticker-scroll-wrap:hover #ticker-scroll-track{animation-play-state:paused;}
+@keyframes focus-ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ftick{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.ftick:hover{border-color:var(--green-bd);background:var(--green-bg);color:var(--green);}
+.ftick.active{border-color:var(--green-bd);background:var(--green-bg);color:var(--green);}
+.ftick-score{font-family:'DM Mono',monospace;font-size:10px;opacity:0.7;}
+.ftick-score.hi{color:var(--green);opacity:1;}
+.ftick-score.mid{color:var(--amber);opacity:1;}
+.ftick-score.lo{color:var(--red);opacity:1;}
+@media(max-width:600px){#ticker-scroll-wrap{display:none;}}
+
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;overflow-x:hidden;}
 .hdr{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:50px;position:sticky;top:0;z-index:100;gap:16px;}
 #app-hdr{overflow:hidden;max-width:100%;}
@@ -509,33 +524,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
     </div>
     <div id="focus-active-chip" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);color:var(--blue);font-weight:600;letter-spacing:.02em;flex-shrink:0;"></div>
-    <div id="layer-ticker-btns" style="display:none;align-items:center;gap:4px;padding-left:12px;border-left:0.5px solid var(--border2);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex-shrink:1;min-width:0;">
-      <button onclick=\"focusBarTick('ASML',this)\" style="padding:4px 10px;border:0.5px solid var(--red);border-radius:5px;background:var(--red-bg);color:var(--red);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">ASML</button>
-      <button onclick=\"focusBarTick('NVDA',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NVDA</button>
-      <button onclick=\"focusBarTick('RKLB',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RKLB</button>
-      <button onclick=\"focusBarTick('PLTR',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PLTR</button>
-      <button onclick=\"focusBarTick('AMD',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMD</button>
-      <button onclick=\"focusBarTick('TSM',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">TSM</button>
-      <button onclick=\"focusBarTick('SMCI',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SMCI</button>
-      <button onclick=\"focusBarTick('META',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">META</button>
-      <button onclick=\"focusBarTick('MSFT',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MSFT</button>
-      <button onclick=\"focusBarTick('GOOGL',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GOOGL</button>
-      <button onclick=\"focusBarTick('VST',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">VST</button>
-      <button onclick=\"focusBarTick('CEG',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CEG</button>
-      <button onclick=\"focusBarTick('AMAT',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMAT</button>
-      <button onclick=\"focusBarTick('LRCX',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LRCX</button>
-      <button onclick=\"focusBarTick('MU',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MU</button>
-      <button onclick=\"focusBarTick('LMT',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LMT</button>
-      <button onclick=\"focusBarTick('NOC',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOC</button>
-      <button onclick=\"focusBarTick('RTX',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RTX</button>
-      <button onclick=\"focusBarTick('CRM',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CRM</button>
-      <button onclick=\"focusBarTick('NOW',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NOW</button>
-      <button onclick=\"focusBarTick('SNOW',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SNOW</button>
-      <button onclick=\"focusBarTick('AMZN',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMZN</button>
-      <button onclick=\"focusBarTick('ARM',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">ARM</button>
-      <button onclick=\"focusBarTick('AAPL',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AAPL</button>
-      <button onclick=\"focusBarTick('PANW',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PANW</button>
-      <button onclick=\"focusBarTick('GEV',this)\" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GEV</button>
+    <div id="layer-ticker-btns" style="display:none;flex:1;min-width:0;padding-left:12px;border-left:0.5px solid var(--border2);">
+      <div id="ticker-scroll-wrap">
+        <div id="ticker-scroll-track"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -2523,7 +2515,8 @@ function _refreshLiveScoreUI() {
     const q = document.getElementById('focus-search-input')?.value;
     if (q) focusSearchInput(q);
   }
-}
+
+  try{buildTickerScrollTrack();updateTickerScrollActive(S.focusTicker);}catch(e){}}
 
 // ─── SCORE CARD COLOR SYNC ────────────────────────────────────────────────────
 function syncSignalScoreCards() {
@@ -4308,24 +4301,57 @@ function focusBarTick(sym, btn) {
   setFocusTicker(sym);
   // On Signal Scores tab, also render layer analysis
   if (S.activeTab === 'convergence') {
-    try { renderLayerAnalysis(sym, btn); } catch(e) {}
+    try { renderLayerAnalysis(sym, null); } catch(e) {}
   }
-  // Highlight active button
-  document.querySelectorAll('#layer-ticker-btns button').forEach(b => {
-    b.style.background = 'none';
-    b.style.color = 'var(--text2)';
-    b.style.borderColor = 'var(--border2)';
+  // Highlight active pill in scroll track
+  updateTickerScrollActive(sym);
+  // Briefly pause scroll to show selection
+  const track = document.getElementById('ticker-scroll-track');
+  if (track) {
+    track.style.animationPlayState = 'paused';
+    setTimeout(() => { track.style.animationPlayState = ''; }, 1200);
+  }
+}
+
+
+/* ── FOCUS BAR SCROLLING TICKER WHEEL ── */
+function buildTickerScrollTrack() {
+  const track = document.getElementById('ticker-scroll-track');
+  if (!track) return;
+  // Sort all stocks by score descending
+  const sorted = Object.keys(SCORES).sort((a, b) => SCORES[b] - SCORES[a]);
+  const buildPill = function(sym) {
+    const sc = SCORES[sym] || 50;
+    const scCls = sc >= 70 ? 'hi' : sc >= 40 ? 'mid' : 'lo';
+    const btn = document.createElement('button');
+    btn.className = 'ftick';
+    btn.setAttribute('data-sym', sym);
+    btn.innerHTML = sym + ' <span class="ftick-score ' + scCls + '">' + sc + '</span>';
+    btn.onclick = function() { focusBarTick(sym, btn); };
+    return btn;
+  };
+  // Build two full sets for seamless infinite loop
+  const frag = document.createDocumentFragment();
+  sorted.forEach(sym => frag.appendChild(buildPill(sym)));
+  sorted.forEach(sym => frag.appendChild(buildPill(sym)));
+  track.innerHTML = '';
+  track.appendChild(frag);
+}
+
+function updateTickerScrollActive(sym) {
+  document.querySelectorAll('#ticker-scroll-track .ftick').forEach(btn => {
+    if (btn.getAttribute('data-sym') === sym) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
   });
-  if (btn) {
-    btn.style.background = 'var(--green-bg)';
-    btn.style.color = 'var(--green)';
-    btn.style.borderColor = 'var(--green-bd)';
-  }
 }
 
 function enterApp(){
   updateHeaderUser();
   updateHeaderUser();
+  setTimeout(function(){try{buildTickerScrollTrack();}catch(e){}},200);
   try{localStorage.setItem('ti72_visited','1');}catch(e){}
   /* Direct DOM manipulation — show app chrome */
   var hdr=document.getElementById('app-hdr');
@@ -4462,6 +4488,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     // Start 15-min global refresh loop
     setTimeout(()=>{try{startGlobalRefresh();}catch(e){console.warn('globalRefresh',e);}},2000);
   }
+  setTimeout(function(){try{buildTickerScrollTrack();}catch(e){console.warn('tickerTrack',e);}},200);
 });
 
 /* ── MY INTEL SUBTABS ── */
@@ -4915,8 +4942,6 @@ function setFocusTicker(ticker) {
     if (t === 'markets')      { renderMarkets && renderMarkets(); }
   } catch(e) { console.warn('focusTicker re-render:', e); }
 
-  // Refresh Signal Scores layer panel if on that tab
-  if(S.activeTab==='convergence'){try{renderLayerAnalysis(sym||S.focusTicker||'ASML',null);}catch(e){}}
 }
 
 function focusSearchInput(q) {
