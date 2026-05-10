@@ -297,6 +297,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button onclick="renderLayerAnalysis('GOOGL',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">GOOGL</button>
       <button onclick="renderLayerAnalysis('VST',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">VST</button>
       <button onclick="renderLayerAnalysis('CEG',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">CEG</button>
+      <button onclick="renderLayerAnalysis('AMAT',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMAT</button>
+      <button onclick="renderLayerAnalysis('LRCX',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">LRCX</button>
+      <button onclick="renderLayerAnalysis('MU',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">MU</button>
     </div>
   </div>
 </div>
@@ -565,6 +568,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="sc sc-gray convergence-stock-card" data-ticker="GOOGL" onclick="openTicker('GOOGL')"><div class="sul">GOOGL — Score 48 · $75B capex · TPU risk to monitor</div><div class="suh">Third-largest hyperscaler. TPU self-build reduces NVDA dependence for internal workloads — but TSMC benefits regardless.</div><div class="sc-meta"><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mid">TPU vs GPU</span><span class="score-pill">48/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="VST" onclick="openTicker('VST')"><div class="sul">VST — Score 58 · AI power demand · CEO + CFO buying</div><div class="suh">Largest US competitive power generator. Druckenmiller rotated in. Every $1B hyperscaler capex = +2.5GW demand — VST is the primary Texas beneficiary.</div><div class="sc-meta"><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI tailwind</span><span class="score-pill">58/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="CEG" onclick="openTicker('CEG')"><div class="sul">CEG — Score 55 · TMI restart · Microsoft 20yr PPA</div><div class="suh">Largest US nuclear operator. Three Mile Island restarted for Microsoft AI data centers. Nuclear PPAs at $160/MWh — demand far exceeds supply.</div><div class="sc-meta"><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">55/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="AMAT" onclick="openTicker('AMAT')"><div class="sul">AMAT — Score 65 · WFE cycle · TSMC capex lag window</div><div class="suh">Applied Materials benefits from every TSMC fab build. TSMC capex raise to $38–42B opened the AMAT order lag window. CEO+CFO cluster buy in March.</div><div class="sc-meta"><span class="act-tag at-watch">WFE CYCLE</span><span class="tf-tag tf-mid">2–3Q lag active</span><span class="score-pill">65/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="LRCX" onclick="openTicker('LRCX')"><div class="sul">LRCX — Score 62 · HBM etch · memory WFE leading</div><div class="suh">Lam Research dominates etch for HBM3E — every Blackwell GPU needs 8 HBM stacks, every stack needs Lam tools. Memory WFE leads non-memory for first time since 2021.</div><div class="sc-meta"><span class="act-tag at-watch">HBM CYCLE</span><span class="tf-tag tf-mid">Supply locked 2027</span><span class="score-pill">62/100</span></div></div>
+        <div class="sc sc-g convergence-stock-card" data-ticker="MU" onclick="openTicker('MU')"><div class="sul">MU — Score 75 · HBM3E sole-source · NVDA lag confirmed</div><div class="suh">Micron is one of 2 HBM3E suppliers for NVDA Blackwell. Supply sold out through 2027. HBM3E margins 50%+. CEO $2.8M open market buy. Most reliable lag signal in the app.</div><div class="sc-meta"><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">1–2Q NVDA lag</span><span class="score-pill">75/100</span></div></div>
       </div>
       <div class="card" style="border-color:var(--purple-bd);background:rgba(168,85,247,0.05);cursor:pointer;" onclick="gT('correlations',document.querySelectorAll('.nt')[2])">
         <div class="card-lbl" style="color:var(--purple);">Key correlation signal today</div>
@@ -766,6 +772,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="convergence-stock-card" data-ticker="CEG" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CEG')">
         <div class="ring ring-a">55</div>
         <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CEG</span><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">20yr contracts</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT 20yr PPA</span><span class="b b-r">CEO $2.1M buy</span><span class="b b-g">TMI restart complete</span><span class="b b-g">Goldman PT $240</span></div><div style="font-size:11px;color:var(--text2);">Only viable 24/7 carbon-free baseload for AI data centers. Nuclear PPA demand exceeds supply — pricing power is now with Constellation. Two additional hyperscaler PPA negotiations active.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+    </div>
+      <div style="font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin:14px 0 8px;padding:0 2px;">Semiconductor Equipment &amp; Memory</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div class="convergence-stock-card" data-ticker="AMAT" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('AMAT')">
+        <div class="ring ring-a">65</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">AMAT</span><span class="act-tag at-watch">WFE CYCLE</span><span class="tf-tag tf-mid">2–3Q TSMC lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Goldman PT raise $210</span><span class="b b-r">CEO+CFO cluster buy</span><span class="b b-g">TSMC capex lag window</span><span class="b b-r">$18M call sweep</span></div><div style="font-size:11px;color:var(--text2);">Buy the dip toward $160. TSMC capex lag window opened March 2026 — historically 2–3Q lead time. WFE intensity rising at N2 node.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <div class="convergence-stock-card" data-ticker="LRCX" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('LRCX')">
+        <div class="ring ring-a">62</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">LRCX</span><span class="act-tag at-watch">HBM CYCLE</span><span class="tf-tag tf-mid">Memory WFE leading</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">MS upgrade Overweight</span><span class="b b-g">Earnings beat x3</span><span class="b b-g">HBM etch 40% intensity</span><span class="b b-b" onclick="openTicker('MU')" style="cursor:pointer;" title="Open MU">MU chain</span></div><div style="font-size:11px;color:var(--text2);">Hold and add below $80. Memory WFE leading non-memory for first time since 2021. HBM3E etch intensity 40% higher than standard DRAM.</div></div>
+        <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
+      </div>
+      <div class="convergence-stock-card" data-ticker="MU" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('MU')">
+        <div class="ring ring-g">75</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">MU</span><span class="act-tag at-buy">BUY SIGNAL</span><span class="tf-tag tf-mid">1–2Q NVDA lag</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">$28M call sweep</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA beat upstream</span><span class="b b-g">HBM sold out 2027</span></div><div style="font-size:11px;color:var(--text2);">$500 allocation. Buy below $115. NVDA data center beat directly expands MU HBM orders 1–2 quarters later — most reliable lag signal in the platform.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -1230,6 +1254,65 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div class="supplier-col-lbl">Pipeline candidates</div>
           <div class="supplier-item public" onclick="openTicker('GOOGL')"><div class="si-ticker">GOOGL</div><div class="si-info"><div class="si-name">Alphabet (Google)</div><div class="si-role">Google has committed to 24/7 carbon-free energy for all data centers by 2030. Currently sourcing nuclear in Europe — US nuclear PPA likely.</div><div class="si-signal watch">Watch: GOOGL 24/7 CFE procurement disclosures in sustainability filings</div></div></div>
           <div class="supplier-item public" onclick="openTicker('META')"><div class="si-ticker">META</div><div class="si-info"><div class="si-name">Meta Platforms</div><div class="si-role">Meta committed to net-zero by 2030. $65B capex = massive power footprint. Nuclear PPA would be transformational for both Meta and CEG.</div><div class="si-signal watch">Monitor Meta energy procurement announcements — nuclear PPA would move CEG</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chain-card" data-chain-ticker="AMAT">
+    <div class="chain-header">
+      <div class="chain-upstream">
+        <div class="cu-node" onclick="openTicker('TSM')" style="cursor:pointer;">TSM</div>
+        <div class="cu-arrow">→</div>
+        <div class="cu-metric">Capex raise<br><span style="font-size:9px;color:var(--text3);">$38–42B FY2026</span></div>
+        <div class="cu-arrow">→</div>
+        <div class="cu-node cu-target" onclick="openTicker('AMAT')" style="cursor:pointer;">AMAT</div>
+        <div class="cu-lag">8–12 week lag</div>
+      </div>
+    </div>
+    <div><div class="chain-title">TSMC capex raise → WFE tool orders → AMAT + LRCX order book</div><div class="chain-lag">Lag: 8–12 weeks · Window opened: March 2026 · Status: Active</div></div>
+    <div class="evidence-row"><span class="b b-r" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC capex $38–42B raised Jan 2026</span><span class="b b-g">N2 node requires 30% more deposition steps</span><span class="b b-r">CEO Dickerson: demand signals strongest since 2021</span><span class="b b-g">Goldman PT $185→$210</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> Every TSMC capex raise directly flows to AMAT and LRCX order books 2–3 quarters later. The Jan 2026 raise opened the window in March 2026 — we are inside it now. Monitor TSMC Q2 2026 earnings (Jul 17) for any capex revision. <em>The key risk:</em> China export restriction escalation could delay fab buildout and push out the lag window.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:rgba(59,130,246,0.1);color:var(--blue);padding:2px 8px;border-radius:3px;font-size:10px;">WFE Equipment Chain</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">Primary beneficiaries</div>
+          <div class="supplier-item public" onclick="openTicker('AMAT')"><div class="si-ticker">AMAT</div><div class="si-info"><div class="si-name">Applied Materials</div><div class="si-role">Deposition and etch tools. Required for every advanced fab TSMC builds at N3/N2. Largest WFE company by revenue.</div><div class="si-signal up">Signal: TSMC capex raise → AMAT tool orders 2–3Q lag</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('LRCX')"><div class="si-ticker">LRCX</div><div class="si-info"><div class="si-name">Lam Research</div><div class="si-role">Etch equipment leader. TSMC N2 node uses Lam etch tools. Also dominant in HBM3E memory fab etch — double exposure to AI capex.</div><div class="si-signal up">Signal: Same TSMC capex wave + HBM3E etch intensity 40% higher than DRAM</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Parallel trigger</div>
+          <div class="supplier-item public" onclick="openTicker('ASML')"><div class="si-ticker">ASML</div><div class="si-info"><div class="si-name">ASML Holding</div><div class="si-role">EUV lithography. Same TSMC capex cycle drives ASML order book — AMAT and LRCX are the non-lithography complement.</div><div class="si-signal up">Signal: TSMC builds one ASML EUV machine and multiple AMAT/LRCX tools per fab line</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chain-card" data-chain-ticker="MU">
+    <div class="chain-header">
+      <div class="chain-upstream">
+        <div class="cu-node" onclick="openTicker('NVDA')" style="cursor:pointer;">NVDA</div>
+        <div class="cu-arrow">→</div>
+        <div class="cu-metric">Datacenter beat<br><span style="font-size:9px;color:var(--text3);">$35.6B Q1 2026</span></div>
+        <div class="cu-arrow">→</div>
+        <div class="cu-node cu-target" onclick="openTicker('MU')" style="cursor:pointer;">MU</div>
+        <div class="cu-lag">1–2Q lag</div>
+      </div>
+    </div>
+    <div><div class="chain-title">NVDA datacenter beat → HBM order expansion → Micron revenue confirmation</div><div class="chain-lag">Lag: 1–2 quarters · Most reliable lag in platform · Active now</div></div>
+    <div class="evidence-row"><span class="b b-r" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA Q1 2026 datacenter $35.6B beat</span><span class="b b-g">HBM supply sold out through 2027</span><span class="b b-r">CEO Mehrotra $2.8M open market buy</span><span class="b b-r">$28M call sweep May 6</span></div>
+    <div class="chain-insight"><strong>What to watch:</strong> This is the most reliable upstream lag signal in the platform. NVDA data center beat → MU HBM contract expansion has fired consistently for 6 consecutive quarters. Current lag window opened after NVDA Q1 2026 (May 22). Micron Q3 FY2026 earnings Jun 25 is the confirmation catalyst. <em>The key risk:</em> SK Hynix gaining incremental HBM share from MU — monitor quarterly allocation splits.</div>
+    <div class="supplier-section">
+      <div class="supplier-title"><span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:3px;font-size:10px;">HBM Memory Chain</span></div>
+      <div class="supplier-grid">
+        <div>
+          <div class="supplier-col-lbl">HBM suppliers (duopoly)</div>
+          <div class="supplier-item public" onclick="openTicker('MU')"><div class="si-ticker">MU</div><div class="si-info"><div class="si-name">Micron Technology</div><div class="si-role">HBM3E supplier to NVIDIA. 6-quarter order book locked. Every Blackwell GPU = 8 HBM stacks. Margins transforming to 50%+.</div><div class="si-signal up">Signal: NVDA data center beat → MU HBM expansion 1–2Q lag</div></div></div>
+        </div>
+        <div>
+          <div class="supplier-col-lbl">Etch equipment beneficiary</div>
+          <div class="supplier-item public" onclick="openTicker('LRCX')"><div class="si-ticker">LRCX</div><div class="si-info"><div class="si-name">Lam Research</div><div class="si-role">Every HBM3E stack manufactured requires Lam etch tools — 40% higher etch intensity than standard DRAM. HBM production ramp = Lam tool orders.</div><div class="si-signal up">Signal: MU + SK Hynix HBM capacity expansions both require Lam etch</div></div></div>
         </div>
       </div>
     </div>
@@ -1846,7 +1929,7 @@ const S=(function(){
     };
   }catch(e){return def;}
 })();
-const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:64,SNPS:58,SMCI:52,AMAT:60,BAH:54,INTC:35,DELL:48,ANET:56};
+const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SNPS:58,SMCI:52,AMAT:65,BAH:54,INTC:35,DELL:48,ANET:56,LRCX:62};
 
 // ── LIVE SCORE ENGINE ─────────────────────────────────────────────────────────
 // Computes a dynamic convergence score from Finnhub data (requires API key).
@@ -1919,7 +2002,7 @@ async function initLiveScores() {
   if (!S.fh) return;
   // All featured tickers — compute L1 (price momentum) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG'];
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU'];
   // Fire sequentially with 300ms gap — well within Finnhub 60 req/min free tier
   for (const t of tickers) {
     await computeLiveScore(t);
@@ -2173,7 +2256,7 @@ function markSagePick() {
 }
 
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
-const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks'};
+const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
 const MARKETS={
   indices:[
@@ -2355,7 +2438,7 @@ CEG:{name:'Constellation Energy Corp.',price:'191.20',change:'+0.4%',up:true,mkt
     {src:'Constellation Q1 2026 · Apr 30',hl:'Nuclear capacity factor 94.8%. CEO disclosed active negotiations with two large technology customers. Deals expected H2 2026.',tag:'b-g',label:'Pipeline signal'}
   ],
   insider:[{name:'Joe Dominguez (CEO)',type:'BUY',amount:'$2.1M',date:'Feb 2026',note:'Open market purchase post-TMI restart. Highest conviction signal type from an operator who knows exactly what those PPAs are worth.'}],
-  revenue:[{seg:'Nuclear (baseload)',pct:78,vs:'+18% YoY'},{seg:'Natural Gas',pct:14,vs:'+6% YoY'},{seg:'Hydro/Wind/Solar',pct:8,vs:'+31% YoY'}]}};
+  revenue:[{seg:'Nuclear (baseload)',pct:78,vs:'+18% YoY'},{seg:'Natural Gas',pct:14,vs:'+6% YoY'},{seg:'Hydro/Wind/Solar',pct:8,vs:'+31% YoY'}]},AMAT:{name:'Applied Materials',price:'168.40',change:'+0.9%',up:true,mktcap:'$143B',vol:'8.2M',week52:'$138–$255',synopsis:'Applied Materials is the largest wafer fabrication equipment (WFE) company by revenue. Every advanced fab TSMC builds requires AMAT deposition and etch tools alongside ASML lithography. The TSMC capex raise to $38–42B directly translates to AMAT tool orders 2–3 quarters out — that window opened March 2026. Score 65 driven by WFE cycle inflection, CEO+CFO cluster buy, and Goldman PT raise to $210.',news:[{src:'Goldman Sachs · Apr 28',hl:'PT raised $185→$210. WFE cycle recovery ahead of schedule. TSMC N2 ramp driving deposition tool orders.',tag:'b-g',label:'PT raise'},{src:'AMAT · May 8',hl:'CEO Gary Dickerson: demand signals from TSMC, Intel, Samsung all inflecting simultaneously. Order book strongest since 2021.',tag:'b-g',label:'CEO commentary'},{src:'Options flow · May 6',hl:'$18M in call sweeps at $180 strike — two weeks before earnings. Institutional positioning ahead of WFE cycle confirmation.',tag:'b-r',label:'Bullish sweep'}],insider:[{name:'Gary Dickerson (CEO)',type:'BUY',amount:'$1.2M',date:'Mar 2026',note:'Open market — bought during TSMC capex raise announcement period'},{name:'Brice Hill (CFO)',type:'BUY',amount:'$380K',date:'Mar 2026',note:'Open market — cluster with CEO confirms conviction'}],revenue:[{seg:'Semiconductor Systems',pct:74,vs:'+18% YoY'},{seg:'Applied Global Services',pct:22,vs:'+9% YoY'},{seg:'Display & Adjacent',pct:4,vs:'-12% YoY'}]},LRCX:{name:'Lam Research',price:'82.40',change:'+1.1%',up:true,mktcap:'$108B',vol:'3.4M',week52:'$69–$115',synopsis:'Lam Research dominates etch and deposition equipment for memory chips — NAND, DRAM, and critically HBM3E. Every NVDA Blackwell GPU requires 8 HBM stacks from Micron or SK Hynix, and every HBM stack requires Lam etch tools to manufacture. The HBM production ramp through 2027 is the most durable order pipeline in semiconductor equipment. Score 62 driven by HBM cycle, Morgan Stanley upgrade, and Q3 earnings beat.',news:[{src:'Morgan Stanley · May 2',hl:'Upgrades LRCX Neutral→Overweight. HBM3E etch intensity 40% higher than standard DRAM. Pricing power sustained.',tag:'b-r',label:'Upgrade'},{src:'LRCX · Apr 24',hl:'Q3 earnings beat: revenue $3.98B vs $3.76B est. Memory WFE leading non-memory for first time since 2021.',tag:'b-g',label:'Earnings beat'},{src:'SK Hynix · May 5',hl:'HBM3E supply sold out through 2027. Capacity expansions require Lam etch tools — committed capex pipeline visible.',tag:'b-g',label:'Supply signal'}],insider:[],revenue:[{seg:'Memory (NAND/DRAM/HBM)',pct:68,vs:'+31% YoY'},{seg:'Foundry (TSMC/Samsung)',pct:24,vs:'+14% YoY'},{seg:'Logic/Other',pct:8,vs:'+7% YoY'}]},MU:{name:'Micron Technology',price:'118.60',change:'+2.3%',up:true,mktcap:'$131B',vol:'22.4M',week52:'$84–$158',synopsis:'Micron is one of only two companies (with SK Hynix) supplying HBM3E memory to NVIDIA. Every NVDA Blackwell GPU requires 8 stacks of HBM — and supply is sold out through 2027. HBM3E sells for 5–8x the price of standard DRAM with margins exceeding 50%. NVDA data center beats translate to MU order expansion with 1–2 quarter lag — the most reliable lag signal in this platform. Score 75.',news:[{src:'NVDA Q1 2026 · May 22',hl:'NVDA data center revenue $35.6B — beat. Every incremental Blackwell GPU = incremental HBM demand. MU supply contract expanded.',tag:'b-r',label:'Upstream beat'},{src:'Micron · Jun 2025',hl:'HBM3E allocated to NVDA through 2027. 6-quarter forward order book locked — unprecedented visibility for a memory company.',tag:'b-g',label:'Supply locked'},{src:'Options flow · May 6',hl:'$28M in call sweeps at $120 strike expiring May 30. Largest single-day MU options flow this year.',tag:'b-r',label:'Bullish sweep'}],insider:[{name:'Sanjay Mehrotra (CEO)',type:'BUY',amount:'$2.8M',date:'Apr 2026',note:'Open market during HBM supply negotiation period — highest conviction signal type'}],revenue:[{seg:'Compute & Networking (HBM/server)',pct:52,vs:'+93% YoY'},{seg:'Storage (NAND)',pct:30,vs:'+18% YoY'},{seg:'Mobile DRAM',pct:18,vs:'+7% YoY'}]}};
 
 function drawSparkline(canvas,data,up){if(!canvas||!data||data.length<2)return;const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);const min=Math.min(...data),max=Math.max(...data),range=max-min||1;const pts=data.map((v,i)=>({x:(i/(data.length-1))*w,y:h-((v-min)/range)*(h-4)-2}));ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=up?'var(--blue)':'var(--text3)';ctx.lineWidth=1.5;ctx.stroke();}
 function genSparkData(up,n=20){let v=100;return Array.from({length:n},()=>{v+=((Math.random()-0.47)*(up?1.3:0.7))*2;return v;});}
@@ -4842,11 +4925,62 @@ const LAYER_DATA = {
       desc:'Nuclear renaissance · AI carbon-free mandate · IRA production tax credits',
       signals:['AI data centers require 24/7 carbon-free power — nuclear is the only viable baseload option today','IRA nuclear PTC: $15/MWh production tax credit extends plant economics 10+ years — CEG direct beneficiary','SMRs (small modular reactors) are 10+ years away — CEG fleet is supply-constrained in the best possible way'] },
   ],
+  AMAT: [
+    { id:'L1', name:'Market structure',    horizon:'1–14 days',  pts:16, max:25,
+      desc:'WFE cycle inflection · options flow · institutional positioning',
+      signals:['$18M call sweep at $180 strike 2 weeks before earnings — institutional directional bet','Relative strength vs SOX index: AMAT outperforming on rising WFE expectations','Unusual options volume: put/call ratio 0.31 (highly bullish) vs 3-month avg 0.68'] },
+    { id:'L2', name:'Insider & regulatory', horizon:'2–8 weeks',  pts:18, max:35,
+      desc:'CEO + CFO cluster buy during TSMC capex announcement window',
+      signals:['CEO Gary Dickerson $1.2M open market purchase — bought during TSMC capex raise period','CFO Brice Hill $380K open market — cluster with CEO signals shared conviction','No insider selling in 6 months while options activity building'] },
+    { id:'L3', name:'Corporate intel',     horizon:'4–12 weeks', pts:20, max:25,
+      desc:'Goldman PT raise · CEO channel check commentary · WFE order signals',
+      signals:['Goldman Sachs PT $185→$210 on WFE cycle recovery — ahead of consensus','CEO: TSMC, Intel, Samsung demand signals inflecting simultaneously — strongest since 2021','Morgan Stanley WFE tracker: deposition tool orders at 18-month high across all leading-edge fabs'] },
+    { id:'L4', name:'Supply chain',        horizon:'6–18 weeks', pts:8,  max:10,
+      desc:'TSMC capex raise → AMAT tool orders 2–3 quarters out',
+      signals:['TSMC raised FY2026 capex to $38–42B in Q1 — AMAT deposition tools are non-optional for N2 node','Historical: TSMC capex raises lead AMAT order book by 2–3 quarters — lag window opened March 2026','Intel 18A process node restart adds second fab customer for advanced etch/deposition tools'] },
+    { id:'L5', name:'Macro / structural',  horizon:'60–365 days', pts:3,  max:5,
+      desc:'AI fab supercycle · advanced node complexity · WFE intensity rising',
+      signals:['Every node shrink increases WFE intensity: N3→N2 requires 30% more deposition steps per wafer','AI chip demand requires leading-edge fabs exclusively — no demand shift to mature nodes for NVDA/AMD','AMAT is in every advanced fab globally — TAM expands with every TSMC/Samsung/Intel capacity announcement'] },
+  ],
+  LRCX: [
+    { id:'L1', name:'Market structure',    horizon:'1–14 days',  pts:17, max:25,
+      desc:'Morgan Stanley upgrade · earnings beat · memory WFE momentum',
+      signals:['Morgan Stanley upgrade Neutral→Overweight on HBM etch intensity thesis','Earnings beat Q3: $3.98B revenue vs $3.76B estimate — 3rd consecutive beat','Relative strength vs memory peers: LRCX leading on HBM positioning recognition'] },
+    { id:'L2', name:'Insider & regulatory', horizon:'2–8 weeks',  pts:12, max:35,
+      desc:'No recent insider activity — monitoring for cluster signals',
+      signals:['No insider selling in 4 months — management not distributing at current prices','Share repurchase program active: $5B authorized, $2.1B remaining — price support signal','Large institutional hedges being removed — suggests confidence in near-term direction'] },
+    { id:'L3', name:'Corporate intel',     horizon:'4–12 weeks', pts:20, max:25,
+      desc:'HBM etch dominance · SK Hynix supply locked · memory WFE pricing power',
+      signals:['SK Hynix HBM3E supply sold out through 2027 — committed capex visible to LRCX order book','LRCX etch tools required for every HBM stack — 40% higher etch intensity vs standard DRAM','Management: memory WFE leading non-memory for first time since 2021 — confirms HBM cycle durability'] },
+    { id:'L4', name:'Supply chain',        horizon:'6–18 weeks', pts:9,  max:10,
+      desc:'NVDA Blackwell → HBM demand → LRCX etch tool orders',
+      signals:['Every NVDA Blackwell GPU requires 8 HBM3E stacks — demand locked through NVDA production schedule','MU and SK Hynix both expanding HBM capacity — both require Lam etch tools for each expansion','TSMC advanced packaging (CoWoS) uses Lam etch for interposer manufacture — double exposure to AI capex'] },
+    { id:'L5', name:'Macro / structural',  horizon:'60–365 days', pts:4,  max:5,
+      desc:'HBM supercycle · AI memory intensity · etch tool pricing power',
+      signals:['HBM content per AI server growing: H100→H200→Blackwell each require more HBM — secular growth','Memory WFE is the fastest-growing equipment category for 2026–2028 per SEMI forecast','Lam holds 70%+ etch market share in memory — new competitors face 10+ year moat in process IP'] },
+  ],
+  MU: [
+    { id:'L1', name:'Market structure',    horizon:'1–14 days',  pts:20, max:25,
+      desc:'HBM demand signal · NVDA beat → MU expansion · options flow',
+      signals:['$28M call sweep at $120 strike May 30 — largest single-day MU options flow this year','Relative strength: MU +31% YTD vs SOX +18% — institutional rotation into HBM exposure','NVDA data center beat drives same-session MU gap up — beta to AI capex cycle confirmed'] },
+    { id:'L2', name:'Insider & regulatory', horizon:'2–8 weeks',  pts:20, max:35,
+      desc:'CEO $2.8M open market buy · bought during HBM supply negotiation',
+      signals:['CEO Sanjay Mehrotra $2.8M open market purchase April 2026 — bought during HBM supply negotiation period','Timing signal: CEO bought before Q4 earnings (beat) — insider had forward visibility on HBM contract expansion','No insider selling in 8 months — full management alignment with shareholders'] },
+    { id:'L3', name:'Corporate intel',     horizon:'4–12 weeks', pts:22, max:25,
+      desc:'HBM3E margins 50%+ · 6-quarter order book visibility · NVDA sole-source',
+      signals:['HBM3E ASPs 5–8x standard DRAM — transforming MU gross margin profile toward 50%+ on HBM mix','6-quarter forward order book locked to NVDA — unprecedented visibility for a memory company','Micron Q3 2026 guidance raised: HBM revenue projected to triple vs FY2025 — still constrained by capacity not demand'] },
+    { id:'L4', name:'Supply chain',        horizon:'6–18 weeks', pts:9,  max:10,
+      desc:'NVDA datacenter beat → MU HBM expansion · 1–2Q lag confirmed',
+      signals:['NVDA Q1 2026 data center beat $35.6B — MU HBM contract directly expanded the following quarter','Historical lag 1–2 quarters: NVDA data center beat → MU revenue confirmation is the most reliable lag in the app','SK Hynix and MU are the only two HBM suppliers — duopoly pricing power sustained through at least 2028'] },
+    { id:'L5', name:'Macro / structural',  horizon:'60–365 days', pts:4,  max:5,
+      desc:'HBM supercycle · memory content per AI chip growing · supply constrained',
+      signals:['HBM per GPU growing: H100=80GB, H200=141GB, Blackwell=192GB — content per chip growing 2.4x each generation','MU capex to expand HBM capacity is running 18 months behind demand — supply constraint is structural not cyclical','AI inference requires large memory bandwidth — every new AI application increases memory TAM permanently'] },
+  ],
 };
 
 // ─── SECTOR HEATMAP ──────────────────────────────────────────────
 const SECTORS = {
-  Semis:        { label:'Semiconductors',    tickers:['NVDA','ASML','AMD','TSM','SMCI'], color:'var(--blue)' },
+  Semis:        { label:'Semiconductors',    tickers:['NVDA','ASML','AMD','TSM','SMCI','AMAT','LRCX','MU'], color:'var(--blue)' },
   Hyperscalers: { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL'],           color:'var(--purple,#a855f7)' },
   Defense:      { label:'Defense / Space',   tickers:['PLTR','RKLB'],                   color:'var(--amber)' },
   Energy:       { label:'Energy / Nuclear',  tickers:['VST','CEG'],                     color:'var(--green)' },
@@ -5337,6 +5471,17 @@ const SIGNAL_EVENTS = {
     { upstream:'TSM',   date:'2026-01-15', desc:'TSMC N3 capacity expansion — Google TPU Trillium fab capacity increasing', lagMin:4, lagMax:20 },
     { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Q1 2026: Google Cloud +28% YoY · capex $75B FY2026 · Gemini 2.0 efficiency +4x', lagMin:0, lagMax:4 },
   ],
+  AMAT: [
+    { upstream:'TSM', date:'2026-01-16', desc:'TSMC Q4 2025: capex raised to $38–42B FY2026 · N2 node yield improving · advanced packaging CoWoS capacity doubling', lagMin:8, lagMax:12 },
+  ],
+  LRCX: [
+    { upstream:'TSM', date:'2026-01-16', desc:'TSMC capex raise $38–42B · CoWoS advanced packaging requires Lam etch for interposer · additional etch intensity at N2', lagMin:6, lagMax:10 },
+    { upstream:'MU',  date:'2026-03-20', desc:'Micron Q2 2026: HBM3E revenue tripled · capacity expansion capex announced · Lam etch tool orders expanding', lagMin:4, lagMax:8 },
+  ],
+  MU: [
+    { upstream:'NVDA', date:'2025-11-20', desc:'NVDA Q3 FY2026: H200 demand strong · Blackwell production beginning · HBM allocation for FY2027 secured', lagMin:2, lagMax:4 },
+    { upstream:'NVDA', date:'2026-02-26', desc:'NVDA Q4 FY2026: data center $35.6B beat · Blackwell ramp confirmed · HBM demand letter sent to MU and SK Hynix', lagMin:4, lagMax:8 },
+  ],
 };
 
 const UPCOMING_CATALYSTS = {
@@ -5347,6 +5492,9 @@ const UPCOMING_CATALYSTS = {
   META:  { date:'2026-07-23', label:'Q2 2026 earnings', note:'AI monetisation ramp · capex FY2026 H2 update' },
   MSFT:  { date:'2026-07-30', label:'Q4 FY2026 earnings', note:'Azure AI capacity · Copilot revenue' },
   RKLB:  { date:'2026-08-07', label:'Q2 2026 earnings', note:'Neutron progress · SDA satellite delivery milestones' },
+  AMAT:  { date:'2026-08-14', label:'Q3 FY2026 earnings', note:'WFE order book · TSMC lag window validation · N2 ramp update' },
+  LRCX:  { date:'2026-07-23', label:'Q4 FY2026 earnings', note:'HBM etch intensity update · memory WFE outlook 2027' },
+  MU:    { date:'2026-06-25', label:'Q3 FY2026 earnings', note:'HBM3E revenue mix · NVDA supply contract update · margin trajectory' },
 };
 
 function computeWindowStatus(ticker) {
