@@ -5724,7 +5724,7 @@ function renderSectorHeatmap() {
     var overall = tickers.map(function(t){ return SCORES[t]||0; }).reduce(function(a,b){ return a+b; },0) / tickers.length;
     var oc = heatColor(overall);
     h += '<div style="display:grid;grid-template-columns:' + cols + ';gap:5px;align-items:center;padding:9px 0;border-top:0.5px solid var(--border2);">';
-    h += '<div style="font-size:12px;font-weight:600;color:var(--text);">' + sector.label + '</div>';
+    h += '<div onclick="openSectorBrief(\'' + key + '\')" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--border2);" title="Open ' + sector.label + ' sector brief">' + sector.label + '</div>';
     h += '<div style="display:flex;gap:3px;flex-wrap:wrap;">';
     tickers.forEach(function(t) {
       h += '<span onclick="openTicker(\'' + t + '\')" style="cursor:pointer;font-size:10px;font-weight:700;font-family:\'DM Mono\',monospace;padding:1px 5px;border-radius:3px;background:var(--bg4);color:' + sector.color + ';border:0.5px solid var(--border2);" title="Open ' + t + '">' + t + '</span>';
@@ -5736,35 +5736,207 @@ function renderSectorHeatmap() {
       var breakdown = tickers.map(function(t){ var lr=(LAYER_DATA[t]||[]).find(function(l){return l.id===lid;}); return lr ? t+':'+Math.round(Math.min((lr.pts/lr.max)*100,100)) : null; }).filter(Boolean).join(' ');
       h += '<div onclick="openSectorCell(\'' + key + '\',\'' + lid + '\')" style="cursor:pointer;background:' + c.bg + ';color:' + c.fg + ';border-radius:6px;padding:7px 3px;text-align:center;font-size:11px;font-weight:700;" title="' + breakdown + '">' + Math.round(score) + '</div>';
     });
-    h += '<div style="background:' + oc.bg + ';color:' + oc.fg + ';border-radius:6px;padding:7px 3px;text-align:center;font-size:13px;font-weight:700;">' + Math.round(overall) + '</div>';
+    h += '<div onclick="openSectorBrief(\'' + key + '\')" style="cursor:pointer;background:' + oc.bg + ';color:' + oc.fg + ';border-radius:6px;padding:7px 3px;text-align:center;font-size:13px;font-weight:700;" title="Open ' + sector.label + ' sector brief">' + Math.round(overall) + '</div>';
     h += '</div>';
   });
   el.innerHTML = h;
 }
 
-function openSectorCell(sectorKey, lid) {
-  var sector = SECTORS[sectorKey];
-  var lName = { L1:'Market Structure', L2:'Insider / Regulatory', L3:'Corporate Intel', L4:'Supply Chain / Contracts', L5:'Macro / Structural' }[lid];
-  var el = document.getElementById('sector-drill-el');
-  if (!el) return;
+// ─── SECTOR BRIEF HELPERS ────────────────────────────────────────────────────
+
+function _sectorRiskLabel(sector) {
   var tickers = sector.tickers.filter(function(t){ return LAYER_DATA[t]; });
-  var h = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div><div style="font-size:12px;font-weight:600;color:var(--text);">' + sector.label + ' — ' + lName + '</div><div style="font-size:10px;color:var(--text3);">Click any stock to open full ticker intel</div></div><span onclick="document.getElementById(\'sector-drill-el\').style.display=\'none\'" style="cursor:pointer;font-size:20px;color:var(--text3);line-height:1;">&#215;</span></div>';
-  tickers.forEach(function(t) {
-    var layer = (LAYER_DATA[t]||[]).find(function(l){ return l.id === lid; });
-    if (!layer) return;
-    var score = Math.min(Math.round((layer.pts/layer.max)*100), 100);
-    var fg = score >= 75 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
-    var totalScore = SCORES[t] || 0;
-    h += '<div onclick="openTicker(\'' + t + '\')" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-top:0.5px solid var(--border2);">';
-    h += '<div style="flex-shrink:0;text-align:center;min-width:38px;"><div style="font-family:\'DM Mono\',monospace;font-weight:700;font-size:15px;color:' + fg + ';">' + score + '</div><div style="font-size:9px;color:var(--text3);">layer</div></div>';
-    h += '<div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--text);">' + t + '</span><span style="font-size:10px;color:var(--text3);">Overall: ' + totalScore + '/100</span></div>';
-    h += '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + layer.desc + '</div></div>';
+  var lids = ['L1','L2','L3','L4','L5'];
+  var lNames = { L1:'market structure', L2:'insider activity', L3:'corporate intel', L4:'supply chain signals', L5:'macro environment' };
+  var layerAvgs = lids.map(function(lid) {
+    var sum = 0, cnt = 0;
+    tickers.forEach(function(t) {
+      var lr = (LAYER_DATA[t]||[]).find(function(l){ return l.id===lid; });
+      if (lr) { sum += Math.min((lr.pts/lr.max)*100,100); cnt++; }
+    });
+    return { lid: lid, avg: cnt ? sum/cnt : 0 };
+  });
+  var weakest = layerAvgs.sort(function(a,b){ return a.avg-b.avg; })[0];
+  return 'Weakest signal in ' + lNames[weakest.lid] + ' (' + Math.round(weakest.avg) + '/100 avg)';
+}
+
+function _renderSectorBriefHTML(sectorKey, focusLid) {
+  var sector = SECTORS[sectorKey];
+  if (!sector) return '';
+  var lNames = { L1:'Market Structure', L2:'Insider / Regulatory', L3:'Corporate Intel', L4:'Supply Chain / Contracts', L5:'Macro / Structural' };
+  var lShort = { L1:'Market', L2:'Insider', L3:'Corporate', L4:'Supply Chain', L5:'Macro' };
+  var cats = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS : {};
+
+  var tickers = sector.tickers.filter(function(t){ return LAYER_DATA[t] || SCORES[t]; });
+  var allTickers = sector.tickers;
+
+  var ranked = tickers.slice().sort(function(a,b){ return (SCORES[b]||0)-(SCORES[a]||0); });
+  var topPick = ranked[0] || null;
+  var buys = ranked.filter(function(t){ return (SCORES[t]||0)>=75; }).length;
+  var watches = ranked.filter(function(t){ return (SCORES[t]||0)>=60&&(SCORES[t]||0)<75; }).length;
+  var avgScore = ranked.length ? Math.round(ranked.reduce(function(s,t){ return s+(SCORES[t]||0); },0)/ranked.length) : 0;
+
+  var acCls = function(s){ return s>=75?'at-buy':s>=60?'at-watch':s>=45?'at-hold':'at-skip'; };
+  var acLbl = function(s){ return s>=75?'BUY':s>=60?'WATCH':s>=45?'HOLD':'SKIP'; };
+  var fgCol = function(s){ return s>=75?'var(--green)':s>=55?'var(--amber)':'var(--text3)'; };
+  var sCol  = sector.color || 'var(--blue)';
+
+  var subline = focusLid
+    ? ('Drilling into <strong>' + lNames[focusLid] + '</strong> · ' + ranked.length + ' stocks in coverage')
+    : (ranked.length + ' stocks · ' + buys + ' buy · ' + watches + ' watch · avg ' + avgScore + '/100');
+
+  var h = '';
+
+  // Header
+  h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px;">';
+  h += '<div>';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">';
+  h += '<span style="width:10px;height:10px;border-radius:50%;background:' + sCol + ';flex-shrink:0;display:inline-block;"></span>';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--text);">' + sector.label + '</div>';
+  h += '</div>';
+  h += '<div style="font-size:11px;color:var(--text3);line-height:1.5;">' + subline + '</div>';
+  h += '</div>';
+  h += '<span onclick="document.getElementById('sector-drill-el').style.display='none'" style="cursor:pointer;font-size:22px;color:var(--text3);line-height:1;flex-shrink:0;">&#215;</span>';
+  h += '</div>';
+
+  // Summary pills
+  h += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">';
+  h += '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--bg4);color:var(--text2);border:0.5px solid var(--border2);">' + ranked.length + ' tracked</span>';
+  if (buys > 0) h += '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);">' + buys + ' BUY</span>';
+  if (watches > 0) h += '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(217,119,6,.12);color:var(--amber);border:0.5px solid rgba(217,119,6,.3);">' + watches + ' WATCH</span>';
+  h += '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--bg4);color:var(--text2);border:0.5px solid var(--border2);">Avg ' + avgScore + '/100</span>';
+  h += '</div>';
+
+  // Two-col layout
+  h += '<div class="g13">';
+
+  // ── LEFT ──
+  h += '<div>';
+
+  // Top pick card
+  if (topPick) {
+    var tp = topPick;
+    var tpScore = SCORES[tp] || 0;
+    var tpLayers = (LAYER_DATA[tp]||[]).filter(function(l){ return l.pts>0; }).sort(function(a,b){ return (b.pts||0)-(a.pts||0); });
+    var tpSignal = tpLayers.length ? ((tpLayers[0].signals&&tpLayers[0].signals[0]) || tpLayers[0].desc || '') : '';
+    var tpCat = cats[tp] || null;
+    h += '<div class="card" style="margin-bottom:10px;border-left:3px solid ' + sCol + ';">';
+    h += '<div class="card-lbl" style="color:' + sCol + ';">Top pick · ' + sector.label + '</div>';
+    h += '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:5px;">';
+    h += '<span onclick="openTicker('' + tp + '')" style="font-size:20px;font-weight:700;font-family:'DM Mono',monospace;cursor:pointer;color:var(--text);">' + tp + '</span>';
+    h += '<span style="font-size:11px;color:var(--text3);">' + (NAMES[tp]||'') + '</span>';
+    h += '<span style="font-size:14px;font-weight:700;color:' + fgCol(tpScore) + ';margin-left:auto;">' + tpScore + '/100</span>';
+    h += '</div>';
+    if (tpSignal) h += '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px;">' + tpSignal + '</div>';
+    if (tpCat) h += '<div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Next catalyst: <strong style="color:var(--text2);">' + tpCat.label + '</strong> · ' + tpCat.date + '</div>';
+    h += '<button onclick="openTicker('' + tp + '')" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg4);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">Full analysis →</button>';
+    h += '</div>';
+  }
+
+  // All stocks ranked
+  h += '<div class="card">';
+  h += '<div class="card-lbl">' + (focusLid ? lNames[focusLid] + ' · all stocks' : 'All stocks · ranked by signal') + '</div>';
+  ranked.forEach(function(t) {
+    var score = SCORES[t] || 0;
+    var focusLayer = focusLid ? (LAYER_DATA[t]||[]).find(function(l){ return l.id===focusLid; }) : null;
+    var layerScore = focusLayer ? Math.min(Math.round((focusLayer.pts/focusLayer.max)*100),100) : null;
+    var bestLayer = (LAYER_DATA[t]||[]).filter(function(l){ return l.pts>0; }).sort(function(a,b){ return (b.pts||0)-(a.pts||0); })[0];
+    var layerDesc = focusLayer ? focusLayer.desc : (bestLayer ? bestLayer.desc : '');
+    var layerScoreStr = layerScore !== null ? ' · ' + lShort[focusLid] + ':' + layerScore : '';
+    h += '<div onclick="openTicker('' + t + '')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:9px 0;border-top:0.5px solid var(--border2);">';
+    h += '<div style="flex-shrink:0;text-align:center;min-width:42px;">';
+    h += '<div style="font-family:'DM Mono',monospace;font-weight:700;font-size:16px;color:' + fgCol(score) + ';">' + score + '</div>';
+    h += '<div style="font-size:9px;color:var(--text3);">score</div></div>';
+    h += '<div style="flex:1;min-width:0;">';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">';
+    h += '<span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);">' + t + '</span>';
+    h += '<span style="font-size:10px;color:var(--text3);">' + (NAMES[t]||'') + layerScoreStr + '</span>';
+    h += '<span class="act-tag ' + acCls(score) + '" style="margin-left:auto;flex-shrink:0;">' + acLbl(score) + '</span>';
+    h += '</div>';
+    if (layerDesc) h += '<div style="font-size:11px;color:var(--text2);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + layerDesc + '</div>';
+    h += '</div></div>';
+  });
+  allTickers.filter(function(t){ return !tickers.includes(t); }).forEach(function(t){
+    h += '<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-top:0.5px solid var(--border2);opacity:.45;">';
+    h += '<div style="flex-shrink:0;text-align:center;min-width:42px;"><div style="font-size:14px;color:var(--text3);">—</div><div style="font-size:9px;color:var(--text3);">score</div></div>';
+    h += '<div style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text3);">' + t + '</div><div style="font-size:10px;color:var(--text3);margin-left:4px;">coming soon</div>';
     h += '</div>';
   });
-  el.innerHTML = h;
-  el.style.display = '';
+  h += '</div>';
+  h += '</div>'; // end left
+
+  // ── RIGHT ──
+  h += '<div>';
+
+  // Layer scorecard
+  h += '<div class="card" style="margin-bottom:10px;">';
+  h += '<div class="card-lbl">Layer scores · sector avg</div>';
+  var lids = ['L1','L2','L3','L4','L5'];
+  lids.forEach(function(lid) {
+    var sum = 0, cnt = 0;
+    tickers.forEach(function(t) {
+      var lr = (LAYER_DATA[t]||[]).find(function(l){ return l.id===lid; });
+      if (lr) { sum += Math.min((lr.pts/lr.max)*100,100); cnt++; }
+    });
+    var avg = cnt ? Math.round(sum/cnt) : 0;
+    var barCol = avg>=75?'var(--green)':avg>=55?'var(--amber)':'var(--text3)';
+    var isActive = focusLid === lid;
+    h += '<div onclick="openSectorCell(\'' + sectorKey + '\',' + '\'' + lid + '\')" style="cursor:pointer;padding:6px 0;border-bottom:0.5px solid var(--border2);">';
+    h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">';
+    h += '<span style="font-size:11px;color:' + (isActive?'var(--text)':'var(--text2)') + ';font-weight:' + (isActive?'600':'400') + ';">' + lNames[lid] + (isActive?' ◄':'') + '</span>';
+    h += '<span style="font-size:11px;font-weight:700;color:' + barCol + ';">' + avg + '</span>';
+    h += '</div>';
+    h += '<div style="height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;">';
+    h += '<div style="width:' + avg + '%;height:3px;background:' + barCol + ';border-radius:2px;transition:width .4s;"></div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+
+  // Upcoming catalysts
+  var catTickers = ranked.filter(function(t){ return cats[t]; });
+  if (catTickers.length) {
+    h += '<div class="card" style="margin-bottom:10px;">';
+    h += '<div class="card-lbl">Upcoming catalysts</div>';
+    catTickers.forEach(function(t) {
+      var cat = cats[t];
+      var score = SCORES[t]||0;
+      h += '<div onclick="openTicker('' + t + '')" style="cursor:pointer;display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);">';
+      h += '<div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;width:42px;flex-shrink:0;color:var(--text);">' + t + '</div>';
+      h += '<div style="flex:1;"><div style="font-size:11px;font-weight:600;color:var(--text2);">' + cat.label + '</div>';
+      h += '<div style="font-size:10px;color:var(--text3);">' + cat.date + (cat.note?' · '+cat.note:'') + '</div></div>';
+      h += '<span class="act-tag ' + acCls(score) + '" style="flex-shrink:0;">' + acLbl(score) + '</span>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
+  // Key risk
+  h += '<div class="card">';
+  h += '<div class="card-lbl">Key risk</div>';
+  h += '<div style="font-size:11px;color:var(--text2);line-height:1.6;">' + _sectorRiskLabel(sector) + '</div>';
+  h += '</div>';
+
+  h += '</div>'; // end right
+  h += '</div>'; // end g13
+  return h;
 }
-// ─── END SECTOR HEATMAP ──────────────────────────────────────────
+
+function openSectorCell(sectorKey, lid) {
+  var el = document.getElementById('sector-drill-el');
+  if (!el) return;
+  el.innerHTML = _renderSectorBriefHTML(sectorKey, lid);
+  el.style.display = '';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function openSectorBrief(sectorKey) {
+  var el = document.getElementById('sector-drill-el');
+  if (!el) return;
+  el.innerHTML = _renderSectorBriefHTML(sectorKey, null);
+  el.style.display = '';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+// ─── END SECTOR HEATMAP ────────────────────────────────
 
 // Auto-link known tickers mentioned in plain text to openTicker()
 function linkTickers(text) {
