@@ -353,6 +353,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .pro-waitlist-row button:hover{opacity:.88}
 .pro-free-note{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
 
+
+/* ── News sector filter pills ─── */
+.ns-pill{padding:3px 10px;border:0.5px solid var(--border2);border-radius:12px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;white-space:nowrap}
+.ns-pill:hover{border-color:var(--blue);color:var(--blue)}
+.ns-pill.active{border-color:var(--blue);background:rgba(59,130,246,.12);color:var(--blue);font-weight:600}
+.nt-pill{padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s}
+.nt-pill:hover{border-color:var(--text);color:var(--text)}
+.nt-pill.active{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:600}
+
 </style>
 </head>
 <body>
@@ -660,17 +669,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <button onclick="filterNewsTopic('mergers_and_acquisitions',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">M&amp;A</button>
         <button onclick="filterNewsTopic('ipo',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">IPO</button>
       </div>
-      <!-- Ticker filters -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;" id="news-filter-btns">
-        <div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:4px;">Tickers:</div>
-        <button onclick="filterNews('ALL',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">All</button>
-        <button onclick="filterNews('NVDA',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">NVDA</button>
-        <button onclick="filterNews('ASML',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">ASML</button>
-        <button onclick="filterNews('AMD',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMD</button>
-        <button onclick="filterNews('PLTR',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PLTR</button>
-        <button onclick="filterNews('RKLB',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RKLB</button>
-        <button onclick="filterNews('META',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">META</button>
-      </div>
+      <!-- Sector + Ticker filters (dynamic) -->
+      <div id="news-sector-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;overflow:visible;"></div>
+      <div id="news-filter-btns" style="display:flex;gap:5px;flex-wrap:wrap;overflow:visible;"></div>
     </div>
     <div id="av-news-feed">
       <div style="font-size:11px;color:var(--text3);text-align:center;padding:16px 0;">Loading news...</div>
@@ -3975,7 +3976,7 @@ function gT(n,btn){
   /* Tab-specific init hooks */
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=(n==='convergence')?'flex':'none';}catch(e){}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();}catch(e){}},50);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();}catch(e){}},50);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
@@ -4005,7 +4006,15 @@ function enterApp(){
   if(firstNt)firstNt.classList.add('active');
   /* Always show stock focus bar when entering app */
   var fb=document.getElementById('stock-focus-bar');
-  if(fb)fb.style.display='block';
+  if(fb){
+    fb.style.display='block';
+    // Dynamically set top = header height + nav height so it always sits flush below nav
+    var hdrEl=document.getElementById('app-hdr');
+    var navEl=document.getElementById('app-nav');
+    var hdrH=hdrEl?hdrEl.getBoundingClientRect().height:50;
+    var navH=navEl?navEl.getBoundingClientRect().height:42;
+    fb.style.top=(hdrH+navH)+'px';
+  }
   try{S.activeTab='morning';S.prevTab='morning';}catch(e){}
   window.scrollTo(0,0);
   /* Render hot bar immediately on enter */
@@ -4819,7 +4828,19 @@ async function fetchFinnhubNews(forceRefresh) {
     const today = new Date();
     const from = new Date(today - 7 * 86400000).toISOString().slice(0,10);
     const to   = today.toISOString().slice(0,10);
-    const tickers = (S.wl && S.wl.length ? S.wl : ['NVDA','ASML','AMD','PLTR','META']).slice(0,6);
+    // Expand fetch: use watchlist, or focused ticker's sector, or top stocks
+  const _focusTk = S.focusTicker;
+  let _fetchTickers;
+  if (S.wl && S.wl.length) {
+    _fetchTickers = S.wl.slice(0, 6);
+  } else if (_focusTk) {
+    // Find sector for focused ticker
+    const _tkSector = Object.values(NEWS_SECTORS).find(s => s.tickers && s.tickers.includes(_focusTk));
+    _fetchTickers = _tkSector ? [_focusTk, ...(_tkSector.tickers.filter(t => t !== _focusTk))].slice(0, 6) : [_focusTk, 'NVDA', 'ASML', 'AMD', 'META', 'PLTR'];
+  } else {
+    _fetchTickers = ['NVDA', 'ASML', 'AMD', 'PLTR', 'META', 'TSM'];
+  }
+  const tickers = _fetchTickers;
 
     // Fetch general news + company news in parallel (6 company + 1 general = 7 calls)
     const generalP = fetch(fhURL("news",{category:"general"}))
@@ -5011,25 +5032,28 @@ async function fetchAVNews(forceRefresh) {
 }
 
 function _resetNewsFilterButtons() {
-  document.querySelectorAll('#news-filter-btns button, #news-topic-btns button').forEach(b => {
+  _newsActiveSector = 'all';
+  _newsActiveFilter = 'ALL';
+  renderNewsFilterBtns();
+  // Reset topic buttons
+  document.querySelectorAll('#news-topic-btns button').forEach(b => {
     b.style.border = '0.5px solid var(--border2)';
     b.style.background = 'none';
     b.style.color = 'var(--text2)';
     b.style.fontWeight = '400';
   });
-  const allTickerBtn = document.querySelector('#news-filter-btns button');
-  const allTopicBtn  = document.querySelector('#news-topic-btns button');
-  [allTickerBtn, allTopicBtn].forEach(b => {
-    if (!b) return;
-    b.style.border = '0.5px solid var(--green)';
-    b.style.background = 'var(--green-bg)';
-    b.style.color = 'var(--green)';
-    b.style.fontWeight = '600';
-  });
+  const allTopicBtn = document.querySelector('#news-topic-btns button');
+  if (allTopicBtn) {
+    allTopicBtn.style.border = '0.5px solid var(--green)';
+    allTopicBtn.style.background = 'var(--green-bg)';
+    allTopicBtn.style.color = 'var(--green)';
+    allTopicBtn.style.fontWeight = '600';
+  }
 }
 
 function filterNews(ticker, btn) {
   _newsActiveFilter = ticker;
+  renderNewsFilterBtns();
   _newsActiveTopic = 'all';
   document.querySelectorAll('#news-topic-btns button').forEach(b => {
     b.style.border='0.5px solid var(--border2)';b.style.background='none';b.style.color='var(--text2)';b.style.fontWeight='400';
@@ -5075,6 +5099,56 @@ const _fmtTime = t => {
 };
 const _topicLabel = t => ({'financial_markets':'Markets','economy_macro':'Macro','economy_fiscal':'Fiscal','economy_monetary':'Monetary','technology':'Tech','earnings':'Earnings','mergers_and_acquisitions':'M&A','ipo':'IPO','energy_transportation':'Energy','real_estate':'Real Estate','life_sciences':'Biotech','finance':'Finance','manufacturing':'Manufacturing','retail_wholesale':'Retail','blockchain':'Crypto'}[t]||t);
 
+
+// ══ News sector filter system ════════════════════════════════════
+let _newsActiveSector = 'all';
+
+const NEWS_SECTORS = {
+  all:        { label:'All Sectors', tickers:null },
+  semi:       { label:'Semiconductors', tickers:['NVDA','ASML','AMD','TSM','SMCI','AMAT','LRCX','MU'] },
+  ai:         { label:'AI Infrastructure', tickers:['META','MSFT','GOOGL'] },
+  defense:    { label:'Defense & Space', tickers:['LMT','NOC','RTX','RKLB','PLTR'] },
+  energy:     { label:'Energy & Nuclear', tickers:['VST','CEG','CCJ','UEC'] },
+  software:   { label:'Software', tickers:['CRM','NOW','SNOW'] },
+};
+
+function renderNewsFilterBtns() {
+  var sectorEl = document.getElementById('news-sector-btns');
+  if (sectorEl) {
+    var sh = '<div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:6px;flex-shrink:0">Sector:</div>';
+    Object.entries(NEWS_SECTORS).forEach(function(e) {
+      var key = e[0], s = e[1];
+      var active = (_newsActiveSector === key) ? ' active' : '';
+      sh += '<button class="ns-pill' + active + '" onclick="filterNewsBySector(' + "'" + key + "'" + ',this)">' + s.label + '</button>';
+    });
+    sectorEl.innerHTML = sh;
+  }
+  var tickerEl = document.getElementById('news-filter-btns');
+  if (!tickerEl) return;
+  // When 'all' sectors selected: hide ticker row (too many to show cleanly)
+  if (!_newsActiveSector || _newsActiveSector === 'all') {
+    tickerEl.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:2px 0">Pick a sector above to filter by stock ↑</div>';
+    return;
+  }
+  var sectorDef = NEWS_SECTORS[_newsActiveSector];
+  var list = (sectorDef && sectorDef.tickers) ? sectorDef.tickers : [];
+  if (!list.length) { tickerEl.innerHTML = ''; return; }
+  var th = '<div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:6px;flex-shrink:0">Stock:</div>';
+  th += '<button class="nt-pill' + (_newsActiveFilter === 'ALL' ? ' active' : '') + '" onclick="filterNews(' + "'" + 'ALL' + "'" + ',this)">All</button>';
+  list.forEach(function(tk) {
+    th += '<button class="nt-pill' + (_newsActiveFilter === tk ? ' active' : '') + '" onclick="filterNews(' + "'" + tk + "'" + ',this)">' + tk + '</button>';
+  });
+  tickerEl.innerHTML = th;
+}
+
+function filterNewsBySector(sector, btn) {
+  _newsActiveSector = sector;
+  _newsActiveFilter = 'ALL';  // reset ticker filter when switching sector
+  renderNewsFilterBtns();
+  renderNewsFilter('ALL');
+}
+
+
 function renderNewsFilter(ticker) {
   const feed = document.getElementById('av-news-feed');
   if (!feed) return;
@@ -5083,6 +5157,15 @@ function renderNewsFilter(ticker) {
     return;
   }
   let articles = _avNewsCache;
+  // Sector filter
+  if (_newsActiveSector && _newsActiveSector !== 'all') {
+    const sectorTickers = new Set((NEWS_SECTORS[_newsActiveSector] || {}).tickers || []);
+    articles = articles.filter(a => {
+      const ts = (a.ticker_sentiment||[]).map(t => t.ticker);
+      const linked = a._ticker || null;
+      return (linked && sectorTickers.has(linked)) || ts.some(t => sectorTickers.has(t));
+    });
+  }
   if (_newsActiveTopic && _newsActiveTopic !== 'all') {
     articles = articles.filter(a => (a._cats||(a.topics||[]).map(t=>t.topic)).includes(_newsActiveTopic));
   }
