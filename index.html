@@ -298,7 +298,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
 
 
 /* ── Focus bar: auto-scrolling ticker wheel ───────────────── */
-#ticker-scroll-wrap{flex:1;min-width:0;overflow:hidden;position:relative;mask-image:linear-gradient(to right,transparent 0%,black 40px,black calc(100% - 40px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 40px,black calc(100% - 40px),transparent 100%);}
+#ticker-scroll-wrap{flex:1;min-width:0;overflow:hidden;position:relative;mask-image:linear-gradient(to right,transparent 0%,black 70px,black calc(100% - 70px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 70px,black calc(100% - 70px),transparent 100%);}
 #ticker-scroll-track{display:flex;gap:6px;width:max-content;animation:focus-ticker-scroll 40s linear infinite;align-items:center;}
 #ticker-scroll-track:hover,#ticker-scroll-wrap:hover #ticker-scroll-track{animation-play-state:paused;}
 @keyframes focus-ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -2357,7 +2357,7 @@ const S=(function(){
     };
   }catch(e){return def;}
 })();
-const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SNPS:58,SMCI:52,AMAT:65,BAH:54,INTC:35,DELL:48,ANET:56,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77};
+const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SMCI:52,AMAT:65,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77};
 
 // ── LIVE SCORE ENGINE ─────────────────────────────────────────────────────────
 // Computes a dynamic convergence score from Finnhub data (requires API key).
@@ -4318,8 +4318,11 @@ function focusBarTick(sym, btn) {
 function buildTickerScrollTrack() {
   const track = document.getElementById('ticker-scroll-track');
   if (!track) return;
-  // Sort all stocks by score descending
-  const sorted = Object.keys(SCORES).sort((a, b) => SCORES[b] - SCORES[a]);
+  // Only show curated 30-stock list — never leak related/watch stocks into focus bar
+  const OUR_TICKERS = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL',
+    'VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW',
+    'CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV'];
+  const sorted = OUR_TICKERS.filter(t => SCORES[t] !== undefined).sort((a, b) => (SCORES[b]||0) - (SCORES[a]||0));
   const buildPill = function(sym) {
     const sc = SCORES[sym] || 50;
     const scCls = sc >= 70 ? 'hi' : sc >= 40 ? 'mid' : 'lo';
@@ -4331,8 +4334,12 @@ function buildTickerScrollTrack() {
     return btn;
   };
   // Build two full sets for seamless infinite loop
+  // Spacer ensures no ticker name is clipped at the animation start point
+  const makeSpacer = () => { const sp = document.createElement('span'); sp.style.cssText='display:inline-block;width:32px;flex-shrink:0;'; return sp; };
   const frag = document.createDocumentFragment();
+  frag.appendChild(makeSpacer());
   sorted.forEach(sym => frag.appendChild(buildPill(sym)));
+  frag.appendChild(makeSpacer());
   sorted.forEach(sym => frag.appendChild(buildPill(sym)));
   track.innerHTML = '';
   track.appendChild(frag);
@@ -6919,7 +6926,7 @@ function renderLayerAnalysis(ticker, btn) {
         <div style="font-size:13px;font-weight:700;">${ticker} — Composite signal score</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px;">Across all 5 layers · 100pt scale</div>
       </div>
-      <div style="text-align:right;">
+      <div style="text-align:right;flex-shrink:0;padding-left:12px;">
         <div style="font-size:26px;font-weight:800;font-family:'DM Mono',monospace;color:${barColor(totalPts, 100)};letter-spacing:-1px;">${totalPts}<span style="font-size:13px;font-weight:400;color:var(--text3)">/100</span></div>
         <div style="font-size:10px;color:var(--text3);">${overallPct >= 80 ? 'High conviction' : overallPct >= 60 ? 'Moderate conviction' : 'Low conviction'}</div>
       </div>
