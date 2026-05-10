@@ -5190,7 +5190,144 @@ function renderMacroSens() {
   el.innerHTML = html;
 }
 
+// ── DYNAMIC LAG WINDOW ENGINE ─────────────────────────────────────
+// Records real upstream signal events with the date they occurred and
+// the documented lag window (in weeks) before the downstream stock reacts.
+const SIGNAL_EVENTS = {
+  ASML: [
+    { upstream:'TSM',   date:'2026-01-15', desc:'TSMC raised FY2026 capex to $38–42B — 15% above prior year', lagMin:24, lagMax:36 },
+    { upstream:'TSM',   date:'2025-07-18', desc:'TSMC Q2 2025 capex beat — $10.4B single quarter record',      lagMin:24, lagMax:36 },
+  ],
+  NVDA: [
+    { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT guided $80B AI capex FY2026 — Azure "capacity constrained"', lagMin:0, lagMax:8 },
+    { upstream:'META',  date:'2026-01-22', desc:'META raised FY2026 capex to $64–72B — 350K Blackwell ordered', lagMin:0, lagMax:8 },
+    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL guided $75B capex FY2026 — Cloud +28% YoY',             lagMin:2, lagMax:10 },
+    { upstream:'MSFT',  date:'2026-04-30', desc:'MSFT Q3 2026 Azure +33% YoY — capacity demand still rising',   lagMin:0, lagMax:8 },
+  ],
+  TSM: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA Q4 FY2025: Data Center $30.8B (+93% YoY) — Blackwell ramp accelerating', lagMin:0, lagMax:6 },
+    { upstream:'ASML',  date:'2026-01-15', desc:'TSMC capex raise signals forward EUV machine demand to ASML',  lagMin:0, lagMax:4 },
+  ],
+  SMCI: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA data center beat — Blackwell rack integration volume expanding', lagMin:0, lagMax:6 },
+    { upstream:'NVDA',  date:'2026-04-15', desc:'NVDA Blackwell GB200 NVL72 shipments accelerating ahead of May earnings', lagMin:0, lagMax:6 },
+  ],
+  AMD: [
+    { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT MI300X Azure AI deployment confirmed — second-source GPU strategy', lagMin:4, lagMax:16 },
+    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL expanded MI300X usage for Cloud AI inference workloads',  lagMin:4, lagMax:16 },
+  ],
+  VST: [
+    { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT $80B capex — Texas data center power demand $3.2B+ incremental by 2028', lagMin:20, lagMax:64 },
+    { upstream:'META',  date:'2026-01-22', desc:'META $65B capex — AI data center corridor power demand surge',  lagMin:20, lagMax:64 },
+    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL $75B capex — hyperscaler power demand accelerating',      lagMin:20, lagMax:64 },
+  ],
+  CEG: [
+    { upstream:'MSFT',  date:'2026-01-13', desc:'Three Mile Island PPA signed — 835MW · 20yr · $160/MWh. Template for 2 more in pipeline', lagMin:0, lagMax:104 },
+  ],
+  PLTR: [
+    { upstream:'__DOD__', date:'2026-03-15', desc:'TITAN contract $619M — DoD AI budget +40% YoY · PLTR AIP now program of record', lagMin:0, lagMax:12 },
+    { upstream:'__AIP__', date:'2026-04-01', desc:'AIP bootcamps: 74 conversions in Q1 — fastest growth rate since IPO', lagMin:0, lagMax:8 },
+  ],
+  RKLB: [
+    { upstream:'__SDA__', date:'2026-03-20', desc:'SDA Tranche 2 — 18 satellites · $515M · first major satellite prime contract', lagMin:0, lagMax:16 },
+    { upstream:'__BNSTN__', date:'2026-05-05', desc:'Bernstein initiates at Outperform $30 PT — first major bank coverage', lagMin:0, lagMax:6 },
+  ],
+  META: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA data center beat — META GPU compute capacity confirmed',   lagMin:0, lagMax:8 },
+    { upstream:'META',  date:'2026-04-23', desc:'META Q1 2026: Revenue +19% YoY · capex raised $64B→$72B · AI monetisation beginning', lagMin:0, lagMax:4 },
+  ],
+  MSFT: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA Blackwell supply easing — Azure GPU delivery pipeline accelerating', lagMin:0, lagMax:8 },
+    { upstream:'MSFT',  date:'2026-04-30', desc:'MSFT Q3 2026: Azure +33% YoY · AI Copilot 85M MAU · "demand exceeds our current capacity"', lagMin:0, lagMax:4 },
+  ],
+  GOOGL: [
+    { upstream:'TSM',   date:'2026-01-15', desc:'TSMC N3 capacity expansion — Google TPU Trillium fab capacity increasing', lagMin:4, lagMax:20 },
+    { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Q1 2026: Google Cloud +28% YoY · capex $75B FY2026 · Gemini 2.0 efficiency +4x', lagMin:0, lagMax:4 },
+  ],
+};
+
+const UPCOMING_CATALYSTS = {
+  NVDA:  { date:'2026-05-22', label:'Q1 FY2026 earnings', note:'Blackwell ramp · implied move ±11.4%' },
+  ASML:  { date:'2026-07-16', label:'Q2 2026 order intake', note:'TSMC lag window opens in ~7 weeks' },
+  TSM:   { date:'2026-07-17', label:'TSMC Q2 2026 earnings', note:'Capex trajectory + CoWoS yield update' },
+  AMD:   { date:'2026-07-30', label:'Q2 FY2026 earnings', note:'MI300X market share · data center ramp' },
+  META:  { date:'2026-07-23', label:'Q2 2026 earnings', note:'AI monetisation ramp · capex FY2026 H2 update' },
+  MSFT:  { date:'2026-07-30', label:'Q4 FY2026 earnings', note:'Azure AI capacity · Copilot revenue' },
+  RKLB:  { date:'2026-08-07', label:'Q2 2026 earnings', note:'Neutron progress · SDA satellite delivery milestones' },
+};
+
+function computeWindowStatus(ticker) {
+  const today = new Date();
+  const events = SIGNAL_EVENTS[ticker] || [];
+  const upcoming = UPCOMING_CATALYSTS[ticker];
+
+  let bestStatus = 'watch';
+  let bestEvent = null;
+  const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+  for (const ev of events) {
+    const evDate = new Date(ev.date);
+    const weeksSince = (today - evDate) / MS_PER_WEEK;
+
+    if (weeksSince >= ev.lagMin && weeksSince <= ev.lagMax) {
+      // Fully inside the window
+      bestStatus = 'active';
+      bestEvent = ev;
+      break;
+    } else if (weeksSince > 0 && weeksSince < ev.lagMin && weeksSince >= ev.lagMin - 6) {
+      // Approaching — within 6 weeks of window opening
+      if (bestStatus !== 'active') { bestStatus = 'forming'; bestEvent = ev; }
+    } else if (weeksSince < 0 && Math.abs(weeksSince) < 8) {
+      // Event is in the past 8 weeks but lag hasn't started yet (very short lag)
+      if (bestStatus === 'watch') { bestStatus = 'forming'; bestEvent = ev; }
+    }
+  }
+
+  // Build status text
+  let dotClass, color, text;
+  if (bestStatus === 'active') {
+    dotClass = 'status-active'; color = 'var(--green)';
+    const wks = Math.round((today - new Date(bestEvent.date)) / MS_PER_WEEK);
+    const remaining = bestEvent.lagMax - wks;
+    text = `<strong style="color:var(--green);">Window active.</strong> ${bestEvent.desc}. ~${remaining > 0 ? remaining : '&lt;1'} week${remaining!==1?'s':''} remaining in documented lag window.`;
+    if (upcoming) text += ` <span style="color:var(--text3);"> · Next catalyst: ${upcoming.label} (${_fmtCatalystDate(upcoming.date)})</span>`;
+  } else if (bestStatus === 'forming') {
+    dotClass = 'status-forming'; color = 'var(--amber)';
+    const evDate = new Date(bestEvent.date);
+    const weeksUntilOpen = bestEvent.lagMin - Math.round((today - evDate) / MS_PER_WEEK);
+    text = `<strong style="color:var(--amber);">Forming.</strong> ${bestEvent.desc}. Lag window opens in ~${Math.max(0, weeksUntilOpen)} week${weeksUntilOpen!==1?'s':''}.`;
+    if (upcoming) text += ` <span style="color:var(--text3);"> · Watch: ${upcoming.label} (${_fmtCatalystDate(upcoming.date)})</span>`;
+  } else {
+    dotClass = 'status-watch'; color = 'var(--blue)';
+    text = upcoming
+      ? `<strong style="color:var(--blue);">Watch.</strong> No active lag window. Next potential catalyst: <strong>${upcoming.label}</strong> — ${upcoming.note}.`
+      : `<strong style="color:var(--blue);">Watch.</strong> No active lag window currently detected. Monitor upstream signal events.`;
+  }
+
+  return { dotClass, color, text };
+}
+
+function _fmtCatalystDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+
+function refreshChainStatuses() {
+  document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(card => {
+    const ticker = card.dataset.chainTicker;
+    if (!SIGNAL_EVENTS[ticker]) return; // no events defined — leave static
+    const { dotClass, color, text } = computeWindowStatus(ticker);
+    const statusEl = card.querySelector('.chain-status');
+    if (!statusEl) return;
+    statusEl.innerHTML = `<div class="status-dot ${dotClass}"></div><span style="font-size:11px;font-weight:500;color:${color};">${text}</span>`;
+  });
+}
+// ── END LAG WINDOW ENGINE ──────────────────────────────────────────
+
 function initCorrTab() {
+  // Compute and render dynamic lag window statuses for all chain cards
+  try { refreshChainStatuses(); } catch(e) { console.warn('refreshChainStatuses:', e); }
+
   const ft = S.focusTicker;
   const cards = document.querySelectorAll('.chain-card[data-chain-ticker]');
   // Check whether a direct chain card exists for the focused ticker
