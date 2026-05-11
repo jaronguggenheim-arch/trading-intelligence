@@ -6488,6 +6488,67 @@ const THOUGHT_LEADERS = [
   }
 ];
 
+// ─── Notable fund managers — static seed (overridden by live 13F data) ───────
+// Keys are display names. tickers = known holdings from last public filing (seed).
+// Live data is fetched from /api/funds?cik=... on Funds tab open.
+const NOTABLE_MANAGERS = {
+  'Pershing Square (Ackman)': {
+    style: 'Activist · concentrated · 8–12 positions · avg hold 3–5yr',
+    tickers: ['GOOGL','PLTR','MSFT','HHH','CMG','QSR'],
+    cik: '0001336528',
+    twitter: 'BillAckman',
+    thesis: 'Concentrated bets on dominant franchises. Discloses publicly — moves the price.'
+  },
+  'Duquesne (Druckenmiller)': {
+    style: 'Global macro · concentrated high-conviction · 30%+ CAGR career',
+    tickers: ['NVDA','MSFT','VST','CEG','META','ARM'],
+    cik: '0001536411',
+    twitter: null,
+    thesis: 'One of the greatest track records in history. His AI pivot in 2023 validated the entire infrastructure thesis.'
+  },
+  'Coatue Management': {
+    style: 'Tiger cub · tech-focused long/short · $20B+ AUM',
+    tickers: ['NVDA','META','MSFT','AMZN','GOOGL','SNOW'],
+    cik: '0001336767',
+    twitter: null,
+    thesis: 'Deep technology research. Among the first institutional funds to size NVDA pre-ChatGPT.'
+  },
+  'Tiger Global': {
+    style: 'Long/short hedge fund · global tech · $15B+ AUM',
+    tickers: ['META','MSFT','NVDA','AMZN','GOOGL','CRM'],
+    cik: '0001167483',
+    twitter: null,
+    thesis: 'Global technology investor. 13F shows concentrated bets on hyperscaler and enterprise AI plays.'
+  },
+  'Scion Asset Mgmt (Burry)': {
+    style: 'Deep value contrarian · "The Big Short" · 13F closely watched',
+    tickers: ['JD','BABA','GOOG'],
+    cik: '0001403395',
+    twitter: 'michaeljburry',
+    thesis: 'Bearish on AI froth. His shorts in our universe are a useful contrarian signal.'
+  }
+};
+
+// Cache for live 13F holdings — keyed by CIK, 6h TTL
+var _fundsCache = {};
+var _fundsCacheTime = {};
+
+async function loadFundHoldings(cik) {
+  const now = Date.now();
+  if (_fundsCache[cik] && (now - (_fundsCacheTime[cik] || 0)) < 6 * 3600 * 1000) {
+    return _fundsCache[cik];
+  }
+  try {
+    const r = await fetch('/api/funds?cik=' + encodeURIComponent(cik), { signal: AbortSignal.timeout(12000) });
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (!j.ok) return null;
+    _fundsCache[cik] = j;
+    _fundsCacheTime[cik] = now;
+    return j;
+  } catch(e) { return null; }
+}
+
 // ─── Sub-tab switcher ────────────────────────────────────────────────────────
 function switchSmartSubTab(tab, btn) {
   document.querySelectorAll('.sm-stab').forEach(b => b.classList.remove('active'));
@@ -6503,45 +6564,85 @@ function switchSmartSubTab(tab, btn) {
 }
 
 // ─── Fund manager cards ──────────────────────────────────────────────────────
-function renderFundManagerCards() {
+function _fundCardHTML(name, m, focused, liveData) {
+  // Live holdings override static seed tickers if available
+  const liveTickers = liveData
+    ? liveData.top25.map(function(h) { return h.ticker; }).filter(Boolean).slice(0, 8)
+    : null;
+  const displayTickers = liveTickers || (m.tickers || []);
+  const holdsIt = displayTickers.includes(focused);
+
+  const chips = displayTickers.slice(0, 8).map(function(t) {
+    const liveH = liveData ? liveData.top25.find(function(h) { return h.ticker === t; }) : null;
+    const tooltip = liveH ? t + ' · $' + liveH.valueM + 'M · ' + liveH.pct + '% of portfolio' : t;
+    return '<span onclick="openTicker(\'' + t + '\');event.stopPropagation();" title="' + tooltip + '" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid ' + (t===focused?'var(--blue-bd)':'var(--border)') + ';background:' + (t===focused?'var(--blue-bg)':'var(--bg4)') + ';color:' + (t===focused?'var(--blue)':'var(--text2)') + ';">' + t + (liveH && liveH.pct >= 5 ? ' <span style="opacity:.6;">' + liveH.pct + '%</span>' : '') + '</span>';
+  }).join('');
+
+  const holdsFlag = holdsIt
+    ? '<span style="padding:2px 8px;border-radius:10px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);font-size:10px;font-weight:700;">Holds ' + focused + '</span>'
+    : '';
+
+  const twitterLink = m.twitter
+    ? '<a href="https://twitter.com/' + m.twitter + '" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;">@' + m.twitter + ' ↗</a>'
+    : '';
+
+  const edgarLink = m.cik
+    ? '<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + m.cik + '&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--text3);text-decoration:none;">13F ↗</a>'
+    : '';
+
+  const filingBadge = liveData
+    ? '<span style="font-size:9px;color:var(--green);font-weight:600;background:var(--green-bg);border:0.5px solid var(--green-bd);padding:1px 6px;border-radius:8px;">● Live 13F · ' + liveData.filingDate + '</span>'
+    : '<span style="font-size:9px;color:var(--text3);padding:1px 0;">Curated holdings</span>';
+
+  const holdingsCount = liveData
+    ? '<span style="font-size:10px;color:var(--text3);">' + liveData.holdingsCount + ' total positions</span>'
+    : '';
+
+  return '<div class="sm-fund-card" onclick="void(0)" style="margin-bottom:10px;">'
+    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">' + name + '</div>'
+    + '<div style="font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:4px;">' + (m.style||'') + '</div>'
+    + '<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;">' + (m.thesis||'') + '</div>'
+    + '</div>' + holdsFlag + '</div>'
+    + '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">' + chips + '</div>'
+    + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' + filingBadge + holdingsCount + twitterLink + edgarLink + '</div>'
+    + '</div>';
+}
+
+async function renderFundManagerCards() {
   const container = document.getElementById('notable-fund-cards');
-  if(!container || container.dataset.rendered) return;
-  container.dataset.rendered = '1';
+  if (!container) return;
+  // Clear rendered flag so re-opens after focus change show correct "Holds X" badge
+  delete container.dataset.rendered;
+  if (container.dataset.loading) return;
+  container.dataset.loading = '1';
 
   const focused = (typeof S !== 'undefined' && S.focusTicker) || 'NVDA';
 
-  const cards = Object.entries(NOTABLE_MANAGERS).map(([name, m]) => {
-    const holdsIt = m.tickers && m.tickers.includes(focused);
-    const chips = (m.tickers || []).slice(0, 6).map(t =>
-      `<span onclick="openTicker('${t}');event.stopPropagation();" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid ${t===focused?'var(--blue-bd)':'var(--border)'};background:${t===focused?'var(--blue-bg)':'var(--bg4)'};color:${t===focused?'var(--blue)':'var(--text2)'};">${t}</span>`
-    ).join('');
-
-    const holdsFlag = holdsIt
-      ? `<span style="padding:2px 8px;border-radius:10px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);font-size:10px;font-weight:700;">Holds ${focused}</span>`
-      : '';
-
-    const twitterLink = m.twitter
-      ? `<a href="https://twitter.com/${m.twitter}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;">@${m.twitter} ↗</a>`
-      : '';
-
-    const edgarLink = m.cik
-      ? `<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${m.cik}&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--text3);text-decoration:none;">13F filing ↗</a>`
-      : '';
-
-    return `<div class="sm-fund-card" onclick="void(0)">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;">
-        <div>
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">${name}</div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.5;">${m.style || ''}</div>
-        </div>
-        ${holdsFlag}
-      </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">${chips}</div>
-      <div style="display:flex;gap:10px;align-items:center;">${twitterLink}${edgarLink}</div>
-    </div>`;
+  // Render immediately with static seed data
+  container.innerHTML = Object.entries(NOTABLE_MANAGERS).map(function([name, m]) {
+    return _fundCardHTML(name, m, focused, null);
   }).join('');
 
-  container.innerHTML = cards;
+  // Fetch live 13F in parallel for all funds (only on Vercel, silently skip errors)
+  if (!IS_VERCEL) { delete container.dataset.loading; return; }
+
+  const entries = Object.entries(NOTABLE_MANAGERS).filter(function([, m]) { return m.cik; });
+  const results = await Promise.allSettled(entries.map(function([, m]) {
+    return loadFundHoldings(m.cik);
+  }));
+
+  // Re-render with live data overlaid
+  const liveMap = {};
+  entries.forEach(function([name], i) {
+    const r = results[i];
+    liveMap[name] = (r.status === 'fulfilled' && r.value) ? r.value : null;
+  });
+  container.innerHTML = Object.entries(NOTABLE_MANAGERS).map(function([name, m]) {
+    return _fundCardHTML(name, m, focused, liveMap[name] || null);
+  }).join('');
+  delete container.dataset.loading;
 }
 
 // ─── Tech Titans renderer — live Form 4 data ─────────────────────────────────
