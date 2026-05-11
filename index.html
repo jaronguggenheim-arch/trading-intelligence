@@ -2711,19 +2711,65 @@ function getSagePick() {
   const runnerEntry = allScored.find(([t]) => t !== ticker);
   const runner = runnerEntry ? { ticker: runnerEntry[0], score: runnerEntry[1] } : null;
 
-  // Build narrative: prefer LAYER_DATA layers, fall back to TICKER_DATA.news headlines
+  // Build narrative — live signals first, then LAYER_DATA, then news fallback
   let reasons = [];
-  if (ld[ticker]) {
+  let liveSignals = [];
+
+  // 1. Live insider signal from INSIDER_CACHE
+  const icache = typeof INSIDER_CACHE !== 'undefined' && INSIDER_CACHE[ticker];
+  if (icache && icache.txns && typeof computeInsiderSignal !== 'undefined') {
+    const isig = computeInsiderSignal(icache.txns);
+    if (isig.dir === 'positive') liveSignals.push('Insider signal: ' + isig.label);
+  }
+
+  // 2. Analyst cascade — is this stock downstream from a recently-upgraded anchor?
+  if (typeof ANALYST_CASCADE_MAP !== 'undefined') {
+    const l3key = 'l3_' + new Date().toDateString();
+    const l3data = typeof DE_CACHE !== 'undefined' && DE_CACHE[l3key] && DE_CACHE[l3key].data;
+    if (l3data) {
+      Object.entries(ANALYST_CASCADE_MAP).forEach(([anchor, cfg]) => {
+        if (cfg.downstream.includes(ticker)) {
+          const anchorSig = l3data[anchor];
+          if (anchorSig && anchorSig.ups && anchorSig.ups.length >= 2) {
+            liveSignals.push(anchor + ' upgraded (' + anchorSig.ups.length + ' analysts) — ' + ticker + ' in follow-on window (' + cfg.lag + ')');
+          }
+        }
+      });
+    }
+  }
+
+  // 3. Supply chain propagation — is this stock downstream from an anchor mover today?
+  const l4key = 'l4_' + new Date().toDateString();
+  const l4data = typeof DE_CACHE !== 'undefined' && DE_CACHE[l4key] && DE_CACHE[l4key].data;
+  if (l4data && l4data.movers && l4data.downstreamOf) {
+    l4data.movers.forEach(([anchor, q]) => {
+      const downstream = l4data.downstreamOf[anchor] || [];
+      const match = downstream.find(d => d.sym === ticker && d.direction === (q.dp >= 0 ? 'positive' : 'negative'));
+      if (match) {
+        const dpStr = (q.dp >= 0 ? '+' : '') + q.dp.toFixed(1) + '%';
+        liveSignals.push('Supply chain window: ' + anchor + ' ' + dpStr + ' today. ' + match.desc);
+      }
+    });
+  }
+
+  // Combine: live signals first (most actionable), then LAYER_DATA context
+  if (liveSignals.length) {
+    reasons = liveSignals.slice(0, 2);
+  }
+  if (reasons.length < 2 && ld[ticker]) {
     const layers = (ld[ticker] || []).filter(l => l.pts > 0);
-    const topLayers = [...layers].sort((a,b) => (b.pts||0) - (a.pts||0)).slice(0,2);
-    reasons = topLayers.map(l =>
+    const topLayers = [...layers].sort((a,b) => (b.pts||0) - (a.pts||0)).slice(0, 2 - reasons.length);
+    const layerReasons = topLayers.map(l =>
       (l.signals && l.signals[0]) ? l.signals[0] : (l.desc || '')
     ).filter(Boolean);
+    reasons = reasons.concat(layerReasons);
   }
   // Fallback: use top news headlines from TICKER_DATA
   if (reasons.length === 0 && td[ticker] && td[ticker].news) {
     reasons = td[ticker].news.slice(0, 2).map(n => n.hl).filter(Boolean);
   }
+
+  const hasLiveSignals = liveSignals.length > 0;
 
   // Upcoming catalyst
   const catalyst = cats[ticker] || null;
@@ -2732,7 +2778,7 @@ function getSagePick() {
   const action = score >= 75 ? 'BUY' : score >= 60 ? 'WATCH' : 'MONITOR';
   const actionColor = score >= 75 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--text3)';
 
-  return { ticker, score, reasons, catalyst, runner, action, actionColor };
+  return { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals };
 }
 
 function renderSageCard() {
@@ -3253,12 +3299,24 @@ function _renderMorningSummaryBanner() {
   const topLayers = (ld[topTicker] || []).filter(l => l.pts > 0).sort((a,b) => (b.pts||0)-(a.pts||0));
   const topDesc = topLayers[0] ? (topLayers[0].desc || '') : '';
   const scoreColor = topScore >= 75 ? 'var(--green)' : topScore >= 60 ? '#e07b00' : 'var(--text3)';
+  // Check for live signals from engines
+  const l3key = 'l3_' + new Date().toDateString();
+  const l3d = typeof DE_CACHE !== 'undefined' && DE_CACHE[l3key] && DE_CACHE[l3key].data;
+  const analyzeCount = l3d ? Object.values(l3d).filter(v => v.ups && v.ups.length >= 2).length : 0;
+  const cascadesActive = l3d && typeof detectAnalystCascades !== 'undefined' ? detectAnalystCascades(l3d).length : 0;
+  const l4key = 'l4_' + new Date().toDateString();
+  const l4d = typeof DE_CACHE !== 'undefined' && DE_CACHE[l4key] && DE_CACHE[l4key].data;
+  const chainMovers = l4d && l4d.movers ? l4d.movers.length : 0;
+  let liveContext = '';
+  if (analyzeCount > 0) liveContext += analyzeCount + ' analyst upgrade cluster' + (analyzeCount > 1 ? 's' : '') + ' detected. ';
+  if (cascadesActive > 0) liveContext += cascadesActive + ' cascade window' + (cascadesActive > 1 ? 's' : '') + ' open. ';
+  if (chainMovers > 0) liveContext += chainMovers + ' anchor stock move' + (chainMovers > 1 ? 's' : '') + ' propagating. ';
   const signalSummary = buys > 0
     ? `${buys} buy signal${buys>1?'s':''}, ${watches} watch${watches!==1?'es':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}.`
     : `${watches} watch signal${watches!==1?'s':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}. No high-conviction buys today.`;
   el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:14px 18px;margin-bottom:14px;border:0.5px solid var(--border);">
     <div><div style="font-size:38px;font-weight:700;letter-spacing:-2px;color:${scoreColor};font-family:'DM Mono',monospace;">${topScore}</div><div class="sml-lbl">Top signal</div></div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);">${topDesc ? topDesc + '. ' : ''}Click any card below for full analysis. Sector heatmap updates live.</div></div>
+    <div style="flex:1;"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);">${liveContext || (topDesc ? topDesc + '. ' : '')}Click any card below for full analysis.</div></div>
   </div>`;
 }
 
