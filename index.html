@@ -2515,7 +2515,7 @@ async function initLiveScores() {
   if (!S.fh && !IS_VERCEL) return;
   // All featured tickers — compute L1 (price momentum, RSI, volume) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO'];
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC'];
   // Stamp live scores indicator in morning brief picks card
   const lbl = document.getElementById('morning-picks-lbl');
   if (lbl) lbl.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● computing live scores…</span>';
@@ -2628,7 +2628,7 @@ function startGlobalRefresh() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── LIVE TICKER STRIP ───────────────────────────────────────────────────────
-const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO'];
+const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC'];
 let _tickerStripTimer = null;
 
 async function renderLiveTickerStrip() {
@@ -9085,7 +9085,9 @@ const DE_TTL   = 15 * 60 * 1000; // 15 min cache
 // Top 20 stocks by score — fetch insider + news for these
 const DE_TICKERS = ['NVDA','ASML','AMD','PLTR','TSM','SMCI','META','MSFT','GOOGL',
   'AMZN','AAPL','PANW','CRWD','AVGO','MRVL','APP','ORCL','CRM','NOW','MU',
-  'KLAC','ENTG','TER','MKSI','ONTO'];
+  'KLAC','ENTG','TER','MKSI','ONTO',
+  'V','MA','PYPL','SQ','HOOD',
+  'DDOG','MDB','ZS','ESTC'];
 
 // Analyst cascade map: when anchor is upgraded, these downstream stocks enter follow-on window
 // Based on supply chain lags — analyst revisions typically cascade within 5–14 days
