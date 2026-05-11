@@ -534,6 +534,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 
+<!-- SCORE BREAKDOWN OVERLAY -->
+<div id="score-bd-overlay" onclick="closeScoreBreakdown()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1200;"></div>
+<div id="score-bd-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;max-height:85vh;overflow-y:auto;background:var(--bg2);border-top:1px solid var(--border2);border-radius:16px 16px 0 0;z-index:1201;padding:20px 18px 30px;box-shadow:0 -8px 40px rgba(0,0,0,.4);">
+  <div style="width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 18px;"></div>
+  <div id="score-bd-content"></div>
+</div>
+
 <div class="main">
 
 <!-- LANDING PAGE -->
@@ -699,6 +706,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 <!-- MORNING BRIEF -->
 <div class="sec" id="tab-morning">
+  <!-- DAILY INTELLIGENCE CARD — what fired since yesterday -->
+  <div id="morning-intel-card" style="margin-bottom:14px;"></div>
+
   <!-- WHAT'S HOT TODAY BAR -->
   <div id="morning-hot-bar" style="margin-bottom:14px;"></div>
 
@@ -2635,6 +2645,8 @@ async function initLiveScores() {
 }
 
 function _refreshLiveScoreUI() {
+  // Wire score badges after a slight delay to allow DOM to settle
+  setTimeout(function() { try { wireScoreBadges(); renderDailyIntelCard(); } catch(e) {} }, 200);
   // Update score rings in the convergence overview
   document.querySelectorAll('.convergence-stock-card, [data-ticker]').forEach(card => {
     const t = card.dataset.ticker;
@@ -3859,6 +3871,7 @@ function renderChainSignalCard() {
 
 function renderMorningBriefDynamic() {
   try {
+    try { renderDailyIntelCard(); } catch(e) { console.warn('dailyIntel:', e); }
     _renderMorningSummaryBanner();
     try { renderChainSignalCard(); } catch(e) {}
     try { renderInsiderClusterCard(); } catch(e) {}
@@ -3956,6 +3969,11 @@ function _renderMorningPicksCard() {
     <div style="padding:8px 0 2px;display:flex;justify-content:flex-end;">
       <span style="font-size:10px;color:var(--text3);cursor:pointer;" onclick="document.getElementById('morning-picks-card').nextElementSibling.scrollIntoView({behavior:'smooth'})">See all ${ranked.length} stocks ↓</span>
     </div>`;
+}
+
+// Call wireScoreBadges after picks render
+function _postRenderMorning() {
+  try { wireScoreBadges(); } catch(e) {}
 }
 
 function markSagePick() {
@@ -6072,6 +6090,371 @@ function renderSmartMoney() {
   }
   loadSmartMoney(sym);
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DAILY INTELLIGENCE ENGINE
+// Surfaces what changed overnight: score deltas, news signals, chain ripples
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── News signal pattern extractor ────────────────────────────────────────────
+const NEWS_SIGNAL_PATTERNS = [
+  { re: /rais(?:es?|ed?)\s+(?:price\s+)?target\s+(?:to\s+)?\$[\d,]+/i,   type: 'pt_raise',   bull: true,  label: 'PT raised' },
+  { re: /upgrad(?:es?|ed?)\s+to\s+(?:buy|outperform|strong buy)/i,        type: 'upgrade',    bull: true,  label: 'Upgraded to Buy' },
+  { re: /initiates?\s+(?:coverage|at)\s+(?:buy|outperform|overweight)/i,  type: 'initiation', bull: true,  label: 'New Buy initiation' },
+  { re: /downgrad(?:es?|ed?)\s+to\s+(?:sell|underperform|neutral)/i,      type: 'downgrade',  bull: false, label: 'Downgraded' },
+  { re: /beat(?:s?)\s+(?:earnings?|estimates?|expectations?|consensus)/i,  type: 'beat',       bull: true,  label: 'Earnings beat' },
+  { re: /miss(?:es?|ed?)\s+(?:earnings?|estimates?|expectations?)/i,       type: 'miss',       bull: false, label: 'Earnings miss' },
+  { re: /(?:capex|capital expenditure).*(?:rais|increas|grow|guided?\s+(?:above|higher))/i, type: 'capex_up', bull: true, label: 'Capex raised' },
+  { re: /(?:backlog|order\s+book|booking).*(?:record|grew|surged|grew|increas)/i, type: 'orders', bull: true, label: 'Order backlog up' },
+  { re: /guidance.*(?:above|rais|exceed|upward)/i,                         type: 'guidance',   bull: true,  label: 'Guidance raised' },
+  { re: /(?:awarded?|wins?)\s+.*(?:\$[\d.]+\s*(?:billion|million|B|M)\b)/i, type: 'contract',  bull: true,  label: 'Contract win' },
+  { re: /(?:insider|executive|ceo|cfo|director)\s+(?:buys?|purchased?|acquires?)/i, type: 'insider_buy', bull: true, label: 'Insider buy' },
+  { re: /lag\s+window|supply\s+chain.*window|downstream\s+(?:signal|demand)/i, type: 'chain', bull: true, label: 'Chain window' },
+  { re: /activist|stake.*built|position.*opened|new.*position/i,           type: 'activist',   bull: true,  label: 'New institutional position' },
+];
+
+function extractNewsSignals(articles) {
+  if (!articles || !articles.length) return [];
+  const signals = [];
+  const oneDayAgo = Date.now() - 36 * 3600 * 1000; // 36h window
+  articles.forEach(art => {
+    const ts = art.datetime ? art.datetime * 1000 : (art.date ? new Date(art.date).getTime() : 0);
+    const recent = !ts || ts >= oneDayAgo;
+    if (!recent && !art._isDemo) return;
+    const text = (art.headline || art.hl || '') + ' ' + (art.summary || art.body || '');
+    NEWS_SIGNAL_PATTERNS.forEach(p => {
+      if (p.re.test(text)) {
+        const ticker = art.ticker || (art.ticker_sentiment && art.ticker_sentiment[0] && art.ticker_sentiment[0].ticker) || art._ticker;
+        if (ticker && NAMES[ticker]) {
+          signals.push({
+            ticker, type: p.type, bull: p.bull, label: p.label,
+            headline: art.headline || art.hl || '',
+            ts, src: art.source || art.src || ''
+          });
+        }
+      }
+    });
+  });
+  // Deduplicate by ticker + type (keep most recent)
+  const seen = {};
+  return signals.filter(s => {
+    const key = s.ticker + '_' + s.type;
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
+  }).sort((a,b) => (b.ts||0) - (a.ts||0)).slice(0, 12);
+}
+
+// ── Score movers: compute deltas from score_history ───────────────────────────
+function getScoreMovers(minDelta) {
+  minDelta = minDelta || 3;
+  try {
+    const sh = JSON.parse(localStorage.getItem('score_history') || '{}');
+    const now = Date.now();
+    const lookback = 48 * 3600 * 1000; // 48h window
+    const movers = [];
+    Object.entries(sh).forEach(function([ticker, entries]) {
+      if (!entries || entries.length < 2 || !NAMES[ticker]) return;
+      const sorted = entries.slice().sort(function(a,b){ return b.ts - a.ts; });
+      const latest = sorted[0];
+      const older = sorted.find(function(e){ return e.ts <= now - lookback; }) || sorted[sorted.length - 1];
+      if (!older || older.ts >= latest.ts - 3600000) return; // need at least 1h gap
+      const delta = latest.s - older.s;
+      if (Math.abs(delta) >= minDelta) {
+        movers.push({ ticker, now: latest.s, was: older.s, delta, ts: latest.ts });
+      }
+    });
+    return movers.sort(function(a,b){ return Math.abs(b.delta) - Math.abs(a.delta); });
+  } catch(e) { return []; }
+}
+
+// ── Score breakdown popup ──────────────────────────────────────────────────────
+function showScoreBreakdown(sym, event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+  const overlay = document.getElementById('score-bd-overlay');
+  const panel   = document.getElementById('score-bd-panel');
+  const content = document.getElementById('score-bd-content');
+  if (!panel || !content) return;
+
+  const score  = SCORES[sym] || 0;
+  const name   = NAMES[sym] || sym;
+  const cached = (typeof _liveScoreCache !== 'undefined') ? _liveScoreCache[sym] : null;
+  const ld     = (typeof LAYER_DATA !== 'undefined' && LAYER_DATA[sym]) ? LAYER_DATA[sym] : [];
+  const ic     = (typeof INSIDER_CACHE !== 'undefined') ? INSIDER_CACHE[sym] : null;
+  const trend  = getScoreTrend(sym);
+  const trendHtml = trend && Math.abs(trend.delta) >= 2
+    ? `<span style="color:${trend.color};font-weight:700;font-size:13px;margin-left:8px;">${trend.arrow}${Math.abs(trend.delta)} (${trend.days}d)</span>`
+    : '';
+
+  // Layer breakdown — use cached live values when available, fallback to LAYER_DATA
+  const l1pts = cached ? (cached.l1pts || 0) : (ld.find(function(l){return l.id==='L1';}) || {pts:0}).pts;
+  const l3pts = cached ? (cached.l3pts || 0) : (ld.find(function(l){return l.id==='L3';}) || {pts:0}).pts;
+  const l2Layer = ld.find(function(l){return l.id==='L2';}) || {};
+  const l4Layer = ld.find(function(l){return l.id==='L4';}) || {};
+  const l5Layer = ld.find(function(l){return l.id==='L5';}) || {};
+  const l2pts = l2Layer.pts || 0;
+  const l4pts = l4Layer.pts || 0;
+  const l5pts = l5Layer.pts || 0;
+
+  // L1 narrative
+  let l1desc = 'Market structure signal';
+  if (cached) {
+    const parts = [];
+    if (cached.rsi != null) parts.push('RSI ' + cached.rsi.toFixed(1));
+    if (cached.dp != null) parts.push((cached.dp >= 0 ? '+' : '') + cached.dp.toFixed(1) + '% today');
+    if (cached.rangePos != null) parts.push(Math.round(cached.rangePos * 100) + '% of 52W range');
+    if (parts.length) l1desc = parts.join(' · ');
+  } else if (ld.find(function(l){return l.id==='L1';})) {
+    l1desc = (ld.find(function(l){return l.id==='L1';}).desc) || l1desc;
+  }
+
+  // L2 narrative
+  let l2desc = l2Layer.desc || 'Insider & regulatory signals';
+  if (ic && ic.txns && ic.txns.length) {
+    const buys = ic.txns.filter(function(t){ return t.change > 0; });
+    if (buys.length >= 2) {
+      const total = buys.reduce(function(s,t){ return s + Math.abs((t.change||0) * (t.transactionPrice||1)); }, 0);
+      const totalStr = total >= 1e6 ? '$' + (total/1e6).toFixed(1) + 'M' : '$' + Math.round(total/1e3) + 'K';
+      l2desc = buys.length + ' insider buys · ' + totalStr + ' · ' + buys[0].name;
+    } else if (buys.length === 1) {
+      l2desc = 'Insider buy: ' + buys[0].name + ' · ' + buys[0].transactionDate;
+    }
+  }
+
+  // L3 narrative
+  let l3desc = l3Layer ? (l3Layer.desc || 'Analyst consensus') : 'Analyst consensus';
+  const l3Layer2 = ld.find(function(l){return l.id==='L3';});
+  if (l3Layer2 && l3Layer2.desc) l3desc = l3Layer2.desc;
+  if (window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.signals && window._ANALYST_SIGNALS.signals[sym]) {
+    const as = window._ANALYST_SIGNALS.signals[sym];
+    const ups = (as.ups || []).length; const downs = (as.downs || []).length;
+    if (ups > 0 || downs > 0) l3desc = ups + ' analyst upgrade' + (ups!==1?'s':'') + (downs>0?' · ' + downs + ' downgrade' + (downs!==1?'s':''):'') + ' (last 30d)';
+  }
+
+  // L4 narrative
+  let l4desc = l4Layer.desc || 'Supply chain relationships';
+  const windows = window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.windowMap ? (window._CHAIN_SIGNALS.windowMap[sym] || []) : [];
+  if (windows.length > 0) l4desc = windows.length + ' upstream lag window' + (windows.length!==1?'s':'')+' active: ' + windows.slice(0,2).map(function(w){return w.anchor;}).join(', ');
+
+  // L5 narrative
+  const l5desc = l5Layer.desc || 'Macro & structural tailwinds';
+
+  const maxByLayer = { L1: 25, L2: 35, L3: 25, L4: 10, L5: 5 };
+  const layers = [
+    { id:'L1', name:'Market Structure',   pts: l1pts, max: maxByLayer.L1, desc: l1desc,  color:'var(--blue)' },
+    { id:'L2', name:'Insider & Regulatory', pts: l2pts, max: maxByLayer.L2, desc: l2desc, color:'var(--green)' },
+    { id:'L3', name:'Analyst Consensus',  pts: l3pts, max: maxByLayer.L3, desc: l3desc,  color:'var(--amber)' },
+    { id:'L4', name:'Supply Chain',       pts: l4pts, max: maxByLayer.L4, desc: l4desc,  color:'var(--purple,#a78bfa)' },
+    { id:'L5', name:'Macro / Structural', pts: l5pts, max: maxByLayer.L5, desc: l5desc,  color:'var(--text2)' },
+  ];
+
+  const total = layers.reduce(function(s,l){ return s+l.pts; }, 0);
+  const scoreColor = score >= 75 ? 'var(--green)' : score >= 60 ? '#e07b00' : 'var(--text3)';
+  const liveLabel = cached
+    ? '<span style="font-size:9px;color:var(--green);font-weight:600;margin-left:8px;">● Live</span>'
+    : '<span style="font-size:9px;color:var(--text3);margin-left:8px;">Estimated</span>';
+
+  const layerRows = layers.map(function(l) {
+    const pct = l.max > 0 ? Math.round((l.pts / l.max) * 100) : 0;
+    const barColor = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--red)';
+    return '<div style="margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+      + '<span style="font-size:9px;font-weight:700;letter-spacing:.4px;color:' + l.color + ';background:' + l.color.replace(')', ',.15)').replace('var(', 'rgba(') + ';padding:2px 7px;border-radius:4px;">' + l.id + '</span>'
+      + '<span style="font-size:12px;font-weight:600;">' + l.name + '</span>'
+      + '</div>'
+      + '<div style="font-family:\'DM Mono\',monospace;font-size:13px;font-weight:700;color:' + barColor + ';">' + l.pts + '<span style="font-size:10px;color:var(--text3);font-weight:400;">/' + l.max + '</span></div>'
+      + '</div>'
+      + '<div style="height:6px;border-radius:3px;background:var(--bg4);margin-bottom:5px;">'
+      + '<div style="height:100%;border-radius:3px;background:' + barColor + ';width:' + pct + '%;transition:width .4s;"></div>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + l.desc + '</div>'
+      + '</div>';
+  }).join('');
+
+  const ts = cached ? ('<div style="font-size:10px;color:var(--text3);margin-top:16px;text-align:center;">Computed ' + (Math.round((Date.now()-cached.ts)/60000)||'<1') + ' min ago</div>') : '';
+
+  content.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">'
+    + '<div>'
+    + '<div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;letter-spacing:-.5px;">' + sym + '</div>'
+    + '<div style="font-size:13px;color:var(--text2);">' + name + '</div>'
+    + '</div>'
+    + '<div style="text-align:right;">'
+    + '<div style="font-size:32px;font-weight:700;color:' + scoreColor + ';font-family:\'DM Mono\',monospace;letter-spacing:-1px;">' + score + '<span style="font-size:14px;font-weight:400;color:var(--text3);">/100</span></div>'
+    + liveLabel + trendHtml
+    + '</div>'
+    + '</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-bottom:16px;padding:8px 12px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border);">Score = sum of 5 signal layers. Each layer is scored independently. Total: ' + total + ' points across ' + layers.filter(function(l){return l.pts>0;}).length + ' active layers.</div>'
+    + layerRows
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">'
+    + '<button onclick="openTicker(\'' + sym + '\');closeScoreBreakdown();" style="flex:1;padding:10px;border:none;border-radius:8px;background:#6366f1;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;">Full analysis →</button>'
+    + '<button onclick="closeScoreBreakdown()" style="padding:10px 16px;border:0.5px solid var(--border2);border-radius:8px;background:none;color:var(--text2);font-size:12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">Close</button>'
+    + '</div>'
+    + ts;
+
+  overlay.style.display = 'block';
+  panel.style.display = 'block';
+  requestAnimationFrame(function() { panel.scrollTop = 0; });
+}
+
+function closeScoreBreakdown() {
+  const overlay = document.getElementById('score-bd-overlay');
+  const panel   = document.getElementById('score-bd-panel');
+  if (overlay) overlay.style.display = 'none';
+  if (panel)   panel.style.display = 'none';
+}
+
+// ── Daily Intel Card renderer ─────────────────────────────────────────────────
+async function renderDailyIntelCard() {
+  const el = document.getElementById('morning-intel-card');
+  if (!el) return;
+
+  const today = new Date();
+  const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][today.getDay()];
+  const monthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][today.getMonth()];
+  const dateStr = dayName + ' ' + monthName + ' ' + today.getDate();
+
+  // ── Score movers ─────────────────────────────────────────────────────────
+  const movers = getScoreMovers(4); // min delta = 4 pts to surface
+  const upMovers   = movers.filter(function(m){ return m.delta > 0; }).slice(0, 4);
+  const downMovers = movers.filter(function(m){ return m.delta < 0; }).slice(0, 2);
+
+  // ── News signals ─────────────────────────────────────────────────────────
+  const newsCache = typeof _avNewsCache !== 'undefined' ? _avNewsCache : [];
+  const newsSignals = extractNewsSignals(newsCache).slice(0, 6);
+
+  // ── Chain ripples ─────────────────────────────────────────────────────────
+  const chainSignals = (window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.signals)
+    ? window._CHAIN_SIGNALS.signals.slice(0, 3) : [];
+
+  // ── Analyst cascades ──────────────────────────────────────────────────────
+  const l3key = 'l3_' + today.toDateString();
+  const l3d = typeof DE_CACHE !== 'undefined' && DE_CACHE[l3key] && DE_CACHE[l3key].data;
+  const cascades = (l3d && typeof detectAnalystCascades !== 'undefined')
+    ? detectAnalystCascades(l3d).slice(0, 3) : [];
+
+  const hasData = movers.length || newsSignals.length || chainSignals.length || cascades.length;
+  if (!hasData) {
+    // Show a placeholder that will update when live scores compute
+    el.innerHTML = '<div style="border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--bg2);margin-bottom:0;">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+      + '<span style="font-size:11px;font-weight:700;letter-spacing:.5px;color:#6366f1;">🧠 DAILY INTELLIGENCE</span>'
+      + '<span style="font-size:10px;color:var(--text3);">· ' + dateStr + '</span>'
+      + '<span id="intel-live-badge" style="font-size:9px;color:var(--text3);margin-left:auto;">Computing live scores…</span>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);">Signal scan in progress — refreshes automatically as live scores compute.</div>'
+      + '</div>';
+    return;
+  }
+
+  // Build movers HTML
+  let moversHtml = '';
+  if (upMovers.length || downMovers.length) {
+    const allMovers = upMovers.concat(downMovers);
+    const rows = allMovers.map(function(m) {
+      const up = m.delta > 0;
+      const arrow = up ? '↑' : '↓';
+      const color = up ? 'var(--green)' : 'var(--red)';
+      const ld = typeof LAYER_DATA !== 'undefined' && LAYER_DATA[m.ticker];
+      const topLayer = ld ? ld.filter(function(l){return l.pts>0;}).sort(function(a,b){return (b.pts||0)-(a.pts||0);})[0] : null;
+      const reason = topLayer ? (topLayer.desc || topLayer.name || '') : '';
+      return '<div onclick="showScoreBreakdown(\'' + m.ticker + '\',event)" style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
+        + '<span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:700;color:var(--text);min-width:44px;">' + m.ticker + '</span>'
+        + '<span style="font-size:11px;font-weight:700;color:' + color + ';min-width:48px;">' + arrow + Math.abs(m.delta) + ' → ' + m.now + '</span>'
+        + '<span style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + reason + '</span>'
+        + '<span style="font-size:10px;color:var(--text3);flex-shrink:0;">Score ↗</span>'
+        + '</div>';
+    }).join('');
+    moversHtml = '<div style="margin-bottom:12px;">'
+      + '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Score Moves (48h)</div>'
+      + rows + '</div>';
+  }
+
+  // Build news signals HTML
+  let newsHtml = '';
+  if (newsSignals.length) {
+    const rows = newsSignals.map(function(sig) {
+      const bull = sig.bull;
+      const tagColor = bull ? 'var(--green)' : 'var(--red)';
+      const tagBg    = bull ? 'var(--green-bg)' : 'var(--red-bg)';
+      const short = sig.headline.length > 72 ? sig.headline.slice(0,72) + '…' : sig.headline;
+      return '<div onclick="openTicker(\'' + sig.ticker + '\')" style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
+        + '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;min-width:44px;padding-top:1px;">' + sig.ticker + '</span>'
+        + '<div style="flex:1;">'
+        + '<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;background:' + tagBg + ';color:' + tagColor + ';margin-right:6px;">' + sig.label + '</span>'
+        + '<span style="font-size:11px;color:var(--text2);">' + short + '</span>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+    newsHtml = '<div style="margin-bottom:12px;">'
+      + '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Signals From News</div>'
+      + rows + '</div>';
+  }
+
+  // Build chain ripples HTML
+  let chainHtml = '';
+  const allChainItems = [];
+  chainSignals.forEach(function(sig) { allChainItems.push({ type:'chain', sig }); });
+  cascades.forEach(function(cas) { allChainItems.push({ type:'cascade', cas }); });
+  if (allChainItems.length) {
+    const rows = allChainItems.map(function(item) {
+      if (item.type === 'chain') {
+        const s = item.sig;
+        const downstream = s.downstream ? s.downstream.slice(0,3).map(function(d){return d.sym;}).join(', ') : '';
+        const dpStr = s.dp != null ? ((s.dp>=0?'+':'')+s.dp.toFixed(1)+'%') : '';
+        return '<div onclick="openTicker(\'' + (s.anchor||'') + '\')" style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
+          + '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;min-width:44px;color:var(--blue);">' + (s.anchor||'') + '</span>'
+          + '<div style="flex:1;font-size:11px;color:var(--text2);">'
+          + (dpStr ? '<span style="color:' + (s.dp>=0?'var(--green)':'var(--red)') + ';font-weight:600;">' + dpStr + '</span> · ' : '')
+          + 'Lag window open → ' + (downstream || 'downstream stocks') + '</div>'
+          + '</div>';
+      } else {
+        const c = item.cas;
+        const downs = (c.downstream||[]).slice(0,2).join(', ');
+        return '<div onclick="openTicker(\'' + (c.anchor||'') + '\')" style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
+          + '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;min-width:44px;color:var(--amber);">' + (c.anchor||'') + '</span>'
+          + '<div style="flex:1;font-size:11px;color:var(--text2);">'
+          + (c.upgradeCount||0) + ' analyst upgrade' + ((c.upgradeCount||0)!==1?'s':'') + ' · ' + (c.lag||'') + ' lag window'
+          + (downs ? ' → watch ' + downs : '')
+          + '</div>'
+          + '</div>';
+      }
+    }).join('');
+    chainHtml = '<div style="margin-bottom:4px;">'
+      + '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Chain & Cascade Activity</div>'
+      + rows + '</div>';
+  }
+
+  el.innerHTML = '<div style="border:0.5px solid rgba(99,102,241,.3);border-left:3px solid #6366f1;border-radius:10px;padding:14px 16px;background:var(--bg2);">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+    + '<span style="font-size:11px;font-weight:700;letter-spacing:.5px;color:#6366f1;">🧠 DAILY INTELLIGENCE</span>'
+    + '<span style="font-size:10px;color:var(--text3);">· ' + dateStr + '</span>'
+    + '<span style="font-size:9px;color:var(--green);font-weight:600;margin-left:auto;">● Live</span>'
+    + '</div>'
+    + moversHtml + newsHtml + chainHtml
+    + '<div style="padding-top:4px;font-size:10px;color:var(--text3);">Tap any row to open full analysis · Tap a score badge anywhere to see the breakdown</div>'
+    + '</div>';
+}
+
+// ── Wire score badges to breakdown popup ─────────────────────────────────────
+// Make every score-pill and ts-val score clickable to show breakdown
+function wireScoreBadges() {
+  document.querySelectorAll('.score-pill').forEach(function(el) {
+    if (el._scoreBadgeWired) return;
+    el._scoreBadgeWired = true;
+    const card = el.closest('[data-ticker]') || el.closest('.convergence-stock-card');
+    if (!card) return;
+    const ticker = card.dataset.ticker;
+    if (!ticker) return;
+    el.style.cursor = 'pointer';
+    el.title = 'Click to see score breakdown';
+    el.addEventListener('click', function(e) { e.stopPropagation(); showScoreBreakdown(ticker, e); });
+  });
+}
+
+// Call wireScoreBadges after any render that creates score-pill elements
 
 // Global delegate: clicking any .de-ticker-tag opens that ticker modal
 document.addEventListener('click', function(e) {
