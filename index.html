@@ -2751,6 +2751,44 @@ function _seedInitialScoreSnapshot() {
   } catch(e) {}
 }
 
+// ── Server-side pre-computed score loader ────────────────────────────────────
+// Fetches GET /api/scores (pre-computed nightly cron) and seeds SCORES immediately
+// so score displays populate before the slower per-ticker Finnhub loop completes.
+// Also merges server daily history into localStorage for the backtest.
+async function loadServerScores() {
+  if (!IS_VERCEL) return false;
+  try {
+    const r = await fetch('/api/scores', { signal: AbortSignal.timeout(5000) });
+    if (!r.ok) return false;
+    const j = await r.json();
+    if (!j.ok || !j.scores) return false;
+    // Seed SCORES with pre-computed values (initLiveScores will override with fresher data)
+    let seeded = 0;
+    Object.entries(j.scores).forEach(function([t, s]) {
+      if (s && typeof SCORES[t] !== 'undefined') { SCORES[t] = s; seeded++; }
+    });
+    // Merge server daily history into localStorage backtest store
+    if (j.date && j.scores) {
+      try {
+        const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
+        // Only write server entry if we don't already have a local entry for that date
+        if (!hist[j.date]) {
+          hist[j.date] = j.scores;
+          const keys = Object.keys(hist).sort();
+          if (keys.length > 45) keys.slice(0, keys.length - 45).forEach(function(k) { delete hist[k]; });
+          localStorage.setItem('score_history_daily', JSON.stringify(hist));
+        }
+      } catch(e) {}
+    }
+    console.log('[server scores] loaded ' + seeded + ' pre-computed scores for ' + (j.date || 'today'));
+    // Refresh UI immediately with pre-computed scores
+    try { _refreshLiveScoreUI(); } catch(e) {}
+    try { renderMorningBriefDynamic(); } catch(e) {}
+    try { renderSageCard(); markSagePick(); } catch(e) {}
+    return true;
+  } catch(e) { return false; }
+}
+
 function _refreshLiveScoreUI() {
   // Wire score badges after a slight delay to allow DOM to settle
   setTimeout(function() { try { wireScoreBadges(); renderDailyIntelCard(); } catch(e) {} }, 200);
@@ -5919,8 +5957,20 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(S.fh||S.av||IS_VERCEL)setTimeout(()=>{try{if(!window._avNewsFetched)fetchAVNews();}catch(e){}},300);
     // Seed score snapshot with static base scores on first load (builds history from day 1)
     setTimeout(function(){try{_seedInitialScoreSnapshot();}catch(e){}},500);
-    // Kick off live score computation in background (non-blocking, requires Finnhub key)
-    if(S.fh||IS_VERCEL)setTimeout(()=>{try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},1500);
+    // Load pre-computed server scores first (fast, 1 API call) — then kick off full live refresh
+    if(IS_VERCEL){
+      setTimeout(function(){
+        loadServerScores().then(function(){
+          // After server scores are loaded, run full live refresh in background
+          if(S.fh||IS_VERCEL)setTimeout(()=>{try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},500);
+        }).catch(function(){
+          if(S.fh||IS_VERCEL)setTimeout(()=>{try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},1500);
+        });
+      },600);
+    } else {
+      // Local dev — skip server scores, go straight to live computation
+      if(S.fh||IS_VERCEL)setTimeout(()=>{try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},1500);
+    }
     setTimeout(()=>{try{renderLiveTickerStrip();}catch(e){console.warn('tickerStrip',e);}},300);
     // Start 15-min global refresh loop
     setTimeout(()=>{try{startGlobalRefresh();}catch(e){console.warn('globalRefresh',e);}},2000);
