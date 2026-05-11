@@ -2123,7 +2123,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div id="wl-scores"></div>
     </div>
   </div>
-  <div id="pt-brief" style="display:none;">
+  <!-- PORTFOLIO CHAIN VIEW -->
+  <div id="pt-chain" style="margin-bottom:24px;"></div>
+
+    <div id="pt-brief" style="display:none;">
     <div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:16px 18px;margin-bottom:14px;border:0.5px solid var(--border);">
       <div style="font-size:32px;font-weight:700;letter-spacing:-1px;color:#6366f1;font-family:'DM Mono',monospace;">91</div>
       <div style="flex:1;">
@@ -4843,9 +4846,57 @@ document.getElementById('morning-wl').innerHTML=S.wl.slice(0,5).map(sym=>`<div s
 const bwl=document.getElementById('brief-wl');if(bwl)bwl.innerHTML=S.wl.slice(0,6).map(sym=>{const s=SCORES[sym]||0;const sc=s>=80?'var(--green)':s>=60?'var(--amber)':s>=40?'var(--text2)':'var(--red)';return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('${sym}')"><div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">${sym}</div><div style="font-size:10px;color:var(--text3);">${NAMES[sym]||''}</div></div><span style="font-size:11px;font-weight:600;color:${sc};">${s||'—'}</span></div>`;}).join('');
 document.getElementById('comm-wl').innerHTML=COMMUNITY.map(sym=>`<div class="wl-item" onclick="openTicker('${sym}')"><div><div class="wl-ticker">${sym}</div><div style="font-size:10px;color:var(--text3);">${Math.floor(Math.random()*900+80)} watching</div></div><button onclick="event.stopPropagation();addSym('${sym}')" style="font-size:10px;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Add</button></div>`).join('');}
 
+
+function renderPortfolioChain(){
+  const el=document.getElementById('pt-chain');if(!el)return;
+  const wl=S.wl||[];
+  if(!wl.length){el.innerHTML='';return;}
+  // Build upstream exposure map
+  const upMap={};
+  wl.forEach(sym=>{
+    const cg=CHAIN_GRAPH&&CHAIN_GRAPH[sym];
+    if(!cg||!cg.upstream)return;
+    cg.upstream.forEach(u=>{
+      const utk=u.ticker;
+      if(!utk||utk.startsWith('__'))return;
+      if(!upMap[utk])upMap[utk]={holdings:[],totalWeight:0,metric:u.metric||'',desc:u.desc||''};
+      if(!upMap[utk].holdings.includes(sym))upMap[utk].holdings.push(sym);
+      upMap[utk].totalWeight+=u.weight||1;
+    });
+  });
+  // Only show upstreams that drive 2+ watchlist stocks
+  const multi=Object.entries(upMap).filter(([tk,d])=>d.holdings.length>=2).sort((a,b)=>b[1].holdings.length-a[1].holdings.length||b[1].totalWeight-a[1].totalWeight);
+  if(!multi.length){el.innerHTML='';return;}
+  const rows=multi.slice(0,8).map(([tk,d])=>{
+    const s=SCORES[tk]||0;
+    const sc=s>=80?'var(--green)':s>=60?'var(--amber)':s>=40?'var(--text2)':'var(--muted)';
+    const chips=d.holdings.map(h=>`<span style="font-size:10px;font-family:'DM Mono',monospace;font-weight:600;background:rgba(99,102,241,.15);border:0.5px solid rgba(99,102,241,.35);border-radius:5px;padding:2px 7px;color:#818cf8;">${h}</span>`).join(' ');
+    return`<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:11px 0;border-bottom:0.5px solid var(--border);gap:12px;" onclick="openTicker('${tk}')" style="cursor:pointer;">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+          <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;" onclick="openTicker('${tk}')">${tk}</span>
+          <span style="font-size:10px;color:var(--text3);">${NAMES[tk]||''}</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px;">${chips}</div>
+        <div style="font-size:10px;color:var(--text3);">${d.metric?d.metric+' · ':''}<span style="color:var(--text2);">${d.holdings.length} of your stocks depend on this</span></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        ${s?`<div style="font-size:16px;font-weight:700;color:${sc};font-family:'DM Mono',monospace;">${s}</div><div style="font-size:9px;color:var(--muted);">signal</div>`:'<div style="font-size:11px;color:var(--muted);">—</div>'}
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="card-lbl" style="margin-bottom:0;">Shared upstream drivers</div>
+      <span style="font-size:10px;color:var(--text3);">${multi.length} upstream risk${multi.length!==1?'s':''}</span>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Stocks that upstream <span style="color:var(--text2);font-weight:600;">multiple</span> holdings in your watchlist — a signal move here ripples across your portfolio.</div>
+    ${rows}
+  </div>`;}
+
 function addWL(){const s=document.getElementById('wl-input').value.toUpperCase().trim();if(!s)return;addSym(s);document.getElementById('wl-input').value='';}
-function addSym(s){if(!S.wl.includes(s)){S.wl.push(s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){}}}
-function rmWL(s){S.wl=S.wl.filter(x=>x!==s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){}}
+function addSym(s){if(!S.wl.includes(s)){S.wl.push(s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){} try{renderPortfolioChain();}catch(e){}}}
+function rmWL(s){S.wl=S.wl.filter(x=>x!==s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){} try{renderPortfolioChain();}catch(e){}}
 function toggleWL(sym,btn){if(S.wl.includes(sym)){rmWL(sym);btn.textContent='+ Add to watchlist';btn.classList.remove('watching');}else{addSym(sym);btn.textContent='Watching ✓';btn.classList.add('watching');}}
 function saveWL(){localStorage.setItem('ti72_wl',JSON.stringify(S.wl));try{syncToCloud();}catch(e){}}
 
@@ -4912,7 +4963,7 @@ function gT(n,btn){
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
   if(n==='smart'){setTimeout(function(){try{renderSmartMoney&&renderSmartMoney();}catch(e){}},80);}
   if(n==='portfolio'){setTimeout(function(){try{
-    renderWL();renderBudgetTab();renderMyIntelBrief();
+    renderWL();renderBudgetTab();renderMyIntelBrief();try{renderPortfolioChain();}catch(e){}  
   }catch(e){}},50);}
 }
 
