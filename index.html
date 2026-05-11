@@ -2458,7 +2458,7 @@ async function computeLiveScore(ticker) {
 
     // ── L2/L4/L5: Manual curation (insider, supply chain, macro) ─────────────
     const ld    = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
-    const l2pts = ld ? (ld.find(l => l.id==='L2')?.pts || 15) : 15;
+    const l2pts = await computeL2Score(ticker);
     const l4pts = ld ? (ld.find(l => l.id==='L4')?.pts || 5)  : 5;
     const l5pts = ld ? (ld.find(l => l.id==='L5')?.pts || 5)  : 5;
 
@@ -3803,7 +3803,7 @@ function showTkT(n,btn){
   const sym=window._tkSym;if(!sym)return;
   if(n==='score'){const el=document.getElementById('tk-score');if(!el._r){el.innerHTML=renderTkScore(sym);el._r=true;}}
   if(n==='chain'){const el=document.getElementById('tk-chain');if(!el._r){el.innerHTML=renderTkChain(sym);el._r=true;}}
-  if(n==='dedge'){const el=document.getElementById('tk-dedge');if(!el._r){el.innerHTML=renderTkDeep(sym);el._r=true;}}
+  if(n==='dedge'){const el=document.getElementById('tk-dedge');el.innerHTML=renderTkDeep(sym);if(IS_VERCEL||(typeof S!=='undefined'&&S.fh)){fetchInsiderData(sym).then(function(){const e2=document.getElementById('tk-dedge');if(e2&&window._tkSym===sym)e2.innerHTML=renderTkDeep(sym);});}}
   if(n==='ins'){const el=document.getElementById('tk-ins-content');if(el&&!el._r&&!TICKER_DATA[sym]){fillInsiderLive(sym);el._r=true;}}
 }
 
@@ -3919,9 +3919,36 @@ function renderTkChain(sym){
 }
 
 function renderTkDeep(sym){
+  // Live L2 signal card from INSIDER_CACHE (populated by fetchInsiderData)
+  var liveL2='';
+  var ic=typeof INSIDER_CACHE!=='undefined'&&INSIDER_CACHE[sym];
+  if(ic&&ic.txns){
+    var sig=computeInsiderSignal(ic.txns);
+    var age=Math.round((Date.now()-ic.ts)/60000);
+    var ageStr=age<2?'just now':age<60?age+'m ago':Math.round(age/60)+'h ago';
+    var col=sig.dir==='positive'?'var(--blue)':sig.dir==='negative'?'var(--red)':'var(--text3)';
+    var bg=sig.dir==='positive'?'var(--blue-bg)':'var(--bg3)';
+    var bd=sig.dir==='positive'?'var(--blue-bd)':'var(--border)';
+    var detail='';
+    if(sig.dir==='positive'){
+      var r90=ic.txns.filter(function(t){return new Date(t.transactionDate)>new Date(Date.now()-90*864e5);});
+      var buys=r90.filter(function(t){return t.change>0;});
+      var names=[...new Set(buys.map(function(t){return t.name;}).filter(Boolean))].slice(0,3);
+      var tv=buys.reduce(function(s,t){return s+Math.abs(t.change*(t.transactionPrice||0));},0);
+      if(names.length)detail='<div style="font-size:11px;color:var(--text2);margin-top:5px;">'+names.join(', ')+(tv>1e5?' \u00b7 $'+(tv/1e6).toFixed(1)+'M total':'')+'</div>';
+    }
+    liveL2='<div style="background:'+bg+';border:0.5px solid '+bd+';border-left:3px solid '+col+';border-radius:8px;padding:11px 13px;margin-bottom:12px;">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">'
+      +'<div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:'+col+';">L2 \u00b7 Insider Signal</div>'
+      +'<div style="font-size:10px;color:var(--text3);">computed '+ageStr+'</div>'
+      +'</div>'
+      +'<div style="font-size:12px;font-weight:500;color:var(--text);">'+sig.label+'</div>'
+      +detail
+      +'</div>';
+  }
   const cards=document.querySelectorAll('.de-card[data-tickers]');
   const matching=Array.from(cards).filter(c=>(c.getAttribute('data-tickers')||'').split(' ').includes(sym));
-  if(!matching.length)return '<div class="card"><div class="card-lbl">Deep Edge \u2014 '+sym+'</div><div style="font-size:12px;color:var(--text3);padding:8px 0;">No Deep Edge signals for '+sym+' yet.<br><br><span style="color:var(--blue);cursor:pointer;" onclick="gT(\'deepedge\',null)">Go to Deep Edge \u2192</span></div></div>';
+  if(!matching.length&&!liveL2)return '<div class="card"><div class="card-lbl">Deep Edge \u2014 '+sym+'</div><div style="font-size:12px;color:var(--text3);padding:8px 0;">No Deep Edge signals for '+sym+' yet.<br><br><span style="color:var(--blue);cursor:pointer;" onclick="gT(\'deepedge\',null)">Go to Deep Edge \u2192</span></div></div>';
   // Group by section header
   const allDeEls=document.querySelectorAll('.de-section-hdr, .de-card');
   let curHdr='';const sections={};const hdrOrder=[];
@@ -3929,7 +3956,7 @@ function renderTkDeep(sym){
     if(el.classList.contains('de-section-hdr')){curHdr=el.textContent.trim();sections[curHdr]=[];hdrOrder.push(curHdr);}
     else if(el.classList.contains('de-card')&&curHdr)sections[curHdr].push(el);
   });
-  let html='';
+  let html=liveL2;
   hdrOrder.forEach(hdr=>{
     const ms=(sections[hdr]||[]).filter(c=>(c.getAttribute('data-tickers')||'').split(' ').includes(sym));
     if(!ms.length)return;
@@ -4097,6 +4124,25 @@ function computeInsiderSignal(txns) {
   if (buys.length > 0 && sells.length > 0) return { dir: 'neutral', label: 'Mixed activity — both buys and sells present', score: 12 };
   if (sells.length > 0 && buys.length === 0) return { dir: 'neutral', label: 'Sells only — check if 10b5-1 plan (pre-scheduled)', score: 8 };
   return { dir: 'neutral', label: 'Minimal recent activity', score: 5 };
+}
+
+async function computeL2Score(ticker) {
+  const fallback = (() => {
+    const ld = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
+    return ld ? (ld.find(l => l.id==='L2')?.pts || 12) : 12;
+  })();
+  if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) return fallback;
+  try {
+    const data = await fetchInsiderData(ticker);
+    if (!data || !data.txns) return fallback;
+    const sig = computeInsiderSignal(data.txns);
+    if (sig.score >= 30) return 23;
+    if (sig.score >= 22) return 18;
+    if (sig.score >= 18) return 14;
+    if (sig.score >= 12) return 10;
+    if (sig.score >=  8) return  7;
+    return 5;
+  } catch(e) { return fallback; }
 }
 
 async function fillInsiderLive(sym) {
