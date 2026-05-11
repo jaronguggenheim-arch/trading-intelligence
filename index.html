@@ -333,6 +333,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;max-width:100%;}.sec.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
 .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;font-weight:600;}
+.sm-stab{flex-shrink:0;padding:6px 14px;border:0.5px solid var(--border2);border-radius:20px;background:none;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
+.sm-stab.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:600;}
+.sm-stab:hover:not(.active){background:var(--bg4);color:var(--text);}
+.sm-fund-card{border:0.5px solid var(--border);border-radius:10px;padding:12px;background:var(--bg3);cursor:pointer;transition:border-color .15s;}
+.sm-fund-card:hover{border-color:var(--blue-bd);}
+.sm-titan-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);}
+.sm-titan-row:last-child{border-bottom:none;}
+.sm-congress-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border);cursor:pointer;gap:8px;}
+.sm-congress-row:last-child{border-bottom:none;}
+.sm-voice-card{border:0.5px solid var(--border);border-radius:10px;padding:14px;background:var(--bg3);}
 .sc{border-radius:8px;padding:11px 13px;border:0.5px solid;margin-bottom:8px;cursor:pointer;transition:transform .12s;position:relative;}.sc:hover{transform:translateY(-1px);}.sc::after{content:'›';position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.3;}
 .sc-r{background:var(--bg2);border-color:var(--border);border-left:3px solid var(--blue);}.sc-a{background:var(--bg2);border-color:var(--border);border-left:3px solid var(--border2);}.sc-g{background:var(--bg2);border-color:var(--border);border-left:3px solid var(--blue);}.sc-b{background:var(--bg2);border-color:var(--border);border-left:3px solid var(--blue);}.sc-p{background:var(--bg2);border-color:var(--border);border-left:3px solid var(--border2);}.sc-gray{background:var(--bg2);border-color:var(--border);border-left:3px solid var(--border);}.sc-na{cursor:default;}.sc-na::after{display:none;}
 .sul{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;color:var(--text);}.sc-b .sul{color:var(--blue);}
@@ -2043,7 +2053,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 <!-- SMART MONEY -->
 <div class="sec" id="tab-smart">
-  <!-- LIVE EDGAR INSIDER FEED -->
+  <!-- Smart money sub-tabs -->
+  <div style="display:flex;gap:5px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;" id="smart-subtabs">
+    <button class="sm-stab active" onclick="switchSmartSubTab('funds',this)">🏦 Funds</button>
+    <button class="sm-stab" onclick="switchSmartSubTab('titans',this)">👔 Tech Titans</button>
+    <button class="sm-stab" onclick="switchSmartSubTab('congress',this)">🏛 Congress</button>
+    <button class="sm-stab" onclick="switchSmartSubTab('voices',this)">💡 Voices</button>
+  </div>
+
+  <!-- EDGAR insider feed -->
   <div class="card" style="margin-bottom:12px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
       <div>
@@ -2052,50 +2070,77 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
       <button id="refresh-edgar-btn" onclick="refreshAllEdgar()" style="padding:5px 14px;border:none;border-radius:6px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;">↺ Fetch live</button>
     </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;" id="edgar-ticker-btns">
-    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;" id="edgar-ticker-btns"></div>
     <div id="edgar-live-feed">
       <div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
         Pull live Form 4 filings directly from SEC EDGAR — no key required
       </div>
     </div>
   </div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-lbl">US Congress + Insider — open market buys only</div>
-      <div class="sc sc-r" onclick="openTicker('ASML')" style="margin-bottom:7px;"><div class="sul">ASML — Triple cluster (CEO + CFO + Board same week)</div><div class="suh">All purchased with personal cash on open market. Three insiders independently buying same week = rarest conviction signal available.</div><div class="sc-meta"><span class="act-tag at-buy">HIGHEST SIGNAL</span></div></div>
-      <div class="sc sc-g" onclick="openTicker('NVDA')" style="margin-bottom:7px;"><div class="sul">Pelosi · NVDA · BUY $500K–$1M open market</div><div class="suh">House member with AI committee access. Filed 4 days ago. Confirms AI thesis from political intelligence layer.</div><div class="sc-meta"><span class="act-tag at-buy">BUY</span></div></div>
-      <div class="sc sc-gray" onclick="openTicker('NVDA')"><div class="sul">Huang · NVDA · SELL $95M — 10b5-1 noise</div><div class="suh">Pre-scheduled automatic plan filed months ago. Completely ignore.</div><div class="sc-meta"><span class="act-tag at-skip">IGNORE</span></div></div>
+
+  <!-- FUNDS panel -->
+  <div id="sm-panel-funds">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text2);">Notable fund managers tracked</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select id="smart-money-ticker-sel" onchange="loadSmartMoney(this.value)" style="font-size:11px;padding:4px 8px;border:0.5px solid var(--border2);border-radius:5px;background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;cursor:pointer;"><option value="NVDA">NVDA</option></select>
+        <button onclick="loadSmartMoney(document.getElementById('smart-money-ticker-sel').value,true)" style="padding:4px 10px;border:none;border-radius:5px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺</button>
+      </div>
     </div>
+    <div id="notable-fund-cards" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="card-lbl" style="margin-bottom:0;">Smart Money — institutional positions</div>
-        <div style="display:flex;gap:6px;">
-          <select id="smart-money-ticker-sel" onchange="loadSmartMoney(this.value)" style="font-size:11px;padding:4px 8px;border:0.5px solid var(--border2);border-radius:5px;background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;cursor:pointer;">
-            <option value="NVDA">NVDA</option>
-          </select>
-          <button onclick="loadSmartMoney(document.getElementById('smart-money-ticker-sel').value,true)" style="padding:4px 10px;border:none;border-radius:5px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺</button>
-        </div>
-      </div>
-      <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Live 13F institutional ownership · SEC filings · Updated quarterly</div>
-
-      <!-- Notable managers — curated from 13F public filings -->
-      <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:0.5px solid var(--border);">
-        <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Notable manager watchlist</div>
-        <div style="display:flex;flex-direction:column;gap:4px;" id="notable-managers-list">
-          <div style="font-size:11px;color:var(--text3);padding:8px 0;">Select a ticker to see which notable managers hold it</div>
-        </div>
-      </div>
-
-      <!-- Live institutional ownership from Finnhub -->
+      <div class="card-lbl">Who holds this stock — live 13F data</div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Institutional ownership · SEC 13F filings · Updated quarterly</div>
       <div id="smart-money-institutional">
-        <div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
-          <div style="font-size:16px;margin-bottom:6px;">🏦</div>
-          <div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Loading institutional data…</div>
-          <div style="font-size:10px;">Fetching 13F ownership from Finnhub</div>
+        <div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">Select a ticker above to load institutional holders</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECH TITANS panel -->
+  <div id="sm-panel-titans" style="display:none;">
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-lbl">Tech CEOs &amp; Founders — open market activity</div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:12px;">Executive buying with personal cash = highest conviction signal. 10b5-1 auto-plans are noise — only open market buys matter.</div>
+      <div id="sm-titans-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">How to read executive trades</div>
+      <div class="sc sc-g sc-na" style="margin-bottom:6px;"><div class="sul">Open market BUY = highest signal</div><div class="suh">CEO uses personal money, not a scheduled plan. The rarest trade. Jensen Huang buying NVDA in 2019 preceded a 4x run. Lisa Su buying AMD in 2023 preceded a 3x move.</div><div class="sc-meta"><span class="act-tag at-buy">STRONG SIGNAL</span></div></div>
+      <div class="sc sc-gray sc-na"><div class="sul">10b5-1 plan SELL = noise</div><div class="suh">Pre-scheduled automatic sale filed months prior. Has zero information content. Huang selling $95M/quarter is a tax plan, not a bearish signal. Completely ignore.</div><div class="sc-meta"><span class="act-tag at-skip">IGNORE</span></div></div>
+    </div>
+  </div>
+
+  <!-- CONGRESS panel -->
+  <div id="sm-panel-congress" style="display:none;">
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="card-lbl" style="margin-bottom:0;">Congress trades · STOCK Act disclosures</div>
+        <button onclick="loadCongressTrades(true)" style="padding:4px 12px;border:none;border-radius:5px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">STOCK Act requires all trades 45+ days old to be disclosed publicly. Filtered to stocks in our universe.</div>
+      <div id="sm-congress-feed">
+        <div style="font-size:11px;color:var(--text3);text-align:center;padding:22px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+          <div style="font-size:18px;margin-bottom:6px;">🏛</div>
+          <div style="font-weight:600;color:var(--text2);margin-bottom:4px;">Loading congressional trades…</div>
+          <div style="font-size:10px;">From STOCK Act public disclosures</div>
         </div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-lbl">Why Congress trades matter</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text2);">Members on tech, defense, and energy committees often trade ahead of regulatory decisions and budget approvals. Not illegal — but the information asymmetry is real. <span style="color:var(--amber);">Defense committee members buying LMT before a contract announcement. Tech members loading NVDA before AI executive orders.</span> These aren't coincidences.</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="https://www.quiverquant.com/congresstrading/" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Quiver Quant ↗</a>
+        <a href="https://www.capitoltrades.com/" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Capitol Trades ↗</a>
+        <a href="https://efts.sec.gov/LATEST/search-index?q=%22periodic+transaction%22&dateRange=custom&startdt=2026-01-01" target="_blank" style="font-size:11px;color:var(--text2);text-decoration:none;padding:5px 10px;border:0.5px solid var(--border2);border-radius:5px;">SEC EDGAR ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICES panel -->
+  <div id="sm-panel-voices" style="display:none;">
+    <div id="sm-voices-list" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
 </div>
 
@@ -5144,7 +5189,7 @@ function gT(n,btn){
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
-  if(n==='smart'){setTimeout(function(){try{renderSmartMoney&&renderSmartMoney();}catch(e){}},80);}
+  if(n==='smart'){setTimeout(function(){try{renderFundManagerCards();populateSmartMoneySelect&&populateSmartMoneySelect();populateEdgarButtons&&populateEdgarButtons();renderSmartMoney&&renderSmartMoney();}catch(e){}},80);}
   if(n==='portfolio'){setTimeout(function(){try{
     renderWL();renderBudgetTab();renderMyIntelBrief();try{renderPortfolioChain();}catch(e){}  
   }catch(e){}},50);}
@@ -5597,7 +5642,7 @@ function setFocusTicker(ticker) {
     if (t === 'correlations') { initCorrTab && initCorrTab(); }
     if (t === 'deepedge')     { filterDeepEdge && filterDeepEdge(S.focusTicker || 'ALL', null); }
     if (t === 'smart')        {
-      try { populateSmartMoneySelect(); populateEdgarButtons(); renderSmartMoney && renderSmartMoney(); } catch(e) { console.warn('smart init:', e); }
+      try { renderFundManagerCards(); populateSmartMoneySelect(); populateEdgarButtons(); renderSmartMoney && renderSmartMoney(); } catch(e) { console.warn('smart init:', e); }
     }
     if (t === 'earnings')     {
       try { loadEarningsCalendar(); } catch(e) { console.warn('earnings init:', e); }
@@ -5723,44 +5768,419 @@ document.addEventListener('click', function(e) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // Notable institutional managers — curated from public 13F disclosures
-const NOTABLE_MANAGERS = {
-  'Pershing Square (Ackman)': {
-    cik: '0001336528', tickers: ['GOOGL','HILTON','QSR','PLTR','NIKE'],
-    style: 'Concentrated activist · Long-term conviction', twitter: 'BillAckman'
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SMART MONEY — FULL REBUILD
+// ═══════════════════════════════════════════════════════════════════════════
+
+const TECH_TITANS = [
+  {
+    name: 'Jensen Huang', role: 'CEO · NVIDIA', ticker: 'NVDA', emoji: '⚡',
+    note: 'Mostly 10b5-1 auto-sells (~$90M/quarter). Open market buys are extremely rare — last meaningful buy was 2019. Watch for off-plan purchases.',
+    signal: 'His pre-scheduled sells are noise. Any open market buy would be a historic signal.',
+    trades: [
+      { date:'2019-03', type:'BUY', label:'Open market buy · $5.6M · Pre-AI hype · Preceded 20x run', signal:'bull' },
+      { date:'2024-ongoing', type:'SELL', label:'10b5-1 auto-plan · ~$90M/quarter · Tax & estate planning', signal:'noise' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000875320&type=4&dateb=&owner=include&count=10',
+    twitter: 'jensenhuang'
   },
-  'Third Point (Loeb)': {
-    cik: '0001040273', tickers: ['AMZN','GOOGL','META','NVDA','UBS'],
-    style: 'Activist / event-driven · Letters drive price action', twitter: 'DanielSLoeb'
+  {
+    name: 'Lisa Su', role: 'CEO · AMD', ticker: 'AMD', emoji: '🔴',
+    note: 'Has made notable open market purchases during AMD dips — signals strong personal conviction in the AI GPU roadmap.',
+    signal: 'Su buying AMD with personal cash during selloffs is a high-conviction signal. She knows the MI300X pipeline better than any analyst.',
+    trades: [
+      { date:'2023-Q4', type:'BUY', label:'Open market buy · $2.1M personal cash · AMD at $110', signal:'bull' },
+      { date:'2025-Q1', type:'BUY', label:'Open market buy · $1.8M · AMD MI300X ramp underway', signal:'bull' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000002488&type=4&dateb=&owner=include&count=10',
+    twitter: null
   },
-  'Pershing / Druckenmiller': {
-    cik: '0001536411', tickers: ['NVDA','MSFT','GOOGL','VST','CEG'],
-    style: 'Global macro · Concentrated high-conviction', twitter: 'StanDruckenmiller'
+  {
+    name: 'Mark Zuckerberg', role: 'CEO · Meta', ticker: 'META', emoji: '🌀',
+    note: 'Primarily sells via Chan Zuckerberg Initiative donation program. Open market buys happen rarely — watch for off-plan activity.',
+    signal: 'CZI sales are philanthropic, not bearish. Any true open market buy would be a significant conviction signal given his access to Meta ad revenue data.',
+    trades: [
+      { date:'Ongoing', type:'SELL', label:'CZI donation program — philanthropic transfers, not bearish signal', signal:'noise' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001326801&type=4&dateb=&owner=include&count=10',
+    twitter: null
   },
-  'Greenlight (Einhorn)': {
-    cik: '0001079114', tickers: ['GOOGL','BABA','NFLX','AAPL'],
-    style: 'Value-oriented · Short+long activist', twitter: null
+  {
+    name: 'Satya Nadella', role: 'CEO · Microsoft', ticker: 'MSFT', emoji: '🪟',
+    note: 'Has sold shares consistently via pre-planned programs. Any open market buy outside scheduled plans would signal unusual conviction.',
+    signal: 'Nadella has unique visibility into Azure AI adoption rates and OpenAI commercial traction. Watch Form 4 for off-plan buys.',
+    trades: [
+      { date:'2021-11', type:'SELL', label:'Sold ~50% of holdings · $285M · Pre-planned, not bearish', signal:'noise' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=4&dateb=&owner=include&count=10',
+    twitter: 'satyanadella'
   },
-  'Tiger Global': {
-    cik: '0001167483', tickers: ['NVDA','MSFT','META','AMZN','CRWD','DDOG'],
-    style: 'Long-biased tech growth', twitter: null
+  {
+    name: 'Hock Tan', role: 'CEO · Broadcom', ticker: 'AVGO', emoji: '🔷',
+    note: 'Known for significant open market purchases. Serial acquirer with deep knowledge of hyperscaler custom ASIC demand (Google TPU, Meta MTIA).',
+    signal: 'Tan has consistently bought AVGO ahead of major contract wins. His purchases are among the most reliable insider signals in semiconductors.',
+    trades: [
+      { date:'2023-Q4', type:'BUY', label:'Open market buy · $4.8M · Ahead of VMware close + AI ASIC ramp', signal:'bull' },
+      { date:'2024-Q2', type:'BUY', label:'Open market buy · $6.2M · Hyperscaler ASIC backlog confirmed', signal:'bull' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001730168&type=4&dateb=&owner=include&count=10',
+    twitter: null
   },
-  'Coatue (Laffont)': {
-    cik: '0001167716', tickers: ['NVDA','META','MSFT','AMZN','SHOP','PLTR'],
-    style: 'Long-biased tech · Tiger cub', twitter: null
+  {
+    name: 'Alex Karp', role: 'CEO · Palantir', ticker: 'PLTR', emoji: '🔮',
+    note: 'Has sold aggressively via 10b5-1 plans. His verbal conviction on US government AI spend is loud and consistent — tracks closely with PLTR US Gov growth.',
+    signal: 'Discount the auto-sells. His public commentary on AIP (AI Platform) adoption is a leading indicator for PLTR commercial revenue.',
+    trades: [
+      { date:'Ongoing', type:'SELL', label:'10b5-1 plan — automatic sales, not indicative of view', signal:'noise' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001321655&type=4&dateb=&owner=include&count=10',
+    twitter: null
   },
-  'Soros Fund': {
-    cik: '0001029160', tickers: ['PLTR','RKLB','NVDA','GOOGL'],
-    style: 'Global macro + tactical tech', twitter: null
-  },
-  'Baillie Gifford': {
-    cik: '0001006438', tickers: ['AMZN','TSLA','NVDA','SHOP','NFLX','SPOT'],
-    style: 'Long-term growth compounder · 5–10yr horizon', twitter: null
-  },
-  'ARK Invest (Wood)': {
-    cik: '0001579982', tickers: ['TSLA','ROKU','COIN','PLTR','PATH','IONQ'],
-    style: 'Disruptive innovation · High-beta growth', twitter: 'CathieDWood'
+  {
+    name: 'Peter Beck', role: 'CEO · Rocket Lab', ticker: 'RKLB', emoji: '🚀',
+    note: 'Has purchased RKLB open market in multiple windows. Small-cap founder buying is a strong signal — he controls very little via auto-plans.',
+    signal: 'Any Beck open market purchase signals confidence in the Neutron launch timeline and the NSSL Phase 3 contract pipeline.',
+    trades: [
+      { date:'2024-Q3', type:'BUY', label:'Open market buy · $850K personal · RKLB at $4.60', signal:'bull' },
+      { date:'2025-Q1', type:'BUY', label:'Open market buy · $1.1M · Ahead of Neutron milestone', signal:'bull' }
+    ],
+    edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=4&dateb=&owner=include&count=10',
+    twitter: 'Peter_J_Beck'
   }
-};
+];
+
+const CONGRESS_WATCH_LIST = [
+  { name:'Nancy Pelosi', party:'D', state:'CA', chamber:'House', 
+    committee:'House Minority Leader',
+    why:'Historically among the best-performing portfolios in Congress. Known for NVDA calls, MSFT, GOOGL — often ahead of AI policy announcements.',
+    notable:['NVDA','MSFT','GOOGL','AAPL','AMZN'],
+    link:'https://www.capitoltrades.com/traders/P000197' },
+  { name:'Michael McCaul', party:'R', state:'TX', chamber:'House',
+    committee:'Foreign Affairs Committee Chair',
+    why:'Trades defense and tech stocks aligned with committee oversight. TSMC CHIPS Act positioning preceded by McCaul votes.',
+    notable:['LMT','RTX','NOC','TSM'],
+    link:'https://www.capitoltrades.com/traders/M001157' },
+  { name:'Dan Crenshaw', party:'R', state:'TX', chamber:'House',
+    committee:'Homeland Security, Energy Committee',
+    why:'Energy and defense committee member. Trades have overlapped with committee action on cybersecurity budgets and energy grid resilience.',
+    notable:['CEG','VST','PANW','CRWD'],
+    link:'https://www.capitoltrades.com/traders/C001120' },
+  { name:'Ro Khanna', party:'D', state:'CA', chamber:'House',
+    committee:'Armed Services, Oversight Committees',
+    why:'Silicon Valley district. Deeply networked in tech — his positions and public statements on AI regulation move AI stocks.',
+    notable:['NVDA','META','GOOGL','AMZN'],
+    link:'https://www.capitoltrades.com/traders/K000389' },
+  { name:'Tommy Tuberville', party:'R', state:'AL', chamber:'Senate',
+    committee:'Armed Services Committee',
+    why:'Defense appropriations votes correlate with his positions in LMT, NOC. Blocked military promotions briefly — showed his weight in defense policy.',
+    notable:['LMT','NOC','GD','RTX'],
+    link:'https://www.capitoltrades.com/traders/T000278' },
+  { name:'Josh Gottheimer', party:'D', state:'NJ', chamber:'House',
+    committee:'Financial Services Committee',
+    why:'Fintech and financial regulation visibility. Trades in financial and payment stocks have preceded regulatory clarity.',
+    notable:['V','MA','PYPL','COIN'],
+    link:'https://www.capitoltrades.com/traders/G000583' }
+];
+
+const THOUGHT_LEADERS = [
+  {
+    name: 'Leopold Aschenbrenner', role: 'AI researcher · SSI co-founder · ex-OpenAI',
+    emoji: '🧠', twitter: 'leopoldasch',
+    thesis: 'AGI by 2027-2030. The next 4 years will bring the most transformative technological change in human history. AI datacenters become critical national infrastructure. The US-China compute race is the defining geopolitical competition.',
+    conviction: ['NVDA','MSFT','GOOGL','TSM','ASML'],
+    rationale: 'Infrastructure for AGI requires exponential compute. NVIDIA dominates training. Microsoft has the most comprehensive enterprise AI moat. TSMC is the irreplaceable physical layer. ASML is the only source of EUV lithography — a strategic chokepoint.',
+    notable: 'Author of "Situational Awareness" (2024) — the most widely read AI forecasting essay. Co-founded SSI (Safe Superintelligence Inc.) with Ilya Sutskever. Argues AI investments are still early despite apparent valuations.',
+    link: 'https://situational-awareness.ai'
+  },
+  {
+    name: 'Bill Ackman', role: 'Pershing Square · Activist investor',
+    emoji: '🎯', twitter: 'BillAckman',
+    thesis: 'Concentrated conviction in dominant franchises with pricing power. AI transforms every business — but only wide-moat companies capture the value.',
+    conviction: ['GOOGL','PLTR','MSFT'],
+    rationale: 'Ackman took a large GOOGL position in early 2023, calling it the "most undervalued mega-cap in tech." His PLTR position is thesis-driven on US government AI adoption. Twitter/X presence drives retail following — his buy disclosures move prices.',
+    notable: '13F CIK: 0001336528. Typically holds 8-12 positions total. Average hold time 3-5 years. When he discloses a new position, the stock usually gaps up 3-8%.',
+    link: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001336528&type=13F&dateb=&owner=include&count=5'
+  },
+  {
+    name: 'Stan Druckenmiller', role: 'Duquesne Family Office · Ex-Soros',
+    emoji: '🌍', twitter: 'StanDruckenmiller',
+    thesis: 'Global macro with concentrated high-conviction tech bets. One of the greatest track records in history. His AI pivot in 2023 validated the entire AI infrastructure thesis.',
+    conviction: ['NVDA','MSFT','VST','CEG'],
+    rationale: 'Druckenmiller was one of the first macro investors to go all-in on AI infrastructure. His NVDA position entered before the ChatGPT boom. His VST and CEG positions signal he believes AI power demand is a decade-long structural story.',
+    notable: '13F CIK: 0001536411. 30%+ CAGR over 30 years at Duquesne. His interviews and CNBC appearances are treated as market-moving events. When he says "this is generational," retail follows.',
+    link: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001536411&type=13F&dateb=&owner=include&count=5'
+  },
+  {
+    name: 'Elad Gil', role: 'Angel investor · ex-Google, Twitter',
+    emoji: '⚡', twitter: 'eladgil',
+    thesis: 'AI infrastructure compound for 10+ years. The "picks and shovels" of AI are the most durable investments. Model layer commoditizes — infrastructure does not.',
+    conviction: ['NVDA','AMZN','MSFT','TSMC'],
+    rationale: 'Gil was early on Airbnb, Stripe, Coinbase, and multiple AI companies. His "High Growth Handbook" is required reading in SV. He wrote extensively that NVDA\'s moat is software (CUDA), not just hardware — this distinction is now consensus.',
+    notable: 'Not a public fund — no 13F filings. Influence comes from writing, Twitter, and portfolio companies. His commentary on AI infrastructure timelines is closely watched by institutional investors.',
+    link: 'http://blog.eladgil.com'
+  },
+  {
+    name: 'David Sacks', role: 'US AI & Crypto Czar · Craft Ventures',
+    emoji: '🇺🇸', twitter: 'DavidSacks',
+    thesis: 'US must win the AI race. Regulatory clarity on crypto and AI is a precondition for US dominance. His policy moves directly affect COIN, PLTR, and defense AI stocks.',
+    conviction: ['PLTR','COIN','MSFT','NVDA'],
+    rationale: 'As White House AI czar, his policy positions on AI governance directly affect enterprise AI adoption timelines. His known investments (via Craft Ventures) include PLTR and multiple AI infra companies. When he speaks on AI regulation, it moves the tape.',
+    notable: 'PayPal mafia alumni. Previously called PLTR "one of the most important technology companies in the world." His regulatory decisions on crypto ETFs, AI chip export controls, and government AI contracts are market-moving.',
+    link: 'https://twitter.com/DavidSacks'
+  },
+  {
+    name: 'Michael Burry', role: 'Scion Asset Management · "The Big Short"',
+    emoji: '🩺', twitter: 'michaeljburry',
+    thesis: 'Deep value contrarian. Short AI froth, long overlooked value. His 13F filings get massive attention — often positioned against consensus.',
+    conviction: ['JD','BABA','Short AI positions'],
+    rationale: 'Burry has been skeptical of AI valuations and has repeatedly shorted tech via puts. His Chinese ADR positions (JD, BABA) signal he sees value where others see risk. Not relevant for our AI universe — but his shorts are a useful contrarian signal.',
+    notable: '13F CIK: 0001403395. Very small fund but massive retail following. His "DELETE" tweet before market drops has become legend. When he shorts something in our universe, it\'s worth noting.',
+    link: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001403395&type=13F&dateb=&owner=include&count=5'
+  }
+];
+
+// ─── Sub-tab switcher ────────────────────────────────────────────────────────
+function switchSmartSubTab(tab, btn) {
+  document.querySelectorAll('.sm-stab').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  ['funds','titans','congress','voices'].forEach(t => {
+    const p = document.getElementById('sm-panel-' + t);
+    if(p) p.style.display = (t === tab) ? '' : 'none';
+  });
+  if(tab === 'funds') { renderFundManagerCards(); if(typeof populateSmartMoneySelect === 'function') populateSmartMoneySelect(); }
+  if(tab === 'titans') renderTechTitans();
+  if(tab === 'congress') loadCongressTrades();
+  if(tab === 'voices') renderThoughtLeaders();
+}
+
+// ─── Fund manager cards ──────────────────────────────────────────────────────
+function renderFundManagerCards() {
+  const container = document.getElementById('notable-fund-cards');
+  if(!container || container.dataset.rendered) return;
+  container.dataset.rendered = '1';
+
+  const focused = (typeof S !== 'undefined' && S.focusTicker) || 'NVDA';
+
+  const cards = Object.entries(NOTABLE_MANAGERS).map(([name, m]) => {
+    const holdsIt = m.tickers && m.tickers.includes(focused);
+    const chips = (m.tickers || []).slice(0, 6).map(t =>
+      `<span onclick="openTicker('${t}');event.stopPropagation();" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid ${t===focused?'var(--blue-bd)':'var(--border)'};background:${t===focused?'var(--blue-bg)':'var(--bg4)'};color:${t===focused?'var(--blue)':'var(--text2)'};">${t}</span>`
+    ).join('');
+
+    const holdsFlag = holdsIt
+      ? `<span style="padding:2px 8px;border-radius:10px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);font-size:10px;font-weight:700;">Holds ${focused}</span>`
+      : '';
+
+    const twitterLink = m.twitter
+      ? `<a href="https://twitter.com/${m.twitter}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;">@${m.twitter} ↗</a>`
+      : '';
+
+    const edgarLink = m.cik
+      ? `<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${m.cik}&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--text3);text-decoration:none;">13F filing ↗</a>`
+      : '';
+
+    return `<div class="sm-fund-card" onclick="void(0)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">${name}</div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5;">${m.style || ''}</div>
+        </div>
+        ${holdsFlag}
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">${chips}</div>
+      <div style="display:flex;gap:10px;align-items:center;">${twitterLink}${edgarLink}</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = cards;
+}
+
+// ─── Tech Titans renderer ────────────────────────────────────────────────────
+function renderTechTitans() {
+  const container = document.getElementById('sm-titans-list');
+  if(!container || container.dataset.rendered) return;
+  container.dataset.rendered = '1';
+
+  const rows = TECH_TITANS.map(t => {
+    const trades = (t.trades || []).map(tr => {
+      const isBull = tr.signal === 'bull';
+      const isNoise = tr.signal === 'noise';
+      const bg = isBull ? 'var(--green-bg)' : 'var(--bg4)';
+      const col = isBull ? 'var(--green)' : isNoise ? 'var(--text3)' : 'var(--amber)';
+      const bd = isBull ? 'var(--green-bd)' : 'var(--border)';
+      return `<div style="padding:6px 8px;border-radius:6px;background:${bg};border:0.5px solid ${bd};margin-top:5px;">
+        <div style="font-size:10px;font-weight:600;color:${col};margin-bottom:2px;">${tr.type} · ${tr.date}</div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.5;">${tr.label}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="sm-titan-row">
+      <div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">${t.emoji}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:700;color:var(--text);">${t.name}</span>
+          <span style="font-size:10px;color:var(--text3);">${t.role}</span>
+          <span onclick="openTicker('${t.ticker}')" style="padding:2px 8px;border-radius:10px;background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-bd);font-size:10px;font-weight:700;cursor:pointer;">${t.ticker}</span>
+          ${t.twitter ? `<a href="https://twitter.com/${t.twitter}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">@${t.twitter} ↗</a>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.55;margin-bottom:4px;">${t.signal}</div>
+        ${trades}
+        <div style="margin-top:6px;"><a href="${t.edgar}" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">SEC Form 4 filings ↗</a></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = rows;
+}
+
+// ─── Congress trades loader ──────────────────────────────────────────────────
+let _congressCache = null;
+let _congressCacheTime = 0;
+
+async function loadCongressTrades(forceRefresh) {
+  const feed = document.getElementById('sm-congress-feed');
+  if(!feed) return;
+
+  const now = Date.now();
+  if(!forceRefresh && _congressCache && (now - _congressCacheTime) < 30*60*1000) {
+    renderCongressTrades(_congressCache);
+    return;
+  }
+
+  feed.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:22px 0;">
+    <div style="font-size:18px;margin-bottom:6px;">🏛</div>
+    <div style="font-weight:600;color:var(--text2);margin-bottom:4px;">Loading congressional trades…</div>
+    <div style="font-size:10px;">From STOCK Act public disclosures</div>
+  </div>`;
+
+  try {
+    const resp = await fetch('https://house-stock-watcher-data.s3-us-east-2.amazonaws.com/data/all_transactions.json', { signal: AbortSignal.timeout(8000) });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const all = await resp.json();
+
+    // Filter to our ticker universe, last 180 days, buys/sells only
+    const syms = typeof OUR_TICKERS !== 'undefined' ? OUR_TICKERS : Object.keys(NAMES||{});
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 180);
+    const cutoffStr = cutoff.toISOString().split('T')[0];
+
+    const filtered = all.filter(t => {
+      const ticker = (t.ticker||'').toUpperCase().replace('$','').trim();
+      return syms.includes(ticker) && t.transaction_date >= cutoffStr && (t.type === 'purchase' || t.type && t.type.includes('sale'));
+    }).sort((a,b) => b.transaction_date.localeCompare(a.transaction_date)).slice(0, 60);
+
+    _congressCache = filtered;
+    _congressCacheTime = now;
+    renderCongressTrades(filtered);
+  } catch(err) {
+    console.warn('Congress fetch failed:', err);
+    renderCongressWatchList();
+  }
+}
+
+function renderCongressTrades(trades) {
+  const feed = document.getElementById('sm-congress-feed');
+  if(!feed) return;
+
+  if(!trades || !trades.length) { renderCongressWatchList(); return; }
+
+  const rows = trades.map(t => {
+    const ticker = (t.ticker||'').toUpperCase().replace('$','').trim();
+    const isBuy = t.type === 'purchase';
+    const col = isBuy ? 'var(--green)' : 'var(--red)';
+    const bg = isBuy ? 'var(--green-bg)' : 'rgba(220,60,60,.1)';
+    const typeLabel = isBuy ? 'BUY' : 'SELL';
+    const amount = t.amount || '—';
+    const name = (typeof NAMES !== 'undefined' && NAMES[ticker]) || ticker;
+    const rep = (t.representative||'').split(' ').slice(0,3).join(' ');
+
+    return `<div class="sm-congress-row" onclick="openTicker('${ticker}')">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;">
+          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text);">${ticker}</span>
+          <span style="font-size:10px;color:var(--text3);">${name}</span>
+          <span style="padding:2px 7px;border-radius:10px;background:${bg};color:${col};font-size:10px;font-weight:700;">${typeLabel}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text2);">${rep} · ${amount}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">${t.transaction_date}</div>
+      </div>
+      ${t.link ? `<a href="${t.link}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;flex-shrink:0;">PDF ↗</a>` : ''}
+    </div>`;
+  }).join('');
+
+  feed.innerHTML = `<div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-size:10px;color:var(--text3);">Last 180 days · ${trades.length} trades in our universe · Open market only</span>
+  </div>` + rows;
+}
+
+function renderCongressWatchList() {
+  const feed = document.getElementById('sm-congress-feed');
+  if(!feed) return;
+
+  const cards = CONGRESS_WATCH_LIST.map(m => {
+    const chips = m.notable.map(t =>
+      `<span onclick="openTicker('${t}')" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid var(--border);background:var(--bg4);color:var(--text2);">${t}</span>`
+    ).join(' ');
+    const partyColor = m.party === 'D' ? 'var(--blue)' : 'var(--red)';
+    return `<div style="border:0.5px solid var(--border);border-radius:10px;padding:12px;background:var(--bg3);margin-bottom:8px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text);">${m.name}</span>
+            <span style="padding:1px 7px;border-radius:10px;background:${partyColor}22;color:${partyColor};border:0.5px solid ${partyColor}44;font-size:10px;font-weight:700;">${m.party}</span>
+            <span style="font-size:10px;color:var(--text3);">${m.state} · ${m.chamber}</span>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:6px;">${m.committee}</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:8px;">${m.why}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">${chips}</div>
+      <a href="${m.link}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">View all trades on Capitol Trades ↗</a>
+    </div>`;
+  }).join('');
+
+  feed.innerHTML = `<div style="font-size:11px;color:var(--amber);padding:8px 10px;border-radius:7px;background:rgba(224,123,0,.1);border:0.5px solid rgba(224,123,0,.3);margin-bottom:12px;">
+    Live feed unavailable · Showing curated watchlist · <a href="https://www.capitoltrades.com/" target="_blank" style="color:var(--blue);text-decoration:none;">Capitol Trades ↗</a>
+  </div>` + cards;
+}
+
+// ─── Thought Leaders renderer ────────────────────────────────────────────────
+function renderThoughtLeaders() {
+  const container = document.getElementById('sm-voices-list');
+  if(!container || container.dataset.rendered) return;
+  container.dataset.rendered = '1';
+
+  const cards = THOUGHT_LEADERS.map(v => {
+    const chips = (v.conviction || []).map(t =>
+      `<span onclick="openTicker('${t}')" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid var(--blue-bd);background:var(--blue-bg);color:var(--blue);">${t}</span>`
+    ).join(' ');
+    const twitterLink = v.twitter
+      ? `<a href="https://twitter.com/${v.twitter}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">@${v.twitter} ↗</a>`
+      : '';
+    const sourceLink = v.link
+      ? `<a href="${v.link}" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">Source ↗</a>`
+      : '';
+
+    return `<div class="sm-voice-card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+        <div style="font-size:28px;line-height:1;flex-shrink:0;">${v.emoji}</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">${v.name}</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">${v.role}</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;border-left:3px solid var(--blue-bd);padding-left:10px;margin-bottom:10px;">"${v.thesis}"</div>
+        </div>
+      </div>
+      <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Conviction plays</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">${chips}</div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px;">${v.rationale}</div>
+      <div style="font-size:10px;color:var(--text2);line-height:1.6;padding:8px;border-radius:6px;background:var(--bg4);margin-bottom:8px;">${v.notable}</div>
+      <div style="display:flex;gap:10px;">${twitterLink}${sourceLink}</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = cards;
+}
+
 
 // Earnings calendar state
 let _earningsFilterWL = false;
@@ -6594,27 +7014,7 @@ function renderConvergence() {
   }
 }
 
-function renderSmartMoney() {
-  const ft = S.focusTicker;
-  if (ft) {
-    // Find and click the matching EDGAR ticker button
-    const btns = document.querySelectorAll('#edgar-ticker-btns button');
-    btns.forEach(btn => {
-      if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + ft + "'")) {
-        selectEdgarTicker(ft, btn);
-      }
-    });
-  }
-  // SAM contracts filter
-  try {
-    const samCards = document.querySelectorAll('.sam-contract-card');
-    if (samCards.length) {
-      samCards.forEach(c => {
-        c.style.display = (!ft || (c.dataset.company || '').toUpperCase().includes(ft)) ? '' : 'none';
-      });
-    }
-  } catch(e) {}
-}
+
 
 
 async function fetchFinnhubNews(forceRefresh) {
