@@ -7747,6 +7747,90 @@ const CHAIN_GRAPH = {
     { ticker:'MSFT', metric:'revenue', lag:1, direction:'positive', weight:0.60, desc:'Azure cloud adoption drives Elastic Security SIEM deployments for unified log analysis', logic:'Elastic Security runs on Azure for enterprise SIEM. MSFT enterprise cloud revenue signals Elastic SIEM expansion.' }
   ]},
 
+
+  // ── ANET: driven by hyperscaler AI networking capex ──────────
+  ANET: { name:'Arista Networks', upstream:[
+    { ticker:'META', metric:'capex', lag:1, direction:'positive', weight:0.35, desc:'Meta AI spine capex → Arista 400G/800G orders', logic:'Meta sole-sourced Arista for 100K+ port AI spine network. Meta capex guidance beats signal ANET order expansion 1 quarter ahead.' },
+    { ticker:'MSFT', metric:'capex', lag:1, direction:'positive', weight:0.30, desc:'MSFT AI cluster capex → Arista 800G Ethernet wins', logic:'Microsoft AI clusters displaced InfiniBand in favor of Arista Ethernet. MSFT capex beats translate to ANET backlog expansion.' },
+    { ticker:'GOOGL', metric:'capex', lag:1, direction:'positive', weight:0.20, desc:'Google datacenter capex → Arista networking orders', logic:'Google standardized on Arista for AI fabric. GOOGL capex beats signal ANET networking demand 1 quarter out.' },
+    { ticker:'AMZN', metric:'capex', lag:1, direction:'positive', weight:0.15, desc:'AWS AI networking capex → Arista demand', logic:'AWS AI infrastructure expansion includes Arista networking. AMZN capex beats provide incremental ANET order visibility.' }
+  ]},
+
+  // ── PSTG: driven by NVDA AI platform pull-through ────────────
+  PSTG: { name:'Pure Storage', upstream:[
+    { ticker:'NVDA', metric:'revenue', lag:1, direction:'positive', weight:0.55, desc:'NVDA DGX system revenue → Pure Storage FlashBlade pull-through', logic:'NVDA DGX system ($1.2M) includes Pure Storage FlashBlade as sole-source reference architecture. Every NVDA DGX sold drives a Pure Storage order.' },
+    { ticker:'MSFT', metric:'capex', lag:1, direction:'positive', weight:0.25, desc:'MSFT AI capex → Pure Storage enterprise AI deployments', logic:'Microsoft Azure enterprise AI deployments use Pure Storage. MSFT capex beats signal PSTG enterprise pipeline expansion.' },
+    { ticker:'AMZN', metric:'capex', lag:1, direction:'positive', weight:0.20, desc:'AWS AI capex → Pure Storage cloud deployments', logic:'AWS Outposts FlashBlade certification expands PSTG addressable market. AMZN AI capex beats signal PSTG deployment acceleration.' }
+  ]},
+
+  // ── NTAP: driven by cloud adoption + hybrid AI workloads ─────
+  NTAP: { name:'NetApp', upstream:[
+    { ticker:'AMZN', metric:'revenue', lag:1, direction:'positive', weight:0.45, desc:'AWS revenue → FSx for ONTAP demand', logic:'AWS FSx for ONTAP is growing 40%+ YoY — tracks AWS enterprise adoption. AMZN AWS revenue beats signal NTAP cloud storage pull-through.' },
+    { ticker:'MSFT', metric:'revenue', lag:1, direction:'positive', weight:0.35, desc:'Azure revenue → Azure NetApp Files enterprise adoption', logic:'Azure NetApp Files has 2,400+ enterprise customers. MSFT enterprise cloud revenue beats signal NTAP hybrid cloud expansion.' },
+    { ticker:'GOOGL', metric:'revenue', lag:1, direction:'positive', weight:0.20, desc:'GCP revenue → Google Cloud NetApp Volumes adoption', logic:'Google Cloud NetApp Volumes launched 2023. GOOGL cloud revenue signals NTAP GCP channel growth.' }
+  ]},
+
+  // ── WDC: driven by hyperscaler AI storage HDD demand ────────
+  WDC: { name:'Western Digital', upstream:[
+    { ticker:'META', metric:'capex', lag:1, direction:'positive', weight:0.30, desc:'Meta AI datacenter capex → WDC Ultrastar HDD demand', logic:'Meta AI training clusters require 100PB+ cold storage. Meta capex beats signal WDC HDD order acceleration 1 quarter ahead.' },
+    { ticker:'MSFT', metric:'capex', lag:1, direction:'positive', weight:0.30, desc:'MSFT Azure AI storage capex → WDC HDD demand', logic:'Azure AI data lakes use WDC Ultrastar HDDs for cost-effective cold storage at scale. MSFT capex beats = WDC hyperscaler orders.' },
+    { ticker:'GOOGL', metric:'capex', lag:1, direction:'positive', weight:0.25, desc:'Google AI infrastructure capex → WDC storage demand', logic:'Google AI training corpus requires massive cold storage — WDC is primary supplier. GOOGL capex beats signal HDD order expansion.' },
+    { ticker:'AMZN', metric:'capex', lag:1, direction:'positive', weight:0.15, desc:'AWS cold storage capex → WDC HDD orders', logic:'AWS S3 Glacier and deep archive uses WDC HDDs. AMZN capex signals NAND and HDD demand expansion.' }
+  ]},
+
+  // ── MPWR: driven by NVDA AI server power management ─────────
+  MPWR: { name:'Monolithic Power Systems', upstream:[
+    { ticker:'NVDA', metric:'revenue', lag:1, direction:'positive', weight:0.60, desc:'NVDA AI server revenue → MPWR power management chip demand', logic:'MPWR power modules are designed into NVDA Blackwell server platforms. NVDA revenue beats signal MPWR content-per-server growth.' },
+    { ticker:'MSFT', metric:'capex', lag:1, direction:'positive', weight:0.25, desc:'MSFT AI datacenter capex → MPWR datacenter power demand', logic:'AI datacenters require advanced power management. MSFT capex beats expand MPWR datacenter segment demand.' },
+    { ticker:'META', metric:'capex', lag:0, direction:'positive', weight:0.15, desc:'Meta AI infrastructure capex → MPWR power chip demand', logic:'Meta custom AI silicon uses MPWR power management. Meta capex signals MPWR custom silicon design wins.' }
+  ]},
+
+  // ── CFLT: driven by cloud platform adoption ───────────────────
+  CFLT: { name:'Confluent', upstream:[
+    { ticker:'AMZN', metric:'revenue', lag:1, direction:'positive', weight:0.45, desc:'AWS marketplace revenue → Confluent Cloud demand', logic:'Confluent AWS Marketplace revenue +88% YoY — tracks AWS enterprise adoption. AMZN AWS beats signal CFLT channel expansion.' },
+    { ticker:'MSFT', metric:'revenue', lag:1, direction:'positive', weight:0.30, desc:'Azure OpenAI service revenue → Confluent AI streaming demand', logic:'Azure OpenAI deployments need real-time streaming. MSFT Azure revenue beats signal CFLT AI pipeline expansion.' },
+    { ticker:'GOOGL', metric:'revenue', lag:1, direction:'positive', weight:0.25, desc:'GCP enterprise revenue → Confluent streaming adoption', logic:'GCP enterprise adoption drives Confluent multi-cloud deployments. GOOGL cloud beats signal CFLT GCP channel growth.' }
+  ]},
+
+  // ── GTLB: driven by cloud DevSecOps adoption ─────────────────
+  GTLB: { name:'GitLab', upstream:[
+    { ticker:'MSFT', metric:'revenue', lag:1, direction:'positive', weight:0.40, desc:'Azure DevOps revenue → GitLab enterprise competition/migration signal', logic:'MSFT Azure DevOps growth signals enterprise DevOps budget expansion — GitLab captures migration share with better AI tools (Duo vs Copilot).' },
+    { ticker:'AMZN', metric:'revenue', lag:1, direction:'positive', weight:0.35, desc:'AWS CodePipeline revenue → GitLab DevSecOps pull-through', logic:'AWS CodeSuite deployments often pair with GitLab for security scanning. AMZN cloud beats signal DevSecOps budget expansion.' },
+    { ticker:'GOOGL', metric:'revenue', lag:1, direction:'positive', weight:0.25, desc:'GCP cloud revenue → GitLab GCP marketplace adoption', logic:'GitLab is native on GCP for government and enterprise. GOOGL cloud revenue beats signal GTLB GCP channel expansion.' }
+  ]},
+
+  // ── TTD: driven by Meta/Google ad market dynamics ────────────
+  TTD: { name:'The Trade Desk', upstream:[
+    { ticker:'META', metric:'revenue', lag:0, direction:'positive', weight:0.50, desc:'Meta ad revenue → programmatic CTV market size signal', logic:'Meta ad revenue growth signals overall digital ad market health. Strong Meta revenue = healthy ad budgets flowing to open internet via TTD.' },
+    { ticker:'GOOGL', metric:'revenue', lag:0, direction:'positive', weight:0.50, desc:'Google ad revenue → CTV programmatic market signal', logic:'GOOGL ad revenue signals total TV+digital ad market size. YouTube CTV growth validates the shift TTD benefits from on open internet.' }
+  ]},
+
+  // ── RIVN: driven by Amazon EV fleet contract ─────────────────
+  RIVN: { name:'Rivian Automotive', upstream:[
+    { ticker:'AMZN', metric:'revenue', lag:0, direction:'positive', weight:0.70, desc:'AMZN revenue → Rivian EDV fleet delivery cadence', logic:'Amazon 100K EDV contract is RIVN largest customer. AMZN revenue beats signal fleet delivery acceleration and potential order expansion.' },
+    { ticker:'TSLA', metric:'revenue', lag:1, direction:'positive', weight:0.30, desc:'Tesla EV market signal → Rivian R2 demand validation', logic:'Tesla revenue beats validate consumer EV demand. Strong TSLA sales signal RIVN R2 launch into healthy market conditions.' }
+  ]},
+
+  // ── FSLR: driven by AI datacenter power demand ───────────────
+  FSLR: { name:'First Solar', upstream:[
+    { ticker:'MSFT', metric:'capex', lag:2, direction:'positive', weight:0.35, desc:'MSFT AI datacenter capex → utility solar PPA demand', logic:'Microsoft has committed to 100% renewable energy. MSFT capex beats signal utility solar PPA demand expansion — FSLR primary beneficiary.' },
+    { ticker:'GOOGL', metric:'capex', lag:2, direction:'positive', weight:0.35, desc:'Google AI datacenter capex → solar energy contract demand', logic:'Google largest corporate buyer of renewable energy. GOOGL capex beats signal utility solar contract acceleration at FSLR domestic production prices.' },
+    { ticker:'META', metric:'capex', lag:2, direction:'positive', weight:0.30, desc:'Meta datacenter capex → renewable energy procurement', logic:'Meta AI datacenter expansion requires renewable energy commitments. Meta capex beats signal incremental utility solar demand in FSLR book-to-bill.' }
+  ]},
+
+  // ── TWLO: driven by cloud platform adoption ───────────────────
+  TWLO: { name:'Twilio', upstream:[
+    { ticker:'AMZN', metric:'revenue', lag:1, direction:'positive', weight:0.40, desc:'AWS revenue → Twilio Segment CDP cloud integration demand', logic:'Twilio Segment integrates natively with AWS data services. AMZN AWS beats signal enterprise CDP budget expansion benefiting TWLO.' },
+    { ticker:'MSFT', metric:'revenue', lag:1, direction:'positive', weight:0.35, desc:'Azure revenue → Twilio communications API enterprise adoption', logic:'Twilio communications APIs are embedded in Azure enterprise deployments. MSFT enterprise cloud revenue beats signal TWLO API expansion.' },
+    { ticker:'META', metric:'revenue', lag:0, direction:'positive', weight:0.25, desc:'Meta ad revenue → e-commerce communications spend', logic:'Meta ad revenue growth signals e-commerce health. Strong e-commerce = more Twilio customer messaging, abandoned cart, and order notification API calls.' }
+  ]},
+
+  // ── AXON: driven by DoD/federal AI safety contracts ──────────
+  AXON: { name:'Axon Enterprise', upstream:[
+    { ticker:'__DOD_AI__', metric:'contracts', lag:0, direction:'positive', weight:0.55, desc:'Federal AI law enforcement contracts → Axon Evidence.com expansion', logic:'Federal law enforcement AI mandates drive Axon Evidence.com deployments. DoD/DHS AI contracts signal Axon federal pipeline expansion.' },
+    { ticker:'__SAM_GOV__', metric:'contracts', lag:1, direction:'positive', weight:0.45, desc:'Municipal/state law enforcement contracts → Axon body camera revenue', logic:'SAM.gov law enforcement contract awards signal Axon TASER + body camera pipeline. State/local procurement tracks federal mandates with 1-2 quarter lag.' }
+  ]},
+
 };
 
 // ── Finnhub basic-financials cache (2h TTL) ───────────────────
