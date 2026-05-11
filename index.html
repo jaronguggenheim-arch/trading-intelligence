@@ -2504,6 +2504,21 @@ async function computeLiveScore(ticker) {
       }
     }
 
+    // ── L3 velocity boost: adjust for recent analyst upgrades/downgrades ────
+    // _ANALYST_SIGNALS is populated by computeGlobalAnalystSignals() after init
+    if (window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.signals) {
+      const _as = window._ANALYST_SIGNALS.signals[ticker];
+      if (_as) {
+        const _nUp   = (_as.ups   || []).length;
+        const _nDown = (_as.downs || []).length;
+        if      (_nUp >= 3) l3pts = Math.min(25, l3pts + 5); // multiple upgrades = strong consensus shift
+        else if (_nUp >= 2) l3pts = Math.min(25, l3pts + 3);
+        else if (_nUp >= 1) l3pts = Math.min(25, l3pts + 1);
+        if      (_nDown >= 2) l3pts = Math.max(2, l3pts - 4); // multiple downgrades = warning
+        else if (_nDown >= 1) l3pts = Math.max(2, l3pts - 2);
+      }
+    }
+
     // ── L2/L4/L5: Manual curation (insider, supply chain, macro) ─────────────
     const ld    = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
     const l2pts = await computeL2Score(ticker);
@@ -9827,6 +9842,23 @@ const _downgradeKw = ['cuts price target','cut price target','downgrades','downg
 // ── Global analyst cascade signals ──────────────────────────────────────
 window._ANALYST_SIGNALS = null; // { signals: {sym:{ups,downs}}, cascades: [...], ts }
 
+// Re-score stocks that gained new signals (analyst upgrades, insider clusters, chain windows)
+// Called after background signal fetches complete to apply boosts to already-computed scores
+async function refreshScoresFromSignals(tickers) {
+  if (!tickers || !tickers.length) return;
+  const _lsc = typeof _liveScoreCache !== 'undefined' ? _liveScoreCache : {};
+  // Invalidate cache for affected tickers so computeLiveScore re-fetches
+  tickers.forEach(function(t) { if (_lsc[t]) _lsc[t].ts = 0; });
+  // Re-score sequentially (small set — 5-15 tickers typically)
+  for (const t of tickers) {
+    try { await computeLiveScore(t); } catch(e) {}
+    await new Promise(function(r){ setTimeout(r, 150); }); // 150ms gap — gentle on rate limits
+  }
+  // Refresh UI
+  try { _refreshLiveScoreUI(); } catch(e) {}
+  try { renderMorningBriefDynamic(); } catch(e) {}
+}
+
 async function computeGlobalAnalystSignals() {
   if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) return;
   const cacheKey = 'l3_' + new Date().toDateString();
@@ -9864,6 +9896,14 @@ async function computeGlobalAnalystSignals() {
   const cascades = typeof detectAnalystCascades !== 'undefined' ? detectAnalystCascades(analystSignals) : [];
   window._ANALYST_SIGNALS = { signals: analystSignals, cascades: cascades, ts: Date.now() };
   try { renderAnalystCascadeCard(); } catch(e) {}
+  // Re-score stocks with analyst activity (to apply L3 velocity boost)
+  try {
+    const _affectedTickers = Object.keys(analystSignals).filter(function(sym) {
+      const v = analystSignals[sym];
+      return (v.ups && v.ups.length >= 2) || (v.downs && v.downs.length >= 2);
+    });
+    if (_affectedTickers.length) refreshScoresFromSignals(_affectedTickers).catch(function(){});
+  } catch(e) {}
   // If Deep Edge L3 panel is open, refresh it too
   try {
     const el = document.getElementById('de-l3-revisions');
