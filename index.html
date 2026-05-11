@@ -2677,9 +2677,26 @@ async function computeLiveScore(ticker) {
 
 async function initLiveScores() {
   if (!S.fh && !IS_VERCEL) return;
-  // All featured tickers — compute L1 (price momentum, RSI, volume) + L3 (analyst consensus) live
-  // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC','S','OKTA','FTNT','CYBR','HUBS','SHOP','TTD','PATH','CFLT','MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH','WOLF','RIVN','ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN','UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU','MRNA','REGN','DXCM','TDOC','ILMN','ALB','SQM','LTHM','CHPT','BLNK','BILL','ZI','MNDY','TOST','SMAR','FORM','ACMR','CAMT','IPGP','POWI','SOUN','AISP','IONQ','DUOL','RBLX','EQIX','DLR','AMT','IRM','VRT','KTOS','LDOS','BA','SAIC','HII','NIO','XPEV','LCID','F','GM','ROKU','SNAP','PINS','ZM','NTNX','MELI','SE','FLUT','UPST','LMND'];
+  // If the nightly cron already computed scores server-side, only refresh the top 20 high-conviction
+  // tickers + the currently focused ticker (~60 Finnhub calls vs ~450 for all 150).
+  // If no server data is present (first deploy, cron hasn't run), do the full loop.
+  const hasServerData = (typeof _SERVER_COMPONENTS !== 'undefined') && Object.keys(_SERVER_COMPONENTS).length > 10;
+  let tickers;
+  if (hasServerData) {
+    // Exclude pure signal-node stocks that don't appear on the focus bar
+    const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
+    const top20 = Object.entries(SCORES)
+      .filter(function([t, s]) { return s && !SIGNAL_NODES.has(t); })
+      .sort(function([, a], [, b]) { return b - a; })
+      .slice(0, 20)
+      .map(function([t]) { return t; });
+    const focused = (typeof S !== 'undefined' && S.focusTicker) ? S.focusTicker : null;
+    tickers = (focused && !top20.includes(focused)) ? top20.concat([focused]) : top20;
+    console.log('[initLiveScores] server data present — refreshing ' + tickers.length + ' tickers (top 20 + focus)');
+  } else {
+    tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC','S','OKTA','FTNT','CYBR','HUBS','SHOP','TTD','PATH','CFLT','MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH','WOLF','RIVN','ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN','UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU','MRNA','REGN','DXCM','TDOC','ILMN','ALB','SQM','LTHM','CHPT','BLNK','BILL','ZI','MNDY','TOST','SMAR','FORM','ACMR','CAMT','IPGP','POWI','SOUN','AISP','IONQ','DUOL','RBLX','EQIX','DLR','AMT','IRM','VRT','KTOS','LDOS','BA','SAIC','HII','NIO','XPEV','LCID','F','GM','ROKU','SNAP','PINS','ZM','NTNX','MELI','SE','FLUT','UPST','LMND'];
+    console.log('[initLiveScores] no server data — full 150-ticker refresh');
+  }
   // Stamp live scores indicator in morning brief picks card
   const lbl = document.getElementById('morning-picks-lbl');
   if (lbl) lbl.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● computing live scores…</span>';
