@@ -1827,6 +1827,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="font-size:11px;font-weight:700;color:var(--text);">Supply chain / contracts <span style="font-weight:400;color:var(--text3);">· 30–120 day signals</span></div>
   </div>
 
+  <!-- L4 Live propagation card -->
+  <div class="card" style="margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div class="card-lbl" style="margin-bottom:0;">Live chain propagation — anchor moves today</div>
+      <span id="de-l4-ts" style="font-size:10px;color:var(--text3);"></span>
+    </div>
+    <div id="de-l4-propagation"><div style="font-size:11px;color:var(--text3);padding:8px 0;">Loading supply chain signals…</div></div>
+  </div>
+
   <!-- Supply chain visual cards -->
   <div class="g2" style="margin-bottom:10px;">
     <div class="card de-card" data-tickers="NVDA ASML">
@@ -8944,6 +8953,97 @@ function _renderL3Html(analystSignals) {
   el.innerHTML = html;
 }
 
+async function renderDeepEdgeL4() {
+  const el = document.getElementById('de-l4-propagation');
+  if (!el) return;
+  if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Add a Finnhub key to enable live supply chain propagation signals.</div>';
+    return;
+  }
+
+  const cacheKey = 'l4_' + new Date().toDateString();
+  if (DE_CACHE[cacheKey] && Date.now() - DE_CACHE[cacheKey].ts < DE_TTL) {
+    _renderL4Html(DE_CACHE[cacheKey].data);
+    return;
+  }
+
+  el.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Scanning anchor stocks for chain moves…</div>';
+
+  // Build inverted downstream map: anchor → [{sym, lag, metric, direction, weight, desc}]
+  const downstreamOf = {};
+  Object.entries(CHAIN_GRAPH).forEach(([sym, cfg]) => {
+    if (!cfg.upstream) return;
+    cfg.upstream.forEach(u => {
+      if (!u.ticker || u.ticker.startsWith('__')) return;
+      if (!downstreamOf[u.ticker]) downstreamOf[u.ticker] = [];
+      downstreamOf[u.ticker].push({ sym, lag: u.lag, metric: u.metric, direction: u.direction, weight: u.weight, desc: u.desc });
+    });
+  });
+
+  // Fetch today's % change for anchor stocks
+  const anchors = Object.keys(downstreamOf).filter(s => !s.startsWith('__'));
+  const quoteMap = {};
+  await Promise.allSettled(anchors.map(async anchor => {
+    try {
+      const r = await fetch(fhURL('quote', {symbol: anchor}));
+      if (!r.ok) return;
+      const q = await r.json();
+      if (q.dp !== undefined) quoteMap[anchor] = { dp: q.dp, c: q.c };
+    } catch(e) {}
+  }));
+
+  // Find movers (>= 2% in either direction)
+  const movers = Object.entries(quoteMap)
+    .filter(([,q]) => Math.abs(q.dp || 0) >= 2)
+    .sort((a,b) => Math.abs(b[1].dp) - Math.abs(a[1].dp));
+
+  const result = { movers, downstreamOf, quoteMap };
+  DE_CACHE[cacheKey] = { data: result, ts: Date.now() };
+  _renderL4Html(result);
+
+  const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const tsEl = document.getElementById('de-l4-ts');
+  if (tsEl) tsEl.textContent = 'Updated ' + ts;
+}
+
+function _renderL4Html({ movers, downstreamOf }) {
+  const el = document.getElementById('de-l4-propagation');
+  if (!el) return;
+
+  if (!movers || !movers.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">No anchor stocks moved >2% today. Supply chain windows are quiet — check back after an earnings release or macro catalyst.</div>';
+    return;
+  }
+
+  let html = '';
+  movers.forEach(([anchor, q]) => {
+    const downstream = downstreamOf[anchor] || [];
+    if (!downstream.length) return;
+    const dir = q.dp >= 0 ? 'positive' : 'negative';
+    const dpStr = (q.dp >= 0 ? '+' : '') + q.dp.toFixed(1) + '%';
+    const relevant = downstream.filter(d => d.direction === dir);
+    if (!relevant.length) return;
+    const col = dir === 'positive' ? 'var(--blue)' : 'var(--red)';
+    const tagCls = dir === 'positive' ? 'at-buy' : 'at-skip';
+    const topDownstream = relevant.slice(0, 4);
+    html += '<div class="sc sc-b sc-na" style="margin-bottom:10px;border-left:3px solid ' + col + ';cursor:default;">';
+    html += '<div class="sul">' + anchor + ' ' + dpStr + ' today → ' + topDownstream.length + ' downstream stock' + (topDownstream.length > 1 ? 's' : '') + ' in lag window</div>';
+    topDownstream.forEach(d => {
+      const lagStr = d.lag === 0 ? 'same quarter' : d.lag === 1 ? '~1 quarter' : '~' + d.lag + ' quarters';
+      html += '<div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.4;"><span style="font-weight:600;">' + d.sym + ':</span> ' + d.desc + ' <span style="color:var(--text3);">(lag: ' + lagStr + ')</span></div>';
+    });
+    const tags = topDownstream.map(d => _deTagHtml(d.sym)).join('');
+    html += '<div class="sc-meta" style="margin-top:8px;"><span class="act-tag ' + tagCls + '">CHAIN MOVE</span>' + _deTagHtml(anchor) + '<span style="font-size:10px;color:var(--text3);padding:0 4px;">→</span>' + tags + '<span style="font-size:9px;color:var(--text3);margin-left:auto;">' + dpStr + ' today</span></div>';
+    html += '</div>';
+  });
+
+  if (!html) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Anchor stocks moved but no downstream windows aligned today.</div>';
+    return;
+  }
+  el.innerHTML = html;
+}
+
 // ── Init: called on tab open and globalRefresh ────────────────────────────────
 let _deInitDone = false;
 
@@ -8953,7 +9053,7 @@ async function initDeepEdge(force) {
   const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   const hdrTs = document.getElementById('de-l1-ts');
   if (hdrTs) hdrTs.textContent = 'Live · ' + ts;
-  await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3()]);
+  await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3(), renderDeepEdgeL4()]);
 }
 // ═══════════════════════════════════════════════════════════════
 // END DEEP EDGE LIVE ENGINE
