@@ -647,4 +647,84 @@ window.CHAIN_GRAPH = {
     { ticker:'__SAM_GOV__', metric:'contracts', lag:1, direction:'positive', weight:0.45, desc:'Municipal/state law enforcement contracts → Axon body camera revenue', logic:'SAM.gov law enforcement contract awards signal Axon TASER + body camera pipeline. State/local procurement tracks federal mandates with 1-2 quarter lag.' }
   ]},
 
+  // ── 150-stock expansion: new supply chain relationships ──────
+  MRNA: { name:'Moderna', upstream:[
+    { ticker:'ILMN', metric:'sequencing_revenue', lag:8, direction:'positive', weight:0.55, desc:'Illumina sequencing → mRNA target identification', logic:'Illumina RNA sequencing identifies mRNA drug targets. Sequencing revenue growth signals pipeline expansion for mRNA therapeutics.' },
+    { ticker:'__FRED_BIO__', metric:'NIH_grants', lag:4, direction:'positive', weight:0.45, desc:'NIH biotech funding → mRNA clinical trial volume', logic:'NIH grant increases signal more mRNA programs entering clinical stage, driving Moderna pipeline breadth.' }
+  ]},
+  REGN: { name:'Regeneron', upstream:[
+    { ticker:'ILMN', metric:'genomics_revenue', lag:12, direction:'positive', weight:0.60, desc:'Illumina genomics → antibody target identification', logic:'Illumina sequencing platforms identify antibody drug targets. Genomics revenue is leading indicator for next-gen REGN antibody pipeline depth.' },
+    { ticker:'AMGN', metric:'revenue', lag:2, direction:'positive', weight:0.40, desc:'Amgen biotech revenue → biologic reimbursement environment', logic:'Amgen revenue growth signals favorable biologic drug reimbursement environment, benefiting REGN\'s Dupixent and Praluent pricing power.' }
+  ]},
+  DXCM: { name:'DexCom', upstream:[
+    { ticker:'REGN', metric:'diabetes_revenue', lag:4, direction:'positive', weight:0.50, desc:'GLP-1 CGM retention → DexCom installed base growth', logic:'GLP-1 prescriptions drive CGM demand. Diabetes treatment revenue is leading indicator for DexCom sensor subscription growth.' },
+    { ticker:'ILMN', metric:'diagnostics', lag:8, direction:'positive', weight:0.50, desc:'Precision diagnostics adoption → continuous monitoring standard of care', logic:'Illumina precision diagnostics growth signals shift to continuous monitoring as standard of care, expanding CGM market.' }
+  ]},
+  VRT: { name:'Vertiv Holdings', upstream:[
+    { ticker:'NVDA', metric:'datacenter_revenue', lag:2, direction:'positive', weight:0.50, desc:'NVIDIA GPU sales → datacenter power/cooling demand', logic:'Every NVIDIA GPU sold requires Vertiv power and cooling infrastructure. Datacenter revenue is a 1-2 quarter leading indicator for Vertiv orders.' },
+    { ticker:'EQIX', metric:'capex', lag:3, direction:'positive', weight:0.30, desc:'Equinix datacenter capex → critical infrastructure orders', logic:'Equinix capex expansion directly drives Vertiv UPS, PDU, and cooling equipment orders for each new IBX facility.' },
+    { ticker:'META', metric:'capex', lag:3, direction:'positive', weight:0.20, desc:'Meta AI datacenter buildout → Vertiv cooling contracts', logic:'Meta AI infrastructure capex (Project Aria, LLaMA training clusters) requires Vertiv liquid cooling systems at scale.' }
+  ]},
+  EQIX: { name:'Equinix', upstream:[
+    { ticker:'NVDA', metric:'datacenter_revenue', lag:4, direction:'positive', weight:0.40, desc:'AI chip sales → colocation demand', logic:'NVDA AI chip deployments require co-location for network interconnect. Datacenter revenue growth predicts Equinix cabinet bookings 1 quarter ahead.' },
+    { ticker:'META', metric:'capex', lag:2, direction:'positive', weight:0.30, desc:'Hyperscaler AI capex → xScale colocation contracts', logic:'Meta AI infrastructure capex drives xScale facility orders at Equinix. Hyperscaler capex guidance is direct leading indicator for Equinix bookings.' },
+    { ticker:'MSFT', metric:'azure_capex', lag:2, direction:'positive', weight:0.30, desc:'Azure expansion → Equinix interconnection demand', logic:'Azure regional expansion drives enterprise Equinix demand for Azure interconnect access. MSFT cloud capex is colocation leading indicator.' }
+  ]},
+  DLR: { name:'Digital Realty', upstream:[
+    { ticker:'MSFT', metric:'azure_capex', lag:4, direction:'positive', weight:0.40, desc:'Microsoft hyperscale demand → DLR pre-commitment revenue', logic:'Microsoft Azure hyperscale expansion drives DLR pre-commitment bookings. Azure capex guidance predicts DLR multi-year contracts.' },
+    { ticker:'NVDA', metric:'datacenter_revenue', lag:3, direction:'positive', weight:0.35, desc:'AI chip density → datacenter real estate demand', logic:'High-density AI racks require new DLR construction. NVDA datacenter revenue growth predicts DLR new development starts.' },
+    { ticker:'ORCL', metric:'cloud_revenue', lag:3, direction:'positive', weight:0.25, desc:'Oracle Cloud expansion → DLR campus development', logic:'Oracle Cloud Infrastructure expansion drives DLR campus builds. OCI capex commitments appear in DLR bookings within 1 quarter.' }
+  ]},
+  KTOS: { name:'Kratos Defense', upstream:[
+    { ticker:'LMT', metric:'defense_revenue', lag:2, direction:'positive', weight:0.45, desc:'Lockheed defense contracts → autonomous systems sub-contracts', logic:'LMT autonomous systems programs (F-35, LRSO) drive Kratos sub-contract awards for drone target systems and electronic warfare.' },
+    { ticker:'__DOD_AI__', metric:'contracts', lag:1, direction:'positive', weight:0.55, desc:'DoD AI/autonomous contracts → Kratos direct awards', logic:'DoD autonomous weapons and AI contracts are direct Kratos award signal. Drone budget line items directly fund Kratos programs.' }
+  ]},
+  LDOS: { name:'Leidos', upstream:[
+    { ticker:'__DOD_AI__', metric:'contracts', lag:2, direction:'positive', weight:0.60, desc:'DoD IT/AI contracts → Leidos prime award pipeline', logic:'DoD digital transformation and AI contracts flow to Leidos as primary IT services prime. Budget increases directly correlate with backlog growth.' },
+    { ticker:'SAIC', metric:'revenue', lag:1, direction:'positive', weight:0.40, desc:'Defense IT spending → sector-wide revenue growth', logic:'SAIC and Leidos compete for same DoD IT contracts. SAIC revenue growth signals healthy defense IT budget execution, benefiting LDOS similarly.' }
+  ]},
+  MELI: { name:'MercadoLibre', upstream:[
+    { ticker:'V', metric:'latam_volume', lag:2, direction:'positive', weight:0.50, desc:'LatAm payment volume → Mercado Pago fintech growth', logic:'Visa Latin America payment volume growth signals digital payment adoption, directly benefiting Mercado Pago which competes in the same ecosystem.' },
+    { ticker:'AMZN', metric:'international_revenue', lag:3, direction:'positive', weight:0.50, desc:'Amazon international expansion → LatAm e-commerce market validation', logic:'Amazon international investment in LatAm validates market size. AMZN entering Brazil drives e-commerce adoption that benefits MELI as the incumbent.' }
+  ]},
+  DUOL: { name:'Duolingo', upstream:[
+    { ticker:'MSFT', metric:'openai_integration', lag:2, direction:'positive', weight:0.60, desc:'OpenAI/GPT-4 capability → Duolingo AI Companion quality', logic:'OpenAI model improvements directly enhance Duolingo Max AI tutor quality. MSFT OpenAI partnership investment signals Duolingo feature quality roadmap.' },
+    { ticker:'GOOGL', metric:'education_spend', lag:3, direction:'positive', weight:0.40, desc:'Google education platform growth → language learning market expansion', logic:'Google education platform adoption (Workspace for Education) signals digital learning normalization, expanding Duolingo\'s addressable market.' }
+  ]},
+  NTNX: { name:'Nutanix', upstream:[
+    { ticker:'NVDA', metric:'enterprise_ai', lag:3, direction:'positive', weight:0.55, desc:'NVIDIA enterprise AI → on-premises AI workload demand', logic:'NVIDIA enterprise AI deployments increasingly use Nutanix for on-prem GPU clusters (GPT-in-a-Box). NVDA AI revenue predicts Nutanix ACV growth.' },
+    { ticker:'VMW', metric:'enterprise_disruption', lag:2, direction:'negative', weight:0.45, desc:'VMware pricing disruption → Nutanix competitive wins', logic:'Broadcom VMware price increases drive enterprise migration to Nutanix. VMware price disruption (negative for users) is positive leading indicator for Nutanix.' }
+  ]},
+  ROKU: { name:'Roku', upstream:[
+    { ticker:'NFLX', metric:'ad_revenue', lag:2, direction:'positive', weight:0.45, desc:'Netflix ad tier growth → CTV advertising market expansion', logic:'Netflix ad-supported tier growth validates CTV advertising market size. Netflix ad revenue growth drives Roku as measurement and delivery partner.' },
+    { ticker:'AMZN', metric:'prime_video_ads', lag:2, direction:'positive', weight:0.35, desc:'Amazon Prime Video ads → retail media CTV channel growth', logic:'Amazon Prime Video ad launch validates retail media CTV channel. Amazon ad revenue growth drives Roku\'s retail media attribution product.' },
+    { ticker:'GOOGL', metric:'youtube_ads', lag:1, direction:'positive', weight:0.20, desc:'YouTube CTV ad growth → CTV advertising market size', logic:'YouTube Connected TV revenue is the bellwether for CTV ad spend. YouTube CTV growth directly validates Roku\'s addressable market expansion.' }
+  ]},
+  FLUT: { name:'Flutter Entertainment', upstream:[
+    { ticker:'__SAM_GOV__', metric:'state_legalization', lag:1, direction:'positive', weight:0.65, desc:'State sports betting legalization → Flutter market expansion', logic:'State legislation legalizing sports betting directly adds to Flutter/FanDuel TAM. Each state legalization adds $300M-$2B to addressable market.' },
+    { ticker:'DIS', metric:'espn_revenue', lag:2, direction:'positive', weight:0.35, desc:'ESPN sports audience → Flutter user acquisition', logic:'ESPN+ and ESPN Bet partnership means ESPN audience growth directly fuels FanDuel user acquisition. Disney sports media revenue signals Flutter CAC efficiency.' }
+  ]},
+  PINS: { name:'Pinterest', upstream:[
+    { ticker:'AMZN', metric:'advertising_revenue', lag:2, direction:'positive', weight:0.55, desc:'Amazon ad expansion → Pinterest shoppable catalog growth', logic:'Amazon advertising expansion drives Pinterest shoppable integration depth. Amazon ad revenue growth signals more merchant catalog integration for Pinterest checkout.' },
+    { ticker:'SHOP', metric:'merchant_revenue', lag:3, direction:'positive', weight:0.45, desc:'Shopify merchant growth → Pinterest product catalog expansion', logic:'Shopify merchant base growth directly expands Pinterest shoppable product catalog. 1.7M Shopify merchants sync inventory to Pinterest boards.' }
+  ]},
+  ALB: { name:'Albemarle', upstream:[
+    { ticker:'TSLA', metric:'production', lag:6, direction:'positive', weight:0.40, desc:'Tesla EV production → lithium demand signal', logic:'Tesla vehicle production is leading indicator for lithium demand. Each Tesla vehicle requires ~10kg lithium carbonate equivalent.' },
+    { ticker:'GM', metric:'ev_production', lag:6, direction:'positive', weight:0.30, desc:'GM Ultium EV ramp → lithium supply contract execution', logic:'GM EV production ramp activates Albemarle lithium supply agreements. GM Ultium volumes directly drive ALB offtake.' },
+    { ticker:'F', metric:'f150_lightning', lag:5, direction:'positive', weight:0.30, desc:'Ford EV ramp → lithium demand growth', logic:'Ford F-150 Lightning and E-Transit production activates lithium supply agreements with Albemarle from BlueOval battery plants.' }
+  ]},
+  VRT: { name:'Vertiv Holdings', upstream:[
+    { ticker:'NVDA', metric:'datacenter_revenue', lag:2, direction:'positive', weight:0.50, desc:'NVIDIA GPU demand → datacenter power/cooling spend', logic:'Each NVDA GPU datacenter sale drives Vertiv UPS and cooling equipment. Datacenter revenue is 1-2 quarter leading indicator for Vertiv backlog.' },
+    { ticker:'EQIX', metric:'capex', lag:3, direction:'positive', weight:0.30, desc:'Equinix new datacenter builds → Vertiv critical power contracts', logic:'Equinix capex per IBX facility drives Vertiv equipment orders. Each new facility is a $20-40M Vertiv opportunity.' },
+    { ticker:'META', metric:'capex', lag:3, direction:'positive', weight:0.20, desc:'Meta AI datacenter capex → liquid cooling demand', logic:'Meta AI cluster buildout requires Vertiv liquid cooling at 50kW/rack density for GB200 NVL72.' }
+  ]},
+  SAIC: { name:'SAIC', upstream:[
+    { ticker:'LDOS', metric:'contracts', lag:1, direction:'positive', weight:0.55, desc:'Defense IT contracts → SAIC competitive pipeline', logic:'Leidos and SAIC compete for same DoD IT programs. LDOS contract wins signal active procurement cycles benefiting SAIC on alternate awards.' },
+    { ticker:'__DOD_AI__', metric:'contracts', lag:2, direction:'positive', weight:0.45, desc:'DoD AI mandate → SAIC JADC2 integration revenue', logic:'DoD JADC2 and AI mandate drives SAIC Systems Integration services. Defense AI budget increases directly flow to SAIC program awards.' }
+  ]},
+  UPST: { name:'Upstart', upstream:[
+    { ticker:'__FRED_MACRO__', metric:'10y_treasury', lag:2, direction:'negative', weight:0.70, desc:'Rate cycle inflection → Upstart lending volume recovery', logic:'Fed rate cuts directly unfreeze consumer lending. Each 25bps cut increases Upstart loan volume by ~8% as bank partner risk appetite increases.' },
+    { ticker:'HOOD', metric:'fintech_volume', lag:1, direction:'positive', weight:0.30, desc:'Retail fintech adoption → AI lending market growth', logic:'Robinhood user growth signals broader fintech adoption among millennials and Gen Z — same demographic as primary Upstart borrowers.' }
+  ]},
+
 };
