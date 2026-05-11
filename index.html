@@ -899,6 +899,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button onclick="globalRefresh()" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
     </div>
   </div>
+  <!-- VELOCITY LEADERBOARD -->
+  <div class="card" id="velocity-leaderboard-card" style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div>
+        <div class="card-lbl" style="margin-bottom:2px;">Score velocity — fastest movers this week</div>
+        <div style="font-size:10px;color:var(--text3);">Stocks with the largest score delta over the last 7 days. A stock accelerating from 58→71 is more actionable than one sitting flat at 75.</div>
+      </div>
+    </div>
+    <div id="velocity-leaderboard-body"></div>
+  </div>
+
   <!-- 5-LAYER BREAKDOWN EXPLORER -->
   <div class="card">
     <div style="margin-bottom:12px;">
@@ -5488,6 +5499,80 @@ const _origGT = typeof gT === 'function' ? gT : null;
 
 // ── FOCUS-AWARE RENDER FUNCTIONS ─────────────────────────────────────────────
 
+function renderVelocityLeaderboard() {
+  const el = document.getElementById('velocity-leaderboard-body');
+  if (!el) return;
+
+  const ALL_TICKERS = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL',
+    'VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC',
+    'AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL',
+    'NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE',
+    'WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD',
+    'DDOG','MDB','ZS','ESTC'];
+
+  // Compute velocity for each ticker
+  const rows = [];
+  ALL_TICKERS.forEach(function(t) {
+    const tr = getScoreTrend(t);
+    if (tr && tr.delta !== 0) {
+      rows.push({ ticker: t, delta: tr.delta, arrow: tr.arrow, color: tr.color,
+                  score: SCORES[t] || 50, ageStr: tr.ageStr, days: tr.days });
+    }
+  });
+
+  if (!rows.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:10px 0;text-align:center;">'
+      + '<div style="font-size:20px;margin-bottom:6px;">📊</div>'
+      + '<strong>Building score history…</strong>'
+      + '<div style="margin-top:4px;">Visit the app daily to accumulate 7-day score history. Velocity data will appear here once scores have been tracked across sessions.</div>'
+      + '</div>';
+    return;
+  }
+
+  // Split into rising / falling, sort by absolute delta
+  const rising  = rows.filter(r => r.delta > 0).sort((a,b) => b.delta - a.delta).slice(0,5);
+  const falling = rows.filter(r => r.delta < 0).sort((a,b) => a.delta - b.delta).slice(0,5);
+
+  function scoreColor(s) {
+    if (s >= 70) return 'var(--green)';
+    if (s >= 50) return 'var(--amber)';
+    return 'var(--red)';
+  }
+
+  function rowHTML(r) {
+    const sign = r.delta > 0 ? '+' : '';
+    const bg   = r.delta > 0 ? 'var(--green-bg)' : 'rgba(239,68,68,0.06)';
+    const bd   = r.delta > 0 ? 'var(--green-bd)' : 'rgba(239,68,68,0.18)';
+    const name = (typeof NAMES !== 'undefined' && NAMES[r.ticker]) ? NAMES[r.ticker] : r.ticker;
+    const shortName = name.length > 22 ? name.slice(0,20)+'…' : name;
+    return '<div onclick="openTicker(\'' + r.ticker + '\')" style="display:flex;align-items:center;gap:10px;padding:8px 10px;'
+      + 'background:' + bg + ';border:0.5px solid ' + bd + ';border-radius:8px;cursor:pointer;margin-bottom:5px;">'
+      + '<span style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;min-width:46px;color:var(--text1);">' + r.ticker + '</span>'
+      + '<span style="font-size:10px;color:var(--text3);flex:1;">' + shortName + '</span>'
+      + '<span style="font-size:11px;font-weight:600;color:' + scoreColor(r.score) + ';min-width:28px;text-align:right;font-family:\'DM Mono\',monospace;">' + r.score + '</span>'
+      + '<span style="font-size:11px;font-weight:700;color:' + r.color + ';min-width:32px;text-align:right;">' + r.arrow + sign + r.delta + '</span>'
+      + '<span style="font-size:9px;color:var(--text3);min-width:44px;text-align:right;">' + r.days + 'd</span>'
+      + '<span style="color:var(--text3);font-size:14px;">›</span>'
+      + '</div>';
+  }
+
+  let out = '';
+  if (rising.length) {
+    out += '<div style="font-size:10px;font-weight:600;color:var(--green);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Rising signals</div>';
+    rising.forEach(function(r){ out += rowHTML(r); });
+  }
+  if (falling.length) {
+    if (rising.length) out += '<div style="height:8px;"></div>';
+    out += '<div style="font-size:10px;font-weight:600;color:var(--red,#ef4444);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Fading signals</div>';
+    falling.forEach(function(r){ out += rowHTML(r); });
+  }
+
+  const total = rising.length + falling.length;
+  out += '<div style="font-size:10px;color:var(--text3);margin-top:8px;text-align:right;">'
+       + total + ' stock' + (total===1?'':'s') + ' with score movement in last 7 days · updates on each app open</div>';
+  el.innerHTML = out;
+}
+
 function sortConvergenceCards() {
   // Collect all unique parent containers
   const containers = new Set();
@@ -5508,6 +5593,8 @@ function sortConvergenceCards() {
 
 function renderConvergence() {
   const ft = S.focusTicker;
+  // Render velocity leaderboard (reads localStorage score_history)
+  try { renderVelocityLeaderboard(); } catch(e) {}
   // Show/hide each stock card in the signal scores list
   document.querySelectorAll('.convergence-stock-card').forEach(card => {
     const ticker = card.dataset.ticker;
