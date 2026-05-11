@@ -9038,6 +9038,8 @@ const ANALYST_CASCADE_MAP = {
   'AMD':  {downstream:['TSM','SMCI','MU'],                        lag:'5–10 days',  reason:'AMD share gains in datacenter/AI drive TSM node demand and HBM orders'},
   'ASML': {downstream:['TSM','AMAT','LRCX','INTC'],               lag:'5–12 days',  reason:'ASML order intake signals fab buildout — benefits all equipment suppliers'},
   'MU':   {downstream:['NVDA','LRCX','AMAT','TSM'],               lag:'3–8 days',   reason:'MU HBM demand signals AI training infrastructure expansion'},
+  'KLAC': {downstream:['ASML','AMAT','LRCX','ENTG','ONTO'],        lag:'5–10 days',  reason:'KLA process control order surge signals intensifying advanced node yield focus — benefits all equipment and materials suppliers'},
+  'ENTG': {downstream:['AMAT','LRCX','KLAC','MKSI','ONTO'],        lag:'3–8 days',   reason:'Entegris materials volume signals fab utilization acceleration — equipment follow-on orders typically lag 5–10 days'},
 };
 
 function _deRelDate(dateStr) {
