@@ -747,6 +747,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
   <div id="morning-chain-card" style="margin-bottom:14px;"></div>
   <div id="morning-insider-card" style="margin-bottom:14px;"></div>
+  <div id="morning-analyst-card" style="margin-bottom:14px;"></div>
   <div class="g13">
     <div>
       <div id="morning-picks-card" class="card" style="margin-bottom:12px;"></div>
@@ -2552,6 +2553,8 @@ async function initLiveScores() {
   try { computeGlobalChainSignals().then(function(){ try { renderChainSignalCard(); } catch(e) {} }); } catch(e) {}
   // Scan INSIDER_CACHE for clusters across all 64 stocks (cache already warm from above loop)
   try { computeGlobalInsiderSignals(); } catch(e) {}
+  // Fetch analyst news + detect cascade windows for all 64 stocks
+  try { computeGlobalAnalystSignals().then(function(){ try { renderAnalystCascadeCard(); } catch(e) {} }).catch(function(){}); } catch(e) {}
   // Re-render morning brief with freshly computed scores
   try { renderMorningBriefDynamic(); } catch(e) {}
   try { renderSageCard(); markSagePick(); } catch(e) {}
@@ -3446,6 +3449,81 @@ function renderMyIntelBrief() {
   setTimeout(_gsiInit, 100);
 }
 
+function renderAnalystCascadeCard() {
+  const el = document.getElementById('morning-analyst-card');
+  if (!el) return;
+  const as_ = window._ANALYST_SIGNALS;
+  if (!as_) { el.innerHTML = ''; return; }
+
+  const cascades = as_.cascades || [];
+  // Also find direct upgrade clusters (2+ upgrades on a stock, not just cascade)
+  const directUps = Object.entries(as_.signals || {}).filter(function([,v]) {
+    return v.ups && v.ups.length >= 2;
+  }).sort(function(a,b){ return b[1].ups.length - a[1].ups.length; }).slice(0, 3);
+
+  if (!cascades.length && !directUps.length) { el.innerHTML = ''; return; }
+
+  const ts = new Date(as_.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  let rowsHtml = '';
+
+  // Cascade rows (anchor upgraded → downstream stocks in follow-on window)
+  cascades.slice(0, 2).forEach(function(c) {
+    const score = (typeof SCORES !== 'undefined' && SCORES[c.anchor]) ? SCORES[c.anchor] : '—';
+    const sc    = score >= 70 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--text3)';
+    const downTickers = c.downstream.slice(0, 3).map(function(d) {
+      return '<span onclick="openTicker(\'' + d + '\')" style="cursor:pointer;font-weight:600;color:var(--amber);">' + d + '</span>';
+    }).join(' · ');
+    rowsHtml += '<div onclick="openTicker(\'' + c.anchor + '\')" style="display:flex;align-items:flex-start;gap:10px;padding:7px 10px;'
+      + 'background:rgba(245,158,11,0.05);border:0.5px solid rgba(245,158,11,0.18);border-radius:8px;'
+      + 'cursor:pointer;margin-bottom:5px;">'
+      + '<div style="flex:1;">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">'
+      + '<span style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--text1);">' + c.anchor + '</span>'
+      + '<span style="font-size:9px;font-weight:700;color:var(--amber);background:var(--amber-bg);padding:2px 6px;border-radius:4px;">CASCADE</span>'
+      + '<span style="font-size:10px;color:var(--text3);">' + c.upCount + ' upgrades · ' + c.lag + ' window</span>'
+      + '</div>'
+      + '<div style="font-size:10px;color:var(--text2);">Follow-on: ' + downTickers + '</div>'
+      + '</div>'
+      + '<span style="font-size:11px;font-weight:600;color:' + sc + ';font-family:\'DM Mono\',monospace;min-width:28px;text-align:right;">' + score + '</span>'
+      + '<span style="color:var(--blue);font-size:14px;">›</span>'
+      + '</div>';
+  });
+
+  // Direct upgrade cluster rows (2+ analyst upgrades on the stock itself)
+  const shownAnchorSet = new Set(cascades.slice(0,2).map(function(c){ return c.anchor; }));
+  directUps.filter(function([sym]) { return !shownAnchorSet.has(sym); }).slice(0, 2).forEach(function([sym, v]) {
+    const score = (typeof SCORES !== 'undefined' && SCORES[sym]) ? SCORES[sym] : '—';
+    const sc    = score >= 70 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--text3)';
+    const hl    = v.ups[0] ? ((v.ups[0].headline || '').slice(0, 60) + (v.ups[0].headline.length > 60 ? '…' : '')) : '';
+    rowsHtml += '<div onclick="openTicker(\'' + sym + '\')" style="display:flex;align-items:center;gap:10px;padding:7px 10px;'
+      + 'background:rgba(34,197,94,0.05);border:0.5px solid rgba(34,197,94,0.18);border-radius:8px;'
+      + 'cursor:pointer;margin-bottom:5px;">'
+      + '<span style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;min-width:48px;color:var(--text1);">' + sym + '</span>'
+      + '<span style="font-size:9px;font-weight:700;color:var(--green);background:var(--green-bg);padding:2px 6px;border-radius:4px;flex-shrink:0;">UPGRADED</span>'
+      + '<span style="font-size:10px;color:var(--text2);flex:1;">' + v.ups.length + ' upgrades · ' + hl + '</span>'
+      + '<span style="font-size:11px;font-weight:600;color:' + sc + ';font-family:\'DM Mono\',monospace;">' + score + '</span>'
+      + '<span style="color:var(--blue);font-size:14px;">›</span>'
+      + '</div>';
+  });
+
+  if (!rowsHtml) { el.innerHTML = ''; return; }
+
+  const totalShown = cascades.slice(0,2).length
+    + directUps.filter(function([sym]) { return !shownAnchorSet.has(sym); }).slice(0,2).length;
+  el.innerHTML = '<div class="card" style="border-left:3px solid var(--amber);margin-bottom:0;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    + '<div><div class="card-lbl" style="margin-bottom:2px;">📈 Analyst activity — '
+    + (cascades.length ? cascades.length + ' cascade window' + (cascades.length === 1 ? '' : 's') + ' open' : directUps.length + ' upgrade cluster' + (directUps.length === 1 ? '' : 's'))
+    + ' (last 14 days)</div>'
+    + '<div style="font-size:10px;color:var(--text3);">When an anchor stock gets 2+ upgrades, downstream stocks typically follow within 5–14 days.</div></div>'
+    + '<span style="font-size:9px;color:var(--text3);">' + ts + '</span>'
+    + '</div>'
+    + rowsHtml
+    + '<div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:right;">'
+    + totalShown + ' signal' + (totalShown === 1 ? '' : 's') + ' · click for full analyst revision history</div>'
+    + '</div>';
+}
+
 function renderInsiderClusterCard() {
   const el = document.getElementById('morning-insider-card');
   if (!el) return;
@@ -3554,6 +3632,7 @@ function renderMorningBriefDynamic() {
     _renderMorningSummaryBanner();
     try { renderChainSignalCard(); } catch(e) {}
     try { renderInsiderClusterCard(); } catch(e) {}
+    try { renderAnalystCascadeCard(); } catch(e) {}
     _renderMorningPicksCard();
   } catch(e) { console.warn('renderMorningBriefDynamic:', e); }
 }
@@ -9745,44 +9824,67 @@ function _renderL2Html(allBuys) {
 const _upgradeKw  = ['raises price target','raised price target','upgrades','upgrade','initiated','outperform','buy rating','strong buy','overweight','price target to','pt to','pt raised','raises pt','raised pt','analyst raises','target price increased'];
 const _downgradeKw = ['cuts price target','cut price target','downgrades','downgrade','underperform','sell rating','underweight','reduces price target','reduces pt','lowers pt','lowered pt'];
 
+// ── Global analyst cascade signals ──────────────────────────────────────
+window._ANALYST_SIGNALS = null; // { signals: {sym:{ups,downs}}, cascades: [...], ts }
+
+async function computeGlobalAnalystSignals() {
+  if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) return;
+  const cacheKey = 'l3_' + new Date().toDateString();
+  // Use cached result if computed today
+  if (typeof DE_CACHE !== 'undefined' && DE_CACHE[cacheKey] && Date.now() - DE_CACHE[cacheKey].ts < DE_TTL) {
+    const signals = DE_CACHE[cacheKey].data;
+    const cascades = typeof detectAnalystCascades !== 'undefined' ? detectAnalystCascades(signals) : [];
+    window._ANALYST_SIGNALS = { signals, cascades, ts: DE_CACHE[cacheKey].ts };
+    try { renderAnalystCascadeCard(); } catch(e) {}
+    return;
+  }
+
+  const from = _dateStr(-14), to = _dateStr(0);
+  const analystSignals = {}; // sym → {ups: [], downs: []}
+
+  await Promise.allSettled(DE_TICKERS.map(async function(sym) {
+    try {
+      const r = await fetch(fhURL('company-news', {symbol: sym, from: from, to: to}));
+      if (!r.ok) return;
+      const articles = await r.json();
+      if (!Array.isArray(articles)) return;
+      const ups = [], downs = [];
+      articles.forEach(function(a) {
+        const hl = (a.headline || '').toLowerCase();
+        const isUp   = typeof _upgradeKw !== 'undefined' && _upgradeKw.some(function(k){ return hl.includes(k); });
+        const isDown = typeof _downgradeKw !== 'undefined' && _downgradeKw.some(function(k){ return hl.includes(k); });
+        if (isUp)   ups.push(a);
+        if (isDown) downs.push(a);
+      });
+      if (ups.length || downs.length) analystSignals[sym] = {ups: ups, downs: downs};
+    } catch(e) {}
+  }));
+
+  if (typeof DE_CACHE !== 'undefined') DE_CACHE[cacheKey] = { data: analystSignals, ts: Date.now() };
+  const cascades = typeof detectAnalystCascades !== 'undefined' ? detectAnalystCascades(analystSignals) : [];
+  window._ANALYST_SIGNALS = { signals: analystSignals, cascades: cascades, ts: Date.now() };
+  try { renderAnalystCascadeCard(); } catch(e) {}
+  // If Deep Edge L3 panel is open, refresh it too
+  try {
+    const el = document.getElementById('de-l3-revisions');
+    if (el && el.innerHTML.includes('Scanning analyst')) _renderL3Html(analystSignals);
+  } catch(e) {}
+}
+
 async function renderDeepEdgeL3() {
   if (!IS_VERCEL && !S.fh) {
     document.getElementById('de-l3-revisions').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Add a Finnhub key in Settings to enable live analyst intelligence.</div>';
     return;
   }
-
   const cacheKey = 'l3_' + new Date().toDateString();
   if (DE_CACHE[cacheKey] && Date.now() - DE_CACHE[cacheKey].ts < DE_TTL) {
     _renderL3Html(DE_CACHE[cacheKey].data);
-    return;
+  } else {
+    document.getElementById('de-l3-revisions').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Scanning analyst activity…</div>';
+    await computeGlobalAnalystSignals();
+    const fresh = DE_CACHE[cacheKey];
+    if (fresh) _renderL3Html(fresh.data);
   }
-
-  document.getElementById('de-l3-revisions').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Scanning analyst activity…</div>';
-
-  const from = _dateStr(-14), to = _dateStr(0);
-  const analystSignals = {}; // sym → {upgrades: [], downgrades: []}
-
-  await Promise.allSettled(DE_TICKERS.map(async sym => {
-    try {
-      const r = await fetch(fhURL('company-news', {symbol: sym, from, to}));
-      if (!r.ok) return;
-      const articles = await r.json();
-      if (!Array.isArray(articles)) return;
-      const ups = [], downs = [];
-      articles.forEach(a => {
-        const hl = (a.headline || '').toLowerCase();
-        const isUp   = _upgradeKw.some(k => hl.includes(k));
-        const isDown = _downgradeKw.some(k => hl.includes(k));
-        if (isUp)   ups.push(a);
-        if (isDown) downs.push(a);
-      });
-      if (ups.length || downs.length) analystSignals[sym] = {ups, downs};
-    } catch(e) {}
-  }));
-
-  DE_CACHE[cacheKey] = { data: analystSignals, ts: Date.now() };
-  _renderL3Html(analystSignals);
-
   const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   const tsEl = document.getElementById('de-l3-ts');
   if (tsEl) tsEl.textContent = 'Updated ' + ts;
