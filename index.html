@@ -3031,6 +3031,37 @@ function syncSignalScoreCards() {
       if (lbl) pill.title = lbl;
       pill.style.cursor = 'help';
     }
+    // ── Server component breakdown bars (L1–L5) ──────────────────────────
+    const comp = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[t] || null) : null;
+    if (comp) {
+      const LAYERS = [
+        { id:'l1', label:'L1', name:'Momentum',  max:30, color:'var(--blue,#4A9EFF)' },
+        { id:'l2', label:'L2', name:'Insider',   max:25, color:'var(--green)' },
+        { id:'l3', label:'L3', name:'Analyst',   max:25, color:'var(--amber)' },
+        { id:'l4', label:'L4', name:'Chain',     max:10, color:'#a78bfa' },
+        { id:'l5', label:'L5', name:'Macro',     max:10, color:'#38bdf8' }
+      ];
+      let bar = card.querySelector('.sc-comp-bar');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.className = 'sc-comp-bar';
+        bar.style.cssText = 'display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;align-items:center;';
+        const meta = card.querySelector('.sc-meta');
+        if (meta) meta.after(bar); else card.appendChild(bar);
+      }
+      bar.innerHTML = LAYERS.map(function(l) {
+        const pts = Math.min(l.max, Math.max(0, comp[l.id] || 0));
+        const pct = Math.round((pts / l.max) * 100);
+        const opacity = pts > 0 ? '1' : '0.35';
+        return '<div title="' + l.name + ': ' + pts + '/' + l.max + '" style="display:flex;align-items:center;gap:3px;opacity:' + opacity + ';cursor:help;">'
+          + '<span style="font-size:9px;font-weight:700;font-family:\'DM Mono\',monospace;color:' + l.color + ';letter-spacing:.03em;">' + l.label + '</span>'
+          + '<div style="width:28px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">'
+          + '<div style="height:100%;width:' + pct + '%;background:' + l.color + ';border-radius:2px;transition:width .3s;"></div>'
+          + '</div>'
+          + '<span style="font-size:9px;font-family:\'DM Mono\',monospace;color:var(--text3);">' + pts + '</span>'
+          + '</div>';
+      }).join('');
+    }
   });
   // Mark the top pick with a sage badge
   try { markSagePick(); } catch(e) {}
@@ -7728,6 +7759,8 @@ function renderConvergence() {
   });
   // Sort cards by score (highest first)
   sortConvergenceCards();
+  // Inject L1–L5 component breakdown bars if server data is available
+  try { syncSignalScoreCards(); } catch(e) {}
   // Auto-select matching layer analysis button — or call directly if ticker not in preset list
   if (ft) {
     let found = false;
