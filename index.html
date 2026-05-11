@@ -8651,6 +8651,20 @@ const DE_TTL   = 15 * 60 * 1000; // 15 min cache
 const DE_TICKERS = ['NVDA','ASML','AMD','PLTR','TSM','SMCI','META','MSFT','GOOGL',
   'AMZN','AAPL','PANW','CRWD','AVGO','MRVL','APP','ORCL','CRM','NOW','MU'];
 
+// Analyst cascade map: when anchor is upgraded, these downstream stocks enter follow-on window
+// Based on supply chain lags — analyst revisions typically cascade within 5–14 days
+const ANALYST_CASCADE_MAP = {
+  'TSM':  {downstream:['ASML','AMAT','LRCX','NVDA','AMD'],       lag:'5–10 days',  reason:'TSMC capex/capacity revision drives equipment orders and fabless demand'},
+  'NVDA': {downstream:['MU','SMCI','AMAT','LRCX','AVGO'],        lag:'3–10 days',  reason:'NVDA datacenter beat drives HBM memory demand and custom ASIC competition'},
+  'META': {downstream:['NVDA','AVGO','ORCL','NET','DELL'],        lag:'5–12 days',  reason:'META capex guidance drives AI chip and cloud infra demand'},
+  'MSFT': {downstream:['NVDA','AVGO','ORCL','NET','CRM','NOW'],   lag:'5–12 days',  reason:'Azure AI expansion drives chip demand and enterprise software adoption'},
+  'GOOGL':{downstream:['NVDA','AVGO','ORCL','NET'],               lag:'5–12 days',  reason:'Google Cloud capex drives AI infra and networking demand'},
+  'AMZN': {downstream:['NVDA','AVGO','ORCL','NET','DELL','HPE'],  lag:'5–14 days',  reason:'AWS AI infra buildout drives chip and networking hardware demand'},
+  'AMD':  {downstream:['TSM','SMCI','MU'],                        lag:'5–10 days',  reason:'AMD share gains in datacenter/AI drive TSM node demand and HBM orders'},
+  'ASML': {downstream:['TSM','AMAT','LRCX','INTC'],               lag:'5–12 days',  reason:'ASML order intake signals fab buildout — benefits all equipment suppliers'},
+  'MU':   {downstream:['NVDA','LRCX','AMAT','TSM'],               lag:'3–8 days',   reason:'MU HBM demand signals AI training infrastructure expansion'},
+};
+
 function _deRelDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
@@ -8837,6 +8851,29 @@ async function renderDeepEdgeL3() {
   if (tsEl) tsEl.textContent = 'Updated ' + ts;
 }
 
+function detectAnalystCascades(analystSignals) {
+  const cascades = [];
+  Object.entries(ANALYST_CASCADE_MAP).forEach(([anchor, cfg]) => {
+    const sig = analystSignals[anchor];
+    if (!sig || sig.ups.length < 2) return; // need 2+ upgrades on anchor
+    // Which downstream stocks don't already have their own upgrade cluster?
+    const unpriced = cfg.downstream.filter(d => !(analystSignals[d] && analystSignals[d].ups.length >= 2));
+    if (!unpriced.length) return;
+    const latest = sig.ups[0];
+    cascades.push({
+      anchor,
+      upCount: sig.ups.length,
+      latestHl: latest ? (latest.headline || '') : '',
+      latestDate: latest ? latest.datetime : null,
+      downstream: unpriced,
+      lag: cfg.lag,
+      reason: cfg.reason
+    });
+  });
+  // Sort by upstream upgrade count descending
+  return cascades.sort((a,b) => b.upCount - a.upCount);
+}
+
 function _renderL3Html(analystSignals) {
   const el = document.getElementById('de-l3-revisions');
   if (!el) return;
@@ -8847,10 +8884,29 @@ function _renderL3Html(analystSignals) {
     return;
   }
 
+  // ── Cascade signals: when anchor upgraded, flag downstream stocks ────────
+  const cascades = detectAnalystCascades(analystSignals);
+  let cascadeHtml = '';
+  if (cascades.length) {
+    cascadeHtml += '<div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin:0 0 8px;">CASCADE SIGNALS · FOLLOW-ON WINDOWS OPEN</div>';
+    cascades.forEach(c => {
+      const downstreamTags = c.downstream.map(d => _deTagHtml(d)).join('');
+      const ago = c.latestDate ? _deRelDate(new Date(c.latestDate*1000).toISOString().slice(0,10)) : '';
+      cascadeHtml += '<div class="sc sc-r sc-na" style="margin-bottom:10px;border-left:3px solid var(--amber);">';
+      cascadeHtml += '<div class="sul">' + c.anchor + ' analyst cascade → follow-on window open (' + c.lag + ')</div>';
+      cascadeHtml += '<div class="suh">' + c.anchor + ' received ' + c.upCount + ' analyst upgrades this week. ' + c.reason + '. Downstream stocks not yet upgraded:</div>';
+      cascadeHtml += '<div class="sc-meta"><span class="act-tag" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd);">CASCADE</span>';
+      cascadeHtml += _deTagHtml(c.anchor) + '<span style="font-size:10px;color:var(--text3);padding:0 4px;">→</span>' + downstreamTags;
+      cascadeHtml += '<span style="font-size:9px;color:var(--text3);margin-left:auto;">' + ago + '</span></div>';
+      cascadeHtml += '</div>';
+    });
+    cascadeHtml += '<div style="height:6px;"></div>';
+  }
+
   // Sort: most upgrades first, then most downgrades
   entries.sort((a,b) => (b[1].ups.length - a[1].ups.length) || (b[1].downs.length - a[1].downs.length));
 
-  let html = '';
+  let html = cascadeHtml;
   entries.forEach(([sym, {ups, downs}]) => {
     if (ups.length >= 2) {
       const latest = ups[0];
