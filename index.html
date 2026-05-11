@@ -2755,6 +2755,12 @@ function _seedInitialScoreSnapshot() {
 // Fetches GET /api/scores (pre-computed nightly cron) and seeds SCORES immediately
 // so score displays populate before the slower per-ticker Finnhub loop completes.
 // Also merges server daily history into localStorage for the backtest.
+// Global store for server-computed score components and Claude signal narratives
+// { ticker: { l1, l2, l3, l4, l5 } }
+var _SERVER_COMPONENTS = {};
+// { ticker: ['sentence1', 'sentence2', 'sentence3'] }
+var _SERVER_SIGNALS = {};
+
 async function loadServerScores() {
   if (!IS_VERCEL) return false;
   try {
@@ -2762,16 +2768,27 @@ async function loadServerScores() {
     if (!r.ok) return false;
     const j = await r.json();
     if (!j.ok || !j.scores) return false;
+
     // Seed SCORES with pre-computed values (initLiveScores will override with fresher data)
     let seeded = 0;
     Object.entries(j.scores).forEach(function([t, s]) {
       if (s && typeof SCORES[t] !== 'undefined') { SCORES[t] = s; seeded++; }
     });
+
+    // Store score components globally (l1/l2/l3/l4/l5 breakdown per ticker)
+    if (j.components) {
+      Object.assign(_SERVER_COMPONENTS, j.components);
+    }
+
+    // Store Claude-generated signal narratives globally
+    if (j.signals) {
+      Object.assign(_SERVER_SIGNALS, j.signals);
+    }
+
     // Merge server daily history into localStorage backtest store
     if (j.date && j.scores) {
       try {
         const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
-        // Only write server entry if we don't already have a local entry for that date
         if (!hist[j.date]) {
           hist[j.date] = j.scores;
           const keys = Object.keys(hist).sort();
@@ -2780,7 +2797,11 @@ async function loadServerScores() {
         }
       } catch(e) {}
     }
-    console.log('[server scores] loaded ' + seeded + ' pre-computed scores for ' + (j.date || 'today'));
+
+    console.log('[server scores] loaded ' + seeded + ' scores, ' +
+      Object.keys(_SERVER_COMPONENTS).length + ' components, ' +
+      Object.keys(_SERVER_SIGNALS).length + ' narratives for ' + (j.date || 'today'));
+
     // Refresh UI immediately with pre-computed scores
     try { _refreshLiveScoreUI(); } catch(e) {}
     try { renderMorningBriefDynamic(); } catch(e) {}
@@ -4892,15 +4913,40 @@ function renderTkScore(sym){
   const _tBadge=_tr?'<span style="font-size:11px;font-weight:700;color:'+_tr.color+';margin-left:5px;">'+_tr.arrow+(_tr.delta>0?'+':'')+_tr.delta+'</span>':'';
   const _tAge=_tr?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Updated '+_tr.ageStr+'</div>':'';
   if(!layers)return '<div class="card"><div class="card-lbl">Signal Score</div><div style="font-size:12px;color:var(--text3);padding:8px 0;">No signal data for '+sym+' yet.</div></div>';
-  const total=layers.reduce((s,l)=>s+l.pts,0);
-  function bc(pts,max){const r=pts/max;return r>=0.85?'var(--blue)':r>=0.6?'var(--text2)':'var(--text3)';}
-  const bars=layers.map(l=>{
-    const pct=Math.round((l.pts/Math.max(l.max,l.pts))*100);
-    const col=bc(l.pts,l.max);
-    const sigs=l.signals.map(s=>'<div style="font-size:11px;color:var(--text2);padding:3px 0 3px 10px;border-left:2px solid var(--border2);margin-top:3px;">'+s+'</div>').join('');
-    return '<div style="margin-bottom:14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:var(--text3);width:18px;font-family:\'DM Mono\',monospace;">'+l.id+'</span><span style="font-size:12px;font-weight:600;flex:1;">'+l.name+'</span><span style="font-size:10px;font-family:\'DM Mono\',monospace;color:'+col+';font-weight:700;">'+l.pts+'/'+l.max+'</span></div><div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:6px;"><div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:2px;"></div></div><div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px;">'+l.desc+'</div>'+sigs+'</div>';
+
+  // Use server-computed component scores if available (real L1-L5 from live data)
+  const serverComp = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[sym] || null) : null;
+  // Layer ID → server component key mapping
+  const compMap = { L1:'l1', L2:'l2', L3:'l3', L4:'l4', L5:'l5' };
+
+  const total = serverComp
+    ? Math.min(99, (serverComp.l1||0)+(serverComp.l2||0)+(serverComp.l3||0)+(serverComp.l4||0)+(serverComp.l5||0))
+    : layers.reduce(function(s,l){return s+l.pts;},0);
+
+  function bc(pts,max){var r=pts/max;return r>=0.85?'var(--blue)':r>=0.6?'var(--text2)':'var(--text3)';}
+
+  const bars=layers.map(function(l){
+    // Use server-computed pts when available, fall back to static LAYER_DATA pts
+    const livePts = serverComp && compMap[l.id] ? (serverComp[compMap[l.id]] || l.pts) : l.pts;
+    const pct=Math.min(100, Math.round((livePts/Math.max(l.max,livePts))*100));
+    const col=bc(livePts,l.max);
+    const liveTag = (serverComp && compMap[l.id])
+      ? '<span style="font-size:9px;color:var(--green);font-weight:600;margin-left:4px;letter-spacing:.02em;">● live</span>'
+      : '';
+    const sigs=l.signals.map(function(s){return '<div style="font-size:11px;color:var(--text2);padding:3px 0 3px 10px;border-left:2px solid var(--border2);margin-top:3px;">'+s+'</div>';}).join('');
+    return '<div style="margin-bottom:14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:var(--text3);width:18px;font-family:\'DM Mono\',monospace;">'+l.id+'</span><span style="font-size:12px;font-weight:600;flex:1;">'+l.name+'</span><span style="font-size:10px;font-family:\'DM Mono\',monospace;color:'+col+';font-weight:700;">'+livePts+'/'+l.max+'</span>'+liveTag+'</div><div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:6px;"><div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:2px;"></div></div><div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px;">'+l.desc+'</div>'+sigs+'</div>';
   }).join('');
-  return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);">'+total+'<span style="font-size:13px;color:var(--text3);">/100</span>'+_tBadge+'</div></div>'+_tAge+bars+'</div>';
+
+  // Claude-generated live intelligence block (shown above layer bars when available)
+  const serverSigs = (typeof _SERVER_SIGNALS !== 'undefined') ? (_SERVER_SIGNALS[sym] || null) : null;
+  const liveIntelBlock = serverSigs ? (
+    '<div style="background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:8px;padding:10px 12px;margin-bottom:14px;">'
+    +'<div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">● Live Intelligence · computed last night</div>'
+    + serverSigs.map(function(s){ return '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:6px;padding-left:10px;border-left:2px solid var(--green-bd);">'+s+'</div>'; }).join('')
+    +'</div>'
+  ) : '';
+
+  return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);">'+total+'<span style="font-size:13px;color:var(--text3);">/100</span>'+_tBadge+'</div></div>'+_tAge+liveIntelBlock+bars+'</div>';
 }
 
 function renderTkChain(sym){
@@ -6450,42 +6496,110 @@ function renderFundManagerCards() {
   container.innerHTML = cards;
 }
 
-// ─── Tech Titans renderer ────────────────────────────────────────────────────
-function renderTechTitans() {
-  const container = document.getElementById('sm-titans-list');
-  if(!container || container.dataset.rendered) return;
-  container.dataset.rendered = '1';
+// ─── Tech Titans renderer — live Form 4 data ─────────────────────────────────
+let _titansTxnCache = null;
+let _titansTxnCacheTime = 0;
 
-  const rows = TECH_TITANS.map(t => {
-    const trades = (t.trades || []).map(tr => {
-      const isBull = tr.signal === 'bull';
-      const isNoise = tr.signal === 'noise';
-      const bg = isBull ? 'var(--green-bg)' : 'var(--bg4)';
-      const col = isBull ? 'var(--green)' : isNoise ? 'var(--text3)' : 'var(--amber)';
-      const bd = isBull ? 'var(--green-bd)' : 'var(--border)';
-      return `<div style="padding:6px 8px;border-radius:6px;background:${bg};border:0.5px solid ${bd};margin-top:5px;">
-        <div style="font-size:10px;font-weight:600;color:${col};margin-bottom:2px;">${tr.type} · ${tr.date}</div>
-        <div style="font-size:11px;color:var(--text2);line-height:1.5;">${tr.label}</div>
-      </div>`;
+async function renderTechTitans() {
+  const container = document.getElementById('sm-titans-list');
+  if (!container) return;
+
+  // Show bio skeletons immediately, then fetch live trades
+  const skeletons = TECH_TITANS.map(function(t) {
+    const twitterLink = t.twitter
+      ? '<a href="https://twitter.com/' + t.twitter + '" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">@' + t.twitter + ' ↗</a>'
+      : '';
+    return '<div class="sm-titan-row" data-titan-ticker="' + t.ticker + '">'
+      + '<div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">' + t.emoji + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">'
+      + '<span style="font-size:13px;font-weight:700;color:var(--text);">' + t.name + '</span>'
+      + '<span style="font-size:10px;color:var(--text3);">' + t.role + '</span>'
+      + '<span onclick="openTicker(\'' + t.ticker + '\')" style="padding:2px 8px;border-radius:10px;background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-bd);font-size:10px;font-weight:700;cursor:pointer;">' + t.ticker + '</span>'
+      + twitterLink
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.55;margin-bottom:6px;">' + t.signal + '</div>'
+      + '<div id="titan-trades-' + t.ticker + '" style="font-size:10px;color:var(--text3);">Loading Form 4 filings…</div>'
+      + '<div style="margin-top:6px;"><a href="' + t.edgar + '" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">SEC Form 4 filings ↗</a></div>'
+      + '</div></div>';
+  }).join('');
+  container.innerHTML = skeletons;
+
+  // Fetch live insider transactions for all titan tickers in parallel
+  const now = Date.now();
+  let txnMap = {};
+
+  if (_titansTxnCache && (now - _titansTxnCacheTime) < 30 * 60 * 1000) {
+    txnMap = _titansTxnCache;
+  } else if (S.fh || IS_VERCEL) {
+    const titanTickers = [...new Set(TECH_TITANS.map(function(t) { return t.ticker; }))];
+    const results = await Promise.allSettled(
+      titanTickers.map(function(ticker) {
+        const url = fhURL('stock/insider-transactions', {
+          symbol: ticker, from: _dateStr(-270), to: _dateStr(0)
+        });
+        return fetch(url, { signal: AbortSignal.timeout(7000) })
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(j) { return { ticker: ticker, data: j }; });
+      })
+    );
+    results.forEach(function(r) {
+      if (r.status === 'fulfilled' && r.value) {
+        txnMap[r.value.ticker] = (r.value.data?.data || [])
+          .filter(function(t) { return !t.isDerivative && t.change !== 0; })
+          .sort(function(a, b) { return new Date(b.transactionDate) - new Date(a.transactionDate); });
+      }
+    });
+    _titansTxnCache = txnMap;
+    _titansTxnCacheTime = now;
+  }
+
+  // Render live trades for each titan
+  TECH_TITANS.forEach(function(titan) {
+    const el = document.getElementById('titan-trades-' + titan.ticker);
+    if (!el) return;
+
+    const allTxns = txnMap[titan.ticker] || [];
+    // Filter to open-market buys and significant sells (non-auto-plan sells)
+    // Heuristic for auto-plan: round share numbers divisible by 1000 on recurring schedule
+    const buys = allTxns.filter(function(t) { return t.change > 0; }).slice(0, 5);
+    const sells = allTxns.filter(function(t) { return t.change < 0; }).slice(0, 3);
+    const recent = [...buys, ...sells]
+      .sort(function(a, b) { return new Date(b.transactionDate) - new Date(a.transactionDate); })
+      .slice(0, 5);
+
+    if (!recent.length) {
+      el.innerHTML = '<div style="font-size:11px;color:var(--text3);font-style:italic;">No open market activity in last 9 months via Finnhub.</div>';
+      return;
+    }
+
+    const rows = recent.map(function(t) {
+      const isBuy = t.change > 0;
+      const val = Math.abs(t.change * (t.transactionPrice || 0));
+      const valStr = val >= 1e6 ? '$' + (val / 1e6).toFixed(1) + 'M'
+        : val >= 1e3 ? '$' + Math.round(val / 1e3) + 'K' : val > 0 ? '$' + Math.round(val) : '';
+      const shares = Math.abs(t.change).toLocaleString();
+      const daysAgo = Math.round((Date.now() - new Date(t.transactionDate)) / 864e5);
+      const daysStr = daysAgo <= 0 ? 'today' : daysAgo === 1 ? 'yesterday' : daysAgo + 'd ago';
+      const lastName = (t.name || titan.name).split(/\s+/).pop();
+      const bg = isBuy ? 'var(--green-bg)' : 'var(--bg4)';
+      const col = isBuy ? 'var(--green)' : 'var(--text3)';
+      const bd = isBuy ? 'var(--green-bd)' : 'var(--border)';
+      const typeLabel = isBuy ? 'BUY' : 'SELL';
+      return '<div style="padding:5px 8px;border-radius:6px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:4px;">'
+        + '<div style="display:flex;align-items:center;gap:6px;">'
+        + '<span style="font-size:10px;font-weight:700;color:' + col + ';">' + typeLabel + '</span>'
+        + '<span style="font-size:10px;color:var(--text2);">' + (valStr || shares + ' shares') + '</span>'
+        + '<span style="font-size:10px;color:var(--text3);margin-left:auto;">' + daysStr + '</span>'
+        + '</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:1px;">'
+        + lastName + (t.transactionPrice ? ' · $' + t.transactionPrice.toFixed(2) + '/sh' : '') + ' · ' + (t.transactionDate || '')
+        + '</div>'
+        + '</div>';
     }).join('');
 
-    return `<div class="sm-titan-row">
-      <div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">${t.emoji}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">
-          <span style="font-size:13px;font-weight:700;color:var(--text);">${t.name}</span>
-          <span style="font-size:10px;color:var(--text3);">${t.role}</span>
-          <span onclick="openTicker('${t.ticker}')" style="padding:2px 8px;border-radius:10px;background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-bd);font-size:10px;font-weight:700;cursor:pointer;">${t.ticker}</span>
-          ${t.twitter ? `<a href="https://twitter.com/${t.twitter}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">@${t.twitter} ↗</a>` : ''}
-        </div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.55;margin-bottom:4px;">${t.signal}</div>
-        ${trades}
-        <div style="margin-top:6px;"><a href="${t.edgar}" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">SEC Form 4 filings ↗</a></div>
-      </div>
-    </div>`;
-  }).join('');
-
-  container.innerHTML = rows;
+    el.innerHTML = rows;
+  });
 }
 
 // ─── Congress trades loader ──────────────────────────────────────────────────
