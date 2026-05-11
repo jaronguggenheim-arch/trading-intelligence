@@ -1,12 +1,13 @@
 // api/scores.js — Nightly server-side score computation
 // Vercel cron: runs at 02:00 UTC daily (10pm ET, before market open)
 // GET /api/scores  → returns latest pre-computed score snapshot from KV
-// POST /api/scores (cron) → fetches quotes for all 150 stocks, computes L1 momentum,
-//   writes daily snapshot to KV so browsers load pre-computed scores instead of
-//   computing them client-side on page load. History accumulates server-side
-//   even when no browser is open.
+// POST/cron        → fetches live data for all 150 stocks, computes real 5-component
+//                    scores (L1 momentum + L2 insider + L3 analyst + L4 chain + L5 macro),
+//                    generates 3 plain-English signal sentences per stock via Claude Haiku,
+//                    writes everything to KV.
 //
 // Requires env vars: FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN
+// Optional:          ANTHROPIC_API_KEY (enables Claude narrative generation)
 
 export const config = { schedule: '0 2 * * *' };
 
@@ -34,28 +35,57 @@ const ALL_TICKERS = [
   'MELI','SE','FLUT','UPST','LMND'
 ];
 
-// ── Base scores (hardcoded priors — live computation adjusts these) ───────────
-const BASE_SCORES = {
-  NVDA:78,ASML:91,AMD:62,RKLB:67,PLTR:73,TSM:74,SMCI:65,META:64,MSFT:68,GOOGL:60,
-  VST:71,CEG:68,AMAT:66,LRCX:64,MU:75,LMT:59,NOC:57,RTX:61,CRM:72,NOW:70,SNOW:58,
-  CCJ:63,UEC:61,AMZN:65,ARM:69,QCOM:63,AAPL:64,PANW:67,CRWD:70,GEV:72,
-  AVGO:74,MRVL:68,INTC:48,DELL:58,ORCL:76,NET:69,NEE:58,ETN:67,PWR:65,OKLO:63,
-  GD:60,LHX:61,ADBE:62,TSLA:60,NFLX:64,APP:71,ON:62,HPE:55,WDAY:64,COIN:67,
-  KLAC:68,ENTG:64,TER:63,MKSI:61,ONTO:62,V:72,MA:74,PYPL:60,SQ:62,HOOD:63,
-  DDOG:75,MDB:68,ZS:71,ESTC:63,S:66,OKTA:62,FTNT:64,CYBR:65,HUBS:63,SHOP:66,
-  TTD:65,PATH:60,CFLT:64,MCHP:62,TXN:65,MPWR:66,ADI:64,NXPI:63,FSLR:62,ENPH:58,
-  WOLF:52,RIVN:48,ANET:67,PSTG:65,NTAP:60,WDC:62,ISRG:67,VEEV:64,RXRX:59,AMGN:63,
-  UBER:66,SPOT:65,ABNB:62,DIS:58,AXON:69,GTLB:64,TWLO:60,SOFI:62,AFRM:59,NU:64,
-  MRNA:58,REGN:65,DXCM:62,TDOC:52,ILMN:57,
-  ALB:54,SQM:55,LTHM:52,CHPT:46,BLNK:44,
-  BILL:60,ZI:57,MNDY:63,TOST:62,SMAR:60,
-  FORM:59,ACMR:61,CAMT:60,IPGP:58,POWI:60,
-  SOUN:55,AISP:54,IONQ:57,DUOL:65,RBLX:60,
-  EQIX:68,DLR:64,AMT:63,IRM:66,VRT:70,
-  KTOS:64,LDOS:61,BA:57,SAIC:60,HII:58,
-  NIO:46,XPEV:45,LCID:42,F:52,GM:54,
-  ROKU:55,SNAP:52,PINS:57,ZM:51,NTNX:60,
-  MELI:67,SE:61,FLUT:63,UPST:58,LMND:55
+const NAMES = {
+  NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'AMD',RKLB:'Rocket Lab',PLTR:'Palantir',
+  TSM:'Taiwan Semi',SMCI:'Super Micro',META:'Meta',MSFT:'Microsoft',GOOGL:'Alphabet',
+  VST:'Vistra',CEG:'Constellation Energy',AMAT:'Applied Materials',LRCX:'Lam Research',
+  MU:'Micron',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',
+  CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',
+  AMZN:'Amazon',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',
+  CRWD:'CrowdStrike',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell',INTC:'Intel',
+  DELL:'Dell',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',
+  PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',
+  ADBE:'Adobe',TSLA:'Tesla',NFLX:'Netflix',APP:'AppLovin',ON:'ON Semi',
+  HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corp',ENTG:'Entegris',
+  TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation',V:'Visa',
+  MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood',DDOG:'Datadog',
+  MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic',S:'SentinelOne',OKTA:'Okta',
+  FTNT:'Fortinet',CYBR:'CyberArk',HUBS:'HubSpot',SHOP:'Shopify',TTD:'Trade Desk',
+  PATH:'UiPath',CFLT:'Confluent',MCHP:'Microchip',TXN:'Texas Instruments',
+  MPWR:'Monolithic Power',ADI:'Analog Devices',NXPI:'NXP Semi',FSLR:'First Solar',
+  ENPH:'Enphase',WOLF:'Wolfspeed',RIVN:'Rivian',ANET:'Arista Networks',
+  PSTG:'Pure Storage',NTAP:'NetApp',WDC:'Western Digital',ISRG:'Intuitive Surgical',
+  VEEV:'Veeva',RXRX:'Recursion Pharma',AMGN:'Amgen',UBER:'Uber',SPOT:'Spotify',
+  ABNB:'Airbnb',DIS:'Disney',AXON:'Axon',GTLB:'GitLab',TWLO:'Twilio',
+  SOFI:'SoFi',AFRM:'Affirm',NU:'Nu Holdings',MRNA:'Moderna',REGN:'Regeneron',
+  DXCM:'Dexcom',TDOC:'Teladoc',ILMN:'Illumina',ALB:'Albemarle',SQM:'SQM',
+  LTHM:'Livent',CHPT:'ChargePoint',BLNK:'Blink Charging',BILL:'Bill.com',
+  ZI:'ZoomInfo',MNDY:'Monday.com',TOST:'Toast',SMAR:'Smartsheet',FORM:'FormFactor',
+  ACMR:'ACM Research',CAMT:'Camtek',IPGP:'IPG Photonics',POWI:'Power Integrations',
+  SOUN:'SoundHound',AISP:'Airship AI',IONQ:'IonQ',DUOL:'Duolingo',RBLX:'Roblox',
+  EQIX:'Equinix',DLR:'Digital Realty',AMT:'American Tower',IRM:'Iron Mountain',
+  VRT:'Vertiv',KTOS:'Kratos Defense',LDOS:'Leidos',BA:'Boeing',SAIC:'SAIC',
+  HII:'Huntington Ingalls',NIO:'NIO',XPEV:'XPeng',LCID:'Lucid',F:'Ford',GM:'GM',
+  ROKU:'Roku',SNAP:'Snap',PINS:'Pinterest',ZM:'Zoom',NTNX:'Nutanix',
+  MELI:'MercadoLibre',SE:'Sea Limited',FLUT:'Flutter',UPST:'Upstart',LMND:'Lemonade'
+};
+
+// ── Compact supply chain upstream map (for L4 computation) ───────────────────
+// ticker → array of upstream anchor tickers whose momentum drives this stock
+const UPSTREAM_MAP = {
+  ASML:['TSM'], NVDA:['TSM'], AMD:['TSM'], AMAT:['TSM'], LRCX:['TSM'],
+  KLAC:['TSM'], ENTG:['TSM'], SMCI:['NVDA'], MU:['NVDA'],
+  DDOG:['NVDA'], ORCL:['NVDA','MSFT'], NET:['NVDA'], SNOW:['NVDA'],
+  CRM:['NVDA'], CRWD:['NVDA'], PANW:['NVDA'], HUBS:['NVDA'],
+  AVGO:['META'], MRVL:['META'], GEV:['MSFT'], ETN:['MSFT'],
+  PWR:['MSFT'], VST:['MSFT'], CEG:['MSFT'], NEE:['MSFT'],
+  DELL:['NVDA'], HPE:['NVDA'], PSTG:['NVDA'], ANET:['NVDA'],
+  PATH:['MSFT'], WDAY:['MSFT'], NOW:['MSFT'], ADBE:['MSFT'],
+  VRT:['NVDA','MSFT'], EQIX:['NVDA','MSFT'], DLR:['NVDA','MSFT'],
+  SHOP:['AMZN'], UBER:['GOOGL'], ABNB:['GOOGL'],
+  V:['AMZN'], MA:['AMZN'], PYPL:['AMZN'],
+  LMT:['GD'], NOC:['GD'], RTX:['GD'], KTOS:['LMT'], LDOS:['LMT'],
+  CCJ:['CEG'], UEC:['CEG']
 };
 
 // ── Finnhub API helper ────────────────────────────────────────────────────────
@@ -68,6 +98,11 @@ async function fhFetch(path, params, token) {
     if (!r.ok) return null;
     return r.json().catch(() => null);
   } catch (e) { return null; }
+}
+
+function _dateStr(daysOffset = 0) {
+  const d = new Date(Date.now() + daysOffset * 864e5);
+  return d.toISOString().slice(0, 10);
 }
 
 // ── KV helpers ───────────────────────────────────────────────────────────────
@@ -97,78 +132,321 @@ async function kvGet(url, token, key) {
   } catch (e) { return null; }
 }
 
-// ── Score computation (L1 momentum) ─────────────────────────────────────────
-// Takes a live quote and applies momentum boost to the base score.
-// Same logic as initLiveScores() in the browser.
-function computeL1Score(ticker, quote) {
-  const base = BASE_SCORES[ticker] || 55;
-  if (!quote || !quote.c) return base;
+// ── Score computation ─────────────────────────────────────────────────────────
+
+// L1: Price momentum + 52-week position (0–30)
+function computeL1(quote) {
+  if (!quote || !quote.c) return 12;
   const dp = quote.dp || 0;
-  const fromLow = quote.l52 && quote.l52 > 0
-    ? ((quote.c - quote.l52) / (quote.h52 - quote.l52 + 0.01)) * 100
-    : 50;
-  const priceMomentum = dp > 4 ? 8 : dp > 2 ? 5 : dp > 0.5 ? 2
-    : dp < -4 ? -8 : dp < -2 ? -5 : dp < -0.5 ? -2 : 0;
-  const positionBoost = fromLow > 80 ? 4 : fromLow > 60 ? 2 : fromLow < 20 ? -4 : fromLow < 40 ? -2 : 0;
-  return Math.min(99, Math.max(1, base + priceMomentum + positionBoost));
+  const h52 = quote.h || quote.c;
+  const l52 = quote.l || quote.c;
+  const range = h52 - l52;
+  const fromLow = range > 0 ? ((quote.c - l52) / range) * 100 : 50;
+
+  const momentumPts = dp > 4 ? 10 : dp > 2 ? 7 : dp > 0.5 ? 4
+    : dp < -4 ? -4 : dp < -2 ? -2 : dp < -0.5 ? -1 : 0;
+  const positionPts = fromLow > 80 ? 5 : fromLow > 60 ? 3 : fromLow < 20 ? -3 : fromLow < 35 ? -1 : 0;
+  return Math.min(30, Math.max(0, 15 + momentumPts + positionPts));
 }
 
-// ── Main score computation + KV write ────────────────────────────────────────
-async function computeAndStore(fhKey, kvUrl, kvToken) {
-  const today = new Date().toISOString().slice(0, 10);
-  const scores = {};
-  const meta = {}; // dp%, price for each ticker
+// L2: Insider cluster strength (0–25)
+function computeL2(insiderData) {
+  const txns = (insiderData?.data || [])
+    .filter(t => !t.isDerivative && t.change !== 0)
+    .filter(t => (Date.now() - new Date(t.transactionDate)) / 864e5 <= 90)
+    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
 
-  // Fetch quotes in batches of 10 (Finnhub free tier: ~30 req/s)
-  const BATCH = 10;
+  const buys = txns.filter(t => t.change > 0);
+  const sells = txns.filter(t => t.change < 0);
+  const recentBuys = buys.filter(t => (Date.now() - new Date(t.transactionDate)) / 864e5 <= 30);
+  const uniqueBuyers = new Set(buys.map(t => t.name)).size;
+  const totalBuyVal = buys.reduce((s, t) => s + Math.abs(t.change * (t.transactionPrice || 0)), 0);
+
+  // Strong cluster: 2+ executives buying in last 30 days
+  if (uniqueBuyers >= 2 && recentBuys.length >= 2) return 23;
+  // Single large buy ($1M+) recent
+  if (recentBuys.length >= 1 && totalBuyVal >= 1e6) return 19;
+  // Some buying, no recent sells
+  if (buys.length >= 1 && sells.length === 0) return 16;
+  // Some buying with some selling
+  if (buys.length >= 1) return 13;
+  // Net selling
+  if (sells.length >= 2 && buys.length === 0) return 5;
+  if (sells.length >= 1 && buys.length === 0) return 8;
+  // No activity — neutral
+  return 12;
+}
+
+// L3: Analyst consensus strength (0–25)
+function computeL3(recommendations) {
+  if (!Array.isArray(recommendations) || !recommendations[0]) return 12;
+  const r = recommendations[0];
+  const { buy = 0, hold = 0, sell = 0, strongBuy = 0, strongSell = 0 } = r;
+  const total = buy + hold + sell + strongBuy + strongSell;
+  if (!total) return 12;
+
+  const bullish = buy + strongBuy;
+  const bearish = sell + strongSell;
+  const bullPct = bullish / total;
+
+  // Check if consensus is improving vs previous period
+  const prev = recommendations[1];
+  const prevBullish = prev ? (prev.buy || 0) + (prev.strongBuy || 0) : bullish;
+  const improving = bullish > prevBullish;
+
+  if (bullPct >= 0.80 && improving) return 24;
+  if (bullPct >= 0.80) return 21;
+  if (bullPct >= 0.65 && improving) return 19;
+  if (bullPct >= 0.65) return 17;
+  if (bullPct >= 0.50) return 14;
+  if (bullPct >= 0.35) return 10;
+  return 6;
+}
+
+// L4: Supply chain window activity (0–10)
+// Based on whether upstream anchors have significant positive momentum
+function computeL4(ticker, allQuotes) {
+  const upstreams = UPSTREAM_MAP[ticker] || [];
+  if (!upstreams.length) return 5;
+
+  const activeBull = upstreams.filter(up => (allQuotes[up]?.dp || 0) > 1.5);
+  const activeBear = upstreams.filter(up => (allQuotes[up]?.dp || 0) < -1.5);
+
+  if (activeBull.length >= 2) return 9;
+  if (activeBull.length === 1) return 7;
+  if (activeBear.length >= 1) return 3;
+  return 5;
+}
+
+// L5: Macro regime (0–10) — derived from SPY momentum
+function computeL5(spyDp) {
+  if (spyDp > 1.5) return 9;
+  if (spyDp > 0.5) return 7;
+  if (spyDp > -0.5) return 5;
+  if (spyDp > -1.5) return 3;
+  return 1;
+}
+
+// ── Human-readable summaries for narrative generation ────────────────────────
+function insiderSummary(insiderData) {
+  const txns = (insiderData?.data || [])
+    .filter(t => !t.isDerivative && t.change !== 0)
+    .filter(t => (Date.now() - new Date(t.transactionDate)) / 864e5 <= 90)
+    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+
+  const buys = txns.filter(t => t.change > 0);
+  if (!buys.length) {
+    const sells = txns.filter(t => t.change < 0);
+    return sells.length ? `${sells.length} insider sell(s) in last 90 days, no buys` : 'No open market activity in last 90 days';
+  }
+  const val = buys.reduce((s, t) => s + Math.abs(t.change * (t.transactionPrice || 0)), 0);
+  const valStr = val >= 1e6 ? '$' + (val / 1e6).toFixed(1) + 'M' : val >= 1e3 ? '$' + Math.round(val / 1e3) + 'K' : '';
+  const names = [...new Set(buys.map(t => t.name))].slice(0, 2).map(n => n.split(/\s+/).pop()).join(' & ');
+  const daysAgo = Math.round((Date.now() - new Date(buys[0].transactionDate)) / 864e5);
+  return `${names} bought ${valStr} (${daysAgo}d ago) — ${new Set(buys.map(t => t.name)).size} unique buyer(s)`;
+}
+
+function analystSummary(recommendations) {
+  if (!Array.isArray(recommendations) || !recommendations[0]) return 'No recent analyst data';
+  const r = recommendations[0];
+  const { buy = 0, hold = 0, sell = 0, strongBuy = 0, strongSell = 0 } = r;
+  const total = buy + hold + sell + strongBuy + strongSell;
+  const bullish = buy + strongBuy;
+  const bullPct = total ? Math.round((bullish / total) * 100) : 50;
+  const prev = recommendations[1];
+  const prevBull = prev ? (prev.buy || 0) + (prev.strongBuy || 0) : bullish;
+  const trend = bullish > prevBull ? ' (improving)' : bullish < prevBull ? ' (deteriorating)' : '';
+  return `${bullish}/${total} analysts bullish (${bullPct}%)${trend} — ${strongBuy} strong buy`;
+}
+
+function chainSummary(ticker, allQuotes) {
+  const upstreams = UPSTREAM_MAP[ticker] || [];
+  if (!upstreams.length) return 'No mapped upstream signals';
+  const active = upstreams.filter(up => Math.abs(allQuotes[up]?.dp || 0) > 1.5);
+  if (!active.length) return `Upstream (${upstreams.join(', ')}) within normal range`;
+  return active.map(up => {
+    const dp = allQuotes[up]?.dp || 0;
+    return `${up} ${dp > 0 ? '+' : ''}${dp.toFixed(1)}% → lag window active`;
+  }).join('; ');
+}
+
+// ── Claude narrative generation ───────────────────────────────────────────────
+async function generateSignalNarrative(ticker, name, data, anthropicKey) {
+  if (!anthropicKey) return null;
+
+  const { score, l1, l2, l3, l4, l5, dp, insiderStr, analystStr, chainStr } = data;
+  const prompt = `You generate market intelligence signal observations.
+
+Stock: ${ticker} (${name}) | Score: ${score}/100
+Components — L1 market:${l1}/30, L2 insider:${l2}/25, L3 analyst:${l3}/25, L4 chain:${l4}/10, L5 macro:${l5}/10
+Price: ${dp >= 0 ? '+' : ''}${(dp || 0).toFixed(1)}% today
+Insider: ${insiderStr}
+Analyst: ${analystStr}
+Supply chain: ${chainStr}
+
+Write exactly 3 signal observations. Rules:
+- Specific numbers, not vague statements
+- State what the signal implies for price over 2-8 weeks
+- Plain English — smart colleague, not Bloomberg terminal
+- No hedging words (may, could, might)
+- Each sentence = one distinct point
+
+Return ONLY: ["observation1", "observation2", "observation3"]`;
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 256,
+        messages: [{ role: 'user', content: prompt }]
+      }),
+      signal: AbortSignal.timeout(12000)
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const text = (j.content?.[0]?.text || '').trim();
+    const match = text.match(/\[[\s\S]*?\]/);
+    if (match) {
+      const arr = JSON.parse(match[0]);
+      return Array.isArray(arr) && arr.length === 3 ? arr : null;
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+// ── Main computation ──────────────────────────────────────────────────────────
+async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
+  const today = new Date().toISOString().slice(0, 10);
+
+  // ── Phase 1: Fetch all data in batches ─────────────────────────────────────
+  const quoteMap = {};
+  const insiderMap = {};
+  const recMap = {};
+
+  // Fetch SPY for L5 macro baseline
+  const spyQuote = await fhFetch('quote', { symbol: 'SPY' }, fhKey);
+  const spyDp = spyQuote?.dp || 0;
+
+  const BATCH = 8;
   for (let i = 0; i < ALL_TICKERS.length; i += BATCH) {
     const batch = ALL_TICKERS.slice(i, i + BATCH);
-    const results = await Promise.allSettled(
-      batch.map(t => fhFetch('quote', { symbol: t }, fhKey))
-    );
-    results.forEach((r, idx) => {
-      const ticker = batch[idx];
-      const q = r.status === 'fulfilled' ? r.value : null;
-      scores[ticker] = computeL1Score(ticker, q);
-      if (q && q.c) {
-        meta[ticker] = {
-          price: q.c,
-          dp: q.dp || 0,
-          h52: q.h52 || 0,
-          l52: q.l52 || 0
-        };
-      }
+
+    // Fetch quote + recommendation + insider in parallel per batch
+    const [quotes, recs, insiders] = await Promise.all([
+      Promise.allSettled(batch.map(t => fhFetch('quote', { symbol: t }, fhKey))),
+      Promise.allSettled(batch.map(t => fhFetch('stock/recommendation', { symbol: t }, fhKey))),
+      Promise.allSettled(batch.map(t => fhFetch('stock/insider-transactions', {
+        symbol: t, from: _dateStr(-90), to: _dateStr(0)
+      }, fhKey)))
+    ]);
+
+    batch.forEach((t, idx) => {
+      if (quotes[idx]?.status === 'fulfilled') quoteMap[t] = quotes[idx].value;
+      if (recs[idx]?.status === 'fulfilled') recMap[t] = recs[idx].value;
+      if (insiders[idx]?.status === 'fulfilled') insiderMap[t] = insiders[idx].value;
     });
-    // Stagger batches to avoid rate limiting
+
+    // Stagger batches — 3 API calls per ticker × 8 tickers = 24 calls per batch
+    // Finnhub free tier: 30/s, so ~800ms stagger keeps us well within limits
     if (i + BATCH < ALL_TICKERS.length) {
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 900));
     }
   }
 
-  const snapshot = { date: today, scores, meta, computedAt: new Date().toISOString() };
+  // ── Phase 2: Compute 5-component scores ────────────────────────────────────
+  const scores = {};
+  const components = {};
+  const meta = {};
+  const narrativeInputs = {};
 
-  // Write latest scores (no expiry — always serve latest)
+  for (const ticker of ALL_TICKERS) {
+    const q = quoteMap[ticker];
+    const l1 = computeL1(q);
+    const l2 = computeL2(insiderMap[ticker]);
+    const l3 = computeL3(recMap[ticker]);
+    const l4 = computeL4(ticker, quoteMap);
+    const l5 = computeL5(spyDp);
+    const score = Math.min(99, Math.max(1, l1 + l2 + l3 + l4 + l5));
+
+    scores[ticker] = score;
+    components[ticker] = { l1, l2, l3, l4, l5 };
+    if (q && q.c) {
+      meta[ticker] = { price: q.c, dp: q.dp || 0, h52: q.h || 0, l52: q.l || 0 };
+    }
+
+    const insiderStr = insiderSummary(insiderMap[ticker]);
+    const analystStr = analystSummary(recMap[ticker]);
+    const chainStr = chainSummary(ticker, quoteMap);
+    narrativeInputs[ticker] = {
+      score, l1, l2, l3, l4, l5,
+      dp: q?.dp || 0,
+      insiderStr, analystStr, chainStr
+    };
+  }
+
+  // ── Phase 3: Generate Claude narratives (batched, parallel within each batch)
+  const signals = {};
+  if (anthropicKey) {
+    const ANTHRO_BATCH = 15;
+    for (let i = 0; i < ALL_TICKERS.length; i += ANTHRO_BATCH) {
+      const batch = ALL_TICKERS.slice(i, i + ANTHRO_BATCH);
+      const results = await Promise.allSettled(
+        batch.map(t => generateSignalNarrative(t, NAMES[t] || t, narrativeInputs[t], anthropicKey))
+      );
+      results.forEach((r, idx) => {
+        if (r.status === 'fulfilled' && r.value) signals[batch[idx]] = r.value;
+      });
+      // Brief pause between Anthropic batches to respect rate limits
+      if (i + ANTHRO_BATCH < ALL_TICKERS.length) {
+        await new Promise(r => setTimeout(r, 200));
+      }
+    }
+  }
+
+  // ── Phase 4: Write to KV ──────────────────────────────────────────────────
+  const snapshot = {
+    date: today,
+    scores,
+    components,
+    meta,
+    signals,
+    spyDp,
+    computedAt: new Date().toISOString()
+  };
+
   await kvSet(kvUrl, kvToken, 'ti:scores:latest', snapshot);
-
-  // Write daily history entry (keyed by date, expire after 60 days)
   await kvSet(kvUrl, kvToken, `ti:scores:daily:${today}`, snapshot, 60 * 86400);
 
-  // Maintain rolling index of available daily keys (for backtest lookups)
+  // Update rolling daily index (for backtest lookups)
   const indexKey = 'ti:scores:daily:index';
   let index = await kvGet(kvUrl, kvToken, indexKey) || [];
   if (!index.includes(today)) {
     index = [...index, today].sort();
-    // Keep last 60 entries
     if (index.length > 60) index = index.slice(-60);
     await kvSet(kvUrl, kvToken, indexKey, index);
   }
 
-  return { date: today, tickers: Object.keys(scores).length, snapshot };
+  return {
+    date: today,
+    tickers: Object.keys(scores).length,
+    withSignals: Object.keys(signals).length,
+    scoreRange: {
+      min: Math.min(...Object.values(scores)),
+      max: Math.max(...Object.values(scores)),
+      avg: Math.round(Object.values(scores).reduce((s, v) => s + v, 0) / Object.values(scores).length)
+    }
+  };
 }
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
-  const { FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN } = process.env;
+  const { FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN, ANTHROPIC_API_KEY } = process.env;
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -181,23 +459,20 @@ export default async function handler(req, res) {
     }
     const latest = await kvGet(KV_REST_API_URL, KV_REST_API_TOKEN, 'ti:scores:latest');
     if (!latest) {
-      return res.status(200).json({ ok: false, reason: 'No snapshot yet', scores: {} });
+      return res.status(200).json({ ok: false, reason: 'No snapshot yet — cron runs at 2am UTC', scores: {} });
     }
-    // Also include the daily index for backtest use
     const index = await kvGet(KV_REST_API_URL, KV_REST_API_TOKEN, 'ti:scores:daily:index') || [];
     return res.status(200).json({ ok: true, ...latest, dailyIndex: index });
   }
 
   // ── POST/cron: compute and store ──────────────────────────────────────────
   if (!FH_KEY) return res.status(500).json({ error: 'FH_KEY not configured' });
-  if (!KV_REST_API_URL || !KV_REST_API_TOKEN) {
-    return res.status(500).json({ error: 'KV not configured' });
-  }
+  if (!KV_REST_API_URL || !KV_REST_API_TOKEN) return res.status(500).json({ error: 'KV not configured' });
 
   try {
-    const result = await computeAndStore(FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN);
+    const result = await computeAndStore(FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN, ANTHROPIC_API_KEY || null);
     return res.status(200).json({ ok: true, ...result });
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message, stack: e.stack?.slice(0, 400) });
   }
 }
