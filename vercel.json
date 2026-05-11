@@ -5,7 +5,8 @@
     "api/sync.js":       { "memory": 128, "maxDuration": 10 },
     "api/subscribe.js":  { "memory": 128, "maxDuration": 10 },
     "api/digest.js":     { "memory": 256, "maxDuration": 30 },
-    "api/scores.js":     { "memory": 256, "maxDuration": 60 }
+    "api/scores.js":     { "memory": 256, "maxDuration": 60 },
+    "api/funds.js":      { "memory": 128, "maxDuration": 15 }
   },
   "crons": [
     {
