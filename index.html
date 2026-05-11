@@ -2391,7 +2391,7 @@ const S=(function(){
     };
   }catch(e){return def;}
 })();
-const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SMCI:52,AMAT:65,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77,AVGO:81,MRVL:74,INTC:43,DELL:70,ORCL:82,NET:77,NEE:63,ETN:72,PWR:69,OKLO:80,GD:65,LHX:62,ADBE:57,TSLA:54,NFLX:73,APP:86,ON:60,HPE:64,WDAY:68,COIN:75,KLAC:68,ENTG:62,TER:65,MKSI:58,ONTO:55,V:72,MA:74,PYPL:55,SQ:58,HOOD:62,DDOG:75,MDB:68,ZS:71,ESTC:62};
+const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SMCI:52,AMAT:65,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77,AVGO:81,MRVL:74,INTC:43,DELL:70,ORCL:82,NET:77,NEE:63,ETN:72,PWR:69,OKLO:80,GD:65,LHX:62,ADBE:57,TSLA:54,NFLX:73,APP:86,ON:60,HPE:64,WDAY:68,COIN:75,KLAC:68,ENTG:62,TER:65,MKSI:58,ONTO:55,V:72,MA:74,PYPL:55,SQ:58,HOOD:62,DDOG:75,MDB:68,ZS:71,ESTC:62,S:68,OKTA:58,FTNT:72,CYBR:65,HUBS:64,SHOP:71,TTD:63,PATH:55,CFLT:58,MCHP:62,TXN:65,MPWR:74,ADI:68,NXPI:63,FSLR:68,ENPH:52,WOLF:45,RIVN:48,ANET:78,PSTG:72,NTAP:65,WDC:58,ISRG:74,VEEV:67,RXRX:52,AMGN:61,UBER:69,SPOT:65,ABNB:62,DIS:55,AXON:73,GTLB:60,TWLO:54,SOFI:56,AFRM:58,NU:64};
 
 // ── LIVE SCORE ENGINE ─────────────────────────────────────────────────────────
 // Computes a dynamic convergence score from Finnhub data (requires API key).
@@ -2553,7 +2553,7 @@ async function initLiveScores() {
   if (!S.fh && !IS_VERCEL) return;
   // All featured tickers — compute L1 (price momentum, RSI, volume) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC'];
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC','S','OKTA','FTNT','CYBR','HUBS','SHOP','TTD','PATH','CFLT','MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH','WOLF','RIVN','ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN','UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU'];
   // Stamp live scores indicator in morning brief picks card
   const lbl = document.getElementById('morning-picks-lbl');
   if (lbl) lbl.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● computing live scores…</span>';
@@ -2816,7 +2816,7 @@ function startGlobalRefresh() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── LIVE TICKER STRIP ───────────────────────────────────────────────────────
-const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC'];
+const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD','DDOG','MDB','ZS','ESTC','S','OKTA','FTNT','CYBR','HUBS','SHOP','TTD','PATH','CFLT','MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH','WOLF','RIVN','ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN','UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU'];
 let _tickerStripTimer = null;
 
 async function renderLiveTickerStrip() {
@@ -3910,7 +3910,7 @@ function markSagePick() {
 }
 
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
-const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',CRWD:'CrowdStrike',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell Technology',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',ADBE:'Adobe',TSLA:'Tesla',NFLX:'Netflix',APP:'AppLovin',ON:'ON Semiconductor',HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corporation',ENTG:'Entegris',TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation',V:'Visa',MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood Markets',DDOG:'Datadog',MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic NV'};
+const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',CRWD:'CrowdStrike',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell Technology',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',ADBE:'Adobe',TSLA:'Tesla',NFLX:'Netflix',APP:'AppLovin',ON:'ON Semiconductor',HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corporation',ENTG:'Entegris',TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation',V:'Visa',MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood Markets',DDOG:'Datadog',MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic NV',S:'SentinelOne',OKTA:'Okta',FTNT:'Fortinet',CYBR:'CyberArk',HUBS:'HubSpot',SHOP:'Shopify',TTD:'The Trade Desk',PATH:'UiPath',CFLT:'Confluent',MCHP:'Microchip Technology',TXN:'Texas Instruments',MPWR:'Monolithic Power Systems',ADI:'Analog Devices',NXPI:'NXP Semiconductors',FSLR:'First Solar',ENPH:'Enphase Energy',WOLF:'Wolfspeed',RIVN:'Rivian Automotive',PSTG:'Pure Storage',NTAP:'NetApp',WDC:'Western Digital',ISRG:'Intuitive Surgical',VEEV:'Veeva Systems',RXRX:'Recursion Pharma',AMGN:'Amgen',UBER:'Uber Technologies',SPOT:'Spotify',ABNB:'Airbnb',DIS:'Walt Disney',AXON:'Axon Enterprise',GTLB:'GitLab',TWLO:'Twilio',SOFI:'SoFi Technologies',AFRM:'Affirm',NU:'Nu Holdings'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
 const MARKETS={
   indices:[
@@ -4046,7 +4046,14 @@ const SECTOR_DATA={
     {t:'ENTG',n:'Entegris',chg:'+0.9%',up:true},
     {t:'TER',n:'Teradyne',chg:'+1.2%',up:true},
     {t:'MKSI',n:'MKS Instruments',chg:'+0.8%',up:true},
-    {t:'ONTO',n:'Onto Innovation',chg:'+2.1%',up:true}
+    {t:'ONTO',n:'Onto Innovation',chg:'+2.1%',up:true},
+    {t:'MCHP',n:'Microchip Tech',chg:'+0.7%',up:true},
+    {t:'TXN',n:'Texas Instruments',chg:'+0.9%',up:true},
+    {t:'MPWR',n:'Monolithic Power',chg:'+1.6%',up:true},
+    {t:'ADI',n:'Analog Devices',chg:'+0.8%',up:true},
+    {t:'NXPI',n:'NXP Semiconductors',chg:'+1.1%',up:true},
+    {t:'WOLF',n:'Wolfspeed',chg:'-0.6%',up:false},
+    {t:'WDC',n:'Western Digital',chg:'+1.3%',up:true}
   ]},
   Cloud:{stocks:[
     {t:'MSFT',n:'Microsoft',chg:'+0.7%',up:true},
@@ -4060,7 +4067,17 @@ const SECTOR_DATA={
     {t:'WDAY',n:'Workday',chg:'+1.4%',up:true},
     {t:'DELL',n:'Dell',chg:'+1.8%',up:true},
     {t:'HPE',n:'HPE',chg:'+1.0%',up:true},
-    {t:'ADBE',n:'Adobe',chg:'+1.1%',up:true}
+    {t:'ADBE',n:'Adobe',chg:'+1.1%',up:true},
+    {t:'ANET',n:'Arista Networks',chg:'+1.8%',up:true},
+    {t:'PSTG',n:'Pure Storage',chg:'+1.4%',up:true},
+    {t:'NTAP',n:'NetApp',chg:'+0.9%',up:true},
+    {t:'HUBS',n:'HubSpot',chg:'+1.2%',up:true},
+    {t:'SHOP',n:'Shopify',chg:'+2.1%',up:true},
+    {t:'TTD',n:'The Trade Desk',chg:'+0.8%',up:true},
+    {t:'PATH',n:'UiPath',chg:'+0.6%',up:true},
+    {t:'CFLT',n:'Confluent',chg:'+1.1%',up:true},
+    {t:'GTLB',n:'GitLab',chg:'+0.9%',up:true},
+    {t:'TWLO',n:'Twilio',chg:'+0.7%',up:true}
   ]},
   Energy:{stocks:[
     {t:'VST',n:'Vistra Energy',chg:'-0.2%',up:false},
@@ -4071,7 +4088,9 @@ const SECTOR_DATA={
     {t:'PWR',n:'Quanta Services',chg:'+1.2%',up:true},
     {t:'OKLO',n:'Oklo',chg:'+4.2%',up:true},
     {t:'CCJ',n:'Cameco',chg:'+2.1%',up:true},
-    {t:'UEC',n:'Uranium Energy',chg:'+3.4%',up:true}
+    {t:'UEC',n:'Uranium Energy',chg:'+3.4%',up:true},
+    {t:'FSLR',n:'First Solar',chg:'+1.4%',up:true},
+    {t:'ENPH',n:'Enphase Energy',chg:'-0.8%',up:false}
   ]},
   Defense:{stocks:[
     {t:'LMT',n:'Lockheed Martin',chg:'+1.4%',up:true},
@@ -4086,7 +4105,11 @@ const SECTOR_DATA={
     {t:'PANW',n:'Palo Alto Networks',chg:'+2.1%',up:true},
     {t:'CRWD',n:'CrowdStrike',chg:'+1.9%',up:true},
     {t:'NET',n:'Cloudflare',chg:'+1.4%',up:true},
-    {t:'PLTR',n:'Palantir',chg:'+0.8%',up:true}
+    {t:'PLTR',n:'Palantir',chg:'+0.8%',up:true},
+    {t:'FTNT',n:'Fortinet',chg:'+1.2%',up:true},
+    {t:'OKTA',n:'Okta',chg:'+0.8%',up:true},
+    {t:'S',n:'SentinelOne',chg:'+1.4%',up:true},
+    {t:'CYBR',n:'CyberArk',chg:'+0.9%',up:true}
   ]},
   Consumer:{stocks:[
     {t:'AAPL',n:'Apple',chg:'+0.8%',up:true},
@@ -4094,20 +4117,42 @@ const SECTOR_DATA={
     {t:'NFLX',n:'Netflix',chg:'+1.8%',up:true},
     {t:'ADBE',n:'Adobe',chg:'+1.1%',up:true},
     {t:'APP',n:'AppLovin',chg:'+4.8%',up:true},
-    {t:'QCOM',n:'Qualcomm',chg:'+0.9%',up:true}
+    {t:'QCOM',n:'Qualcomm',chg:'+0.9%',up:true},
+    {t:'UBER',n:'Uber',chg:'+1.6%',up:true},
+    {t:'SPOT',n:'Spotify',chg:'+1.2%',up:true},
+    {t:'ABNB',n:'Airbnb',chg:'+0.8%',up:true},
+    {t:'DIS',n:'Walt Disney',chg:'+0.4%',up:true},
+    {t:'RIVN',n:'Rivian',chg:'-1.2%',up:false}
   ]},
   Fintech:{stocks:[
     {t:'COIN',n:'Coinbase',chg:'+5.1%',up:true},
     {t:'V',n:'Visa',chg:'+0.1%',up:true},
     {t:'MA',n:'Mastercard',chg:'-0.3%',up:false},
     {t:'PYPL',n:'PayPal',chg:'-0.8%',up:false},
-    {t:'SQ',n:'Block',chg:'-0.4%',up:false}
+    {t:'SQ',n:'Block',chg:'-0.4%',up:false},
+    {t:'SOFI',n:'SoFi Technologies',chg:'+0.8%',up:true},
+    {t:'AFRM',n:'Affirm',chg:'+1.4%',up:true},
+    {t:'NU',n:'Nu Holdings',chg:'+1.1%',up:true}
   ]},
   Biotech:{stocks:[
     {t:'MRNA',n:'Moderna',chg:'-2.1%',up:false},
     {t:'BNTX',n:'BioNTech',chg:'-1.4%',up:false},
     {t:'REGN',n:'Regeneron',chg:'-0.8%',up:false},
-    {t:'VRTX',n:'Vertex',chg:'-1.2%',up:false}
+    {t:'VRTX',n:'Vertex',chg:'-1.2%',up:false},
+    {t:'ISRG',n:'Intuitive Surgical',chg:'+1.4%',up:true},
+    {t:'VEEV',n:'Veeva Systems',chg:'+0.9%',up:true},
+    {t:'RXRX',n:'Recursion Pharma',chg:'+2.1%',up:true},
+    {t:'AMGN',n:'Amgen',chg:'+0.6%',up:true}
+  ]},
+  GrowthTech:{stocks:[
+    {t:'AXON',n:'Axon Enterprise',chg:'+1.8%',up:true},
+    {t:'SHOP',n:'Shopify',chg:'+2.1%',up:true},
+    {t:'HUBS',n:'HubSpot',chg:'+1.2%',up:true},
+    {t:'TTD',n:'The Trade Desk',chg:'+0.8%',up:true},
+    {t:'PATH',n:'UiPath',chg:'+0.6%',up:true},
+    {t:'CFLT',n:'Confluent',chg:'+1.1%',up:true},
+    {t:'GTLB',n:'GitLab',chg:'+0.9%',up:true},
+    {t:'TWLO',n:'Twilio',chg:'+0.7%',up:true}
   ]},
   Luxury:{stocks:[
     {t:'MC',n:'LVMH',chg:'+1.1%',up:true},
@@ -5004,7 +5049,12 @@ function buildTickerScrollTrack() {
     'AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO',
     'GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN',
     'KLAC','ENTG','TER','MKSI','ONTO',
-  'V','MA','PYPL','SQ','HOOD'];
+  'V','MA','PYPL','SQ','HOOD',
+  'DDOG','MDB','ZS','ESTC',
+  'S','OKTA','FTNT','CYBR','HUBS','SHOP','TTD','PATH','CFLT',
+  'MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH','WOLF','RIVN',
+  'ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN',
+  'UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU'];
   const sorted = OUR_TICKERS.filter(t => SCORES[t] !== undefined).sort((a, b) => (SCORES[b]||0) - (SCORES[a]||0));
   const buildPill = function(sym) {
     const sc = SCORES[sym] || 50;
@@ -9857,7 +9907,11 @@ const DE_TICKERS = ['NVDA','ASML','AMD','PLTR','TSM','SMCI','META','MSFT','GOOGL
   'DDOG','MDB','ZS','ESTC',
   'RKLB','AMAT','LRCX','CEG','VST','GEV','NEE','ETN','PWR','OKLO',
   'CCJ','UEC','LMT','NOC','RTX','GD','LHX','SNOW','ARM','QCOM',
-  'NET','DELL','INTC','ADBE','TSLA','NFLX','ON','HPE','WDAY','COIN'];
+  'NET','DELL','INTC','ADBE','TSLA','NFLX','ON','HPE','WDAY','COIN',
+  'S','OKTA','FTNT','CYBR','HUBS','SHOP','TTD','PATH','CFLT',
+  'MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH','WOLF','RIVN',
+  'ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN',
+  'UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU'];
 
 // Analyst cascade map: when anchor is upgraded, these downstream stocks enter follow-on window
 // Based on supply chain lags — analyst revisions typically cascade within 5–14 days
