@@ -728,6 +728,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- SAGE MODE CARD -->
   <div id="sage-mode-card" style="margin-bottom:14px;"></div>
 
+  <!-- MORNING SUBSCRIBE CTA -->
+  <div id="morning-subscribe-cta" style="margin-bottom:14px;"></div>
+
   <!-- LIVE NEWS HEADER -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
     <div>
@@ -934,6 +937,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
     </div>
     <div id="velocity-leaderboard-body"></div>
+  </div>
+
+  <!-- SCORE TRUTH TEST -->
+  <div class="card" id="score-backtest-card" style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+      <div>
+        <div class="card-lbl" style="margin-bottom:2px;">Signal truth test — do high scores predict returns?</div>
+        <div style="font-size:10px;color:var(--text3);">Comparing 30-day price returns: high-conviction stocks (score 70+) vs low-conviction (score &lt;55). Live from Finnhub.</div>
+      </div>
+      <button onclick="_runScoreBacktest(true)" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Run</button>
+    </div>
+    <div id="score-backtest-body" style="font-size:11px;color:var(--text3);padding:8px 0;">Loading truth test…</div>
   </div>
 
   <!-- 5-LAYER BREAKDOWN EXPLORER -->
@@ -3037,59 +3052,117 @@ function getSagePick() {
   const td = (typeof TICKER_DATA !== 'undefined') ? TICKER_DATA : {};
   const cats = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS : {};
 
-  // All eligible stocks sorted by score — no LAYER_DATA filter so all 30 can be picked
+  // All eligible stocks sorted by score
   const allScored = Object.entries(SCORES)
     .filter(([t, s]) => s && NAMES[t] && !SIGNAL_NODES.has(t))
     .sort(([,a],[,b]) => b - a);
   if (!allScored.length) return null;
 
   const [ticker, score] = allScored[0];
-  // Runner = #2 from all stocks (not just LAYER_DATA-filtered)
   const runnerEntry = allScored.find(([t]) => t !== ticker);
   const runner = runnerEntry ? { ticker: runnerEntry[0], score: runnerEntry[1] } : null;
+  const name = NAMES[ticker] || ticker;
 
   // Build narrative — live signals first, then LAYER_DATA, then news fallback
   let reasons = [];
   let liveSignals = [];
 
-  // 1. Live insider signal from INSIDER_CACHE
-  const icache = typeof INSIDER_CACHE !== 'undefined' && INSIDER_CACHE[ticker];
-  if (icache && icache.txns && typeof computeInsiderSignal !== 'undefined') {
-    const isig = computeInsiderSignal(icache.txns);
-    if (isig.dir === 'positive') liveSignals.push('Insider signal: ' + isig.label);
+  // ── Helper: format dollar value ─────────────────────────────────────────
+  function _fmtVal(v) {
+    if (v >= 1e6) return '$' + (v/1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+    return '$' + Math.round(v);
+  }
+  function _daysAgoStr(dateStr) {
+    const d = Math.round((Date.now() - new Date(dateStr)) / 864e5);
+    return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago';
   }
 
-  // 2. Analyst cascade — is this stock downstream from a recently-upgraded anchor?
-  if (typeof ANALYST_CASCADE_MAP !== 'undefined') {
-    const l3key = 'l3_' + new Date().toDateString();
-    const l3data = typeof DE_CACHE !== 'undefined' && DE_CACHE[l3key] && DE_CACHE[l3key].data;
-    if (l3data) {
-      Object.entries(ANALYST_CASCADE_MAP).forEach(([anchor, cfg]) => {
-        if (cfg.downstream.includes(ticker)) {
-          const anchorSig = l3data[anchor];
-          if (anchorSig && anchorSig.ups && anchorSig.ups.length >= 2) {
-            liveSignals.push(anchor + ' upgraded (' + anchorSig.ups.length + ' analysts) — ' + ticker + ' in follow-on window (' + cfg.lag + ')');
-          }
-        }
-      });
+  // ── 1. Live insider signal — extract actual names and dollar amounts ──────
+  const icache = typeof INSIDER_CACHE !== 'undefined' && INSIDER_CACHE[ticker];
+  if (icache && icache.txns && icache.txns.length) {
+    const recent90 = icache.txns.filter(t => new Date(t.transactionDate) > new Date(Date.now() - 90*864e5));
+    const recentBuys = recent90.filter(t => t.change > 0);
+    if (recentBuys.length >= 1) {
+      const uniqueNames = [...new Set(recentBuys.map(t => t.name))].slice(0, 2);
+      const totalVal = recentBuys.reduce((s, t) => s + Math.abs(t.change * (t.transactionPrice || 0)), 0);
+      const valStr = totalVal > 0 ? ' worth ' + _fmtVal(totalVal) : '';
+      const latestDate = recentBuys[0].transactionDate;
+      const daysStr = _daysAgoStr(latestDate);
+      // Format last name only for readability
+      const fmtName = n => (n || '').split(/\s+/).pop();
+      if (uniqueNames.length >= 2) {
+        const noSells = recentBuys.length === recent90.filter(t => t.change < 0).length + recentBuys.length;
+        liveSignals.push(
+          fmtName(uniqueNames[0]) + ' & ' + fmtName(uniqueNames[1]) + ' (insiders) bought' + valStr + ' ' + daysStr
+          + ' — cluster buy signal, historically bullish for ' + ticker + '.'
+        );
+      } else if (uniqueNames.length === 1) {
+        const noSell = recent90.filter(t => t.change < 0).length === 0;
+        liveSignals.push(
+          uniqueNames[0] + ' bought' + valStr + ' ' + daysStr
+          + (noSell ? ' — no selling in the cohort.' : '.')
+        );
+      }
     }
   }
 
-  // 3. Supply chain propagation — is this stock downstream from an anchor mover today?
-  const l4key = 'l4_' + new Date().toDateString();
-  const l4data = typeof DE_CACHE !== 'undefined' && DE_CACHE[l4key] && DE_CACHE[l4key].data;
-  if (l4data && l4data.movers && l4data.downstreamOf) {
-    l4data.movers.forEach(([anchor, q]) => {
-      const downstream = l4data.downstreamOf[anchor] || [];
-      const match = downstream.find(d => d.sym === ticker && d.direction === (q.dp >= 0 ? 'positive' : 'negative'));
-      if (match) {
-        const dpStr = (q.dp >= 0 ? '+' : '') + q.dp.toFixed(1) + '%';
-        liveSignals.push('Supply chain window: ' + anchor + ' ' + dpStr + ' today. ' + match.desc);
+  // ── 2. Live analyst upgrades — extract firm names and price targets ───────
+  const analystSig = window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.signals
+    && window._ANALYST_SIGNALS.signals[ticker];
+  if (analystSig && analystSig.ups && analystSig.ups.length >= 1) {
+    const topHl  = analystSig.ups[0].headline || '';
+    const upCount = analystSig.ups.length;
+    // Try to extract a price target from the headline
+    const ptMatch = topHl.match(/\$[\d,]+/g);
+    const ptStr = ptMatch ? ' (PT ' + ptMatch[ptMatch.length - 1] + ')' : '';
+    // Try to extract the firm name — e.g. "Goldman raises…", "Morgan Stanley upgrades…"
+    const firmMatch = topHl.match(/^([A-Z][A-Za-z\s&]+?)\s+(?:raises?|upgrades?|initiates?|cuts?|increase)/i);
+    const firmStr = firmMatch ? firmMatch[1].trim() : '';
+    if (upCount >= 3) {
+      liveSignals.push(
+        upCount + ' analyst upgrades in the last 2 weeks'
+        + (firmStr ? ' — ' + firmStr + ' most recent' : '') + ptStr + '. Conviction is building fast.'
+      );
+    } else if (upCount === 2) {
+      liveSignals.push(
+        '2 analyst upgrades' + (firmStr ? ' — ' + firmStr + ' latest' : '') + ptStr + ' in the last 14 days.'
+      );
+    } else if (upCount === 1 && (firmStr || ptStr)) {
+      liveSignals.push(
+        (firmStr || 'An analyst') + ' upgraded' + ptStr + ' — first upgrade signal in 14 days.'
+      );
+    }
+  }
+
+  // ── 2b. Analyst cascade — is this stock in a follow-on window? ───────────
+  if (window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.cascades) {
+    window._ANALYST_SIGNALS.cascades.forEach(cascade => {
+      if (cascade.downstream.includes(ticker) && liveSignals.length < 3) {
+        const anchorName = NAMES[cascade.anchor] || cascade.anchor;
+        liveSignals.push(
+          anchorName + ' received ' + cascade.upCount + ' analyst upgrades'
+          + (cascade.latestHl ? ' ("' + cascade.latestHl.slice(0, 60) + '…")' : '') + '. '
+          + ticker + ' historically follows within ' + cascade.lag + '.'
+        );
       }
     });
   }
 
-  // Combine: live signals first (most actionable), then LAYER_DATA context
+  // ── 3. Supply chain propagation from _CHAIN_SIGNALS ─────────────────────
+  const chainWindows = window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.windowMap
+    ? (window._CHAIN_SIGNALS.windowMap[ticker] || []) : [];
+  if (chainWindows.length && liveSignals.length < 3) {
+    const w = chainWindows[0];
+    const anchorName = NAMES[w.anchor] || w.anchor;
+    const dpStr = w.dp != null ? ' (' + (w.dp >= 0 ? '+' : '') + w.dp.toFixed(1) + '%)' : '';
+    liveSignals.push(
+      anchorName + dpStr + ' activated the ' + (w.lag || w.metric || 'supply chain') + ' lag window for ' + ticker + '. '
+      + (w.desc ? w.desc.replace(/\.$/, '') + '.' : 'Historically bullish in this window.')
+    );
+  }
+
+  // ── Combine: live signals first, then LAYER_DATA, then news ──────────────
   if (liveSignals.length) {
     reasons = liveSignals.slice(0, 2);
   }
@@ -3097,13 +3170,11 @@ function getSagePick() {
     const layers = (ld[ticker] || []).filter(l => l.pts > 0);
     const topLayers = [...layers].sort((a,b) => (b.pts||0) - (a.pts||0)).slice(0, 2 - reasons.length);
     const layerReasons = topLayers.map(l => {
-      // Try to build a proper narrative sentence from signal data
       if (l.signals && l.signals.length) {
         const bullSig = l.signals.find(s => s.dir === 'bull' || s.dir === 'up') || l.signals[0];
         if (bullSig) {
           const note = bullSig.note || bullSig.label || '';
-          if (note.length > 20) return note; // already a sentence
-          // Build from label + layer context
+          if (note.length > 20) return note;
           if (bullSig.label && l.name) return bullSig.label + ' (' + l.name + ')';
         }
       }
@@ -3111,25 +3182,19 @@ function getSagePick() {
     }).filter(r => r && r.length > 8);
     reasons = reasons.concat(layerReasons);
   }
-  // Fallback: use top news headlines from TICKER_DATA
   if (reasons.length === 0 && td[ticker] && td[ticker].news) {
     reasons = td[ticker].news.slice(0, 2).map(n => n.hl).filter(Boolean);
   }
-  // Final fallback: score-based generic but accurate narrative
   if (reasons.length === 0) {
     const sStr = score >= 75 ? 'highest' : score >= 60 ? 'elevated' : 'moderate';
     reasons = [
-      NAMES[ticker] + ' has the ' + sStr + ' signal score — ' + score + '/100 this morning.',
-      'Signal score driven by market structure and sector momentum convergence.'
+      name + ' has the ' + sStr + ' signal score — ' + score + '/100 this morning.',
+      'Score driven by market structure, sector momentum, and convergence across all 5 layers.'
     ];
   }
 
   const hasLiveSignals = liveSignals.length > 0;
-
-  // Upcoming catalyst
   const catalyst = cats[ticker] || null;
-
-  // Action label
   const action = score >= 75 ? 'BUY' : score >= 60 ? 'WATCH' : 'MONITOR';
   const actionColor = score >= 75 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--text3)';
 
@@ -3146,9 +3211,19 @@ function renderSageCard() {
   const pick = getSagePick();
   if (!pick) { el.innerHTML = ''; return; }
 
-  const { ticker, score, reasons, catalyst, runner, action, actionColor } = pick;
+  const { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals } = pick;
   const name = NAMES[ticker] || ticker;
   const scoreColor = score >= 75 ? 'var(--green)' : score >= 60 ? '#e07b00' : 'var(--text3)';
+
+  // Compute a timestamp for when the signals were last refreshed
+  const _lsTs = (typeof _liveScoreCache !== 'undefined' && _liveScoreCache[ticker])
+    ? _liveScoreCache[ticker].ts : 0;
+  const _tsStr = _lsTs > 0
+    ? new Date(_lsTs).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
+    : null;
+  const liveLabel = hasLiveSignals
+    ? `<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:#22c55e18;color:#22c55e;letter-spacing:.3px;">LIVE</span>`
+    : `<span style="font-size:9px;color:var(--text3);">signals computed${_tsStr ? ' at ' + _tsStr : ''}</span>`;
 
   const reasonLines = reasons.map(r =>
     `<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;">
@@ -3182,9 +3257,10 @@ function renderSageCard() {
       <button onclick="(function(){try{localStorage.setItem('sage_dismissed','${today}');}catch(e){}; document.getElementById('sage-mode-card').innerHTML='';})()"
         style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;" title="Dismiss for today">×</button>
 
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap;">
         <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#6366f1;text-transform:uppercase;">🌿 Sage Mode</span>
         <span style="font-size:9px;color:var(--text3);">· highest signal convergence today</span>
+        <span style="margin-left:auto;">${liveLabel}</span>
       </div>
 
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap;">
@@ -3246,9 +3322,57 @@ function _subscribeDigest() {
   }).then(r => r.json()).then(j => {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--green);">✓ Subscribed — Morning Brief arrives at 6:50am weekdays</span>';
     try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
+    // Also update the morning tab CTA if visible
+    try { _renderMorningSubscribeCTA(); } catch(e) {}
   }).catch(() => {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Error — please try again</span>';
   });
+}
+
+function _subscribeMorning() {
+  const inp = document.getElementById('morning-email-inp');
+  const email = inp ? inp.value.trim() : '';
+  if (!email || !email.includes('@')) { if (inp) inp.focus(); return; }
+  const row = document.getElementById('morning-sub-row');
+  if (!IS_VERCEL) {
+    if (row) row.innerHTML = '<span style="font-size:11px;color:var(--amber);">Digest available on the live app at everythingisjustoneclickaway.com</span>';
+    return;
+  }
+  fetch('/api/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  }).then(r => r.json()).then(j => {
+    if (row) row.innerHTML = '<span style="font-size:12px;color:var(--green);">✓ Subscribed — you\'ll get the Morning Brief at 6:50am weekdays</span>';
+    try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
+  }).catch(() => {
+    if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Something went wrong — please try again</span>';
+  });
+}
+
+function _renderMorningSubscribeCTA() {
+  const el = document.getElementById('morning-subscribe-cta');
+  if (!el) return;
+  // Don't show if already subscribed
+  let existingEmail = '';
+  try { existingEmail = localStorage.getItem('ti_digest_email') || ''; } catch(e) {}
+  if (existingEmail) {
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:var(--bg2);border-radius:8px;border:0.5px solid var(--border);">
+      <span style="font-size:10px;">📬</span>
+      <span style="font-size:11px;color:var(--text3);">Morning Brief digest sent to <strong style="color:var(--text2);">${existingEmail}</strong> at 6:50am weekdays</span>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `<div style="background:var(--bg2);border:0.5px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:160px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">📬 Get this in your inbox</div>
+      <div style="font-size:11px;color:var(--text3);">Sage pick + top signals at 6:50am weekdays</div>
+    </div>
+    <div id="morning-sub-row" style="display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap;align-items:center;">
+      <input id="morning-email-inp" type="email" placeholder="your@email.com" style="padding:7px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:11px;background:var(--bg);color:var(--text);font-family:inherit;width:170px;">
+      <button onclick="_subscribeMorning()" style="padding:7px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">Subscribe →</button>
+    </div>
+  </div>`;
 }
 
 function syncToCloud() {
@@ -3920,6 +4044,7 @@ function renderChainSignalCard() {
 function renderMorningBriefDynamic() {
   try {
     try { renderDailyIntelCard(); } catch(e) { console.warn('dailyIntel:', e); }
+    try { _renderMorningSubscribeCTA(); } catch(e) {}
     _renderMorningSummaryBanner();
     try { renderChainSignalCard(); } catch(e) {}
     try { renderInsiderClusterCard(); } catch(e) {}
@@ -7205,6 +7330,119 @@ function renderVelocityLeaderboard() {
   el.innerHTML = out;
 }
 
+// ── SCORE TRUTH TEST — do high-conviction scores predict forward returns? ─────
+let _backtestCache = null;
+async function _runScoreBacktest(force) {
+  const el = document.getElementById('score-backtest-body');
+  if (!el) return;
+  if (!force && _backtestCache) { el.innerHTML = _backtestCache; return; }
+
+  if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Truth test runs on the live app — add a Finnhub key in Settings to enable here.</div>';
+    return;
+  }
+
+  el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Fetching 30-day returns for high and low scorers…</div>';
+
+  const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
+  const allScored = Object.entries(SCORES)
+    .filter(([t, s]) => s && NAMES[t] && !SIGNAL_NODES.has(t))
+    .sort(([,a],[,b]) => b - a);
+
+  // High: top 10 by score; Low: bottom 10 by score
+  const highGroup = allScored.slice(0, 10).map(([t]) => t);
+  const lowGroup  = allScored.slice(-10).map(([t]) => t);
+
+  // Date range: 30 days ago → today
+  const to   = Math.floor(Date.now() / 1000);
+  const from = to - (30 * 86400);
+
+  async function fetchReturn(sym) {
+    try {
+      const url = fhURL('stock/candle', { symbol: sym, resolution: 'D', from, to });
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (!j || !j.c || j.c.length < 2) return null;
+      const first = j.c[0], last = j.c[j.c.length - 1];
+      return ((last - first) / first) * 100;
+    } catch(e) { return null; }
+  }
+
+  // Fetch both groups in parallel (rate-limited: stagger 50ms)
+  const allTickers = [...new Set([...highGroup, ...lowGroup])];
+  const returnMap = {};
+  for (const sym of allTickers) {
+    const ret = await fetchReturn(sym);
+    if (ret !== null) returnMap[sym] = ret;
+    await new Promise(r => setTimeout(r, 60));
+  }
+
+  const avg = tickers => {
+    const vals = tickers.map(t => returnMap[t]).filter(v => v != null);
+    if (!vals.length) return null;
+    return vals.reduce((s, v) => s + v, 0) / vals.length;
+  };
+
+  const highAvg = avg(highGroup);
+  const lowAvg  = avg(lowGroup);
+  const diff    = (highAvg != null && lowAvg != null) ? highAvg - lowAvg : null;
+
+  const pct = v => (v != null ? (v >= 0 ? '+' : '') + v.toFixed(1) + '%' : 'n/a');
+  const clr = v => v == null ? 'var(--text3)' : v >= 0 ? 'var(--green)' : '#ef4444';
+
+  // Build per-stock rows
+  function stockRows(tickers, label, labelColor) {
+    return tickers.map(t => {
+      const ret = returnMap[t];
+      const retStr = ret != null ? (ret >= 0 ? '+' : '') + ret.toFixed(1) + '%' : '—';
+      const rc = ret != null ? (ret >= 0 ? 'var(--green)' : '#ef4444') : 'var(--text3)';
+      return `<span onclick="openTicker('${t}')" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:5px;cursor:pointer;background:var(--bg3);border:0.5px solid var(--border);margin:2px;">
+        <span style="font-size:11px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text);">${t}</span>
+        <span style="font-size:10px;font-weight:600;color:${rc};">${retStr}</span>
+      </span>`;
+    }).join('');
+  }
+
+  const verdict = diff != null
+    ? (diff > 5 ? '✅ High-conviction signals are outperforming — edge is real.'
+      : diff > 0 ? '🟡 High scorers slightly ahead — signal is directionally correct.'
+      : '⚠️ No edge detected this period — macro headwinds may be suppressing signal quality.')
+    : 'Insufficient data for this period.';
+
+  const html = `
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
+      <div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:var(--green-bg);border:0.5px solid var(--green-bd);text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">High conviction (70+)</div>
+        <div style="font-size:24px;font-weight:800;font-family:'DM Mono',monospace;color:${clr(highAvg)};">${pct(highAvg)}</div>
+        <div style="font-size:10px;color:var(--text3);">avg 30-day return · ${highGroup.filter(t => returnMap[t] != null).length} stocks</div>
+      </div>
+      <div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:rgba(239,68,68,0.06);border:0.5px solid rgba(239,68,68,0.18);text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">Low conviction (&lt;55)</div>
+        <div style="font-size:24px;font-weight:800;font-family:'DM Mono',monospace;color:${clr(lowAvg)};">${pct(lowAvg)}</div>
+        <div style="font-size:10px;color:var(--text3);">avg 30-day return · ${lowGroup.filter(t => returnMap[t] != null).length} stocks</div>
+      </div>
+      ${diff != null ? `<div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:var(--bg3);border:0.5px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">Edge (delta)</div>
+        <div style="font-size:24px;font-weight:800;font-family:'DM Mono',monospace;color:${clr(diff)};">${pct(diff)}</div>
+        <div style="font-size:10px;color:var(--text3);">high minus low</div>
+      </div>` : ''}
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;">${verdict}</div>
+    <div style="margin-bottom:8px;">
+      <div style="font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">High scorers (top 10)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:2px;">${stockRows(highGroup, 'high', 'var(--green)')}</div>
+    </div>
+    <div>
+      <div style="font-size:10px;color:#ef4444;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Low scorers (bottom 10)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:2px;">${stockRows(lowGroup, 'low', '#ef4444')}</div>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:10px;text-align:right;">30-day returns via Finnhub · updated ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>`;
+
+  _backtestCache = html;
+  el.innerHTML = html;
+}
+
 function sortConvergenceCards() {
   // Collect all unique parent containers
   const containers = new Set();
@@ -7227,6 +7465,8 @@ function renderConvergence() {
   const ft = S.focusTicker;
   // Render velocity leaderboard (reads localStorage score_history)
   try { renderVelocityLeaderboard(); } catch(e) {}
+  // Run score truth test (lazy — only on first visit; refresh button forces re-run)
+  try { _runScoreBacktest(false); } catch(e) {}
   // Show/hide each stock card in the signal scores list
   document.querySelectorAll('.convergence-stock-card').forEach(card => {
     const ticker = card.dataset.ticker;
