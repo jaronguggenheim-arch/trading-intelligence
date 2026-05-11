@@ -3140,6 +3140,14 @@ function joinProWaitlist() {
   } catch(e) {}
   const btn = document.querySelector('.pro-waitlist-row button');
   if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.style.background = '#059669'; }
+  // Also subscribe to Morning Brief digest
+  if (typeof IS_VERCEL !== 'undefined' && IS_VERCEL) {
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    }).catch(() => {});
+  }
   const conf = document.getElementById('pro-waitlist-confirm');
   if (conf) conf.style.display = 'block';
   if (inp) inp.style.display = 'none';
