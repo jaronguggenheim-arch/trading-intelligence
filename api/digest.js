@@ -2,24 +2,22 @@
 // Vercel cron: runs at 10:50 UTC (6:50am ET) on weekdays
 // Requires env vars: FH_KEY, RESEND_API_KEY, KV_REST_API_URL, KV_REST_API_TOKEN
 
-// Base scores used as fallback / starting point
+// ── Tracked stocks (top 40 by base score — candidates for Sage pick) ─────────
 const BASE_SCORES = {
-  NVDA:78,ASML:91,AMD:62,RKLB:67,PLTR:73,TSM:74,SMCI:65,META:55,MSFT:68,GOOGL:60,
-  VST:71,CEG:68,AMAT:66,LRCX:64,MU:75,LMT:59,NOC:57,RTX:61,CRM:72,NOW:70,SNOW:58,
-  CCJ:63,UEC:60,AMZN:65,ARM:69,QCOM:63,AAPL:61,PANW:67,CRWD:70,GEV:72,AVGO:74,
-  MRVL:68,INTC:42,DELL:58,ORCL:76,NET:69,NEE:55,ETN:67,PWR:65,OKLO:62,GD:58,
-  LHX:60,ADBE:61,TSLA:55,NFLX:64,APP:71,ON:57,HPE:53,WDAY:62,COIN:63,KLAC:68,
-  ENTG:62,TER:65,MKSI:58,ONTO:55,V:72,MA:74,PYPL:55,SQ:58,HOOD:62,DDOG:75,
-  MDB:68,ZS:71,ESTC:62
+  NVDA:78,ASML:91,AMD:62,RKLB:67,PLTR:73,TSM:74,SMCI:65,AVGO:74,
+  MU:75,ORCL:76,DDOG:75,ZS:71,APP:71,GEV:72,CRM:72,V:72,MA:74,
+  NOW:70,CRWD:70,NET:69,ARM:69,AMAT:66,LRCX:64,ETN:67,PWR:65,
+  KLAC:68,MRVL:68,MDB:68,MSFT:68,PANW:67,RKLB:67,PLTR:73,VST:71,
+  CEG:68,LMT:59,NOC:57,RTX:61,SNOW:58,AMZN:65,GOOGL:60
 };
 
 const NAMES = {
-  NVDA:'NVIDIA',ASML:'ASML',AMD:'AMD',RKLB:'Rocket Lab',PLTR:'Palantir',
+  NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'AMD',RKLB:'Rocket Lab',PLTR:'Palantir',
   TSM:'Taiwan Semi',SMCI:'Super Micro',META:'Meta',MSFT:'Microsoft',GOOGL:'Alphabet',
   VST:'Vistra',CEG:'Constellation Energy',AMAT:'Applied Materials',LRCX:'Lam Research',
   MU:'Micron',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',
   CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',
-  AMZN:'Amazon',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto',
+  AMZN:'Amazon',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',
   CRWD:'CrowdStrike',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell',INTC:'Intel',
   DELL:'Dell',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',
   PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',
@@ -27,44 +25,47 @@ const NAMES = {
   HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corp',ENTG:'Entegris',
   TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation',V:'Visa',
   MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood',DDOG:'Datadog',
-  MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic'
+  MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic',AXON:'Axon Enterprise'
 };
 
-const SIGNAL_REASONS = {
-  NVDA: 'GB200 demand backlog extends through 2026. Jensen Huang confirmed no capacity constraints from TSMC N4P ramp.',
-  ASML: 'Rare triple insider cluster: CEO + CFO + Board member bought open-market this month. EUV backlog at record €36B.',
-  PLTR: 'U.S. government AIP contracts accelerating. Commercial ARR +55% YoY. CEO net buyer.',
-  MU: 'Sole-source HBM3E supplier for NVIDIA Blackwell. Supply sold out through 2027. CEO $2.8M open-market buy.',
-  ORCL: '$130B RPO means revenue is already contracted — the market is pricing it as execution risk, not demand risk.',
-  NOW: 'AI Pro+ adoption at 1,300 customers in 90 days. FSI vertical doubling. Margins expanding.',
-  DDOG: 'Every new GPU cluster needs observability. Hyperscaler capex +35% YoY = DDOG revenue follows with 1-quarter lag.',
-  ZS: 'CISA federal zero-trust mandate creates durable government revenue. CEO 17% ownership signals conviction.',
-  AVGO: 'Custom ASIC hyperscaler TAM expanding from $15B to $100B by 2027. Two top-3 cloud providers as anchor customers.',
-  APP: 'AXON 2.0 expanding into CTV advertising. Gaming + e-commerce TAM now $800B. FCF margin 40%+.',
-  GEV: 'AI datacenter power demand creating 10-year grid upgrade supercycle. Backlog $40B+. Only domestic gas turbine maker.',
-  CRM: 'Agentforce signed 3,000 enterprise customers in 90 days — fastest product adoption in Salesforce history.',
-  TSM: 'N2 node ramp on schedule. Arizona fab progressing. Only fab capable of producing NVDA GB200 at scale.',
-  CRWD: 'Post-outage recovery complete. Net logo adds accelerating in Q1. AI security platform expanding beyond endpoint.',
-  ARM: 'Every AI chip — NVDA, AMD, Apple, Qualcomm — licenses ARM. Royalty rate per chip increasing as complexity grows.'
-};
+// ── Analyst keywords for signal detection ────────────────────────────────────
+const UPGRADE_KW = [
+  'raises price target','raised price target','upgrades','upgrade','initiated',
+  'outperform','buy rating','strong buy','overweight','price target to','pt to',
+  'pt raised','raises pt','raised pt','analyst raises','target price increased'
+];
 
+// ── Finnhub API helper ────────────────────────────────────────────────────────
 async function fhFetch(path, params, token) {
   const qs = new URLSearchParams({ ...params, token }).toString();
-  const r = await fetch(`https://finnhub.io/api/v1/${path}?${qs}`);
-  if (!r.ok) return null;
-  return r.json().catch(() => null);
+  try {
+    const r = await fetch(`https://finnhub.io/api/v1/${path}?${qs}`, {
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!r.ok) return null;
+    return r.json().catch(() => null);
+  } catch (e) { return null; }
 }
 
+function _dateStr(daysOffset = 0) {
+  const d = new Date(Date.now() + daysOffset * 864e5);
+  return d.toISOString().slice(0, 10);
+}
+
+// ── KV helpers ───────────────────────────────────────────────────────────────
 async function kvSmembers(url, token, key) {
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(['SMEMBERS', key])
-  });
-  const j = await r.json();
-  return Array.isArray(j.result) ? j.result : [];
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(['SMEMBERS', key])
+    });
+    const j = await r.json();
+    return Array.isArray(j.result) ? j.result : [];
+  } catch (e) { return []; }
 }
 
+// ── Unsubscribe token ─────────────────────────────────────────────────────────
 function makeUnsubToken(email) {
   let hash = 0;
   for (let i = 0; i < email.length; i++) hash = ((hash << 5) - hash + email.charCodeAt(i)) | 0;
@@ -77,152 +78,247 @@ function scoreColor(s) {
   return '#ef4444';
 }
 
-function buildEmailHtml({ ticker, name, score, price, change, changeColor, reason, date }) {
+// ── Signal narrative builder ──────────────────────────────────────────────────
+// Returns 2-3 plain-English bullet strings based on live Finnhub data
+async function buildSignalNarrative(ticker, fhKey) {
+  const signals = [];
+
+  // 1. Analyst upgrades in last 14 days
+  try {
+    const news = await fhFetch('company-news', {
+      symbol: ticker, from: _dateStr(-14), to: _dateStr(0)
+    }, fhKey);
+    if (Array.isArray(news)) {
+      const upgrades = news.filter(a => {
+        const hl = (a.headline || '').toLowerCase();
+        return UPGRADE_KW.some(k => hl.includes(k));
+      });
+      if (upgrades.length >= 1) {
+        const topHl = upgrades[0].headline || '';
+        const ptMatch = topHl.match(/\$[\d,]+/g);
+        const ptStr = ptMatch ? ' (PT ' + ptMatch[ptMatch.length - 1] + ')' : '';
+        const firmMatch = topHl.match(/^([A-Z][A-Za-z\s&]+?)\s+(?:raises?|upgrades?|initiates?)/i);
+        const firmStr = firmMatch ? firmMatch[1].trim() : '';
+        if (upgrades.length >= 3) {
+          signals.push(
+            upgrades.length + ' analyst upgrades in 14 days'
+            + (firmStr ? ' — ' + firmStr + ' most recent' : '') + ptStr + '. Conviction building.'
+          );
+        } else if (upgrades.length === 2) {
+          signals.push('2 analyst upgrades' + (firmStr ? ' — ' + firmStr + ' latest' : '') + ptStr + ' in the last 2 weeks.');
+        } else if (firmStr || ptStr) {
+          signals.push((firmStr || 'Analyst') + ' upgrade' + ptStr + ' in the last 14 days.');
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 2. Insider transactions in last 90 days
+  try {
+    const insider = await fhFetch('stock/insider-transactions', {
+      symbol: ticker, from: _dateStr(-90), to: _dateStr(0)
+    }, fhKey);
+    const txns = (insider?.data || [])
+      .filter(t => !t.isDerivative && t.change !== 0)
+      .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+    const buys = txns.filter(t => t.change > 0);
+    if (buys.length >= 1) {
+      const uniqueNames = [...new Set(buys.map(t => t.name))].slice(0, 2);
+      const totalVal = buys.reduce((s, t) => s + Math.abs(t.change * (t.transactionPrice || 0)), 0);
+      const valStr = totalVal >= 1e6 ? '$' + (totalVal / 1e6).toFixed(1) + 'M'
+        : totalVal >= 1e3 ? '$' + Math.round(totalVal / 1e3) + 'K' : '';
+      const daysAgo = Math.round((Date.now() - new Date(buys[0].transactionDate)) / 864e5);
+      const daysStr = daysAgo <= 0 ? 'today' : daysAgo === 1 ? 'yesterday' : daysAgo + ' days ago';
+      const fmtName = n => (n || '').split(/\s+/).pop();
+      const noSells = txns.filter(t => t.change < 0).length === 0;
+      if (uniqueNames.length >= 2) {
+        signals.push(
+          fmtName(uniqueNames[0]) + ' & ' + fmtName(uniqueNames[1]) + ' (insiders) bought'
+          + (valStr ? ' ' + valStr : '') + ' ' + daysStr + ' — cluster buy, historically bullish.'
+        );
+      } else if (uniqueNames.length === 1) {
+        signals.push(
+          uniqueNames[0] + ' bought' + (valStr ? ' ' + valStr : '') + ' ' + daysStr
+          + (noSells ? ' — no insider selling in 90 days.' : '.')
+        );
+      }
+    }
+  } catch (e) {}
+
+  // 3. Quote-based momentum context
+  try {
+    const quote = await fhFetch('quote', { symbol: ticker }, fhKey);
+    if (quote && quote.c) {
+      const dp = quote.dp || 0;
+      const h52 = quote.h;
+      const pct52 = h52 ? ((quote.c / h52) * 100).toFixed(0) : null;
+      if (Math.abs(dp) >= 2) {
+        const dir = dp > 0 ? 'up' : 'down';
+        signals.push(
+          ticker + ' is ' + dir + ' ' + Math.abs(dp).toFixed(1) + '% today'
+          + (pct52 && dp > 0 ? ', trading at ' + pct52 + '% of 52-week high.' : '.')
+        );
+      }
+    }
+  } catch (e) {}
+
+  return signals.slice(0, 2);
+}
+
+// ── Email HTML template ───────────────────────────────────────────────────────
+function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date }) {
   const sc = scoreColor(score);
   const appUrl = 'https://www.everythingisjustoneclickaway.com';
+
+  const signalDots = (signals.length > 0 ? signals : [
+    `${name} scores ${score}/100 — multi-layer signal convergence across market structure, insider activity, and supply chain.`,
+    'Score driven by 5 independent signal layers — not one indicator, five.'
+  ]).map(s => `
+    <tr><td style="vertical-align:top;padding-bottom:10px;">
+      <table cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="width:8px;padding-top:5px;vertical-align:top;">
+          <div style="width:6px;height:6px;border-radius:50%;background:${sc};"></div>
+        </td>
+        <td style="padding-left:10px;font-size:14px;color:#374151;line-height:1.65;">${s}</td>
+      </tr></table>
+    </td></tr>`).join('');
+
+  const moverRows = movers.length > 0 ? movers.map(m => `
+    <tr>
+      <td style="padding:5px 0;font-size:13px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;white-space:nowrap;">${m.ticker}</td>
+      <td style="padding:5px 8px;font-size:12px;color:#71717a;">${m.name}</td>
+      <td style="padding:5px 0;font-size:13px;font-weight:700;color:${scoreColor(m.score)};font-family:'Courier New',monospace;text-align:right;">${m.score}/100</td>
+      <td style="padding:5px 0 5px 8px;font-size:12px;color:${m.chgColor};text-align:right;">${m.chg}</td>
+    </tr>`).join('') : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Morning Brief — ${ticker}</title>
-<style>
-  body{margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;}
-  .wrap{max-width:560px;margin:0 auto;padding:20px 12px;}
-  .card{background:#fff;border-radius:14px;padding:28px 24px;margin-bottom:12px;border:1px solid #e4e4e7;}
-  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-  .logo{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;}
-  .date{font-size:11px;color:#a1a1aa;}
-  .sage-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8b5cf6;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;padding:3px 10px;display:inline-block;margin-bottom:12px;}
-  .ticker-row{display:flex;align-items:center;gap:14px;margin-bottom:6px;}
-  .ticker{font-size:32px;font-weight:800;letter-spacing:-1px;color:#18181b;font-family:'Courier New',monospace;}
-  .score-badge{width:52px;height:52px;border-radius:12px;background:${sc}18;border:2px solid ${sc}40;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .score-num{font-size:18px;font-weight:800;color:${sc};font-family:'Courier New',monospace;}
-  .ticker-name{font-size:14px;color:#71717a;margin-bottom:10px;}
-  .price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;}
-  .price{font-size:22px;font-weight:600;color:#18181b;font-family:'Courier New',monospace;}
-  .change{font-size:14px;font-weight:600;color:${changeColor};}
-  .thesis{font-size:14px;line-height:1.7;color:#374151;border-left:3px solid ${sc};padding-left:14px;margin-bottom:20px;}
-  .cta{display:inline-block;background:#18181b;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:11px 22px;border-radius:8px;margin-right:8px;}
-  .cta-secondary{display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:11px 22px;border-radius:8px;border:1px solid #e4e4e7;}
-  .divider{height:1px;background:#f4f4f5;margin:20px 0;}
-  .section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:12px;}
-  .signal-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
-  .signal-dot{width:6px;height:6px;border-radius:50%;background:${sc};flex-shrink:0;margin-top:6px;}
-  .signal-text{font-size:13px;color:#374151;line-height:1.6;}
-  .footer{text-align:center;padding:16px 0;}
-  .footer-text{font-size:11px;color:#a1a1aa;}
-  .unsub{font-size:11px;color:#a1a1aa;text-decoration:underline;}
-</style>
 </head>
-<body>
-<div class="wrap">
-  <div class="card">
-    <div class="header">
-      <div class="logo">Everything is just one click away</div>
-      <div class="date">${date}</div>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:20px 12px;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:4px;">
+    <tr>
+      <td style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;">Everything is just one click away</td>
+      <td style="text-align:right;font-size:11px;color:#a1a1aa;">${date}</td>
+    </tr>
+  </table>
+
+  <!-- Sage pick card -->
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8b5cf6;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;padding:3px 10px;display:inline-block;margin-bottom:14px;">🌿 Sage Pick · Today's highest conviction</div>
+
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:8px;">
+      <tr>
+        <td style="vertical-align:middle;">
+          <div style="font-size:36px;font-weight:800;letter-spacing:-1.5px;color:#18181b;font-family:'Courier New',monospace;line-height:1;">${ticker}</div>
+          <div style="font-size:14px;color:#71717a;margin-top:4px;">${name}</div>
+        </td>
+        <td style="vertical-align:middle;text-align:right;">
+          <div style="display:inline-block;width:60px;height:60px;border-radius:14px;background:${sc}18;border:2px solid ${sc}44;text-align:center;line-height:60px;">
+            <span style="font-size:20px;font-weight:800;color:${sc};font-family:'Courier New',monospace;">${score}</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div style="font-size:22px;font-weight:600;color:#18181b;font-family:'Courier New',monospace;margin-bottom:4px;">
+      $${price} <span style="font-size:14px;font-weight:600;color:${changeColor};">${change}</span>
     </div>
-    <div class="sage-label">★ Sage Pick · Today's highest conviction</div>
-    <div class="ticker-row">
-      <div class="ticker">${ticker}</div>
-      <div class="score-badge"><div class="score-num">${score}</div></div>
+
+    <div style="height:1px;background:#f4f4f5;margin:16px 0;"></div>
+
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${signalDots}
+    </table>
+
+    <div style="margin-top:18px;">
+      <a href="${appUrl}/?t=${ticker}" style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:11px 22px;border-radius:8px;margin-right:8px;">Open signal →</a>
+      <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:11px 22px;border-radius:8px;border:1px solid #e4e4e7;">Full Morning Brief</a>
     </div>
-    <div class="ticker-name">${name}</div>
-    <div class="price-row">
-      <div class="price">$${price}</div>
-      <div class="change">${change}</div>
-    </div>
-    <div class="thesis">${reason}</div>
-    <a href="${appUrl}/?t=${ticker}" class="cta">Open signal →</a>
-    <a href="${appUrl}" class="cta-secondary">Full Morning Brief</a>
   </div>
 
-  <div class="card">
-    <div class="section-title">Why this signal matters now</div>
-    <div class="signal-row">
-      <div class="signal-dot"></div>
-      <div class="signal-text"><strong>Score ${score}/100</strong> — in the top tier of 64 tracked stocks. A score above 70 means multiple signal layers are aligning simultaneously.</div>
+  ${movers.length > 0 ? `
+  <!-- Also watching -->
+  <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:14px;">Also worth watching today</div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${moverRows}
+    </table>
+    <div style="margin-top:14px;">
+      <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">See all ${Object.keys(BASE_SCORES).length}+ signals →</a>
     </div>
-    <div class="signal-row">
-      <div class="signal-dot"></div>
-      <div class="signal-text"><strong>Supply chain window open</strong> — upstream signals are propagating downstream. The lag-based intelligence that gives you the edge before headlines catch up.</div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-dot"></div>
-      <div class="signal-text"><strong>Conviction check</strong> — this pick is derived from 5 independent signal layers (market structure, insider activity, corporate intel, supply chain, macro). Not one indicator, five.</div>
-    </div>
-  </div>
+  </div>` : ''}
 
-  <div class="footer">
-    <p class="footer-text">You're receiving this because you subscribed to Morning Brief.</p>
-    <p><a class="unsub" href="${appUrl}/api/subscribe?action=unsub&email=__EMAIL__&token=__TOKEN__">Unsubscribe</a></p>
+  <!-- Footer -->
+  <div style="text-align:center;padding:16px 0;">
+    <p style="font-size:11px;color:#a1a1aa;margin:0 0 6px;">You're receiving this because you subscribed to Morning Brief.</p>
+    <p style="margin:0;"><a style="font-size:11px;color:#a1a1aa;" href="${appUrl}/api/subscribe?action=unsub&email=__EMAIL__&token=__TOKEN__">Unsubscribe</a></p>
   </div>
 </div>
 </body>
 </html>`;
 }
 
-export const config = {
-  schedule: '50 10 * * 1-5'  // 6:50am ET weekdays (UTC-4 EDT)
-};
+// ── Handler ───────────────────────────────────────────────────────────────────
+export const config = { schedule: '50 10 * * 1-5' };
 
 export default async function handler(req, res) {
-  // Allow manual trigger via GET (for testing) + Vercel cron via GET
   const { FH_KEY, RESEND_API_KEY, KV_REST_API_URL, KV_REST_API_TOKEN } = process.env;
 
-  if (!FH_KEY) return res.status(500).json({ error: 'FH_KEY not configured' });
-  if (!RESEND_API_KEY) return res.status(500).json({ error: 'RESEND_API_KEY not configured' });
+  if (!FH_KEY)          return res.status(500).json({ error: 'FH_KEY not configured' });
+  if (!RESEND_API_KEY)  return res.status(500).json({ error: 'RESEND_API_KEY not configured' });
 
-  // ── Pick the Sage stock ───────────────────────────────────────────────────
-  // Score top candidates from Finnhub: fetch quote + basic metrics for top 15 by base score
-  const candidates = Object.entries(BASE_SCORES)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 15)
-    .map(([t]) => t);
+  // ── Step 1: Fetch live quotes for top 20 candidates ──────────────────────
+  const candidates = Object.entries(BASE_SCORES).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([t]) => t);
 
-  // Fetch quotes in parallel (rate limit: Finnhub free = 30 req/sec, batch fine)
   const quoteResults = await Promise.allSettled(
     candidates.map(t => fhFetch('quote', { symbol: t }, FH_KEY))
   );
 
-  let bestTicker = 'ASML', bestScore = BASE_SCORES['ASML'] || 91;
-  let bestPrice = '--', bestChange = '--', changeColor = '#10b981';
-
-  quoteResults.forEach((r, i) => {
-    if (r.status !== 'fulfilled' || !r.value) return;
-    const q = r.value;
-    const t = candidates[i];
+  // ── Step 2: Score each candidate with live momentum boost ─────────────────
+  const scoredCandidates = candidates.map((t, i) => {
     const base = BASE_SCORES[t] || 50;
-    // Boost: strong day price move + not near 52-week high (extended)
-    const dp = q.dp || 0;
-    const momentum = dp > 2 ? 5 : dp > 1 ? 3 : dp < -2 ? -5 : 0;
-    const adjusted = base + momentum;
-    if (adjusted > bestScore) {
-      bestScore = adjusted;
-      bestTicker = t;
-      bestPrice = q.c ? q.c.toFixed(2) : '--';
-      bestChange = dp ? (dp > 0 ? '+' + dp.toFixed(2) + '%' : dp.toFixed(2) + '%') : '--';
-      changeColor = dp >= 0 ? '#10b981' : '#ef4444';
-    }
-  });
+    const q = quoteResults[i]?.status === 'fulfilled' ? quoteResults[i].value : null;
+    const dp = q?.dp || 0;
+    const momentumBoost = dp > 3 ? 6 : dp > 1.5 ? 3 : dp < -3 ? -6 : dp < -1.5 ? -3 : 0;
+    const adjusted = Math.min(99, Math.max(1, base + momentumBoost));
+    return {
+      ticker: t,
+      score: adjusted,
+      price: q?.c ? q.c.toFixed(2) : '--',
+      dp: dp,
+      changeStr: dp ? (dp > 0 ? '+' : '') + dp.toFixed(2) + '%' : '--',
+      changeColor: dp >= 0 ? '#10b981' : '#ef4444'
+    };
+  }).sort((a, b) => b.score - a.score);
 
-  // Ensure price is filled for the best ticker if not set
-  if (bestPrice === '--') {
-    const qi = candidates.indexOf(bestTicker);
-    if (qi >= 0 && quoteResults[qi]?.status === 'fulfilled' && quoteResults[qi].value) {
-      const q = quoteResults[qi].value;
-      bestPrice = q.c ? q.c.toFixed(2) : '--';
-      const dp = q.dp || 0;
-      bestChange = dp ? (dp > 0 ? '+' + dp.toFixed(2) + '%' : dp.toFixed(2) + '%') : '--';
-      changeColor = dp >= 0 ? '#10b981' : '#ef4444';
-    }
-  }
+  // Signal-nodes (hyperscalers, used as upstream indicators — not direct picks)
+  const SIGNAL_NODES = new Set(['META', 'MSFT', 'GOOGL', 'TSM', 'AMZN']);
+  const actionable = scoredCandidates.filter(s => !SIGNAL_NODES.has(s.ticker));
+  const best = actionable[0];
 
-  const reason = SIGNAL_REASONS[bestTicker] || `${NAMES[bestTicker] || bestTicker} is showing multi-layer signal convergence across market structure, insider activity, and supply chain indicators.`;
+  // ── Step 3: Build live narrative for the Sage pick ────────────────────────
+  const signals = await buildSignalNarrative(best.ticker, FH_KEY);
+
+  // ── Step 4: Build "also watching" movers (top 3 after best) ──────────────
+  const movers = actionable.slice(1, 4).map(s => ({
+    ticker: s.ticker,
+    name: NAMES[s.ticker] || s.ticker,
+    score: s.score,
+    chg: s.changeStr,
+    chgColor: s.changeColor
+  }));
+
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
-  // ── Get subscribers ───────────────────────────────────────────────────────
+  // ── Step 5: Get subscribers ───────────────────────────────────────────────
   let subscribers = [];
   if (KV_REST_API_URL && KV_REST_API_TOKEN) {
     subscribers = await kvSmembers(KV_REST_API_URL, KV_REST_API_TOKEN, 'ti:subscribers');
@@ -231,31 +327,33 @@ export default async function handler(req, res) {
   if (!subscribers.length) {
     return res.status(200).json({
       ok: true,
-      sage: bestTicker,
-      score: Math.min(bestScore, 99),
+      sage: best.ticker,
+      score: best.score,
+      signals,
+      movers: movers.map(m => m.ticker),
       subscribers: 0,
       message: 'No subscribers yet — digest ready when they sign up'
     });
   }
 
-  // ── Send emails via Resend ────────────────────────────────────────────────
-  const appUrl = 'https://www.everythingisjustoneclickaway.com';
+  // ── Step 6: Send emails ────────────────────────────────────────────────────
   let sent = 0, failed = 0;
 
   for (const email of subscribers) {
     const unsubToken = makeUnsubToken(email);
     const htmlBody = buildEmailHtml({
-      ticker: bestTicker,
-      name: NAMES[bestTicker] || bestTicker,
-      score: Math.min(bestScore, 99),
-      price: bestPrice,
-      change: bestChange,
-      changeColor,
-      reason,
+      ticker: best.ticker,
+      name: NAMES[best.ticker] || best.ticker,
+      score: best.score,
+      price: best.price,
+      change: best.changeStr,
+      changeColor: best.changeColor,
+      signals,
+      movers,
       date: dateStr
     })
-    .replace('__EMAIL__', encodeURIComponent(email))
-    .replace('__TOKEN__', unsubToken);
+      .replace('__EMAIL__', encodeURIComponent(email))
+      .replace('__TOKEN__', unsubToken);
 
     try {
       const r = await fetch('https://api.resend.com/emails', {
@@ -267,21 +365,22 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           from: 'Morning Brief <brief@everythingisjustoneclickaway.com>',
           to: email,
-          subject: `Morning Brief — ${bestTicker} · ${Math.min(bestScore, 99)}/100 signal score`,
+          subject: `☀️ ${best.ticker} leads today — ${best.score}/100 · Morning Brief`,
           html: htmlBody
         })
       });
-      if (r.ok) sent++; else failed++;
+      if (r.ok) sent++; else { failed++; }
     } catch (e) { failed++; }
 
-    // Small delay to stay within Resend rate limits
-    await new Promise(r => setTimeout(r, 50));
+    // Respect Resend rate limits
+    await new Promise(r => setTimeout(r, 60));
   }
 
   return res.status(200).json({
     ok: true,
-    sage: bestTicker,
-    score: Math.min(bestScore, 99),
+    sage: best.ticker,
+    score: best.score,
+    signals,
     subscribers: subscribers.length,
     sent,
     failed,
