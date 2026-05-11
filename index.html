@@ -2593,6 +2593,8 @@ function _refreshLiveScoreUI() {
   });
   // Sync card colors to live scores
   syncSignalScoreCards();
+  // Update signal card text with live signal headlines
+  try { refreshSignalCardText(); } catch(e) {}
   // Refresh hot bar if morning brief is active
   if (S.activeTab === 'morning') {
     renderHotBar();
@@ -2608,6 +2610,148 @@ function _refreshLiveScoreUI() {
   }
 
   try{buildTickerScrollTrack();updateTickerScrollActive(S.focusTicker);}catch(e){}}
+
+// ─── LIVE SIGNAL TEXT ───────────────────────────────────────────────────────────
+function _signalFmtVal(v) {
+  if (!v) return '';
+  if (v >= 1e6) return '$' + (v/1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
+}
+
+function refreshSignalCardText() {
+  // Only update compact signal cards (.sul / .suh structure)
+  document.querySelectorAll('.convergence-stock-card[data-ticker]').forEach(function(card) {
+    const sulEl = card.querySelector('.sul');
+    if (!sulEl) return; // skip My Intel deep cards (different structure)
+    const ticker = card.dataset.ticker;
+    const score  = (typeof SCORES !== 'undefined' && SCORES[ticker]) || null;
+    if (!score) return;
+
+    // ── Build prioritised live signal list ──────────────────────────────
+    const sigs = []; // [{priority, headline, detail, tag, tagCls}]
+
+    // L2: Insider cluster (highest priority — rarest + most actionable)
+    const ins = window._INSIDER_SIGNALS;
+    if (ins) {
+      const cluster = (ins.clusters || []).find(function(c){ return c.sym === ticker; });
+      if (cluster) {
+        const val = _signalFmtVal(cluster.totalVal);
+        const names = cluster.buyers.slice(0,2).join(' + ') + (cluster.buyers.length > 2 ? ' +' + (cluster.buyers.length - 2) + ' more' : '');
+        sigs.push({ priority: 4,
+          headline: cluster.buyers.length + ' insiders bought ' + val + ' (30d)',
+          detail:   names + ' — open-market cluster buy. Historically the strongest signal type.',
+          tag: 'INSIDER CLUSTER', tagCls: 'at-buy' });
+      } else {
+        const single = (ins.singles || []).find(function(s){ return s.sym === ticker; });
+        if (single) {
+          sigs.push({ priority: 2,
+            headline: _signalFmtVal(single.totalVal) + ' insider buy (30d)',
+            detail:   (single.buyers[0] || 'Insider') + ' bought ' + _signalFmtVal(single.totalVal) + ' open market — significant single-buyer activity.',
+            tag: 'INSIDER BUY', tagCls: 'at-add' });
+        }
+      }
+    }
+
+    // L3: Analyst upgrades
+    const an = window._ANALYST_SIGNALS;
+    if (an && an.signals) {
+      const as = an.signals[ticker];
+      if (as && as.ups && as.ups.length >= 2) {
+        const hl = as.ups[0] ? (as.ups[0].headline || '').slice(0, 72) : '';
+        sigs.push({ priority: 3,
+          headline: as.ups.length + ' analyst upgrade' + (as.ups.length > 1 ? 's' : '') + ' (14d)',
+          detail:   hl || (as.ups.length + ' upgrades detected in the last 14 days.'),
+          tag: 'UPGRADED', tagCls: 'at-add' });
+      } else if (as && as.ups && as.ups.length === 1) {
+        const hl = as.ups[0] ? (as.ups[0].headline || '').slice(0, 72) : '';
+        sigs.push({ priority: 1, headline: '1 analyst upgrade (14d)',
+          detail: hl, tag: 'UPGRADE', tagCls: 'at-watch' });
+      }
+      if (as && as.downs && as.downs.length >= 2) {
+        sigs.push({ priority: 3,
+          headline: as.downs.length + ' analyst downgrade' + (as.downs.length > 1 ? 's' : '') + ' (14d)',
+          detail:   'Multiple downgrades — monitor closely before adding.',
+          tag: 'DOWNGRADED', tagCls: 'at-skip' });
+      }
+      // Cascade: this stock is a downstream follow-on target
+      if (an.cascades) {
+        an.cascades.forEach(function(c) {
+          if (c.downstream && c.downstream.includes(ticker)) {
+            sigs.push({ priority: 2,
+              headline: c.anchor + ' upgraded ' + c.upCount + '× → follow-on window (' + c.lag + ')',
+              detail:   c.reason,
+              tag: 'CASCADE', tagCls: 'at-watch' });
+          }
+        });
+      }
+    }
+
+    // L4: Chain window
+    const ch = window._CHAIN_SIGNALS;
+    if (ch && ch.windowMap && ch.windowMap[ticker]) {
+      const wins = ch.windowMap[ticker];
+      const top  = wins[0];
+      if (top) {
+        const sign = top.dp >= 0 ? '+' : '';
+        const lagStr = top.lag === 0 ? 'same quarter' : '~' + top.lag + 'Q lag';
+        sigs.push({ priority: 2,
+          headline: 'Chain window: ' + top.anchor + ' ' + sign + top.dp.toFixed(1) + '% today',
+          detail:   top.desc + ' (' + lagStr + ')',
+          tag: 'CHAIN WINDOW', tagCls: 'at-watch' });
+      }
+    }
+
+    // ── Score tier ──────────────────────────────────────────────────────
+    const tier = score >= 75 ? { cls: 'sc-r', tag: 'BUY',     tagCls: 'at-buy'  } :
+                 score >= 62 ? { cls: 'sc-a', tag: 'WATCH',   tagCls: 'at-add'  } :
+                 score >= 50 ? { cls: 'sc-g', tag: 'MONITOR', tagCls: 'at-watch'} :
+                               { cls: 'sc-gray', tag: 'SKIP', tagCls: 'at-skip' };
+
+    // Pick highest-priority signal
+    sigs.sort(function(a,b){ return b.priority - a.priority; });
+    const top = sigs[0] || null;
+
+    // ── Update card class ────────────────────────────────────────────────
+    card.className = 'sc ' + tier.cls + ' convergence-stock-card';
+
+    // ── Update .sul: TICKER — Score X · signal headline ─────────────────
+    const sigHl = top ? ' · ' + top.headline : '';
+    sulEl.textContent = ticker + ' — Score ' + score + sigHl;
+
+    // ── Update .suh: live detail or LAYER_DATA fallback ──────────────────
+    const suhEl = card.querySelector('.suh');
+    if (suhEl) {
+      if (top && top.detail) {
+        suhEl.textContent = top.detail;
+      } else {
+        // Fallback: top LAYER_DATA signal description
+        const ld = typeof LAYER_DATA !== 'undefined' ? (LAYER_DATA[ticker] || []) : [];
+        const topL = ld.filter(function(l){ return l.pts > 0; }).sort(function(a,b){ return (b.pts||0)-(a.pts||0); })[0];
+        if (topL && topL.signals && topL.signals[0]) {
+          suhEl.textContent = topL.signals[0].d || topL.desc || '';
+        } else if (topL) {
+          suhEl.textContent = topL.desc || '';
+        } else if (score < 50) {
+          suhEl.textContent = 'No convergent signals this week. Hold existing, do not add.';
+        }
+      }
+    }
+
+    // ── Update .act-tag ──────────────────────────────────────────────────
+    const actTag = card.querySelector('.act-tag');
+    if (actTag) {
+      const liveTag    = top ? top.tag    : tier.tag;
+      const liveTagCls = top ? top.tagCls : tier.tagCls;
+      actTag.textContent = liveTag;
+      actTag.className   = 'act-tag ' + liveTagCls;
+    }
+
+    // ── Update .score-pill ───────────────────────────────────────────────
+    const pill = card.querySelector('.score-pill');
+    if (pill) pill.textContent = score + '/100';
+  });
+}
 
 // ─── SCORE CARD COLOR SYNC ────────────────────────────────────────────────────
 function syncSignalScoreCards() {
@@ -8903,6 +9047,72 @@ function linkTickers(text) {
   return text;
 }
 
+// Build a "Live signals" banner for the top of the Layer Analysis panel
+function _buildLayerLiveBanner(ticker) {
+  const items = [];
+
+  // Insider
+  const ins = window._INSIDER_SIGNALS;
+  if (ins) {
+    const c = (ins.clusters || []).find(function(x){ return x.sym === ticker; });
+    const s = (ins.singles  || []).find(function(x){ return x.sym === ticker; });
+    if (c) items.push({ icon:'👥', col:'var(--blue)',
+      txt: c.buyers.length + ' insiders bought ' + _signalFmtVal(c.totalVal) + ' open market in the last 30 days — insider cluster (rare, historically bullish)' });
+    else if (s) items.push({ icon:'💰', col:'var(--amber)',
+      txt: _signalFmtVal(s.totalVal) + ' insider open-market buy in the last 30 days' });
+  }
+
+  // Analyst
+  const an = window._ANALYST_SIGNALS;
+  if (an && an.signals) {
+    const as = an.signals[ticker];
+    if (as && as.ups && as.ups.length >= 2)
+      items.push({ icon:'📈', col:'var(--green)',
+        txt: as.ups.length + ' analyst upgrades in the last 14 days' });
+    if (as && as.downs && as.downs.length >= 2)
+      items.push({ icon:'📉', col:'var(--red)',
+        txt: as.downs.length + ' analyst downgrades in the last 14 days — monitor closely' });
+    // Cascade
+    if (an.cascades) an.cascades.forEach(function(c) {
+      if (c.downstream && c.downstream.includes(ticker))
+        items.push({ icon:'🔄', col:'var(--amber)',
+          txt: c.anchor + ' upgraded ' + c.upCount + '× — follow-on window open (' + c.lag + ')' });
+    });
+  }
+
+  // Chain window
+  const ch = window._CHAIN_SIGNALS;
+  if (ch && ch.windowMap && ch.windowMap[ticker]) {
+    const wins = ch.windowMap[ticker];
+    wins.slice(0,2).forEach(function(w) {
+      const sign = w.dp >= 0 ? '+' : '';
+      items.push({ icon:'🔗', col:'var(--blue)',
+        txt: 'Chain window active: ' + w.anchor + ' moved ' + sign + w.dp.toFixed(1) + '% today — ' + w.desc });
+    });
+  }
+
+  if (!items.length) return '';
+
+  // Timestamp — use the most recent signal source
+  const tsSrc = (ch && ch.ts) || (ins && ins.ts) || (an && an.ts) || Date.now();
+  const tsStr = new Date(tsSrc).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+  const rows = items.map(function(item) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;">'
+      + '<span style="font-size:13px;flex-shrink:0;margin-top:1px;">' + item.icon + '</span>'
+      + '<span style="font-size:11px;color:var(--text2);line-height:1.5;">' + item.txt + '</span>'
+      + '</div>';
+  }).join('');
+
+  return '<div style="padding:11px 14px;background:rgba(59,130,246,0.06);border:0.5px solid rgba(59,130,246,0.22);border-radius:10px;margin-bottom:12px;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    + '<span style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;">● Live signals</span>'
+    + '<span style="font-size:9px;color:var(--text3);">updated ' + tsStr + '</span>'
+    + '</div>'
+    + rows
+    + '</div>';
+}
+
 function renderLayerAnalysis(ticker, btn) {
   // Update active button style
   document.querySelectorAll('#layer-ticker-btns button').forEach(b => {
@@ -8941,9 +9151,12 @@ function renderLayerAnalysis(ticker, btn) {
     return { text: 'Weak', color: 'var(--red)' };
   }
 
+  // Build live signals banner (populated from _INSIDER_SIGNALS, _ANALYST_SIGNALS, _CHAIN_SIGNALS)
+  const _liveBanner = _buildLayerLiveBanner(ticker);
+
   let html = `
   <div style="margin-top:14px;">
-    <!-- Overall score header -->
+    ${_liveBanner}<!-- Overall score header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:12px 14px;background:var(--card2);border-radius:10px;border:0.5px solid var(--border2);min-width:0;overflow:hidden;">
       <div>
         <div style="font-size:13px;font-weight:700;">${ticker} — Composite signal score</div>
@@ -9718,6 +9931,8 @@ function computeGlobalInsiderSignals() {
   window._INSIDER_SIGNALS = { clusters, singles, ts: Date.now() };
   // Refresh insider card in Morning Brief if rendered
   try { renderInsiderClusterCard(); } catch(e) {}
+  // Update card text — insider signal headlines on affected tickers
+  try { refreshSignalCardText(); } catch(e) {}
 }
 
 async function renderDeepEdgeL2() {
@@ -10085,6 +10300,8 @@ function _buildChainWindowMap({ movers, downstreamOf }) {
   try { renderChainSignalCard(); } catch(e) {}
   // Refresh hot bar chain badges
   try { if (typeof S !== 'undefined' && S.activeTab === 'morning') renderHotBar(); } catch(e) {}
+  // Update card text — chain window badges on affected tickers
+  try { refreshSignalCardText(); } catch(e) {}
 }
 
 async function renderDeepEdgeL4() {
