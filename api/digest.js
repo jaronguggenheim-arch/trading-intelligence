@@ -7,7 +7,7 @@ const BASE_SCORES = {
   NVDA:78,ASML:91,AMD:62,RKLB:67,PLTR:73,TSM:74,SMCI:65,AVGO:74,
   MU:75,ORCL:76,DDOG:75,ZS:71,APP:71,GEV:72,CRM:72,V:72,MA:74,
   NOW:70,CRWD:70,NET:69,ARM:69,AMAT:66,LRCX:64,ETN:67,PWR:65,
-  KLAC:68,MRVL:68,MDB:68,MSFT:68,PANW:67,RKLB:67,PLTR:73,VST:71,
+  KLAC:68,MRVL:68,MDB:68,MSFT:68,PANW:67,VST:71,
   CEG:68,LMT:59,NOC:57,RTX:61,SNOW:58,AMZN:65,GOOGL:60
 };
 
@@ -27,6 +27,69 @@ const NAMES = {
   MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood',DDOG:'Datadog',
   MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic',AXON:'Axon Enterprise'
 };
+
+// ── Supply chain link table ───────────────────────────────────────────────────
+// [source, target, lag, description]
+// source move/beat → target enters the lag window
+const CHAIN_LINKS = [
+  ['TSM',   'ASML', '8–12w',  'TSM capex increase signals ASML order intake'],
+  ['TSM',   'NVDA', '2–4w',   'TSM fab output directly enables NVDA GPU delivery'],
+  ['TSM',   'AMD',  '2–4w',   'TSM fab capacity drives AMD chip availability'],
+  ['TSM',   'AMAT', '2–3q',   'TSM node ramp drives Applied Materials equipment spend'],
+  ['TSM',   'LRCX', '2–3q',   'TSM capacity expansion drives Lam Research etch tools'],
+  ['TSM',   'KLAC', '2–3q',   'TSM process control demand drives KLA metrology'],
+  ['NVDA',  'SMCI', '2–4w',   'NVDA datacenter beat → Super Micro server builds accelerate'],
+  ['NVDA',  'MU',   '4–8w',   'NVDA AI demand → Micron HBM order acceleration'],
+  ['NVDA',  'DDOG', '1–2q',   'AI inference workloads on NVDA chips → Datadog monitoring growth'],
+  ['NVDA',  'ORCL', '1–2q',   'NVDA GPU buildout → Oracle cloud AI infrastructure'],
+  ['NVDA',  'NET',  '1–2q',   'AI edge compute growth → Cloudflare traffic expansion'],
+  ['NVDA',  'SNOW', '1–3q',   'AI workload growth → Snowflake query volumes'],
+  ['NVDA',  'CRM',  '1–3q',   'AI spend → Salesforce Einstein AI adoption'],
+  ['NVDA',  'CRWD', '1–2q',   'AI-powered endpoint expansion → CrowdStrike ARR'],
+  ['NVDA',  'PANW', '1–2q',   'AI security spend → Palo Alto platform consolidation'],
+  ['META',  'AVGO', '2–3q',   'META custom ASIC orders → Broadcom networking revenue'],
+  ['META',  'MRVL', '2–3q',   'Hyperscaler silicon demand → Marvell design wins'],
+  ['MSFT',  'GEV',  '2–4q',   'Datacenter buildout → GE Vernova turbine orders'],
+  ['MSFT',  'ETN',  '2–4q',   'AI datacenter power demand → Eaton electrical equipment'],
+  ['MSFT',  'PWR',  '2–4q',   'Datacenter expansion → Quanta Services grid infrastructure'],
+  ['MSFT',  'VST',  '1–2q',   'AI power demand → Vistra nuclear/gas generation'],
+  ['MSFT',  'CEG',  '1–2q',   'AI power demand → Constellation Energy nuclear capacity'],
+  ['MSFT',  'ORCL', '1–2q',   'Azure + AI growth → Oracle cloud migration contracts'],
+  ['GOOGL', 'NVDA', '1–2q',   'Alphabet TPU + GPU capex → NVDA datacenter orders'],
+  ['AMZN',  'NVDA', '1–2q',   'AWS AI buildout → NVDA GPU procurement'],
+  ['AMAT',  'TSM',  '1–3q',   'Applied Materials deposition tool shipments → TSM node ramp confirmation'],
+  ['LRCX',  'TSM',  '1–3q',   'Lam Research etch tool orders → TSM capacity expansion signal'],
+  ['MU',    'NVDA', '2–4w',   'Micron HBM availability enables NVDA H100/B200 shipments'],
+  ['AVGO',  'META', '2–3q',   'Broadcom ASIC revenue → META custom silicon ramp confirmation'],
+  ['ORCL',  'NVDA', '1–2q',   'Oracle GPU cluster buildout → NVDA large-order demand signal'],
+  ['NOW',   'CRM',  '1–2q',   'ServiceNow AI workflow adoption mirrors Salesforce enterprise spend'],
+  ['ARM',   'NVDA', '1–2q',   'ARM IP licensing in AI chips corroborates NVDA roadmap'],
+  ['KLAC',  'TSM',  '1–2q',   'KLA metrology shipments confirm TSM yield improvement ramp'],
+  ['ENTG',  'TSM',  '1–2q',   'Entegris materials supply confirms TSM advanced node ramp'],
+];
+
+// ── Chain context lookup ──────────────────────────────────────────────────────
+// Returns a plain-English reason string, or null if no relationship found
+function getChainContext(moverTicker, sageTicker) {
+  // Case 1: sage is upstream of mover (sage move activates mover's lag window)
+  const sageToMover = CHAIN_LINKS.find(([src, tgt]) => src === sageTicker && tgt === moverTicker);
+  if (sageToMover) {
+    return `${NAMES[sageTicker] || sageTicker} move activates ${sageToMover[2]} lag window — ${sageToMover[3]}.`;
+  }
+  // Case 2: mover is upstream of sage (mover is a leading indicator for sage)
+  const moverToSage = CHAIN_LINKS.find(([src, tgt]) => src === moverTicker && tgt === sageTicker);
+  if (moverToSage) {
+    return `Upstream of ${NAMES[sageTicker] || sageTicker} — ${moverToSage[3]} (${moverToSage[2]} lead time).`;
+  }
+  // Case 3: shared upstream anchor (both downstream of same signal source)
+  const sageUpstreams = CHAIN_LINKS.filter(([, tgt]) => tgt === sageTicker).map(([src]) => src);
+  const moverUpstreams = CHAIN_LINKS.filter(([, tgt]) => tgt === moverTicker).map(([src]) => src);
+  const shared = sageUpstreams.find(s => moverUpstreams.includes(s));
+  if (shared) {
+    return `Shares ${NAMES[shared] || shared} supply chain exposure with ${sageTicker} — same upstream signal.`;
+  }
+  return null;
+}
 
 // ── Analyst keywords for signal detection ────────────────────────────────────
 const UPGRADE_KW = [
@@ -78,8 +141,7 @@ function scoreColor(s) {
   return '#ef4444';
 }
 
-// ── Signal narrative builder ──────────────────────────────────────────────────
-// Returns 2-3 plain-English bullet strings based on live Finnhub data
+// ── Signal narrative builder (Sage pick) ─────────────────────────────────────
 async function buildSignalNarrative(ticker, fhKey) {
   const signals = [];
 
@@ -165,6 +227,40 @@ async function buildSignalNarrative(ticker, fhKey) {
   return signals.slice(0, 2);
 }
 
+// ── Mover reason builder (Also watching section) ──────────────────────────────
+// Tries chain context first, falls back to analyst signal, then momentum
+async function buildMoverReason(moverTicker, sageTicker, dp, fhKey) {
+  // 1. Chain relationship (instant — no fetch)
+  const chain = getChainContext(moverTicker, sageTicker);
+  if (chain) return chain;
+
+  // 2. Analyst upgrade signal (quick news fetch)
+  try {
+    const news = await fhFetch('company-news', {
+      symbol: moverTicker, from: _dateStr(-14), to: _dateStr(0)
+    }, fhKey);
+    if (Array.isArray(news)) {
+      const ups = news.filter(a => UPGRADE_KW.some(k => (a.headline || '').toLowerCase().includes(k)));
+      if (ups.length >= 2) {
+        return ups.length + ' analyst upgrades in 14 days — conviction building.';
+      } else if (ups.length === 1) {
+        const ptM = (ups[0].headline || '').match(/\$[\d,]+/g);
+        const ptStr = ptM ? ' (PT ' + ptM[ptM.length - 1] + ')' : '';
+        const firmM = (ups[0].headline || '').match(/^([A-Z][A-Za-z\s&]+?)\s+(?:raises?|upgrades?|initiates?)/i);
+        return (firmM ? firmM[1].trim() : 'Analyst') + ' upgrade' + ptStr + ' in the last 14 days.';
+      }
+    }
+  } catch (e) {}
+
+  // 3. Momentum fallback
+  if (Math.abs(dp) >= 1.5) {
+    return (dp > 0 ? 'Up ' : 'Down ') + Math.abs(dp).toFixed(1) + '% today — strong price momentum signal.';
+  }
+
+  // 4. Generic fallback
+  return (NAMES[moverTicker] || moverTicker) + ' scores ' + Math.round(BASE_SCORES[moverTicker] || 65) + '/100 — multi-layer signal convergence.';
+}
+
 // ── Email HTML template ───────────────────────────────────────────────────────
 function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date }) {
   const sc = scoreColor(score);
@@ -185,10 +281,19 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
 
   const moverRows = movers.length > 0 ? movers.map(m => `
     <tr>
-      <td style="padding:5px 0;font-size:13px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;white-space:nowrap;">${m.ticker}</td>
-      <td style="padding:5px 8px;font-size:12px;color:#71717a;">${m.name}</td>
-      <td style="padding:5px 0;font-size:13px;font-weight:700;color:${scoreColor(m.score)};font-family:'Courier New',monospace;text-align:right;">${m.score}/100</td>
-      <td style="padding:5px 0 5px 8px;font-size:12px;color:${m.chgColor};text-align:right;">${m.chg}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #f4f4f5;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+          <tr>
+            <td style="font-size:13px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;white-space:nowrap;vertical-align:middle;">${m.ticker}</td>
+            <td style="padding:0 8px;font-size:12px;color:#71717a;vertical-align:middle;">${m.name}</td>
+            <td style="font-size:12px;font-weight:700;color:${scoreColor(m.score)};font-family:'Courier New',monospace;text-align:right;white-space:nowrap;vertical-align:middle;">${m.score}/100</td>
+            <td style="padding-left:8px;font-size:12px;color:${m.chgColor};text-align:right;white-space:nowrap;vertical-align:middle;">${m.chg}</td>
+          </tr>
+          <tr>
+            <td colspan="4" style="font-size:12px;color:#6b7280;padding-top:4px;line-height:1.55;">${m.reason}</td>
+          </tr>
+        </table>
+      </td>
     </tr>`).join('') : '';
 
   return `<!DOCTYPE html>
@@ -251,7 +356,7 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
       ${moverRows}
     </table>
     <div style="margin-top:14px;">
-      <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">See all ${Object.keys(BASE_SCORES).length}+ signals →</a>
+      <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">See all signals →</a>
     </div>
   </div>` : ''}
 
@@ -306,13 +411,21 @@ export default async function handler(req, res) {
   // ── Step 3: Build live narrative for the Sage pick ────────────────────────
   const signals = await buildSignalNarrative(best.ticker, FH_KEY);
 
-  // ── Step 4: Build "also watching" movers (top 3 after best) ──────────────
-  const movers = actionable.slice(1, 4).map(s => ({
+  // ── Step 4: Build "also watching" movers with chain context ──────────────
+  const moverCandidates = actionable.slice(1, 4);
+
+  // Fetch reasons in parallel (chain lookup is instant; news fetch only fires as fallback)
+  const moverReasons = await Promise.all(
+    moverCandidates.map(s => buildMoverReason(s.ticker, best.ticker, s.dp, FH_KEY))
+  );
+
+  const movers = moverCandidates.map((s, i) => ({
     ticker: s.ticker,
     name: NAMES[s.ticker] || s.ticker,
     score: s.score,
     chg: s.changeStr,
-    chgColor: s.changeColor
+    chgColor: s.changeColor,
+    reason: moverReasons[i]
   }));
 
   const now = new Date();
@@ -330,7 +443,7 @@ export default async function handler(req, res) {
       sage: best.ticker,
       score: best.score,
       signals,
-      movers: movers.map(m => m.ticker),
+      movers: movers.map(m => ({ ticker: m.ticker, reason: m.reason })),
       subscribers: 0,
       message: 'No subscribers yet — digest ready when they sign up'
     });
@@ -381,6 +494,7 @@ export default async function handler(req, res) {
     sage: best.ticker,
     score: best.score,
     signals,
+    movers: movers.map(m => ({ ticker: m.ticker, reason: m.reason })),
     subscribers: subscribers.length,
     sent,
     failed,
