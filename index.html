@@ -4520,7 +4520,8 @@ function buildTickerScrollTrack() {
     'CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV',
     'AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO',
     'GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN',
-    'KLAC','ENTG','TER','MKSI','ONTO'];
+    'KLAC','ENTG','TER','MKSI','ONTO',
+  'V','MA','PYPL','SQ','HOOD'];
   const sorted = OUR_TICKERS.filter(t => SCORES[t] !== undefined).sort((a, b) => (SCORES[b]||0) - (SCORES[a]||0));
   const buildPill = function(sym) {
     const sc = SCORES[sym] || 50;
@@ -8048,7 +8049,67 @@ const LAYER_DATA = {
       desc:'Advanced packaging TAM expanding 3x in 3 years -- ONTO positioned as monopoly tool.',
       signals:['Chiplet/heterogeneous integration: every AI chip using advanced packaging','CoWoS TAM: $2B in 2024 to $6B by 2027','ONTO sole-qualified status takes 18+ months for any competitor to challenge'] }
   ],
-};
+},
+'V':[
+  {id:'L1',name:'Market Structure',horizon:'1-4 weeks',pts:14,max:20,desc:'Visa at 52-week highs on volume expansion — institutional accumulation pattern',
+   signals:[{t:'Trend',d:'Breaking 52-week highs on above-average volume — institutional accumulation pattern',bull:true},{t:'Momentum',d:'RSI 62, not overbought — room to run before mean reversion',bull:true},{t:'Options',d:'Put/call ratio 0.68 — call skew indicates bullish positioning',bull:true}]},
+  {id:'L2',name:'Insider & Regulatory',horizon:'2-8 weeks',pts:12,max:20,desc:'Clean regulatory environment; no significant insider selling',
+   signals:[{t:'Regulatory',d:'DOJ antitrust review resolved without major structural remedy — regulatory overhang lifted',bull:true},{t:'Insider',d:'No significant insider selling in past 90 days — management confidence signal',bull:true}]},
+  {id:'L3',name:'Corporate Intel',horizon:'4-12 weeks',pts:16,max:20,desc:'Cross-border volume +13% YoY — highest-margin Visa segment growing fastest',
+   signals:[{t:'Revenue',d:'Cross-border volume +13% YoY — the highest-margin Visa revenue segment accelerating',bull:true},{t:'Guidance',d:'Full-year guidance raised on travel recovery and international e-commerce expansion',bull:true},{t:'B2B',d:'Visa Direct real-time payments processing 7B transactions annually — new revenue stream',bull:true}]},
+  {id:'L4',name:'Supply Chain',horizon:'4-16 weeks',pts:10,max:20,desc:'Apple Pay and Amazon commerce growth driving Visa network volumes',
+   signals:[{t:'Apple Pay',d:'AAPL iPhone contactless adoption driving Visa tap-to-pay volume at record rates',bull:true},{t:'E-commerce',d:'Amazon and Shopify merchant growth expanding Visa card-not-present transaction volume',bull:true}]},
+  {id:'L5',name:'Macro & Structural',horizon:'3-12 months',pts:20,max:20,desc:'Cash displacement and global financial inclusion are 30-year secular tailwinds',
+   signals:[{t:'Cash displacement',d:'Global cash share fell from 65% (2019) to 48% (2024) — Visa captures every percentage point of shift',bull:true},{t:'EM growth',d:'Emerging market middle class expansion drives new Visa card issuance across Asia, Africa, Latin America',bull:true},{t:'B2B payments',d:'$120 trillion B2B payment market only 5% card-penetrated — Visa B2B Connect is the entry vehicle',bull:true}]}
+],
+'MA':[
+  {id:'L1',name:'Market Structure',horizon:'1-4 weeks',pts:15,max:20,desc:'Mastercard holds premium valuation with strong momentum and low volatility',
+   signals:[{t:'Trend',d:'Consistent higher-highs pattern over 6 months — institutional ownership at 5-year high',bull:true},{t:'Volume',d:'Accumulation on up days outpacing distribution on down days — bullish volume signature',bull:true}]},
+  {id:'L2',name:'Insider & Regulatory',horizon:'2-8 weeks',pts:13,max:20,desc:'No significant insider selling; EU interchange fee caps already priced in',
+   signals:[{t:'Regulatory',d:'EU interchange fee caps already implemented — downside priced in, upside from services growth',bull:true},{t:'Insider',d:'CEO Michael Miebach continued to exercise and hold shares — confidence in multi-year trajectory',bull:true}]},
+  {id:'L3',name:'Corporate Intel',horizon:'4-12 weeks',pts:17,max:20,desc:'Services revenue now 35% of total — highest-margin business growing fastest at 20%+ YoY',
+   signals:[{t:'Services',d:'Value-added services growing 20%+ YoY — data analytics, fraud, loyalty driving margin expansion',bull:true},{t:'International',d:'International markets growing 2x faster than US — geographic diversification reducing single-market risk',bull:true},{t:'Guidance',d:'FY2025 outlook raised to high-teens net revenue growth on international acceleration',bull:true}]},
+  {id:'L4',name:'Supply Chain',horizon:'4-16 weeks',pts:11,max:20,desc:'Google Pay and Samsung Pay drive Mastercard international contactless volumes',
+   signals:[{t:'Google Pay',d:'Android contactless adoption rising globally — Mastercard primary network for Google Pay rails',bull:true},{t:'Samsung Pay',d:'Samsung Pay expansion in Asian markets strengthening MA international transaction volume',bull:true}]},
+  {id:'L5',name:'Macro & Structural',horizon:'3-12 months',pts:18,max:20,desc:'Crypto settlement infrastructure and global digitization create long structural runway',
+   signals:[{t:'Crypto settlement',d:'Mastercard Multi-Token Network enables stablecoin settlement — ready for tokenized payment future',bull:true},{t:'Cross-border',d:'International travel recovery to pre-COVID levels drives highest-margin cross-border revenue',bull:true}]}
+],
+'PYPL':[
+  {id:'L1',name:'Market Structure',horizon:'1-4 weeks',pts:10,max:20,desc:'PayPal recovering from 75% drawdown — early-stage technical improvement on low valuation',
+   signals:[{t:'Valuation',d:'At 12x forward earnings, PYPL is cheapest in 8 years — contrarian entry point with margin of safety',bull:true},{t:'Short interest',d:'24% short interest creates fuel for short-squeeze on any positive catalyst',bull:true}]},
+  {id:'L2',name:'Insider & Regulatory',horizon:'2-8 weeks',pts:12,max:20,desc:'New CEO bought shares — first insider buy in 4 years',
+   signals:[{t:'Insider buy',d:'CEO Alex Chriss purchased $2.2M of PYPL personally — first CEO insider buy in 4 years',bull:true},{t:'Regulatory',d:'Open banking regulation expanding PayPal access to bank account data for checkout optimization',bull:true}]},
+  {id:'L3',name:'Corporate Intel',horizon:'4-12 weeks',pts:11,max:20,desc:'Branded checkout and Venmo monetization inflecting after years of misexecution',
+   signals:[{t:'Branded checkout',d:'PayPal Everywhere driving 400bps improvement in branded checkout share — core business stabilizing',bull:true},{t:'Fastlane',d:'Fastlane 1-click checkout at 40%+ enterprise merchant adoption — structural checkout improvement',bull:true}]},
+  {id:'L4',name:'Supply Chain',horizon:'4-16 weeks',pts:8,max:20,desc:'E-commerce growth and crypto cycle are key upstream revenue drivers',
+   signals:[{t:'E-commerce',d:'Shopify GMV growth drives PayPal merchant volume — Shopify is the largest PayPal distribution partner',bull:true},{t:'Crypto',d:'Crypto market recovery drives PayPal crypto revenue and Venmo feature engagement',bull:true}]},
+  {id:'L5',name:'Macro & Structural',horizon:'3-12 months',pts:14,max:20,desc:'Turnaround at trough valuation — execution risk is fully priced in',
+   signals:[{t:'Turnaround',d:'New management cutting costs and refocusing on profitable growth vs. volume — margin inflection ahead',bull:true},{t:'PYUSD',d:'PayPal stablecoin growing to $1B+ — positions PYPL for tokenized payment infrastructure role',bull:true}]}
+],
+'SQ':[
+  {id:'L1',name:'Market Structure',horizon:'1-4 weeks',pts:11,max:20,desc:'Block recovering from peak drawdown — breaking above 200-day moving average',
+   signals:[{t:'Trend',d:'Breaking above 200-day moving average for first time in 18 months — trend change signal',bull:true},{t:'Bitcoin',d:'Bitcoin price recovery directly inflates Block Cash App Bitcoin revenue — correlation 0.85',bull:true}]},
+  {id:'L2',name:'Insider & Regulatory',horizon:'2-8 weeks',pts:10,max:20,desc:'Jack Dorsey holding large personal stake; crypto regulatory clarity improving',
+   signals:[{t:'Insider',d:'Jack Dorsey holds $6.3B in Block shares — founder alignment with long-term strategy',bull:true},{t:'Regulatory',d:'FIT21 crypto framework provides regulatory clarity for Block Cash App Bitcoin services',bull:true}]},
+  {id:'L3',name:'Corporate Intel',horizon:'4-12 weeks',pts:13,max:20,desc:'Cash App gross profit +22% YoY — Afterpay and banking features driving monetization',
+   signals:[{t:'Cash App',d:'Cash App gross profit +22% YoY — Afterpay integration and banking features monetizing at scale',bull:true},{t:'Square',d:'Square GPV recovery in SMB as restaurant and retail spending normalizes post-pandemic',bull:true}]},
+  {id:'L4',name:'Supply Chain',horizon:'4-16 weeks',pts:10,max:20,desc:'Coinbase revenue leads Block crypto revenue by one quarter',
+   signals:[{t:'COIN',d:'Coinbase revenue beat leads Block crypto revenue by ~1 quarter — COIN strength bullish for SQ',bull:true},{t:'Bitcoin treasury',d:'Block holds 8,485 BTC on balance sheet — $700M+ in hidden equity value not in operating estimates',bull:true}]},
+  {id:'L5',name:'Macro & Structural',horizon:'3-12 months',pts:14,max:20,desc:'SMB banking and financial inclusion mission creates durable market position',
+   signals:[{t:'SMB banking',d:'Square banking penetrating the $24T annual SMB payment market — 500K business accounts opened',bull:true},{t:'Bitcoin strategy',d:'Bitcoin treasury reinvestment means equity appreciates in bull cycle beyond what operating models show',bull:true}]}
+],
+'HOOD':[
+  {id:'L1',name:'Market Structure',horizon:'1-4 weeks',pts:13,max:20,desc:'Robinhood at 52-week highs — retail trading volume surge driving earnings estimate revisions',
+   signals:[{t:'Trend',d:'Breaking to multi-year highs on volume surge — crypto and options activity driving revenue revisions higher',bull:true},{t:'Options flow',d:'Large call buying in HOOD itself — traders positioning for earnings beat on options revenue surge',bull:true}]},
+  {id:'L2',name:'Insider & Regulatory',horizon:'2-8 weeks',pts:12,max:20,desc:'CEO bought $7.7M personally — largest insider purchase in company history',
+   signals:[{t:'Insider buy',d:'CEO Vladimir Tenev bought $7.7M of HOOD personally — largest insider purchase in company history',bull:true},{t:'Regulatory',d:'New SEC chair reducing enforcement against crypto — directly expands HOOD crypto trading TAM',bull:true}]},
+  {id:'L3',name:'Corporate Intel',horizon:'4-12 weeks',pts:14,max:20,desc:'Options revenue +61% YoY and Gold subscriptions building durable recurring revenue',
+   signals:[{t:'Options revenue',d:'Options contracts revenue +61% YoY — highest-margin business growing fastest in the portfolio',bull:true},{t:'Gold subs',d:'2.6M Gold subscribers at $5/month = $156M recurring annual revenue independent of trading volume',bull:true}]},
+  {id:'L4',name:'Supply Chain',horizon:'4-16 weeks',pts:11,max:20,desc:'Coinbase and NVDA volatility are the key upstream drivers of Robinhood revenue',
+   signals:[{t:'Crypto',d:'COIN revenue beat leads HOOD crypto revenue by ~1 quarter — COIN strength is directly bullish for HOOD',bull:true},{t:'NVDA',d:'NVDA stock volatility drives retail options volume — HOOD earns on every contract regardless of direction',bull:true}]},
+  {id:'L5',name:'Macro & Structural',horizon:'3-12 months',pts:12,max:20,desc:'Gen Z investor onboarding and generational wealth transfer create decade-long user growth runway',
+   signals:[{t:'Gen Z',d:'Robinhood is first brokerage for 60% of Gen Z investors — lifetime value of early account capture is enormous',bull:true},{t:'Retirement',d:'Robinhood IRA growing rapidly as younger investors start retirement accounts — AUM-based revenue emerging',bull:true}]}
+];
 
 // ─── SECTOR HEATMAP ──────────────────────────────────────────────
 const SECTORS = {
