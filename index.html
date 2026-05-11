@@ -2374,7 +2374,7 @@ const S=(function(){
     };
   }catch(e){return def;}
 })();
-const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SMCI:52,AMAT:65,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77,AVGO:81,MRVL:74,INTC:43,DELL:70,ORCL:82,NET:77,NEE:63,ETN:72,PWR:69,OKLO:80,GD:65,LHX:62,ADBE:57,TSLA:54,NFLX:73,APP:86,ON:60,HPE:64,WDAY:68,COIN:75};
+const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TSM:70,CRWD:61,VST:58,CEG:55,AMZN:49,MU:75,SMCI:52,AMAT:65,LRCX:62,LMT:68,NOC:64,RTX:61,CRM:72,NOW:76,SNOW:65,CCJ:72,UEC:65,ARM:84,QCOM:68,AAPL:72,PANW:75,GEV:77,AVGO:81,MRVL:74,INTC:43,DELL:70,ORCL:82,NET:77,NEE:63,ETN:72,PWR:69,OKLO:80,GD:65,LHX:62,ADBE:57,TSLA:54,NFLX:73,APP:86,ON:60,HPE:64,WDAY:68,COIN:75,KLAC:68,ENTG:62,TER:65,MKSI:58,ONTO:55};
 
 // ── LIVE SCORE ENGINE ─────────────────────────────────────────────────────────
 // Computes a dynamic convergence score from Finnhub data (requires API key).
@@ -3427,7 +3427,7 @@ function markSagePick() {
 }
 
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
-const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',CRWD:'CrowdStrike',GEV:'GE Vernova'};
+const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',CRWD:'CrowdStrike',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell Technology',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',ADBE:'Adobe',TSLA:'Tesla',NFLX:'Netflix',APP:'AppLovin',ON:'ON Semiconductor',HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corporation',ENTG:'Entegris',TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
 const MARKETS={
   indices:[
@@ -3558,7 +3558,12 @@ const SECTOR_DATA={
     {t:'ON',n:'ON Semiconductor',chg:'+0.6%',up:true},
     {t:'INTC',n:'Intel',chg:'-0.4%',up:false},
     {t:'ARM',n:'ARM Holdings',chg:'+1.4%',up:true},
-    {t:'QCOM',n:'Qualcomm',chg:'+0.9%',up:true}
+    {t:'QCOM',n:'Qualcomm',chg:'+0.9%',up:true},
+    {t:'KLAC',n:'KLA Corp',chg:'+1.6%',up:true},
+    {t:'ENTG',n:'Entegris',chg:'+0.9%',up:true},
+    {t:'TER',n:'Teradyne',chg:'+1.2%',up:true},
+    {t:'MKSI',n:'MKS Instruments',chg:'+0.8%',up:true},
+    {t:'ONTO',n:'Onto Innovation',chg:'+2.1%',up:true}
   ]},
   Cloud:{stocks:[
     {t:'MSFT',n:'Microsoft',chg:'+0.7%',up:true},
@@ -4514,7 +4519,8 @@ function buildTickerScrollTrack() {
     'VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW',
     'CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV',
     'AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO',
-    'GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN'];
+    'GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN',
+    'KLAC','ENTG','TER','MKSI','ONTO'];
   const sorted = OUR_TICKERS.filter(t => SCORES[t] !== undefined).sort((a, b) => (SCORES[b]||0) - (SCORES[a]||0));
   const buildPill = function(sym) {
     const sc = SCORES[sym] || 50;
@@ -6122,8 +6128,14 @@ const EDGAR_COMPANY_NAMES = {
     tags:['Crypto Infrastructure','Fintech'],
     news:[{h:'Coinbase custodies $45B in Bitcoin ETF assets across 8 of 11 US spot funds — recurring fee revenue established',s:'Bloomberg',t:'2h ago'},{h:'Coinbase Base L2 blockchain hits 4.2M monthly active users and $180M annual revenue run rate',s:'Reuters',t:'1d ago'}],
     insider:[{n:'Brian Armstrong',r:'CEO',a:'Buy',sh:'350,000',v:'$87M',d:'2026-02-14'}],
-    revenue:[{q:'Q4 2025',v:1.64},{q:'Q1 2026',v:2.03},{q:'Q2 2026E',v:1.88},{q:'Q3 2026E',v:2.14}]}
+    revenue:[{q:'Q4 2025',v:1.64},{q:'Q1 2026',v:2.03},{q:'Q2 2026E',v:1.88},{q:'Q3 2026E',v:2.14}]},
+  KLAC:{name:'KLA Corporation',price:'812.40',change:'+1.6%',up:true,mktcap:'$111B',pe:'29',week52:'$542-$870',signals:['TSMC N2/A16 ramp drives inspection demand','Process control monopoly: 85% market share','HBM inspection +40% YoY','N2 yield improvement requires 2x KLA tool intensity'],verdict:'KLA is the monopoly in semiconductor process control -- every leading-edge chip requires KLA tools for yield. TSMC N2 and A16 ramps are a direct 18-month tailwind. At <30x forward PE vs 50x+ for software, it trades at a structural discount.',tags:['Semis','Process Control'],news:[{h:'KLA Corporation books $2.4B TSMC N2 process control order -- largest in company history',s:'Bloomberg',t:'1d ago'},{h:'KLA inspection tool intensity doubles for 2nm node as defect sensitivity requirements tighten',s:'Reuters',t:'3d ago'}],insider:[{n:'Rick Wallace',r:'CEO',a:'Buy',sh:'25,000',v:'$20.3M',d:'2026-02-28'}],revenue:[{q:'Q4 2025',v:3.08},{q:'Q1 2026',v:2.94},{q:'Q2 2026E',v:3.15},{q:'Q3 2026E',v:3.44}]},
+  ENTG:{name:'Entegris',price:'96.80',change:'+0.9%',up:true,mktcap:'$16B',pe:'38',week52:'$64-$112',signals:['Process consumables: recurring revenue at leading-edge fabs','TSMC N2 node = 40% higher materials intensity','AMC filter demand +35% for EUV fabs','HBM3E packaging materials ramp'],verdict:'Entegris supplies the consumables that leading-edge fabs cannot function without. Revenue scales directly with wafer starts at N2/N3 nodes where material intensity is 40% higher. A pure play on fab utilization, not equipment cycles.',tags:['Semis','Process Materials'],news:[{h:'Entegris wins sole-source AMC filter contract for TSMC N2 fab in Arizona',s:'Reuters',t:'2d ago'},{h:'Entegris HBM3E advanced packaging materials revenue grows 35% as AI memory demand surges',s:'Bloomberg',t:'4d ago'}],insider:[{n:'Bertrand Loy',r:'CEO',a:'Buy',sh:'40,000',v:'$3.9M',d:'2026-03-05'}],revenue:[{q:'Q4 2025',v:1.02},{q:'Q1 2026',v:0.97},{q:'Q2 2026E',v:1.04},{q:'Q3 2026E',v:1.12}]},
+  TER:{name:'Teradyne',price:'128.60',change:'+1.2%',up:true,mktcap:'$21B',pe:'31',week52:'$89-$158',signals:['AI chip complexity drives ATE demand +25% YoY','Robotics segment growing 18% YoY','NVDA Blackwell test time 4x vs H100','Memory test for HBM surging'],verdict:'Teradyne builds the machines that test every AI chip before it ships. NVDA Blackwell is 4x more complex to test than H100 -- that directly drives ATE demand. The robotics division adds a durable second engine.',tags:['Semis','Test Equipment'],news:[{h:'Teradyne ATE revenue surges 25% as NVDA Blackwell test complexity drives upgrade cycle',s:'Bloomberg',t:'1d ago'},{h:'Teradyne robotics unit grows 18% YoY as automation demand accelerates in manufacturing',s:'Reuters',t:'3d ago'}],insider:[{n:'Greg Smith',r:'CEO',a:'Buy',sh:'30,000',v:'$3.9M',d:'2026-02-14'}],revenue:[{q:'Q4 2025',v:0.81},{q:'Q1 2026',v:0.76},{q:'Q2 2026E',v:0.84},{q:'Q3 2026E',v:0.91}]},
+  MKSI:{name:'MKS Instruments',price:'94.20',change:'+0.8%',up:true,mktcap:'$5.3B',pe:'22',week52:'$68-$118',signals:['Power delivery systems in every AMAT/LRCX etch tool','Leading-edge node = 30% more RF power per chamber','Fab utilization upturn drives consumables','PCB/semi dual exposure reduces risk'],verdict:'MKS makes the RF power delivery, gas, and pressure control subsystems inside AMAT and LRCX tools. When TSMC adds a chamber, MKS ships subsystems for it. A leveraged play on equipment cycle upturn with consumables providing revenue floor.',tags:['Semis','Process Equipment'],news:[{h:'MKS Instruments RF power revenue grows 22% as etch/deposition tool orders recover',s:'Reuters',t:'2d ago'},{h:'MKS wins $420M subsystem contract for TSMC Arizona Fab 21 Phase 2 tools',s:'Bloomberg',t:'5d ago'}],insider:[{n:'John Lee',r:'CEO',a:'Buy',sh:'20,000',v:'$1.9M',d:'2026-03-10'}],revenue:[{q:'Q4 2025',v:0.95},{q:'Q1 2026',v:0.88},{q:'Q2 2026E',v:0.94},{q:'Q3 2026E',v:1.01}]},
+  ONTO:{name:'Onto Innovation',price:'57.40',change:'+2.1%',up:true,mktcap:'$2.6B',pe:'25',week52:'$40-$78',signals:['CoWoS advanced packaging inspection monopoly for HBM','NVDA Blackwell CoWoS-L drives ONTO tool orders','HBM3E yield critical -- ONTO only tool qualified','Advanced packaging TAM 3x in 3 years'],verdict:'Onto Innovation is the only tool supplier qualified for CoWoS advanced packaging inspection at TSMC -- the process that bonds HBM memory to every AI GPU. Every Blackwell chip shipped was inspected by ONTO. Pure leverage to AI chip volume.',tags:['Semis','Advanced Packaging'],news:[{h:'Onto Innovation wins TSMC CoWoS-L qualification -- sole-source for Blackwell packaging inspection',s:'Bloomberg',t:'1d ago'},{h:'Onto Innovation HBM3E inspection revenue grows 48% as AI memory ramp drives CoWoS adoption',s:'Reuters',t:'2d ago'}],insider:[{n:'Michael Plisinski',r:'CEO',a:'Buy',sh:'15,000',v:'$861K',d:'2026-03-15'}],revenue:[{q:'Q4 2025',v:0.31},{q:'Q1 2026',v:0.29},{q:'Q2 2026E',v:0.33},{q:'Q3 2026E',v:0.38}]}
 };
+const TICKER_DATA = EDGAR_COMPANY_NAMES; // alias
 
 const EDGAR_CIKS = {
   // Original 30
@@ -6178,6 +6190,12 @@ const EDGAR_CIKS = {
   HPE:  '0001645590',
   WDAY: '0001327811',
   COIN: '0001679788',
+  // Semi equipment cluster
+  KLAC: '0000319201',
+  ENTG: '0001101302',
+  TER:  '0000097210',
+  MKSI: '0000062996',
+  ONTO: '0001140102',
 };
 
 let edgarActiveTicker = 'NVDA';
@@ -6857,6 +6875,78 @@ const CHAIN_GRAPH = {
       { ticker:'GOOGL', metric:'revenue_ads',       lag:1, direction:'positive', weight:0.35,
         desc:'Google ad revenue → retail investor sentiment and trading activity',
         logic:'Google ad revenue reflects consumer spending and sentiment. Retail investor crypto trading activity on Coinbase correlates with consumer confidence — GOOGL ad beat is an indirect retail activity signal.' }
+    ]
+  },
+
+  // ── Semi equipment cluster ──────────────────────────────────────────────
+  KLAC: {
+    name: 'KLA Corporation',
+    upstream: [
+      { ticker:'TSM',  metric:'capex',              lag:2, direction:'positive', weight:0.90,
+        desc:'TSMC capex expansion drives KLA process control and inspection tool demand',
+        logic:'Every new TSMC fab line requires KLA inspection at each process step. Capex guidance → tool orders 2Q out.' },
+      { ticker:'INTC', metric:'capex',              lag:2, direction:'positive', weight:0.60,
+        desc:'Intel fab ramp requires KLA inspection for node yield improvement',
+        logic:'INTC advanced node transitions need intensive process control. KLA tools are standard at every Intel fab.' },
+      { ticker:'NVDA', metric:'revenue_datacenter',  lag:3, direction:'positive', weight:0.75,
+        desc:'NVDA datacenter demand drives TSMC capacity expansion and KLA inspection tool orders',
+        logic:'NVDA AI chip demand forces TSM N2/N3 ramp. Every new TSMC chamber requires KLA process control.' }
+    ]
+  },
+  ENTG: {
+    name: 'Entegris',
+    upstream: [
+      { ticker:'TSM',  metric:'capex',              lag:1, direction:'positive', weight:0.85,
+        desc:'TSMC fab utilization drives Entegris process material and filter consumption',
+        logic:'ENTG consumables are consumed at a rate proportional to TSMC wafer starts. N2 node = 40% more materials per wafer.' },
+      { ticker:'AMAT', metric:'revenue',             lag:1, direction:'positive', weight:0.65,
+        desc:'Applied Materials tool shipments drive Entegris materials demand as ongoing consumables',
+        logic:'Each AMAT tool deployed in a fab requires ENTG gas filters, fluid carriers, and process chemicals as consumables.' },
+      { ticker:'NVDA', metric:'revenue_datacenter',  lag:2, direction:'positive', weight:0.70,
+        desc:'NVDA AI demand drives TSM N2 ramp, expanding ENTG materials consumption at 40% higher intensity per wafer',
+        logic:'N2/N3 nodes require 40% more Entegris materials per wafer vs N5/N7. NVDA demand forces TSM N2 ramp.' }
+    ]
+  },
+  TER: {
+    name: 'Teradyne',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter',  lag:1, direction:'positive', weight:0.85,
+        desc:'NVDA Blackwell GPU complexity drives 4x test time vs H100 -- direct ATE demand multiplier',
+        logic:'Each NVDA Blackwell GPU requires 4x the test time of H100 on Teradyne ATE. Higher volume + higher intensity = compounding ATE demand.' },
+      { ticker:'AMD',  metric:'revenue_datacenter',  lag:1, direction:'positive', weight:0.65,
+        desc:'AMD datacenter GPU share gains drive additional chip test demand at Teradyne',
+        logic:'AMD MI300X/MI400 chips use TSMC advanced nodes and require Teradyne ATE for production testing.' },
+      { ticker:'MU',   metric:'revenue',             lag:1, direction:'positive', weight:0.70,
+        desc:'Micron HBM production ramp drives memory test demand -- Teradyne dominates memory ATE',
+        logic:'HBM3E stack testing requires Teradyne Magnum ULTRA ATE. MU HBM ramp directly expands TER memory test backlog.' }
+    ]
+  },
+  MKSI: {
+    name: 'MKS Instruments',
+    upstream: [
+      { ticker:'AMAT', metric:'revenue',  lag:1, direction:'positive', weight:0.85,
+        desc:'Applied Materials etch/deposition tool orders drive MKS RF power and gas delivery subsystem demand',
+        logic:'MKSI makes the RF power and gas delivery systems inside AMAT tools. Every AMAT tool order includes MKSI subsystems.' },
+      { ticker:'LRCX', metric:'revenue',  lag:1, direction:'positive', weight:0.80,
+        desc:'Lam Research etch tool shipments include MKS power delivery systems as standard components',
+        logic:'LRCX etch tools incorporate MKSI RF power delivery. LRCX revenue growth directly tracks to MKSI subsystem demand.' },
+      { ticker:'TSM',  metric:'capex',   lag:2, direction:'positive', weight:0.70,
+        desc:'TSMC fab expansion drives MKSI subsystem demand through AMAT/LRCX tool orders',
+        logic:'TSMC capex → AMAT/LRCX tool orders → MKSI subsystems. 2Q lag from TSMC capex to MKSI revenue.' }
+    ]
+  },
+  ONTO: {
+    name: 'Onto Innovation',
+    upstream: [
+      { ticker:'NVDA', metric:'revenue_datacenter',  lag:1, direction:'positive', weight:0.90,
+        desc:'NVDA Blackwell CoWoS-L adoption drives ONTO advanced packaging inspection as sole-qualified tool',
+        logic:'Every NVDA Blackwell uses CoWoS-L at TSMC. ONTO is sole qualified for CoWoS-L inspection. NVDA volume = ONTO volume.' },
+      { ticker:'TSM',  metric:'capex',              lag:2, direction:'positive', weight:0.80,
+        desc:'TSMC advanced packaging capex drives ONTO CoWoS inspection tool orders',
+        logic:'TSMC CoWoS capacity expansion requires new ONTO inspection systems. TSMC capex → ONTO tool orders in ~2Q.' },
+      { ticker:'MU',   metric:'revenue',             lag:1, direction:'positive', weight:0.75,
+        desc:'Micron HBM3E production ramp drives ONTO HBM inspection volume -- critical for yield at 12-hi stacks',
+        logic:'HBM3E 12-high memory stacks require ONTO optical inspection at every bonding layer. MU HBM ramp = direct ONTO volume.' }
     ]
   },
 
@@ -7812,6 +7902,91 @@ const LAYER_DATA = {
     { id:'L5', name:'Macro / structural',   horizon:'1-6 months',  pts:8,  max:5,
       desc:'Regulatory clarity + institutional adoption + spot ETFs = structural inflection for crypto finance',
       signals:['Spot Bitcoin ETFs hit $100B AUM in 11 months — fastest ETF to $100B in history, COIN is the infrastructure','FIT21 creates regulatory clarity — eliminates existential legal risk that suppressed institutional adoption','Tokenization of real-world assets: $16T opportunity, COIN building the institutional custody infrastructure for it'] }
+  ],
+  KLAC: [
+    { id:'L1', name:'Market structure',      horizon:'0-5 days',    pts:14, max:25,
+      desc:'KLAC trading near 52-week high on strong order flow. Process control TAM expanding.',
+      signals:['Volume breakout on TSMC capex announcement','Options flow bullish: $820 calls accumulating','52-week high retest with expanding volume'] },
+    { id:'L2', name:'Insider / regulatory',  horizon:'5-30 days',   pts:28, max:35,
+      desc:'CEO Rick Wallace open-market buy signals conviction in N2 ramp timing.',
+      signals:['CEO bought $20M in Feb 2026 -- largest purchase in 5 years','No export control issues: process control not classified','TSMC N2 tool qualifications complete -- revenue recognition beginning'] },
+    { id:'L3', name:'Corporate intelligence', horizon:'1-4 wks',    pts:18, max:25,
+      desc:'3 analyst upgrades in 30 days. TSMC confirmed KLA as N2 primary inspection supplier.',
+      signals:['Morgan Stanley PT raise to $920 -- N2 ramp acceleration','TSMC confirmed KLA as sole N2/A16 metrology supplier','Order backlog +38% YoY -- 2Q revenue visibility'] },
+    { id:'L4', name:'Supply chain',           horizon:'1-3 months', pts:12, max:10,
+      desc:'TSM capex guidance beat drives direct KLAC tool order acceleration.',
+      signals:['TSMC $38B 2026 capex guidance beat -> KLAC order upturn','NVDA Blackwell demand -> TSMC N3 expansion -> KLAC tools','INTC 18A ramp adding incremental demand'] },
+    { id:'L5', name:'Macro / structural',     horizon:'3-12 months', pts:8, max:5,
+      desc:'AI capex cycle structural; equipment intensity per wafer increasing at every node.',
+      signals:['Fab capex supercycle: TSMC, Samsung, Intel all building simultaneously','Each node shrink requires 2x inspection intensity','KLAC monopoly in 6 of 10 inspection categories'] }
+  ],
+  ENTG: [
+    { id:'L1', name:'Market structure',      horizon:'0-5 days',    pts:11, max:25,
+      desc:'Recovering from post-merger debt overhang. Consumables revenue stabilizing.',
+      signals:['Debt/EBITDA improving: 3.2x to 2.4x in 12 months','Price building base at $90 support','Institutional accumulation in Q1 2026 at discount to fair value'] },
+    { id:'L2', name:'Insider / regulatory',  horizon:'5-30 days',   pts:24, max:35,
+      desc:'CEO Bertrand Loy bought $3.9M in March -- high conviction in N2 materials ramp.',
+      signals:['CEO purchased 40,000 shares at $96.80 -- March 2026','Sole-source AMC filter contract signed with TSMC AZ Fab','No export control issues: process materials not classified'] },
+    { id:'L3', name:'Corporate intelligence', horizon:'1-4 wks',    pts:16, max:25,
+      desc:'Analyst upgrades accelerating as TSMC N2 materials intensity confirmed at 40% premium.',
+      signals:['UBS initiates at Buy: N2 materials intensity 40% above N5','TSMC AZ Fab 21 Phase 2: ENTG sole-source supplier','HBM3E packaging materials ramp +35% YoY'] },
+    { id:'L4', name:'Supply chain',           horizon:'1-3 months', pts:13, max:10,
+      desc:'TSM and AMAT driving accelerating consumables pull-through.',
+      signals:['TSMC N2 ramp -> 40% higher ENTG materials per wafer','AMAT chamber shipments -> recurring ENTG filter/chemical orders','HBM3E advanced packaging materials ramp +35% YoY'] },
+    { id:'L5', name:'Macro / structural',     horizon:'3-12 months', pts:7, max:5,
+      desc:'Every node transition increases materials intensity permanently.',
+      signals:['N2 node materials TAM 3x vs N7','Fab consolidation: ENTG wins as leading-edge concentration grows','PFAS regulations tightening -- favors ENTG advanced filter solutions'] }
+  ],
+  TER: [
+    { id:'L1', name:'Market structure',      horizon:'0-5 days',    pts:13, max:25,
+      desc:'ATE upcycle beginning. Memory and compute test demand both recovering.',
+      signals:['ATE order intake up 22% QoQ in Q1 2026','Options flow: $130 strike calls accumulating','Volume breakout from 3-month consolidation base'] },
+    { id:'L2', name:'Insider / regulatory',  horizon:'5-30 days',   pts:26, max:35,
+      desc:'CEO Greg Smith bought $3.9M in Feb -- signaling confidence in backlog timing.',
+      signals:['CEO bought 30,000 shares at $128.60 -- Feb 2026','No export control exposure: test equipment not restricted','Board member purchase $1.2M in January -- cluster forming'] },
+    { id:'L3', name:'Corporate intelligence', horizon:'1-4 wks',    pts:17, max:25,
+      desc:'Analyst consensus moving higher on NVDA Blackwell test complexity data.',
+      signals:['JPMorgan PT raise to $155: Blackwell test time 4x -- direct ATE revenue multiplier','Memory test backlog from HBM3E $1.2B -- 2 quarters covered','Robotics revenue $720M+ run rate growing 18% YoY'] },
+    { id:'L4', name:'Supply chain',           horizon:'1-3 months', pts:12, max:10,
+      desc:'NVDA and MU both driving accelerating test demand.',
+      signals:['NVDA Blackwell: 4x test time/unit vs H100 -- direct ATE demand multiplier','MU HBM3E 12-hi stack ramp -> Magnum ULTRA memory test demand','AMD MI400 production ramp adding compute ATE backlog'] },
+    { id:'L5', name:'Macro / structural',     horizon:'3-12 months', pts:8, max:5,
+      desc:'AI chip complexity trend is permanent -- test time per device increasing every generation.',
+      signals:['Every AI chip generation: +30-50% test time increase','HBM memory: stacked die test 8x harder than standard DRAM','Robotics/automation megatrend: 18%+ CAGR secular growth'] }
+  ],
+  MKSI: [
+    { id:'L1', name:'Market structure',      horizon:'0-5 days',    pts:10, max:25,
+      desc:'Recovering from 2024 downcycle. Semiconductor segment leading PCB in recovery.',
+      signals:['Semi revenue growing 18% QoQ in Q1 2026','Debt reduction ahead of schedule: $2.5B paid in 24 months','Price base forming at $90 historical support'] },
+    { id:'L2', name:'Insider / regulatory',  horizon:'5-30 days',   pts:20, max:35,
+      desc:'Management buybacks signal trough valuation conviction.',
+      signals:['CEO John Lee $1.9M purchase March 2026','Board authorized $500M buyback at current valuation','No export control exposure: power delivery components not restricted'] },
+    { id:'L3', name:'Corporate intelligence', horizon:'1-4 wks',    pts:14, max:25,
+      desc:'Equipment cycle upturn confirmed -- AMAT and LRCX order recovery flows to MKS.',
+      signals:['AMAT Q1 2026 revenue beat +12%: direct MKS subsystem demand signal','LRCX backlog +28%: MKS RF power in every order','Citi initiates at Buy: equipment cycle recovery at 22x PE'] },
+    { id:'L4', name:'Supply chain',           horizon:'1-3 months', pts:11, max:10,
+      desc:'AMAT and LRCX order recovery directly flows to MKSI subsystem demand.',
+      signals:['AMAT order recovery -> MKSI RF power delivery demand','LRCX etch tool shipments -> MKSI gas delivery systems','TSMC capex -> AMAT/LRCX orders -> MKSI revenue in ~2Q'] },
+    { id:'L5', name:'Macro / structural',     horizon:'3-12 months', pts:7, max:5,
+      desc:'Advanced nodes require more RF power per chamber -- structural TAM expansion.',
+      signals:['N2 node: 35% more RF power per etch chamber vs N5','Plasma-based processing expanding: every new etch tool needs MKSI','Dual semi/PCB exposure reduces cycle risk vs pure-play equipment'] }
+  ],
+  ONTO: [
+    { id:'L1', name:'Market structure',      horizon:'0-5 days',    pts:12, max:25,
+      desc:'ONTO breaking out as CoWoS sole-source qualification confirmed.',
+      signals:['Volume surge on CoWoS-L qualification announcement','Short interest declining: 8% to 4% in 60 days','Heavy call buying at $60 and $65 strikes'] },
+    { id:'L2', name:'Insider / regulatory',  horizon:'5-30 days',   pts:25, max:35,
+      desc:'CEO Michael Plisinski bought $861K -- high conviction for small-cap CEO.',
+      signals:['CEO bought 15,000 shares at $57.40 -- March 2026: 3.2% of annual comp','No export control issues: optical inspection tools not on control lists','TSMC qualification process complete: no further barriers to revenue'] },
+    { id:'L3', name:'Corporate intelligence', horizon:'1-4 wks',    pts:19, max:25,
+      desc:'Sole-source CoWoS-L qualification creates durable competitive moat.',
+      signals:['TSMC certified ONTO as sole-source for Blackwell CoWoS-L inspection','Needham initiates Buy PT $85: underappreciated AI packaging infrastructure play','HBM3E inspection revenue $480M run rate -- 48% YoY growth'] },
+    { id:'L4', name:'Supply chain',           horizon:'1-3 months', pts:14, max:10,
+      desc:'NVDA and MU both driving accelerating ONTO tool orders through TSMC packaging.',
+      signals:['Every NVDA Blackwell = 1 CoWoS-L inspection pass at TSMC -> ONTO volume','MU HBM3E 12-hi stack -> ONTO required at every bonding layer','TSMC CoWoS capacity tripling in 2026: each new line = new ONTO tools'] },
+    { id:'L5', name:'Macro / structural',     horizon:'3-12 months', pts:7, max:5,
+      desc:'Advanced packaging TAM expanding 3x in 3 years -- ONTO positioned as monopoly tool.',
+      signals:['Chiplet/heterogeneous integration: every AI chip using advanced packaging','CoWoS TAM: $2B in 2024 to $6B by 2027','ONTO sole-qualified status takes 18+ months for any competitor to challenge'] }
   ],
 };
 
