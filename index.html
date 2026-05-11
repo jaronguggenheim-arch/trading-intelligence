@@ -509,10 +509,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <button class="nt" onclick="gT('convergence',this)">Signal Scores</button>
   <button class="nt" onclick="gT('correlations',this)">Supply Chain</button>
   <button class="nt" onclick="gT('deepedge',this)">Deep Edge</button>
-  <button class="nt" onclick="gT('portfolio',this)">My Intel</button>
   <button class="nt" onclick="gT('smart',this)">Smart Money</button>
   <button class="nt" onclick="gT('earnings',this)">Earnings</button>
   <button class="nt" onclick="gT('markets',this)">Markets</button>
+  <button class="nt" onclick="gT('portfolio',this)">My Intel</button>
 </div>
 
 <!-- STOCK FOCUS BAR -->
@@ -2640,10 +2640,10 @@ async function computeLiveScore(ticker) {
     const l4pts = _l4Windows.length > 0
       ? Math.min(20, _l4Base + Math.min(5, _l4Windows.length * 2))  // +2 per active upstream mover, cap 20
       : _l4Base;
-    const l5pts = ld ? (ld.find(l => l.id==='L5')?.pts || 5)  : 5;
+    const l5pts = await computeL5Score(ticker);
 
     const score = Math.min(99, Math.max(1, l1pts + l2pts + l3pts + l4pts + l5pts));
-    _liveScoreCache[ticker] = { score, l1pts, l3pts, rsi, rangePos: hi52 ? (curPrice-lo52)/(hi52-lo52) : null, dp, ts: Date.now() };
+    _liveScoreCache[ticker] = { score, l1pts, l3pts, l5pts, rsi, rangePos: hi52 ? (curPrice-lo52)/(hi52-lo52) : null, dp, vix: _macroCache.vix, regime: _macroCache.regime, ts: Date.now() };
     SCORES[ticker] = score; // update in place — all renders get live value
     // Persist to score history for trend arrows
     try {
@@ -4660,10 +4660,11 @@ function buildTickerFallback(sym) {
 
 function openTicker(sym){const d=TICKER_DATA[sym]||buildTickerFallback(sym);const inWL=S.wl.includes(sym);const score=SCORES[sym]||0;const sColor=score>=80?'var(--blue)':score>=60?'var(--text2)':'var(--text3)';const sBg=score>=80?'var(--blue-bg)':'var(--bg3)';const sBd=score>=80?'var(--blue-bd)':'var(--border)';const _isVercel = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
 const newsH=d.news.map(n=>`<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:3px;">${n.src}</div><div style="font-size:12px;font-weight:500;line-height:1.5;margin-bottom:5px;">${n.hl}</div><span class="b ${n.tag||'b-b'}">${n.label||'Signal'}</span></div>`).join('')||(_isVercel?'<div style="font-size:11px;color:var(--text3);padding:10px 0;text-align:center;">Fetching live news from Finnhub…</div>':'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No recent news tracked</div>');const insH=d.insider.map(i=>`<div class="sc ${i.type==='BUY'?'sc-g':'sc-gray'} sc-na" style="cursor:default;margin-bottom:6px;"><div class="sul">${i.name} · ${i.type} ${i.amount}</div><div class="suh">${i.date} · ${i.note}</div></div>`).join('')||'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No recent insider filings tracked</div>';const revH=d.revenue.map(r=>`<div class="rev-bar-wrap"><div class="rev-bar-label"><span style="font-weight:500;">${r.seg}</span><span>${r.pct}%</span></div><div class="rev-bar-outer"><div class="rev-bar-inner" style="width:${r.pct}%;background:${r.pct>50?'var(--green)':r.pct>25?'var(--blue)':'var(--amber)'};"></div></div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${r.vs}</div></div>`).join('')||'<div style="font-size:11px;color:var(--text3);">No revenue breakdown data</div>';
-document.getElementById('ticker-content').innerHTML=`<div class="ticker-hdr"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div class="ticker-back" onclick="goBack()">← Back</div><button class="share-btn" onclick="shareStock('${sym}',event)"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg> Share</button></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.5px;">${sym}</div><div id="tk-hdr-name" style="font-size:13px;color:var(--text2);margin-top:2px;">${d.name}</div></div><div style="text-align:right;"><div id="tk-hdr-price" style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;">${d.price==='—'?'—':'$'+d.price}</div><div id="tk-hdr-change" class="${d.up?'up':'dn'}" style="font-size:13px;font-weight:500;margin-top:2px;">${d.change}</div></div></div><div class="ticker-stats"><div class="ts-cell"><div id="tk-hdr-mktcap" class="ts-val">${d.mktcap}</div><div class="ts-lbl">Market cap</div></div><div class="ts-cell"><div id="tk-hdr-vol" class="ts-val">${d.vol}</div><div class="ts-lbl">Volume</div></div><div class="ts-cell"><div id="tk-hdr-w52" class="ts-val">${d.week52}</div><div class="ts-lbl">52-week range</div></div><div class="ts-cell" style="background:${sBg};border-color:${sBd};"><div class="ts-val" style="color:${sColor};">${score||'—'}/100</div><div class="ts-lbl">Signal score</div></div></div><div class="ticker-action-bar"><button class="tab-watch-btn ${inWL?'watching':''}" onclick="toggleWL('${sym}',this)">${inWL?'Watching ✓':'+ Add to watchlist'}</button><button class="mirror-btn" onclick="mirrorTrade('${sym}','${d.price}','Score ${score}')">Mirror trade</button><button class="supply-btn" onclick="gT('correlations',document.querySelectorAll('.nt')[2])">Supplier chain →</button></div></div><div class="ticker-tabs"><button class="ticker-tab active" onclick="showTkT('ov',this)">Overview</button><button class="ticker-tab" onclick="showTkT('news',this)">News & Signals</button><button class="ticker-tab" onclick="showTkT('ins',this)">Insider + Congress</button><button class="ticker-tab" onclick="showTkT('rev',this)">Revenue</button><button class="ticker-tab" onclick="showTkT('score',this)">Signal Score</button><button class="ticker-tab" onclick="showTkT('chain',this)">Supply Chain</button><button class="ticker-tab" onclick="showTkT('dedge',this)">Deep Edge</button></div><div class="card"><div class="card-lbl">Price chart — click a timeframe</div><div class="tf-bar" id="tf-bar-ticker">${['1D','5D','1M','3M','6M','1Y','5Y'].map(t=>`<button class="tf-btn ${t==='3M'?'active':''}" onclick="setTF('ticker','${sym}','${t}',this)">${t}</button>`).join('')}</div><div class="chart-wrap" id="chart-ticker"><div class="chart-loading">Loading chart…</div></div></div><div id="tk-ov"><div class="card"><div class="card-lbl">Synopsis</div><p id="tk-ov-synopsis" style="font-size:13px;line-height:1.75;">${d.synopsis}</p></div></div><div id="tk-news" style="display:none;"><div class="card"><div class="card-lbl">News + signal events — last 14 days</div><div id="tk-news-list">${newsH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://finance.yahoo.com/quote/${sym}/news/" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Yahoo Finance ↗</a><a href="https://unusualwhales.com/stocks/${sym}" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Unusual Whales ↗</a></div></div></div><div id="tk-ins" style="display:none;"><div class="card"><div class="card-lbl">Insider + congress activity</div><div id="tk-ins-content">${insH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${sym}&type=4" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">SEC Form 4 ↗</a><a href="http://openinsider.com/search?q=${sym}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;padding:5px 10px;border:0.5px solid var(--green-bd);border-radius:5px;">OpenInsider ↗</a><a href="https://www.quiverquant.com/congresstrading/" target="_blank" style="font-size:11px;color:var(--amber);text-decoration:none;padding:5px 10px;border:0.5px solid var(--amber-bd);border-radius:5px;">Quiver Congress ↗</a></div></div></div><div id="tk-rev" style="display:none;"><div class="card"><div class="card-lbl">Revenue breakdown by segment</div>${revH}</div></div><div id="tk-score" style="display:none;"></div><div id="tk-chain" style="display:none;"></div><div id="tk-dedge" style="display:none;"></div>`;
+document.getElementById('ticker-content').innerHTML=`<div class="ticker-hdr"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div class="ticker-back" onclick="goBack()">← Back</div><button class="share-btn" onclick="shareStock('${sym}',event)"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg> Share</button></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.5px;">${sym}</div><div id="tk-hdr-name" style="font-size:13px;color:var(--text2);margin-top:2px;">${d.name}</div></div><div style="text-align:right;"><div id="tk-hdr-price" style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;">${d.price==='—'?'—':'$'+d.price}</div><div id="tk-hdr-change" class="${d.up?'up':'dn'}" style="font-size:13px;font-weight:500;margin-top:2px;">${d.change}</div></div></div><div class="ticker-stats"><div class="ts-cell"><div id="tk-hdr-mktcap" class="ts-val">${d.mktcap}</div><div class="ts-lbl">Market cap</div></div><div class="ts-cell"><div id="tk-hdr-vol" class="ts-val">${d.vol}</div><div class="ts-lbl">Volume</div></div><div class="ts-cell"><div id="tk-hdr-w52" class="ts-val">${d.week52}</div><div class="ts-lbl">52-week range</div></div><div class="ts-cell" style="background:${sBg};border-color:${sBd};"><div class="ts-val" style="color:${sColor};">${score||'—'}/100</div><div class="ts-lbl">Signal score</div></div></div><div class="ticker-action-bar"><button class="tab-watch-btn ${inWL?'watching':''}" onclick="toggleWL('${sym}',this)">${inWL?'Watching ✓':'+ Add to watchlist'}</button><button class="mirror-btn" onclick="mirrorTrade('${sym}','${d.price}','Score ${score}')">Mirror trade</button><button class="supply-btn" onclick="gT('correlations',document.querySelectorAll('.nt')[2])">Supplier chain →</button></div></div><div class="ticker-tabs"><button class="ticker-tab active" onclick="showTkT('ov',this)">Overview</button><button class="ticker-tab" onclick="showTkT('news',this)">News & Signals</button><button class="ticker-tab" onclick="showTkT('flow',this)">Options Flow</button><button class="ticker-tab" onclick="showTkT('ins',this)">Insider + Congress</button><button class="ticker-tab" onclick="showTkT('rev',this)">Revenue</button><button class="ticker-tab" onclick="showTkT('score',this)">Signal Score</button><button class="ticker-tab" onclick="showTkT('chain',this)">Supply Chain</button><button class="ticker-tab" onclick="showTkT('dedge',this)">Deep Edge</button></div><div class="card"><div class="card-lbl">Price chart — click a timeframe</div><div class="tf-bar" id="tf-bar-ticker">${['1D','5D','1M','3M','6M','1Y','5Y'].map(t=>`<button class="tf-btn ${t==='3M'?'active':''}" onclick="setTF('ticker','${sym}','${t}',this)">${t}</button>`).join('')}</div><div class="chart-wrap" id="chart-ticker"><div class="chart-loading">Loading chart…</div></div></div><div id="tk-ov"><div class="card"><div class="card-lbl">Synopsis</div><p id="tk-ov-synopsis" style="font-size:13px;line-height:1.75;">${d.synopsis}</p></div></div><div id="tk-news" style="display:none;"><div class="card"><div class="card-lbl">News + signal events — last 14 days</div><div id="tk-news-list">${newsH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://finance.yahoo.com/quote/${sym}/news/" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Yahoo Finance ↗</a><a href="https://unusualwhales.com/stocks/${sym}" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Unusual Whales ↗</a></div></div></div><div id="tk-flow" style="display:none;"><div id="tk-options-flow"><div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;"><div style="font-size:18px;margin-bottom:6px;">📊</div><div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Click to load options flow</div><div style="font-size:10px;">Volume analysis · Options positioning · Dark pool news</div></div></div></div><div id="tk-ins" style="display:none;"><div class="card"><div class="card-lbl">Insider + congress activity</div><div id="tk-ins-content">${insH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${sym}&type=4" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">SEC Form 4 ↗</a><a href="http://openinsider.com/search?q=${sym}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;padding:5px 10px;border:0.5px solid var(--green-bd);border-radius:5px;">OpenInsider ↗</a><a href="https://www.quiverquant.com/congresstrading/" target="_blank" style="font-size:11px;color:var(--amber);text-decoration:none;padding:5px 10px;border:0.5px solid var(--amber-bd);border-radius:5px;">Quiver Congress ↗</a></div></div></div><div id="tk-rev" style="display:none;"><div class="card"><div class="card-lbl">Revenue breakdown by segment</div>${revH}</div></div><div id="tk-score" style="display:none;"></div><div id="tk-chain" style="display:none;"></div><div id="tk-dedge" style="display:none;"></div>`;
 window._tkSym=sym;if(S.activeTab&&S.activeTab!=='ticker'&&S.activeTab!=='instrument')S.prevTab=S.activeTab;else S.prevTab=S.prevTab||'morning';gT('ticker',null);setTimeout(()=>loadChart('ticker',sym,'3M'),40);if(S.fh||IS_VERCEL){setTimeout(()=>fillTickerLive(sym),80);}}
 
 function showTkT(n,btn){
+  if(id==='flow'){setTimeout(function(){try{if(window._tkSym)loadOptionsFlowInModal(window._tkSym);}catch(e){}},50);}
   ['ov','news','ins','rev','score','chain','dedge'].forEach(x=>{
     const el=document.getElementById('tk-'+x);
     if(el)el.style.display=x===n?'block':'none';
@@ -4998,6 +4999,235 @@ function computeInsiderSignal(txns) {
   if (sells.length > 0 && buys.length === 0) return { dir: 'neutral', label: 'Sells only — check if 10b5-1 plan (pre-scheduled)', score: 8 };
   return { dir: 'neutral', label: 'Minimal recent activity', score: 5 };
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE L5 MACRO SCORE + OPTIONS FLOW SIGNALS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Macro regime cache (shared across all tickers) ─────────────────────────
+let _macroCache = { score: 3, vix: null, spyDp: 0, regime: 'neutral', ts: 0 };
+const _MACRO_CACHE_TTL = 30 * 60 * 1000;
+
+async function fetchMacroRegime() {
+  if (Date.now() - _macroCache.ts < _MACRO_CACHE_TTL) return _macroCache;
+  try {
+    const [vixRes, spyRes] = await Promise.all([
+      fetch(fhURL('quote', { symbol: '^VIX' })),
+      fetch(fhURL('quote', { symbol: 'SPY'  }))
+    ]);
+    const vix = vixRes.ok ? (await vixRes.json()).c : null;
+    const spy = spyRes.ok ? await spyRes.json() : {};
+
+    // VIX → base score: <15 risk-on (5), 15-20 (4), 20-25 (3), 25-30 (2), >30 panic (1)
+    let base = 3;
+    if (vix != null) {
+      if      (vix < 15) base = 5;
+      else if (vix < 20) base = 4;
+      else if (vix < 25) base = 3;
+      else if (vix < 30) base = 2;
+      else               base = 1;
+    }
+    // SPY day change nudge
+    const spyDp = spy.dp || 0;
+    if (spyDp < -1.5) base = Math.max(1, base - 1);
+    else if (spyDp >  1.5) base = Math.min(5, base + 1);
+
+    const regime = vix == null ? 'neutral' : vix < 20 ? 'risk-on' : vix < 28 ? 'neutral' : 'risk-off';
+    _macroCache = { score: base, vix, spyDp, regime, ts: Date.now() };
+    window._macroRegime = _macroCache;  // expose globally for Morning Brief
+    return _macroCache;
+  } catch(e) {
+    return _macroCache;
+  }
+}
+
+function getSectorMacroAdjust(ticker) {
+  // Defense is rate-insensitive (+1); tech is rate-sensitive (-1 at current high rates)
+  const defense = new Set(['LMT','NOC','RTX','GD','LHX','RKLB','KTOS','LDOS','SAIC','HII','BA']);
+  const techAI  = new Set(['NVDA','AMD','ASML','TSM','META','MSFT','GOOGL','AMZN','AAPL','ARM',
+    'QCOM','AVGO','MRVL','MU','SMCI','AMAT','LRCX','KLAC','ENTG','SNOW','CRM','NOW','DDOG','MDB','ZS']);
+  if (defense.has(ticker)) return 1;
+  if (techAI.has(ticker))  return -1;
+  return 0;
+}
+
+async function computeL5Score(ticker) {
+  const ld = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
+  const fallback = ld ? (ld.find(l => l.id === 'L5')?.pts || 3) : 3;
+  if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) return fallback;
+  try {
+    const macro = await fetchMacroRegime();
+    return Math.min(5, Math.max(1, macro.score + getSectorMacroAdjust(ticker)));
+  } catch(e) { return fallback; }
+}
+
+// ── OPTIONS FLOW SIGNAL ENGINE ─────────────────────────────────────────────
+// No paid API needed — uses volume spikes (L1 proxy) + news keyword extraction
+// + Finnhub option chain where free tier allows
+
+const OPTIONS_KEYWORDS = [
+  { re: /(\$[\d.]+[MK]?|\d+[MK])\s+call\s+(sweep|flow|buy)/i,   label: 'Call sweep',    bull: true,  weight: 4 },
+  { re: /unusual\s+(call|options|put)\s+(activity|flow|volume)/i, label: 'Unusual options activity', bull: null, weight: 3 },
+  { re: /dark\s+pool\s+(print|buy|block)/i,                       label: 'Dark pool print',bull: true,  weight: 4 },
+  { re: /(\$[\d.]+[MK]?|\d+[MK])\s+put\s+(sweep|flow|buy)/i,    label: 'Put sweep',     bull: false, weight: 4 },
+  { re: /options\s+(sweep|block)/i,                               label: 'Options sweep', bull: null,  weight: 3 },
+  { re: /gamma\s+(squeeze|exposure|GEX)/i,                        label: 'Gamma signal',  bull: null,  weight: 2 },
+  { re: /institutional\s+(call|put|options)/i,                    label: 'Institutional flow', bull: null, weight: 3 },
+  { re: /max\s+pain|options\s+expir/i,                            label: 'Expiry dynamic', bull: null, weight: 1 },
+];
+
+let _optionsFlowCache = {};
+const _OPTIONS_TTL = 15 * 60 * 1000;
+
+async function fetchOptionsFlow(ticker) {
+  const cached = _optionsFlowCache[ticker];
+  if (cached && Date.now() - cached.ts < _OPTIONS_TTL) return cached;
+
+  const signals = [];
+
+  try {
+    // 1) Scan news for options keywords (uses cached _avNewsCache if available)
+    const newsArr = window._avNewsCache ? (window._avNewsCache[ticker] || []) : [];
+    for (const article of newsArr.slice(0, 20)) {
+      const text = (article.headline || article.summary || '') + ' ' + (article.summary || '');
+      for (const kw of OPTIONS_KEYWORDS) {
+        if (kw.re.test(text)) {
+          const match = text.match(kw.re);
+          signals.push({
+            type: 'news',
+            label: kw.label,
+            bull: kw.bull,
+            weight: kw.weight,
+            headline: article.headline || '',
+            source: article.source || '',
+            datetime: article.datetime || 0,
+            url: article.url || ''
+          });
+          break;
+        }
+      }
+    }
+
+    // 2) Volume spike ratio (proxy for unusual activity — institutional footprint)
+    const metricsRes = await fetch(fhURL('stock/metric', { symbol: ticker, metric: 'all' }));
+    if (metricsRes.ok) {
+      const mData = await metricsRes.json();
+      const m = mData.metric || {};
+      const vol10 = m['10DayAverageTradingVolume'] || 0;
+      const vol3m = m['3MonthAverageTradingVolume'] || 0;
+      if (vol10 && vol3m && vol3m > 0) {
+        const ratio = vol10 / vol3m;
+        if (ratio >= 2.0) {
+          signals.push({ type:'volume', label:`Volume ${ratio.toFixed(1)}x above average`, bull: true, weight: 5,
+            note: 'Unusual volume surge — 10-day avg is ' + ratio.toFixed(1) + 'x the 3-month average. Institutional-scale activity.' });
+        } else if (ratio >= 1.5) {
+          signals.push({ type:'volume', label:`Volume ${ratio.toFixed(1)}x above average`, bull: true, weight: 3,
+            note: 'Above-average volume — potential accumulation in progress.' });
+        } else if (ratio >= 1.25) {
+          signals.push({ type:'volume', label:`Volume ${ratio.toFixed(1)}x average`, bull: null, weight: 1,
+            note: 'Slightly elevated volume — worth monitoring for continuation.' });
+        }
+      }
+    }
+
+    // 3) Try Finnhub option-chain basic metrics if available
+    try {
+      const optRes = await fetch(fhURL('stock/option-chain', { symbol: ticker }));
+      if (optRes.ok) {
+        const optData = await optRes.json();
+        if (optData && optData.data && optData.data.length) {
+          // Aggregate put/call open interest ratio
+          let totalCallOI = 0, totalPutOI = 0;
+          for (const exp of optData.data.slice(0, 4)) {  // nearest 4 expirations
+            for (const opt of (exp.options || [])) {
+              if (opt.type === 'call') totalCallOI += (opt.openInterest || 0);
+              else                     totalPutOI  += (opt.openInterest || 0);
+            }
+          }
+          if (totalCallOI + totalPutOI > 0) {
+            const pcRatio = totalPutOI / (totalCallOI || 1);
+            if (pcRatio < 0.6) {
+              signals.push({ type:'options', label:`P/C ratio ${pcRatio.toFixed(2)} — bullish skew`, bull: true, weight: 4,
+                note: 'Low put/call ratio: traders are loading calls over puts. Bullish positioning.' });
+            } else if (pcRatio > 1.4) {
+              signals.push({ type:'options', label:`P/C ratio ${pcRatio.toFixed(2)} — bearish skew`, bull: false, weight: 4,
+                note: 'High put/call ratio: unusual put buying. Hedging or bearish bet.' });
+            } else {
+              signals.push({ type:'options', label:`P/C ratio ${pcRatio.toFixed(2)} — neutral`, bull: null, weight: 1,
+                note: 'Put/call ratio near neutral. No strong directional options bet detected.' });
+            }
+          }
+        }
+      }
+    } catch(e) { /* option-chain may not be on free tier */ }
+
+  } catch(e) {
+    console.warn('fetchOptionsFlow error:', ticker, e);
+  }
+
+  const result = { signals: signals.sort((a,b) => b.weight - a.weight), ts: Date.now() };
+  _optionsFlowCache[ticker] = result;
+  return result;
+}
+
+function renderOptionsFlowCard(ticker, optData) {
+  if (!optData || !optData.signals) return '';
+  const sigs = optData.signals.slice(0, 6);
+
+  const signalRows = sigs.length ? sigs.map(s => {
+    const col = s.bull === true ? 'var(--green)' : s.bull === false ? 'var(--red)' : 'var(--amber)';
+    const bg  = s.bull === true ? 'var(--green-bg)' : s.bull === false ? 'rgba(220,60,60,.1)' : 'rgba(224,123,0,.12)';
+    const bd  = s.bull === true ? 'var(--green-bd)' : s.bull === false ? 'rgba(220,60,60,.25)' : 'rgba(224,123,0,.25)';
+    const icon = s.bull === true ? '▲' : s.bull === false ? '▼' : '◆';
+    const detail = s.headline || s.note || '';
+    const srcLine = s.source ? `<span style="color:var(--text3);margin-left:6px;">${s.source}</span>` : '';
+    return `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:${detail?'4':'0'}px;">
+        <span style="padding:2px 8px;border-radius:10px;background:${bg};color:${col};border:0.5px solid ${bd};font-size:10px;font-weight:700;flex-shrink:0;">${icon} ${s.label}</span>
+        ${srcLine}
+      </div>
+      ${detail ? `<div style="font-size:11px;color:var(--text2);line-height:1.5;">${detail.slice(0,160)}</div>` : ''}
+    </div>`;
+  }).join('') : `<div style="font-size:11px;color:var(--text3);text-align:center;padding:16px 0;border:0.5px dashed var(--border2);border-radius:7px;">No unusual options/volume signals detected · Normal activity</div>`;
+
+  const bullCount = sigs.filter(s=>s.bull===true).length;
+  const bearCount = sigs.filter(s=>s.bull===false).length;
+  const sentiment = bullCount > bearCount ? '📈 Bullish flow' : bearCount > bullCount ? '📉 Bearish flow' : '⚖️ Mixed flow';
+  const sentColor = bullCount > bearCount ? 'var(--green)' : bearCount > bullCount ? 'var(--red)' : 'var(--amber)';
+
+  return `<div class="card" id="options-flow-card-${ticker}">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="card-lbl" style="margin-bottom:0;">Options &amp; Flow Signals</div>
+      ${sigs.length ? `<span style="font-size:11px;font-weight:700;color:${sentColor};">${sentiment}</span>` : ''}
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Volume anomalies · Options positioning · Dark pool mentions from news</div>
+    ${signalRows}
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="https://unusualwhales.com/stocks/${ticker}" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Unusual Whales ↗</a>
+      <a href="https://www.barchart.com/stocks/quotes/${ticker}/options" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Barchart Options ↗</a>
+      <a href="https://marketchameleon.com/Overview/${ticker}/OptionsOverview/" target="_blank" style="font-size:11px;color:var(--text2);text-decoration:none;padding:5px 10px;border:0.5px solid var(--border2);border-radius:5px;">MarketChameleon ↗</a>
+    </div>
+  </div>`;
+}
+
+// Wire options flow into stock modal News tab
+async function loadOptionsFlowInModal(sym) {
+  const container = document.getElementById('tk-options-flow');
+  if (!container) return;
+  container.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Loading options flow…</div>';
+  const data = await fetchOptionsFlow(sym);
+  container.innerHTML = renderOptionsFlowCard(sym, data);
+}
+
+// Macro regime display for score breakdown
+function getMacroRegimeLabel() {
+  const m = window._macroRegime || _macroCache;
+  if (!m || !m.vix) return 'Macro — loading…';
+  const regime = m.vix < 20 ? '🟢 Risk-On' : m.vix < 28 ? '🟡 Neutral' : '🔴 Risk-Off';
+  return `${regime} · VIX ${m.vix.toFixed(1)} · SPY ${m.spyDp >= 0 ? '+' : ''}${(m.spyDp||0).toFixed(2)}%`;
+}
+
 
 async function computeL2Score(ticker) {
   const fallback = (() => {
@@ -7808,7 +8038,7 @@ const EDGAR_CIKS = {
   MKSI: '0000062996',
   ONTO: '0001140102',
   V:    '0001403161',
-  MA:   '0001467858',
+  MA:   '0001141391',
   PYPL: '0001633917',
   SQ:   '0001512673',
   HOOD: '0001783398',
@@ -7875,7 +8105,7 @@ const EDGAR_CIKS = {
   IPGP: '0001111928',
   POWI: '0000833640',
   SOUN: '0001840292',
-  AISP: '0001750153',
+  AISP: '0001577526',
   IONQ: '0001807707',
   DUOL: '0001599298',
   RBLX: '0001315098',
@@ -7887,7 +8117,7 @@ const EDGAR_CIKS = {
   KTOS: '0001069258',
   LDOS: '0001336920',
   BA: '0000012927',
-  SAIC: '0001336920',
+  SAIC: '0001571123',
   HII: '0001501585',
   NIO: '0001733186',
   XPEV: '0001810806',
