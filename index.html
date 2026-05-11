@@ -746,6 +746,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
   <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
   <div id="morning-chain-card" style="margin-bottom:14px;"></div>
+  <div id="morning-insider-card" style="margin-bottom:14px;"></div>
   <div class="g13">
     <div>
       <div id="morning-picks-card" class="card" style="margin-bottom:12px;"></div>
@@ -2549,6 +2550,8 @@ async function initLiveScores() {
   _refreshLiveScoreUI();
   // Compute global chain propagation signals (anchor movers → downstream windows)
   try { computeGlobalChainSignals().then(function(){ try { renderChainSignalCard(); } catch(e) {} }); } catch(e) {}
+  // Scan INSIDER_CACHE for clusters across all 64 stocks (cache already warm from above loop)
+  try { computeGlobalInsiderSignals(); } catch(e) {}
   // Re-render morning brief with freshly computed scores
   try { renderMorningBriefDynamic(); } catch(e) {}
   try { renderSageCard(); markSagePick(); } catch(e) {}
@@ -3443,6 +3446,62 @@ function renderMyIntelBrief() {
   setTimeout(_gsiInit, 100);
 }
 
+function renderInsiderClusterCard() {
+  const el = document.getElementById('morning-insider-card');
+  if (!el) return;
+  const ins = window._INSIDER_SIGNALS;
+  if (!ins || (!ins.clusters.length && !ins.singles.length)) { el.innerHTML = ''; return; }
+
+  const ts = new Date(ins.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  const topClusters = ins.clusters.slice(0, 3);
+  const topSingles  = ins.clusters.length < 3 ? ins.singles.slice(0, 3 - ins.clusters.length) : [];
+  const shown = [...topClusters, ...topSingles];
+  if (!shown.length) { el.innerHTML = ''; return; }
+
+  function fmtVal(v) {
+    if (v >= 1e6) return '$' + (v/1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+    return '$' + Math.round(v);
+  }
+
+  const rowsHtml = shown.map(function(item) {
+    const isCluster = item.buyers.length >= 2;
+    const bg  = isCluster ? 'rgba(59,130,246,0.05)' : 'var(--bg3)';
+    const bd  = isCluster ? 'rgba(59,130,246,0.18)' : 'var(--border)';
+    const lbl = isCluster
+      ? item.buyers.length + ' insiders · ' + fmtVal(item.totalVal)
+      : fmtVal(item.totalVal) + ' buy';
+    const score = (typeof SCORES !== 'undefined' && SCORES[item.sym]) ? SCORES[item.sym] : '—';
+    const sc    = score >= 70 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--text3)';
+    const tag   = isCluster
+      ? '<span style="font-size:9px;font-weight:700;color:var(--blue);background:rgba(59,130,246,0.12);padding:2px 6px;border-radius:4px;flex-shrink:0;">CLUSTER</span>'
+      : '<span style="font-size:9px;font-weight:700;color:var(--amber);background:var(--amber-bg);padding:2px 6px;border-radius:4px;flex-shrink:0;">BIG BUY</span>';
+    return '<div onclick="openTicker(\'' + item.sym + '\')" style="display:flex;align-items:center;gap:10px;padding:7px 10px;'
+      + 'background:' + bg + ';border:0.5px solid ' + bd + ';border-radius:8px;'
+      + 'cursor:pointer;margin-bottom:5px;">'
+      + '<span style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;min-width:48px;color:var(--text1);">' + item.sym + '</span>'
+      + tag
+      + '<span style="font-size:10px;color:var(--text2);flex:1;">' + lbl + '</span>'
+      + '<span style="font-size:11px;font-weight:600;color:' + sc + ';font-family:\'DM Mono\',monospace;">' + score + '</span>'
+      + '<span style="color:var(--blue);font-size:14px;">›</span>'
+      + '</div>';
+  }).join('');
+
+  const totalClusters = ins.clusters.length;
+  el.innerHTML = '<div class="card" style="border-left:3px solid var(--blue);margin-bottom:0;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    + '<div><div class="card-lbl" style="margin-bottom:2px;">👥 Insider activity — '
+    + (totalClusters ? totalClusters + ' cluster' + (totalClusters === 1 ? '' : 's') + ' detected' : ins.singles.length + ' notable buy' + (ins.singles.length === 1 ? '' : 's'))
+    + ' in last 30 days</div>'
+    + '<div style="font-size:10px;color:var(--text3);">Open-market purchases by C-suite and directors. Clusters (2+ insiders) are the strongest signal.</div></div>'
+    + '<span style="font-size:9px;color:var(--text3);">' + ts + '</span>'
+    + '</div>'
+    + rowsHtml
+    + '<div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:right;">'
+    + shown.length + ' stock' + (shown.length === 1 ? '' : 's') + ' shown · click for full insider transaction history</div>'
+    + '</div>';
+}
+
 function renderChainSignalCard() {
   const el = document.getElementById('morning-chain-card');
   if (!el) return;
@@ -3494,6 +3553,7 @@ function renderMorningBriefDynamic() {
   try {
     _renderMorningSummaryBanner();
     try { renderChainSignalCard(); } catch(e) {}
+    try { renderInsiderClusterCard(); } catch(e) {}
     _renderMorningPicksCard();
   } catch(e) { console.warn('renderMorningBriefDynamic:', e); }
 }
@@ -9487,7 +9547,10 @@ const DE_TICKERS = ['NVDA','ASML','AMD','PLTR','TSM','SMCI','META','MSFT','GOOGL
   'AMZN','AAPL','PANW','CRWD','AVGO','MRVL','APP','ORCL','CRM','NOW','MU',
   'KLAC','ENTG','TER','MKSI','ONTO',
   'V','MA','PYPL','SQ','HOOD',
-  'DDOG','MDB','ZS','ESTC'];
+  'DDOG','MDB','ZS','ESTC',
+  'RKLB','AMAT','LRCX','CEG','VST','GEV','NEE','ETN','PWR','OKLO',
+  'CCJ','UEC','LMT','NOC','RTX','GD','LHX','SNOW','ARM','QCOM',
+  'NET','DELL','INTC','ADBE','TSLA','NFLX','ON','HPE','WDAY','COIN'];
 
 // Analyst cascade map: when anchor is upgraded, these downstream stocks enter follow-on window
 // Based on supply chain lags — analyst revisions typically cascade within 5–14 days
@@ -9529,6 +9592,40 @@ function _deFmt(v) {
 }
 
 // ── L2: Insider cluster detection ────────────────────────────────────────────
+// ── Global insider cluster signals ───────────────────────────────────────
+window._INSIDER_SIGNALS = null; // { clusters: [{sym,txns,buyers,totalVal}], singles: [...], ts }
+
+function computeGlobalInsiderSignals() {
+  // INSIDER_CACHE is already populated by computeL2Score() during initLiveScores().
+  // This is purely a cache-scan — zero extra API calls.
+  const clusters = [];
+  const singles  = [];
+  const cutoff   = Date.now() - 30 * 24 * 3600 * 1000; // 30 days
+
+  Object.entries(INSIDER_CACHE).forEach(function([sym, data]) {
+    if (!data || !data.txns || !data.txns.length) return;
+    // Recent open-market purchases only
+    const recentBuys = data.txns.filter(function(t) {
+      return t.change > 0 && new Date(t.transactionDate).getTime() >= cutoff;
+    });
+    if (!recentBuys.length) return;
+    const uniqueNames = [...new Set(recentBuys.map(function(t){ return t.name; }))];
+    const totalVal    = recentBuys.reduce(function(s,t){ return s + Math.abs(t.change * (t.transactionPrice || 0)); }, 0);
+    if (uniqueNames.length >= 2) {
+      clusters.push({ sym, txns: recentBuys, buyers: uniqueNames, totalVal });
+    } else if (totalVal >= 100000) {
+      singles.push({ sym, txns: recentBuys, buyers: uniqueNames, totalVal });
+    }
+  });
+
+  clusters.sort(function(a,b){ return b.buyers.length - a.buyers.length || b.totalVal - a.totalVal; });
+  singles.sort(function(a,b){  return b.totalVal - a.totalVal; });
+
+  window._INSIDER_SIGNALS = { clusters, singles, ts: Date.now() };
+  // Refresh insider card in Morning Brief if rendered
+  try { renderInsiderClusterCard(); } catch(e) {}
+}
+
 async function renderDeepEdgeL2() {
   if (!IS_VERCEL && !S.fh) {
     document.getElementById('de-l2-filing').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Add a Finnhub key in Settings to enable live insider data.</div>';
