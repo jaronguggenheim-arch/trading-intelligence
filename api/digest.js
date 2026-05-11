@@ -128,6 +128,18 @@ async function kvSmembers(url, token, key) {
   } catch (e) { return []; }
 }
 
+async function kvGet(url, token, key) {
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(['GET', key])
+    });
+    const j = await r.json();
+    return j.result ? JSON.parse(j.result) : null;
+  } catch (e) { return null; }
+}
+
 // ── Unsubscribe token ─────────────────────────────────────────────────────────
 function makeUnsubToken(email) {
   let hash = 0;
@@ -379,8 +391,27 @@ export default async function handler(req, res) {
   if (!FH_KEY)          return res.status(500).json({ error: 'FH_KEY not configured' });
   if (!RESEND_API_KEY)  return res.status(500).json({ error: 'RESEND_API_KEY not configured' });
 
+  // ── Step 0: Load live scores from KV (nightly cron output) ───────────────
+  // Falls back to hardcoded BASE_SCORES if KV unavailable or cron hasn't run yet
+  let liveScores = null;
+  if (KV_REST_API_URL && KV_REST_API_TOKEN) {
+    try {
+      const snap = await kvGet(KV_REST_API_URL, KV_REST_API_TOKEN, 'ti:scores:latest');
+      if (snap && snap.scores && Object.keys(snap.scores).length > 100) {
+        liveScores = snap.scores;
+      }
+    } catch (e) {}
+  }
+  const effectiveScores = liveScores || BASE_SCORES;
+  const scoreSource = liveScores ? 'live' : 'base';
+
   // ── Step 1: Fetch live quotes for top 20 candidates ──────────────────────
-  const candidates = Object.entries(BASE_SCORES).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([t]) => t);
+  // Candidates ranked by effective (live) scores, filtered to tickers we have names for
+  const candidates = Object.entries(effectiveScores)
+    .filter(([t]) => NAMES[t])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20)
+    .map(([t]) => t);
 
   const quoteResults = await Promise.allSettled(
     candidates.map(t => fhFetch('quote', { symbol: t }, FH_KEY))
@@ -388,7 +419,7 @@ export default async function handler(req, res) {
 
   // ── Step 2: Score each candidate with live momentum boost ─────────────────
   const scoredCandidates = candidates.map((t, i) => {
-    const base = BASE_SCORES[t] || 50;
+    const base = effectiveScores[t] || 50;
     const q = quoteResults[i]?.status === 'fulfilled' ? quoteResults[i].value : null;
     const dp = q?.dp || 0;
     const momentumBoost = dp > 3 ? 6 : dp > 1.5 ? 3 : dp < -3 ? -6 : dp < -1.5 ? -3 : 0;
@@ -442,6 +473,7 @@ export default async function handler(req, res) {
       ok: true,
       sage: best.ticker,
       score: best.score,
+      scoreSource,
       signals,
       movers: movers.map(m => ({ ticker: m.ticker, reason: m.reason })),
       subscribers: 0,
@@ -493,6 +525,7 @@ export default async function handler(req, res) {
     ok: true,
     sage: best.ticker,
     score: best.score,
+    scoreSource,
     signals,
     movers: movers.map(m => ({ ticker: m.ticker, reason: m.reason })),
     subscribers: subscribers.length,
