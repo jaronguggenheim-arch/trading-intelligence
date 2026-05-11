@@ -4,12 +4,17 @@
     "api/td.js":         { "memory": 128, "maxDuration": 10 },
     "api/sync.js":       { "memory": 128, "maxDuration": 10 },
     "api/subscribe.js":  { "memory": 128, "maxDuration": 10 },
-    "api/digest.js":     { "memory": 256, "maxDuration": 30 }
+    "api/digest.js":     { "memory": 256, "maxDuration": 30 },
+    "api/scores.js":     { "memory": 256, "maxDuration": 60 }
   },
   "crons": [
     {
       "path": "/api/digest",
       "schedule": "50 10 * * 1-5"
+    },
+    {
+      "path": "/api/scores",
+      "schedule": "0 2 * * *"
     }
   ]
 }
