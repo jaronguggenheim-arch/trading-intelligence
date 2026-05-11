@@ -2092,6 +2092,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 </div>
 
+  <!-- CLOUD SYNC + DIGEST SIGNUP -->
+  <div id="cloud-sync-card" style="margin-bottom:14px;"></div>
+
   <!-- MY INTEL PERSONALIZED BRIEF -->
   <div id="my-intel-brief" style="margin-bottom:20px;"></div>
 
@@ -2916,13 +2919,83 @@ function _gsiInit() {
   } catch(e) { console.warn('GSI init:', e); }
 }
 
+function _subscribeDigest() {
+  const inp = document.getElementById('digest-email-inp');
+  const email = inp ? inp.value.trim() : '';
+  if (!email || !email.includes('@')) { if (inp) inp.focus(); return; }
+  const row = document.getElementById('digest-signup-row');
+  if (!IS_VERCEL) {
+    if (row) row.innerHTML = '<span style="font-size:11px;color:var(--amber);">Digest available on the live app</span>';
+    return;
+  }
+  fetch('/api/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  }).then(r => r.json()).then(j => {
+    if (row) row.innerHTML = '<span style="font-size:11px;color:var(--green);">✓ Subscribed — Morning Brief arrives at 6:50am weekdays</span>';
+    try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
+  }).catch(() => {
+    if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Error — please try again</span>';
+  });
+}
+
+function syncToCloud() {
+  if (!IS_VERCEL) return;
+  const u = S.gUser;
+  if (!u || !S._gsiCredential) return;
+  const data = { wl: S.wl || [], pos: S.pos || [], alerts: {}, budget: {} };
+  try { data.alerts = JSON.parse(localStorage.getItem('ti_alerts') || '{}'); } catch(e) {}
+  try { data.budget = JSON.parse(localStorage.getItem('ti72_budget') || '{}'); } catch(e) {}
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential: S._gsiCredential, data })
+  }).then(r => r.json()).then(j => {
+    if (j.ok) {
+      const el = document.getElementById('sync-status');
+      if (el) { el.textContent = 'Synced ✓'; el.style.color = 'var(--green)';
+        setTimeout(() => { el.textContent = 'Synced across devices'; el.style.color = 'var(--text3)'; }, 2000); }
+    }
+  }).catch(() => {});
+}
+
+async function loadFromCloud(credential) {
+  if (!IS_VERCEL) return;
+  try {
+    const r = await fetch('/api/sync?credential=' + encodeURIComponent(credential));
+    if (!r.ok) return;
+    const j = await r.json();
+    if (!j.ok || !j.data) return;
+    const d = j.data;
+    if (Array.isArray(d.wl) && d.wl.length) {
+      S.wl = d.wl;
+      localStorage.setItem('ti72_wl', JSON.stringify(S.wl));
+    }
+    if (Array.isArray(d.pos) && d.pos.length) {
+      S.pos = d.pos;
+      localStorage.setItem('ti72_pos', JSON.stringify(S.pos));
+    }
+    if (d.alerts && Object.keys(d.alerts).length) {
+      localStorage.setItem('ti_alerts', JSON.stringify(d.alerts));
+    }
+    try { renderWL(); } catch(e) {}
+    try { renderPos(); } catch(e) {}
+    try { renderMyIntelBrief(); } catch(e) {}
+    const el = document.getElementById('sync-status');
+    if (el) el.textContent = 'Synced across devices';
+  } catch(e) { console.warn('loadFromCloud:', e); }
+}
+
 function _gsiCallback(response) {
   try {
     // Decode JWT payload (no verification needed client-side — trust Google)
     const parts = response.credential.split('.');
     const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
     S.gUser = { name: payload.name, email: payload.email, picture: payload.picture, given_name: payload.given_name };
+    S._gsiCredential = response.credential;
     try { localStorage.setItem('ti72_gUser', JSON.stringify(S.gUser)); } catch(e) {}
+    loadFromCloud(response.credential);
     renderMyIntelBrief();
     updateHeaderUser();
   } catch(e) { console.warn('GSI callback:', e); }
@@ -3199,6 +3272,36 @@ function renderMyIntelBrief() {
   const user = S.gUser || null;
 
   // ── Header ─────────────────────────────────────────────────────────────────
+  // ── Cloud sync + digest signup card ──────────────────────────────────────
+  const syncCard = document.getElementById('cloud-sync-card');
+  if (syncCard) {
+    if (user) {
+      syncCard.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;">'
+        + '<div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>'
+        + '<div style="flex:1;"><span style="font-size:12px;font-weight:600;color:var(--text);">'
+        + (user.given_name || user.name || user.email)
+        + '</span><span id="sync-status" style="font-size:10px;color:var(--text3);margin-left:8px;">Synced across devices</span></div>'
+        + '<button onclick="gsiSignOut()" style="font-size:10px;padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text3);cursor:pointer;font-family:inherit;">Sign out</button>'
+        + '</div>'
+        + '<div style="margin-top:8px;padding:12px 14px;background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;">'
+        + '<div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;">Morning Brief · daily email digest</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Sage pick + top signals at 6:50am every weekday.</div>'
+        + '<div style="display:flex;gap:7px;" id="digest-signup-row">'
+        + '<input id="digest-email-inp" type="email" value="' + (user.email || '') + '" placeholder="your@email.com" style="flex:1;padding:7px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:11px;background:var(--bg);color:var(--text);font-family:inherit;">'
+        + '<button onclick="_subscribeDigest()" style="padding:7px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Subscribe</button>'
+        + '</div></div>';
+    } else {
+      syncCard.innerHTML =
+        '<div style="padding:12px 14px;background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;">'
+        + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Sign in to sync across devices</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">Watchlist and positions saved locally. Sign in to sync across devices and get the Morning Brief digest.</div>'
+        + '<div id="gsi-btn" style="min-width:160px;"></div>'
+        + '</div>';
+      try { setTimeout(_gsiInit, 100); } catch(e) {}
+    }
+  }
+
   const h = new Date().getHours();
   const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   const firstName = user ? (user.given_name || user.name.split(' ')[0]) : null;
@@ -4335,7 +4438,7 @@ function addWL(){const s=document.getElementById('wl-input').value.toUpperCase()
 function addSym(s){if(!S.wl.includes(s)){S.wl.push(s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){}}}
 function rmWL(s){S.wl=S.wl.filter(x=>x!==s);saveWL();renderWL();try{renderMyIntelBrief();}catch(e){}}
 function toggleWL(sym,btn){if(S.wl.includes(sym)){rmWL(sym);btn.textContent='+ Add to watchlist';btn.classList.remove('watching');}else{addSym(sym);btn.textContent='Watching ✓';btn.classList.add('watching');}}
-function saveWL(){localStorage.setItem('ti72_wl',JSON.stringify(S.wl));}
+function saveWL(){localStorage.setItem('ti72_wl',JSON.stringify(S.wl));try{syncToCloud();}catch(e){}}
 
 function openSell(idx){S.sellTarget=idx;S.sellWhy='';document.querySelectorAll('.why-tag').forEach(t=>t.classList.remove('selected'));const pos=S.pos[idx];document.getElementById('sell-title').textContent='Sell '+pos.t;document.getElementById('sell-shares').value=pos.s;document.getElementById('sell-price').value=pos.cur||pos.p;document.getElementById('sell-err').style.display='none';document.getElementById('m-sell').style.display='flex';}
 function selWhy(btn,why){document.querySelectorAll('.why-tag').forEach(t=>t.classList.remove('selected'));btn.classList.add('selected');S.sellWhy=why;}
@@ -4678,7 +4781,7 @@ function saveAllAPIKeys(){
   if(fredk)refreshFRED();
 }
 function cM(id){document.getElementById(id).style.display='none';}
-function save(){localStorage.setItem('ti72_pos',JSON.stringify(S.pos));localStorage.setItem('ti72_hist',JSON.stringify(S.hist));}
+function save(){localStorage.setItem('ti72_pos',JSON.stringify(S.pos));localStorage.setItem('ti72_hist',JSON.stringify(S.hist));try{syncToCloud();}catch(e){}}
 
 async function fetchPrices(){
   const pairs=[['NVDA','t-nvda'],['ASML','t-asml'],['AMD','t-amd'],['META','t-meta'],['SPY','t-spy']];
