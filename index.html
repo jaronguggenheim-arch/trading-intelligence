@@ -2515,7 +2515,7 @@ async function initLiveScores() {
   if (!S.fh && !IS_VERCEL) return;
   // All featured tickers — compute L1 (price momentum, RSI, volume) + L3 (analyst consensus) live
   // L2/L4/L5 remain manually curated (insider + supply chain + macro)
-  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV'];
+  const tickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO'];
   // Stamp live scores indicator in morning brief picks card
   const lbl = document.getElementById('morning-picks-lbl');
   if (lbl) lbl.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● computing live scores…</span>';
@@ -2628,7 +2628,7 @@ function startGlobalRefresh() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── LIVE TICKER STRIP ───────────────────────────────────────────────────────
-const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','MU','AMAT','LRCX','ARM','GEV','PANW','NOW','AAPL','CRWD','QCOM','CRM','CCJ','UEC','LMT','SNOW','VST','CEG','NOC','RTX','AMZN','META','MSFT','GOOGL'];
+const _tickerStripTickers = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL','VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW','CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV','AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO','GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN','KLAC','ENTG','TER','MKSI','ONTO'];
 let _tickerStripTimer = null;
 
 async function renderLiveTickerStrip() {
