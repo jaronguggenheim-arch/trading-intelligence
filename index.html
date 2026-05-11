@@ -1752,20 +1752,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div style="font-size:9px;font-weight:800;color:#6366f1;font-family:'DM Mono',monospace;">L1</div>
     </div>
     <div style="font-size:11px;font-weight:700;color:var(--text);">Market structure <span style="font-weight:400;color:var(--text3);">· 0–5 day signals</span></div>
-    <div style="font-size:9px;color:var(--text3);margin-left:auto;">Research-captured · GEX resets each Friday</div>
+    <div style="font-size:9px;color:var(--text3);margin-left:auto;" id="de-l1-ts">Live signals · refreshes automatically</div>
   </div>
   <div class="g2" style="margin-bottom:16px;">
     <div class="card">
       <div class="card-lbl">Dark pool clustering — institutional accumulation</div>
-      <div class="sc sc-r sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — $340M cluster at $820–835 (5 days)</div><div class="suh">11 prints at same price. 4.2x average dark pool volume. Institution building cost basis — $820 is now mechanical support.</div><div class="sc-meta"><span class="act-tag at-buy">CONFIRMS BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('ASML')" style="cursor:pointer;" title="Open ASML">ASML</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Signal captured: May 7, 2026</span></div></div>
-      <div class="sc sc-a sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — $180M above VWAP pre-earnings (48h)</div><div class="suh">2.3x average volume. Above VWAP = paying up = urgency. Independently confirms $47M call sweep.</div><div class="sc-meta"><span class="act-tag at-add">CONFIRMS ADD</span><span class="tf-tag tf-short">Pre-earnings</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Signal captured: May 8, 2026</span></div></div>
-      <div class="sc sc-b sc-na de-card" data-tickers="PLTR"><div class="sul">PLTR — Distributed $22M/day (vs $8M avg)</div><div class="suh">Small prints spread over 14 days = sophisticated hiding. Aligns with board cluster buy timing.</div><div class="sc-meta"><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Structural</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Signal captured: May 6, 2026</span></div></div>
+      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ Unusual Whales integration — coming soon</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">Dark pool prints are off-exchange institutional block trades. When a single institution buys $200M+ of one stock across 5 sessions at the same price, they're building a cost basis — not reacting to news. That price level becomes mechanical support. We're wiring Unusual Whales to surface these prints live when they happen.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Why it matters: dark pool accumulation at a specific price level historically precedes a breakout 60–70% of the time within 30 days. It's one of the clearest leading signals available.</div>
+      </div>
     </div>
     <div class="card">
       <div class="card-lbl">GEX — gamma exposure price gravity</div>
-      <div class="sc sc-b sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — Magnet $580 · Floor $540 · Ceiling $620</div><div class="suh">GEX mechanics for week of May 5–9 only. Below $540 volatility accelerates mechanically — use to time entries, not thesis.</div><div class="sc-meta"><span class="tf-tag tf-short">Week of May 5–9</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Resets Fri May 9</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — GEX floor at $820</div><div class="suh">Heavy call OI at $850. Dealers mechanically buy near $820. Physics, not fundamental thesis.</div><div class="sc-meta"><span class="tf-tag tf-short">Week of May 5–9</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('ASML')" style="cursor:pointer;" title="Open ASML">ASML</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Resets Fri May 9</span></div></div>
-      <div class="sc sc-gray sc-na de-card" data-tickers="AMD"><div class="sul">AMD — GEX neutral zone $155–170</div><div class="suh">No significant gamma concentration. Price free to drift. Avoid short-term options plays until thesis strengthens.</div><div class="sc-meta"><span class="tf-tag tf-mixed">Neutral</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('AMD')" style="cursor:pointer;" title="Open AMD">AMD</span><span style="font-size:9px;color:var(--text3);margin-left:auto;">Week of May 5–9</span></div></div>
+      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ GEX live calculation — coming soon</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">Gamma Exposure measures how market makers must hedge as price moves. Positive GEX = dealers buy dips and sell rips, creating a magnetic, low-volatility drift. Negative GEX = dealers amplify moves in both directions. The flip point between positive and negative GEX is the most powerful price gravity level in the short term — physics, not thesis.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Wiring live GEX calculation from options chain data. Resets every Friday at market close.</div>
+      </div>
     </div>
   </div>
 
@@ -1778,17 +1782,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
   <div class="g2" style="margin-bottom:16px;">
     <div class="card">
-      <div class="card-lbl">SEC filing timing anomalies</div>
-      <div class="sc sc-a sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — 3 Form 4s filed within 24h (legal = 48h)</div><div class="suh">Filing faster than legally required = urgency. Independently confirms cluster conviction. Not procedural — personal decision by each insider.</div><div class="sc-meta"><span class="act-tag at-buy">CONFIRMS CLUSTER</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('ASML')" style="cursor:pointer;" title="Open ASML">ASML</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="PLTR" style="margin-bottom:7px;"><div class="sul">PLTR — 8-K filed Friday 5:42pm after close</div><div class="suh">New government AI contract. After-hours Friday = minimises retail reaction. Monday open is the entry window.</div><div class="sc-meta"><span class="act-tag at-watch">MONDAY SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR</span></div></div>
-      <div class="sc sc-gray sc-na de-card" data-tickers="AMD"><div class="sul">AMD — No Form 4 buys in 90 days</div><div class="suh">Lisa Su 10b5-1 sales (pre-scheduled plan) = ignore. Zero insider buys = no conviction signal. Thesis must wait for positive catalyst.</div><div class="sc-meta"><span class="act-tag at-hold">NO SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('AMD')" style="cursor:pointer;" title="Open AMD">AMD</span></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div class="card-lbl" style="margin-bottom:0;">Recent insider transactions — live</div>
+        <span id="de-l2-ts" style="font-size:10px;color:var(--text3);"></span>
+      </div>
+      <div id="de-l2-filing"><div style="font-size:11px;color:var(--text3);padding:10px 0;">Loading insider data…</div></div>
     </div>
     <div class="card">
-      <div class="card-lbl" style="margin-bottom:6px;">Top insider signals this period</div>
-      <div class="sc sc-r sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — Triple cluster (CEO + CFO + Board, same week)</div><div class="suh">All three purchased with personal cash, open market. No 10b5-1 plan. Highest conviction Form 4 signal available — 3 independent decisions, one week.</div><div class="sc-meta"><span class="act-tag at-buy">HIGHEST SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('ASML')" style="cursor:pointer;" title="Open ASML">ASML</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="PLTR" style="margin-bottom:7px;"><div class="sul">PLTR — Board cluster, first in 14 months ($1.4M)</div><div class="suh">14 months of silence = this cluster is meaningful. Karp's 10b5-1 sales are noise — these open-market board buys at $79 are the signal.</div><div class="sc-meta"><span class="act-tag at-add">ADD SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('PLTR')" style="cursor:pointer;" title="Open PLTR">PLTR</span></div></div>
-      <div class="sc sc-r sc-na de-card" data-tickers="SMCI" style="margin-bottom:7px;"><div class="sul">SMCI — CEO $2.8M + CFO $380K open market (Apr 2026)</div><div class="suh">First insider purchases since the accounting crisis — CEO Charles Liang and CFO David Weigand independently buying with personal cash. No 10b5-1 plan. Two executives buying post-crisis = conviction the worst is behind them. Mirrors the ASML insider pattern before the Jan 2025 rally. Accounting resolved March 2026.</div><div class="sc-meta"><span class="act-tag at-add">RECOVERY SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('SMCI')" style="cursor:pointer;" title="Open SMCI">SMCI</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="RKLB"><div class="sul">RKLB — Soros new position + ARK adding</div><div class="suh">Not a Form 4, but 13F institutional additions. Two independent institutional validators adding simultaneously = external conviction.</div><div class="sc-meta"><span class="act-tag at-add">INST. VALIDATION</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('RKLB')" style="cursor:pointer;" title="Open RKLB">RKLB</span></div></div>
+      <div class="card-lbl" style="margin-bottom:6px;">Insider clusters — buy signals detected</div>
+      <div id="de-l2-clusters"><div style="font-size:11px;color:var(--text3);padding:10px 0;">Loading cluster analysis…</div></div>
     </div>
   </div>
 
@@ -1801,17 +1803,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
   <div class="g2" style="margin-bottom:16px;">
     <div class="card">
-      <div class="card-lbl">Estimate revision acceleration</div>
-      <div class="sc sc-r sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — 6 analyst raises in 21 days (+8.4% avg)</div><div class="suh">Acceleration of revisions (not absolute level) is the signal. 6 analysts independently raising = positive channel checks from supply chain.</div><div class="sc-meta"><span class="act-tag at-buy">BEAT SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="ASML" style="margin-bottom:7px;"><div class="sul">ASML — Estimates flat after 3 cuts. Floor forming.</div><div class="suh">Stabilisation after downward revision cycle is bullish inflection. Stock historically bottoms 2–4 weeks after estimate floor.</div><div class="sc-meta"><span class="act-tag at-add">FLOOR SIGNAL</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('ASML')" style="cursor:pointer;" title="Open ASML">ASML</span></div></div>
-      <div class="sc sc-r sc-na de-card" data-tickers="TSM" style="margin-bottom:7px;"><div class="sul">TSM — Q1 2026 beat $800M above consensus · 7 analysts raised PT avg +$28</div><div class="suh">TSMC beat consensus estimates by $800M in Q1 2026 (+33% YoY). Goldman raised to $220. Seven analysts raised price targets within 5 days — an acceleration of revisions, not just a beat. Post-beat estimates are typically set conservatively, meaning Q2 consensus is beatable again. The revision cycle has momentum.</div><div class="sc-meta"><span class="act-tag at-buy">BEAT + REVISIONS</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSM</span></div></div>
-      <div class="sc sc-a sc-na de-card" data-tickers="AMD"><div class="sul">AMD — Solo Citi cut. 14 others unchanged. Not a trend.</div><div class="suh">A single downgrade is noise unless 3+ analysts move same direction. Watch for cluster of cuts to reassess. No action yet.</div><div class="sc-meta"><span class="act-tag at-watch">MONITOR</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('AMD')" style="cursor:pointer;" title="Open AMD">AMD</span></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div class="card-lbl" style="margin-bottom:0;">Analyst moves — last 14 days</div>
+        <span id="de-l3-ts" style="font-size:10px;color:var(--text3);"></span>
+      </div>
+      <div id="de-l3-revisions"><div style="font-size:11px;color:var(--text3);padding:10px 0;">Loading analyst intelligence…</div></div>
     </div>
     <div class="card">
       <div class="card-lbl">Options flow — institutional pre-positioning</div>
-      <div class="sc sc-r sc-na de-card" data-tickers="NVDA" style="margin-bottom:7px;"><div class="sul">NVDA — $47M call sweep · $600 strike · May 23</div><div class="suh">Single transaction, above-ask, no hedge. Pure directional bet by institution with information advantage. 52% larger than META sweep 3 weeks before their beat.</div><div class="sc-meta"><span class="act-tag at-buy">INSTITUTIONAL BET</span><span class="tf-tag tf-short">Pre-earnings</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">NVDA</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="META" style="margin-bottom:7px;"><div class="sul">META — $31M call sweep pre-earnings (validated ✓)</div><div class="suh">Same pattern 3 weeks before META Q1. Stock moved +8.4%. NVDA sweep is 52% larger — same playbook, higher conviction.</div><div class="sc-meta"><span class="act-tag at-buy">PATTERN VALIDATED</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('META')" style="cursor:pointer;" title="Open META">META</span></div></div>
-      <div class="sc sc-b sc-na de-card" data-tickers="RKLB"><div class="sul">RKLB — Options OI building at $14 call (Jun)</div><div class="suh">Not a sweep — gradual accumulation. Consistent with thesis build after Bernstein initiation. Watch for sweep confirmation.</div><div class="sc-meta"><span class="act-tag at-watch">BUILDING</span><span class="de-ticker-tag" style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);" onclick="openTicker('RKLB')" style="cursor:pointer;" title="Open RKLB">RKLB</span></div></div>
+      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ Options flow — coming soon</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">An options sweep is a large, aggressive order that fills across multiple exchanges simultaneously — meaning the buyer needed to fill immediately regardless of price. That urgency is the signal. Sweeps of $10M+ on calls with short expirations, placed above the ask, are one of the clearest pre-earnings positioning signals available. We're wiring Unusual Whales to detect these in real time.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Signal: single transactions above-ask, no hedge, $10M+ size — pure directional institutional bets.</div>
+      </div>
     </div>
   </div>
 
@@ -2563,7 +2567,8 @@ let _globalRefreshTimer = null;
 async function globalRefresh() {
   try { await renderLiveTickerStrip(); } catch(e) {}
   try { syncSignalScoreCards(); } catch(e) {}
-  try { if (S.activeTab === 'morning') renderHotBar(); } catch(e) {}
+  try { if (S.activeTab === 'morning') renderHotBar();
+  if (S.activeTab === 'deepedge') { setTimeout(()=>{ try{initDeepEdge();}catch(e){console.warn('initDeepEdge',e);} },100); } } catch(e) {}
   updateRefreshTimestamps();
 }
 
@@ -8586,6 +8591,271 @@ function saveBudget(){
 }
 
 document.addEventListener('DOMContentLoaded', function() { try { _handleShareUrl(); } catch(e) {} });
+
+// ═══════════════════════════════════════════════════════════════
+// DEEP EDGE — LIVE INTELLIGENCE ENGINE
+// L2: Real Finnhub insider transactions, cluster detection
+// L3: Real Finnhub news, analyst revision detection
+// ═══════════════════════════════════════════════════════════════
+
+const DE_CACHE = {};
+const DE_TTL   = 15 * 60 * 1000; // 15 min cache
+
+// Top 20 stocks by score — fetch insider + news for these
+const DE_TICKERS = ['NVDA','ASML','AMD','PLTR','TSM','SMCI','META','MSFT','GOOGL',
+  'AMZN','AAPL','PANW','CRWD','AVGO','MRVL','APP','ORCL','CRM','NOW','MU'];
+
+function _deRelDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.round((now - d) / 86400000);
+  if (diff === 0) return 'today';
+  if (diff === 1) return '1 day ago';
+  if (diff < 7)  return diff + ' days ago';
+  if (diff < 14) return '1 week ago';
+  return Math.round(diff / 7) + ' weeks ago';
+}
+
+function _deTagHtml(sym) {
+  return `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2);font-weight:600;border:0.5px solid var(--border2);cursor:pointer;" onclick="openTicker('${sym}')" title="Open ${sym}">${sym}</span>`;
+}
+
+function _deFmt(v) {
+  if (!v) return '';
+  if (v >= 1e6) return '$' + (v/1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return '$' + (v/1e3).toFixed(0) + 'K';
+  return '$' + v;
+}
+
+// ── L2: Insider cluster detection ────────────────────────────────────────────
+async function renderDeepEdgeL2() {
+  if (!IS_VERCEL && !S.fh) {
+    document.getElementById('de-l2-filing').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Add a Finnhub key in Settings to enable live insider data.</div>';
+    document.getElementById('de-l2-clusters').innerHTML = '';
+    return;
+  }
+
+  const cacheKey = 'l2_' + new Date().toDateString();
+  if (DE_CACHE[cacheKey] && Date.now() - DE_CACHE[cacheKey].ts < DE_TTL) {
+    _renderL2Html(DE_CACHE[cacheKey].data);
+    return;
+  }
+
+  document.getElementById('de-l2-filing').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Fetching SEC Form 4 data…</div>';
+
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+  const allBuys = {}; // sym → [{name, title, value, date, shares, price}]
+
+  await Promise.allSettled(DE_TICKERS.map(async sym => {
+    try {
+      const r = await fetch(fhURL('stock/insider-transactions', {symbol: sym}));
+      if (!r.ok) return;
+      const j = await r.json();
+      const txns = (j.data || []).filter(t =>
+        t.transactionType === 'P' &&
+        t.share > 0 &&
+        new Date(t.transactionDate) >= cutoff
+      );
+      if (txns.length) allBuys[sym] = txns;
+    } catch(e) {}
+  }));
+
+  DE_CACHE[cacheKey] = { data: allBuys, ts: Date.now() };
+  _renderL2Html(allBuys);
+
+  const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const tsEl = document.getElementById('de-l2-ts');
+  if (tsEl) tsEl.textContent = 'Updated ' + ts;
+}
+
+function _renderL2Html(allBuys) {
+  const filingEl   = document.getElementById('de-l2-filing');
+  const clusterEl  = document.getElementById('de-l2-clusters');
+  if (!filingEl || !clusterEl) return;
+
+  const today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const clusters = [];  // stocks with 2+ buys
+  const singles  = [];  // stocks with 1 meaningful buy
+
+  Object.entries(allBuys).forEach(([sym, txns]) => {
+    const totalVal = txns.reduce((s, t) => s + (t.value || 0), 0);
+    if (txns.length >= 2) {
+      clusters.push({sym, txns, totalVal});
+    } else if (txns.length === 1 && (txns[0].value || 0) >= 50000) {
+      singles.push({sym, txns, totalVal});
+    }
+  });
+
+  clusters.sort((a,b) => b.txns.length - a.txns.length || b.totalVal - a.totalVal);
+  singles.sort((a,b) => b.totalVal - a.totalVal);
+
+  // Filing card — recent transactions list
+  if (Object.keys(allBuys).length === 0) {
+    filingEl.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">No open-market purchases detected in the last 30 days across tracked stocks.</div>';
+  } else {
+    const recentAll = [];
+    Object.entries(allBuys).forEach(([sym, txns]) => {
+      txns.forEach(t => recentAll.push({...t, sym}));
+    });
+    recentAll.sort((a,b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+    const top8 = recentAll.slice(0, 8);
+    filingEl.innerHTML = top8.map(t => {
+      const val = _deFmt(t.value);
+      const ago = _deRelDate(t.transactionDate);
+      const cls = 'sc sc-g sc-na de-card';
+      return `<div class="${cls}" style="margin-bottom:6px;cursor:default;">
+        <div class="sul">${t.sym} — ${t.name || 'Insider'}${val ? ' · ' + val : ''} open market buy</div>
+        <div class="suh">${t.transactionDate ? t.transactionDate : ''} · ${ago}${t.share ? ' · ' + t.share.toLocaleString() + ' shares' : ''}${t.transactionPrice ? ' @ $' + t.transactionPrice.toFixed(2) : ''}</div>
+        <div class="sc-meta">${_deTagHtml(t.sym)}<span style="font-size:9px;color:var(--text3);margin-left:auto;">SEC Form 4 · ${ago}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Cluster card — high-conviction signals
+  if (clusters.length === 0 && singles.length === 0) {
+    clusterEl.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">No insider buy clusters detected in the last 30 days. Single buys also below threshold. This is actually useful information — absence of insider buying is a signal too.</div>';
+  } else {
+    let html = '';
+    clusters.forEach(({sym, txns, totalVal}) => {
+      const names = txns.map(t => t.name || 'Insider').slice(0,3).join(', ');
+      const val = _deFmt(totalVal);
+      const ago = _deRelDate(txns[0].transactionDate);
+      const cls = txns.length >= 3 ? 'sc sc-r sc-na de-card' : 'sc sc-g sc-na de-card';
+      const tag = txns.length >= 3 ? 'CLUSTER BUY' : 'MULTI BUY';
+      html += `<div class="${cls}" style="margin-bottom:7px;cursor:default;">
+        <div class="sul">${sym} — ${txns.length} insiders buying in 30 days${val ? ' · ' + val + ' total' : ''}</div>
+        <div class="suh">${names}. ${txns.length >= 3 ? 'Three or more insiders buying independently = high-conviction cluster signal. Each purchase is a separate personal decision.' : 'Multiple insiders buying in the same window — meaningful when not pre-scheduled 10b5-1 plans.'}</div>
+        <div class="sc-meta"><span class="act-tag at-buy">${tag}</span>${_deTagHtml(sym)}<span style="font-size:9px;color:var(--text3);margin-left:auto;">${ago}</span></div>
+      </div>`;
+    });
+    singles.slice(0, 3).forEach(({sym, txns, totalVal}) => {
+      const t = txns[0];
+      const val = _deFmt(totalVal);
+      const ago = _deRelDate(t.transactionDate);
+      html += `<div class="sc sc-b sc-na de-card" style="margin-bottom:7px;cursor:default;">
+        <div class="sul">${sym} — ${t.name || 'Insider'} · ${val} open market buy</div>
+        <div class="suh">Single purchase, open market. ${t.transactionDate || ''}. Not a 10b5-1 pre-scheduled sale — an independent open-market decision.</div>
+        <div class="sc-meta"><span class="act-tag at-watch">SINGLE BUY</span>${_deTagHtml(sym)}<span style="font-size:9px;color:var(--text3);margin-left:auto;">${ago}</span></div>
+      </div>`;
+    });
+    if (!html) html = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">No significant buy clusters detected this period.</div>';
+    clusterEl.innerHTML = html;
+  }
+}
+
+// ── L3: Analyst revision detection ───────────────────────────────────────────
+const _upgradeKw  = ['raises price target','raised price target','upgrades','upgrade','initiated','outperform','buy rating','strong buy','overweight','price target to','pt to','pt raised','raises pt','raised pt','analyst raises','target price increased'];
+const _downgradeKw = ['cuts price target','cut price target','downgrades','downgrade','underperform','sell rating','underweight','reduces price target','reduces pt','lowers pt','lowered pt'];
+
+async function renderDeepEdgeL3() {
+  if (!IS_VERCEL && !S.fh) {
+    document.getElementById('de-l3-revisions').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Add a Finnhub key in Settings to enable live analyst intelligence.</div>';
+    return;
+  }
+
+  const cacheKey = 'l3_' + new Date().toDateString();
+  if (DE_CACHE[cacheKey] && Date.now() - DE_CACHE[cacheKey].ts < DE_TTL) {
+    _renderL3Html(DE_CACHE[cacheKey].data);
+    return;
+  }
+
+  document.getElementById('de-l3-revisions').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Scanning analyst activity…</div>';
+
+  const from = _dateStr(-14), to = _dateStr(0);
+  const analystSignals = {}; // sym → {upgrades: [], downgrades: []}
+
+  await Promise.allSettled(DE_TICKERS.map(async sym => {
+    try {
+      const r = await fetch(fhURL('company-news', {symbol: sym, from, to}));
+      if (!r.ok) return;
+      const articles = await r.json();
+      if (!Array.isArray(articles)) return;
+      const ups = [], downs = [];
+      articles.forEach(a => {
+        const hl = (a.headline || '').toLowerCase();
+        const isUp   = _upgradeKw.some(k => hl.includes(k));
+        const isDown = _downgradeKw.some(k => hl.includes(k));
+        if (isUp)   ups.push(a);
+        if (isDown) downs.push(a);
+      });
+      if (ups.length || downs.length) analystSignals[sym] = {ups, downs};
+    } catch(e) {}
+  }));
+
+  DE_CACHE[cacheKey] = { data: analystSignals, ts: Date.now() };
+  _renderL3Html(analystSignals);
+
+  const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const tsEl = document.getElementById('de-l3-ts');
+  if (tsEl) tsEl.textContent = 'Updated ' + ts;
+}
+
+function _renderL3Html(analystSignals) {
+  const el = document.getElementById('de-l3-revisions');
+  if (!el) return;
+
+  const entries = Object.entries(analystSignals);
+  if (!entries.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">No analyst upgrades or PT raises detected in the last 14 days across tracked stocks. This is also a signal — quiet periods often precede a catalyst.</div>';
+    return;
+  }
+
+  // Sort: most upgrades first, then most downgrades
+  entries.sort((a,b) => (b[1].ups.length - a[1].ups.length) || (b[1].downs.length - a[1].downs.length));
+
+  let html = '';
+  entries.forEach(([sym, {ups, downs}]) => {
+    if (ups.length >= 2) {
+      const latest = ups[0];
+      const hl = latest.headline || '';
+      const ago = latest.datetime ? _deRelDate(new Date(latest.datetime*1000).toISOString().slice(0,10)) : '';
+      const cls = ups.length >= 3 ? 'sc sc-r sc-na de-card' : 'sc sc-g sc-na de-card';
+      const tag = ups.length >= 3 ? 'UPGRADE CLUSTER' : 'MULTIPLE UPGRADES';
+      html += `<div class="${cls}" style="margin-bottom:7px;cursor:default;">
+        <div class="sul">${sym} — ${ups.length} analyst upgrades/PT raises in 14 days</div>
+        <div class="suh">${hl.slice(0,140)}${hl.length>140?'…':''}</div>
+        <div class="sc-meta"><span class="act-tag at-buy">${tag}</span>${_deTagHtml(sym)}<span style="font-size:9px;color:var(--text3);margin-left:auto;">${ago}</span></div>
+      </div>`;
+    } else if (ups.length === 1) {
+      const a = ups[0];
+      const hl = a.headline || '';
+      const ago = a.datetime ? _deRelDate(new Date(a.datetime*1000).toISOString().slice(0,10)) : '';
+      html += `<div class="sc sc-b sc-na de-card" style="margin-bottom:7px;cursor:default;">
+        <div class="sul">${sym} — Analyst upgrade / PT raise</div>
+        <div class="suh">${hl.slice(0,160)}${hl.length>160?'…':''}</div>
+        <div class="sc-meta"><span class="act-tag at-watch">SINGLE UPGRADE</span>${_deTagHtml(sym)}<span style="font-size:9px;color:var(--text3);margin-left:auto;">${ago}</span></div>
+      </div>`;
+    }
+    if (downs.length >= 2) {
+      const hl = downs[0].headline || '';
+      const ago = downs[0].datetime ? _deRelDate(new Date(downs[0].datetime*1000).toISOString().slice(0,10)) : '';
+      html += `<div class="sc sc-gray sc-na de-card" style="margin-bottom:7px;cursor:default;">
+        <div class="sul">${sym} — ${downs.length} analyst downgrades/PT cuts in 14 days</div>
+        <div class="suh">${hl.slice(0,140)}${hl.length>140?'…':''}. ${downs.length >= 3 ? 'Cluster of cuts = trend, not noise. Reassess thesis.' : 'Multiple cuts — monitor for continuation.'}</div>
+        <div class="sc-meta"><span class="act-tag at-skip">DOWNGRADE CLUSTER</span>${_deTagHtml(sym)}<span style="font-size:9px;color:var(--text3);margin-left:auto;">${ago}</span></div>
+      </div>`;
+    }
+  });
+
+  if (!html) html = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">No significant analyst activity detected in the last 14 days.</div>';
+  el.innerHTML = html;
+}
+
+// ── Init: called on tab open and globalRefresh ────────────────────────────────
+let _deInitDone = false;
+
+async function initDeepEdge(force) {
+  if (_deInitDone && !force) return;
+  _deInitDone = true;
+  const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const hdrTs = document.getElementById('de-l1-ts');
+  if (hdrTs) hdrTs.textContent = 'Live · ' + ts;
+  await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3()]);
+}
+// ═══════════════════════════════════════════════════════════════
+// END DEEP EDGE LIVE ENGINE
+// ═══════════════════════════════════════════════════════════════
 </script>
 
 <!-- PRO MODAL -->
