@@ -2380,6 +2380,28 @@ const SCORES={NVDA:78,ASML:91,AMD:31,RKLB:67,PLTR:62,META:55,GOOGL:48,MSFT:52,TS
 // Computes a dynamic convergence score from Finnhub data (requires API key).
 // Falls back to hardcoded SCORES if no key or on error.
 const _liveScoreCache = {};
+
+function getScoreTrend(ticker) {
+  try {
+    const raw = localStorage.getItem('score_history');
+    if (!raw) return null;
+    const hist = JSON.parse(raw);
+    const entries = (hist[ticker] || []).filter(e => e && e.ts).sort((a,b) => b.ts - a.ts);
+    if (entries.length < 2) return null;
+    const latest = entries[0];
+    const sevenDaysAgo = Date.now() - 7 * 24 * 3600000;
+    const old = entries.find(e => e.ts <= sevenDaysAgo) || entries[entries.length - 1];
+    if (!old || old.ts === latest.ts) return null;
+    const delta = latest.s - old.s;
+    const age = Math.round((Date.now() - latest.ts) / 3600000);
+    const ageStr = age < 1 ? 'just now' : age === 1 ? '1h ago' : age < 24 ? age + 'h ago' : Math.round(age / 24) + 'd ago';
+    const days = Math.round((latest.ts - old.ts) / 86400000) || 1;
+    if (delta >= 3) return { arrow: '\u2191', delta, color: 'var(--green)', ageStr, days };
+    if (delta <= -3) return { arrow: '\u2193', delta, color: 'var(--red)', ageStr, days };
+    return { arrow: '\u2192', delta, color: 'var(--text3)', ageStr, days };
+  } catch(e) { return null; }
+}
+
 const _LIVE_SCORE_TTL = 30 * 60 * 1000; // 30 min
 
 async function computeLiveScore(ticker) {
@@ -2474,6 +2496,14 @@ async function computeLiveScore(ticker) {
     const score = Math.min(99, Math.max(1, l1pts + l2pts + l3pts + l4pts + l5pts));
     _liveScoreCache[ticker] = { score, l1pts, l3pts, rsi, rangePos: hi52 ? (curPrice-lo52)/(hi52-lo52) : null, dp, ts: Date.now() };
     SCORES[ticker] = score; // update in place — all renders get live value
+    // Persist to score history for trend arrows
+    try {
+      const _sh = JSON.parse(localStorage.getItem('score_history') || '{}');
+      if (!_sh[ticker]) _sh[ticker] = [];
+      _sh[ticker].push({ s: score, ts: Date.now() });
+      _sh[ticker] = _sh[ticker].slice(-14); // keep 14 entries max
+      localStorage.setItem('score_history', JSON.stringify(_sh));
+    } catch(e) {}
     return score;
   } catch(e) {
     console.warn('computeLiveScore error', ticker, e);
@@ -3358,10 +3388,13 @@ function _renderMorningPicksCard() {
     const catNote = cat ? ` · ${cat.label} ${cat.date}` : '';
     const skipText = p.cat === 'SKIP' ? `Mixed or weak signals this week. Hold existing only. Do not add.${catNote}` : (info.signal || info.desc || NAMES[p.t] || p.t) + catNote;
     const tf = p.s >= 75 ? 'Mid-term' : p.s >= 60 ? 'Mid-term' : p.cat === 'SKIP' ? 'Revisit next week' : 'Monitor';
+    const tr = getScoreTrend(p.t);
+    const trendHtml = tr ? `<span style="font-size:9px;font-weight:700;color:${tr.color};margin-left:3px;">${tr.arrow}${Math.abs(tr.delta)}</span>` : '';
+    const ageHtml = tr ? `<span style="font-size:9px;color:var(--text3);margin-left:4px;">${tr.ageStr}</span>` : '';
     return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}')">
       <div class="sul">${p.t} — Score ${p.s} · ${info.desc || NAMES[p.t] || ''}</div>
       <div class="suh">${skipText}</div>
-      <div class="sc-meta"><span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span></div>
+      <div class="sc-meta"><span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span>${trendHtml}${ageHtml}</div>
     </div>`;
   }).join('');
 
@@ -3877,6 +3910,9 @@ function showTkT(n,btn){
 /* ── TICKER MODAL DEEP-DIVE RENDERERS ──────────────── */
 function renderTkScore(sym){
   const layers=LAYER_DATA[sym];
+  const _tr=getScoreTrend(sym);
+  const _tBadge=_tr?'<span style="font-size:11px;font-weight:700;color:'+_tr.color+';margin-left:5px;">'+_tr.arrow+(_tr.delta>0?'+':'')+_tr.delta+'</span>':'';
+  const _tAge=_tr?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Updated '+_tr.ageStr+'</div>':'';
   if(!layers)return '<div class="card"><div class="card-lbl">Signal Score</div><div style="font-size:12px;color:var(--text3);padding:8px 0;">No signal data for '+sym+' yet.</div></div>';
   const total=layers.reduce((s,l)=>s+l.pts,0);
   function bc(pts,max){const r=pts/max;return r>=0.85?'var(--blue)':r>=0.6?'var(--text2)':'var(--text3)';}
@@ -3886,7 +3922,7 @@ function renderTkScore(sym){
     const sigs=l.signals.map(s=>'<div style="font-size:11px;color:var(--text2);padding:3px 0 3px 10px;border-left:2px solid var(--border2);margin-top:3px;">'+s+'</div>').join('');
     return '<div style="margin-bottom:14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:var(--text3);width:18px;font-family:\'DM Mono\',monospace;">'+l.id+'</span><span style="font-size:12px;font-weight:600;flex:1;">'+l.name+'</span><span style="font-size:10px;font-family:\'DM Mono\',monospace;color:'+col+';font-weight:700;">'+l.pts+'/'+l.max+'</span></div><div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:6px;"><div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:2px;"></div></div><div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px;">'+l.desc+'</div>'+sigs+'</div>';
   }).join('');
-  return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);">'+total+'<span style="font-size:13px;color:var(--text3);">/100</span></div></div>'+bars+'</div>';
+  return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);">'+total+'<span style="font-size:13px;color:var(--text3);">/100</span>'+_tBadge+'</div></div>'+_tAge+bars+'</div>';
 }
 
 function renderTkChain(sym){
