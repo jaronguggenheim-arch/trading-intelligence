@@ -2699,12 +2699,56 @@ async function initLiveScores() {
   // Re-render morning brief with freshly computed scores
   try { renderMorningBriefDynamic(); } catch(e) {}
   try { renderSageCard(); markSagePick(); } catch(e) {}
+  // Save daily score snapshot AFTER live scores are computed (truth test uses this)
+  try { _saveDailyScoreSnapshot(); } catch(e) {}
   // Update picks card label to confirm live scores
   const lbl2 = document.getElementById('morning-picks-lbl');
   if (lbl2) {
     const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     lbl2.innerHTML = 'Today\'s top picks <span style="font-size:9px;color:var(--green);font-weight:600;margin-left:6px;letter-spacing:.02em;">● live · ' + now + '</span>';
   }
+}
+
+// ── Daily score snapshot — one entry per day, all tickers ───────────────────
+// Stored in localStorage as score_history_daily: { 'YYYY-MM-DD': {NVDA:78,...}, ... }
+// Used by the truth test to compare "score at day 0" vs "price 30 days later"
+function _saveDailyScoreSnapshot() {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
+    // Only snapshot once per calendar day (first app open)
+    if (hist[today]) return false;
+    // Capture all current scores
+    const snap = {};
+    Object.entries(SCORES).forEach(function([t, s]) { if (s) snap[t] = s; });
+    if (!Object.keys(snap).length) return false;
+    hist[today] = snap;
+    // Trim to 45 days (enough for a 30-day backtest with 15-day buffer)
+    const keys = Object.keys(hist).sort();
+    if (keys.length > 45) keys.slice(0, keys.length - 45).forEach(function(k) { delete hist[k]; });
+    localStorage.setItem('score_history_daily', JSON.stringify(hist));
+    console.log('[score snapshot] saved ' + Object.keys(snap).length + ' tickers for ' + today);
+    return true;
+  } catch(e) { return false; }
+}
+
+// Also call with base SCORES on first load (before live refresh) — seeds history with static scores
+// so the app starts building history from day 1, even on slow connections
+function _seedInitialScoreSnapshot() {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
+    if (hist[today]) return; // already have today's entry
+    const snap = {};
+    if (typeof SCORES !== 'undefined') {
+      Object.entries(SCORES).forEach(function([t, s]) { if (s) snap[t] = s; });
+    }
+    if (!Object.keys(snap).length) return;
+    hist[today] = snap;
+    const keys = Object.keys(hist).sort();
+    if (keys.length > 45) keys.slice(0, keys.length - 45).forEach(function(k) { delete hist[k]; });
+    localStorage.setItem('score_history_daily', JSON.stringify(hist));
+  } catch(e) {}
 }
 
 function _refreshLiveScoreUI() {
@@ -5873,6 +5917,8 @@ window.addEventListener('DOMContentLoaded',()=>{
     const firstNt=document.querySelector('#app-nav .nt');
     gT('morning',firstNt);
     if(S.fh||S.av||IS_VERCEL)setTimeout(()=>{try{if(!window._avNewsFetched)fetchAVNews();}catch(e){}},300);
+    // Seed score snapshot with static base scores on first load (builds history from day 1)
+    setTimeout(function(){try{_seedInitialScoreSnapshot();}catch(e){}},500);
     // Kick off live score computation in background (non-blocking, requires Finnhub key)
     if(S.fh||IS_VERCEL)setTimeout(()=>{try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},1500);
     setTimeout(()=>{try{renderLiveTickerStrip();}catch(e){console.warn('tickerStrip',e);}},300);
@@ -7342,10 +7388,28 @@ async function _runScoreBacktest(force) {
     return;
   }
 
-  el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Fetching 30-day returns for high and low scorers…</div>';
-
   const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN']);
-  const allScored = Object.entries(SCORES)
+
+  // ── Try to use historical snapshot from 30+ days ago ────────────────────
+  let historicalScores = null;
+  let historicalDate = null;
+  let useHistorical = false;
+  try {
+    const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
+    const keys = Object.keys(hist).sort(); // ascending date strings
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+    // Find oldest snapshot that is at least 30 days old
+    const oldKey = keys.find(k => k <= thirtyDaysAgo);
+    if (oldKey) {
+      historicalScores = hist[oldKey];
+      historicalDate = oldKey;
+      useHistorical = true;
+    }
+  } catch(e) {}
+
+  // Resolve which scores to rank by (historical if available, else current)
+  const rankScores = useHistorical ? historicalScores : SCORES;
+  const allScored = Object.entries(rankScores)
     .filter(([t, s]) => s && NAMES[t] && !SIGNAL_NODES.has(t))
     .sort(([,a],[,b]) => b - a);
 
@@ -7353,9 +7417,17 @@ async function _runScoreBacktest(force) {
   const highGroup = allScored.slice(0, 10).map(([t]) => t);
   const lowGroup  = allScored.slice(-10).map(([t]) => t);
 
-  // Date range: 30 days ago → today
-  const to   = Math.floor(Date.now() / 1000);
-  const from = to - (30 * 86400);
+  const modeLabel = useHistorical
+    ? `Scores from ${historicalDate} vs price change since`
+    : 'Current scores vs last 30-day price change (building history…)';
+
+  // Date range: historical start → +30 days (or last 30 days from now)
+  const to   = useHistorical
+    ? Math.floor(new Date(historicalDate + 'T23:59:59Z').getTime() / 1000) + (30 * 86400)
+    : Math.floor(Date.now() / 1000);
+  const from = useHistorical
+    ? Math.floor(new Date(historicalDate + 'T00:00:00Z').getTime() / 1000)
+    : to - (30 * 86400);
 
   async function fetchReturn(sym) {
     try {
@@ -7411,6 +7483,7 @@ async function _runScoreBacktest(force) {
     : 'Insufficient data for this period.';
 
   const html = `
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;padding:6px 8px;border-radius:6px;background:var(--bg3);border:0.5px solid var(--border);">${modeLabel}</div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
       <div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:var(--green-bg);border:0.5px solid var(--green-bd);text-align:center;">
         <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">High conviction (70+)</div>
@@ -7437,7 +7510,7 @@ async function _runScoreBacktest(force) {
       <div style="font-size:10px;color:#ef4444;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Low scorers (bottom 10)</div>
       <div style="display:flex;flex-wrap:wrap;gap:2px;">${stockRows(lowGroup, 'low', '#ef4444')}</div>
     </div>
-    <div style="font-size:10px;color:var(--text3);margin-top:10px;text-align:right;">30-day returns via Finnhub · updated ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>`;
+    <div style="font-size:10px;color:var(--text3);margin-top:10px;text-align:right;">${useHistorical ? `30-day returns after ${historicalDate}` : '30-day returns'} via Finnhub · updated ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>`;
 
   _backtestCache = html;
   el.innerHTML = html;
@@ -8221,18 +8294,18 @@ const TICKER_DATA = EDGAR_COMPANY_NAMES; // alias
 const EDGAR_CIKS = {
   // Original 30
   NVDA: '0001045810',
-  ASML: '0000937556',
+  ASML: '0000937966',
   AMD:  '0000002488',
-  RKLB: '0001819989',
+  RKLB: '0001819994',
   PLTR: '0001321655',
   META: '0001326801',
   TSM:  '0001046179',
-  SMCI: '0000886136',
-  CCJ:  '0001067294',
-  UEC:  '0001334978',
+  SMCI: '0001375365',
+  CCJ:  '0001009001',
+  UEC:  '0001334933',
   LMT:  '0000936468',
   NOC:  '0001133421',
-  RTX:  '0000101830',
+  RTX:  '0000101829',
   CRM:  '0001108524',
   NOW:  '0001373715',
   SNOW: '0001640147',
@@ -8275,14 +8348,14 @@ const EDGAR_CIKS = {
   KLAC: '0000319201',
   ENTG: '0001101302',
   TER:  '0000097210',
-  MKSI: '0000062996',
-  ONTO: '0001140102',
+  MKSI: '0001049502',
+  ONTO: '0000704532',
   V:    '0001403161',
   MA:   '0001141391',
   PYPL: '0001633917',
   SQ:   '0001512673',
-  HOOD: '0001783398',
-  DDOG: '0001466349',
+  HOOD: '0001783879',
+  DDOG: '0001561550',
   MDB:  '0001441816',
   ZS:   '0001713683',
   ESTC: '0001707753',
@@ -8294,86 +8367,86 @@ const EDGAR_CIKS = {
   HUBS: '0001404655',
   SHOP: '0001594805',
   TTD:  '0001671933',
-  PATH: '0001403708',
+  PATH: '0001734722',
   CFLT: '0001853145',
   MCHP: '0000827054',
   TXN:  '0000097476',
   MPWR: '0001280452',
-  ADI:  '0000006654',
-  NXPI: '0001411579',
+  ADI:  '0000006281',
+  NXPI: '0001413447',
   FSLR: '0001274494',
   ENPH: '0001463101',
   WOLF: '0000895419',
   RIVN: '0001874178',
-  ANET: '0001313925',
+  ANET: '0001596532',
   PSTG: '0001474432',
-  NTAP: '0001109354',
+  NTAP: '0001002047',
   WDC:  '0000106040',
   ISRG: '0001035267',
   VEEV: '0001393052',
-  RXRX: '0001628908',
-  AMGN: '0000820081',
+  RXRX: '0001601830',
+  AMGN: '0000318154',
   UBER: '0001543151',
   SPOT: '0001639920',
   ABNB: '0001559720',
-  DIS:  '0001001039',
+  DIS:  '0001744489',
   AXON: '0001069183',
   GTLB: '0001653482',
-  TWLO: '0001447362',
-  SOFI: '0001626115',
-  AFRM: '0001820770',
+  TWLO: '0001447669',
+  SOFI: '0001818874',
+  AFRM: '0001820953',
   NU:   '0001691493',
   // 150-stock expansion
   MRNA: '0001682852',
   REGN: '0000872589',
-  DXCM: '0001327256',
+  DXCM: '0001093557',
   TDOC: '0001477449',
   ILMN: '0001110803',
-  ALB: '0000915779',
-  SQM: '0000932628',
+  ALB: '0000915913',
+  SQM: '0000909037',
   LTHM: '0001776197',
-  CHPT: '0001750153',
-  BLNK: '0001698113',
+  CHPT: '0001777393',
+  BLNK: '0001429764',
   BILL: '0001786352',
   ZI: '0001794515',
-  MNDY: '0001845948',
-  TOST: '0001802665',
+  MNDY: '0001845338',
+  TOST: '0001650164',
   SMAR: '0001557798',
   FORM: '0001039399',
-  ACMR: '0001675644',
-  CAMT: '0000883975',
+  ACMR: '0001680062',
+  CAMT: '0001109138',
   IPGP: '0001111928',
   POWI: '0000833640',
-  SOUN: '0001840292',
-  AISP: '0001577526',
-  IONQ: '0001807707',
-  DUOL: '0001599298',
+  SOUN: '0001840856',
+  AISP: '0001842566',
+  IONQ: '0001824920',
+  DUOL: '0001562088',
   RBLX: '0001315098',
   EQIX: '0001101239',
   DLR: '0001297996',
   AMT: '0001053507',
   IRM: '0001020569',
-  VRT: '0001786286',
+  VRT: '0001674101',
   KTOS: '0001069258',
   LDOS: '0001336920',
   BA: '0000012927',
   SAIC: '0001571123',
   HII: '0001501585',
-  NIO: '0001733186',
-  XPEV: '0001810806',
-  LCID: '0001800227',
+  NIO: '0001736541',
+  XPEV: '0001810997',
+  LCID: '0001811210',
   F: '0000037996',
   GM: '0001467858',
   ROKU: '0001428439',
   SNAP: '0001564408',
-  PINS: '0001506439',
+  PINS: '0001506293',
   ZM: '0001585521',
-  NTNX: '0001702510',
+  NTNX: '0001618732',
   MELI: '0001099590',
-  SE: '0001741830',
-  FLUT: '0001874631',
+  SE: '0001703399',
+  FLUT: '0001635327',
   UPST: '0001647639',
-  LMND: '0001691511',
+  LMND: '0001691421',
 };
 
 let edgarActiveTicker = 'NVDA';
