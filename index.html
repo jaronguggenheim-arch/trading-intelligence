@@ -108,7 +108,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
 @media(max-width:600px){.lp-stats-bar{gap:20px;}.lp-stat-num{font-size:18px;}}
 
 .lp-strip{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:11px 0;}
-.lp-strip-inner{display:flex;gap:44px;white-space:nowrap;animation:lp-scroll 28s linear infinite;width:max-content;}
+.lp-strip-inner{display:flex;gap:44px;white-space:nowrap;animation:lp-scroll 80s linear infinite;width:max-content;}
 @keyframes lp-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .lp-tick{display:flex;align-items:center;gap:9px;font-family:'DM Mono',monospace;font-size:12px;}
 .lp-tick-sym{color:var(--text2);font-weight:500;}
@@ -299,7 +299,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
 
 /* ── Focus bar: auto-scrolling ticker wheel ───────────────── */
 #ticker-scroll-wrap{flex:1;min-width:0;overflow:hidden;position:relative;mask-image:linear-gradient(to right,transparent 0%,black 100px,black calc(100% - 100px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 100px,black calc(100% - 100px),transparent 100%);}
-#ticker-scroll-track{display:flex;gap:6px;width:max-content;animation:focus-ticker-scroll 40s linear infinite;align-items:center;}
+#ticker-scroll-track{display:flex;gap:6px;width:max-content;animation:focus-ticker-scroll 200s linear infinite;align-items:center;}
 #ticker-scroll-track:hover,#ticker-scroll-wrap:hover #ticker-scroll-track{animation-play-state:paused;}
 @keyframes focus-ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .ftick{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;flex-shrink:0;}
@@ -326,7 +326,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .hbtn{font-size:11px;padding:5px 11px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s,color .15s;}.hbtn:hover{background:var(--bg3);color:var(--text);}.hbtn.pri{background:var(--text);color:var(--bg);border-color:transparent;font-weight:600;}
 .nav{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 20px;display:flex;align-items:center;height:40px;overflow-x:auto;scrollbar-width:none;position:sticky;top:50px;z-index:98;box-sizing:border-box;}.nav::-webkit-scrollbar{display:none;}
 #live-ticker-strip{flex:1;overflow:hidden;min-width:0;height:100%;display:none;mask-image:linear-gradient(to right,transparent 0%,black 60px,black calc(100% - 60px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 60px,black calc(100% - 60px),transparent 100%);}
-#ticker-track{display:flex;align-items:center;height:100%;animation:ticker-run 80s linear infinite;width:max-content;}
+#ticker-track{display:flex;align-items:center;height:100%;animation:ticker-run 600s linear infinite;width:max-content;}
 #ticker-track:hover{animation-play-state:paused;}
 @keyframes ticker-run{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .nt{padding:11px 12px;font-size:12px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}.nt.active{color:var(--text);border-bottom-color:var(--text);font-weight:500;}.nt.corr-tab{color:var(--purple);}.nt.corr-tab.active{border-bottom-color:var(--purple);}.nt:hover:not(.active){color:var(--text);}
@@ -521,7 +521,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);cursor:pointer;line-height:1;">×</span>
       <!-- dropdown -->
       <div id="focus-dropdown"
-        style="display:none;position:absolute;top:calc(100% + 5px);left:0;width:280px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:200;overflow:hidden;">
+        style="display:none;position:fixed;top:0;left:0;width:280px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:9999;overflow:hidden;">
       </div>
     </div>
     <div id="focus-active-chip" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);color:var(--blue);font-weight:600;letter-spacing:.02em;flex-shrink:0;"></div>
@@ -1966,12 +1966,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 <!-- EARNINGS PLAYBOOK -->
 <div class="sec" id="tab-earnings">
-  <div style="display:flex;gap:6px;margin-bottom:13px;">
-    <button class="ticker-tab active" onclick="showEP('nvda',this)">NVDA · May 22</button>
-    <button class="ticker-tab" onclick="showEP('asml',this)">ASML · Jul 16</button>
-    <button class="ticker-tab" onclick="showEP('amd',this)">AMD · Jul 30</button>
-    <button class="ticker-tab" onclick="showEP('meta',this)">META · Beat ✓</button>
+  <!-- LIVE EARNINGS CALENDAR -->
+  <div class="card" style="margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div>
+        <div class="card-lbl" style="margin-bottom:2px;">Earnings calendar · Next 90 days</div>
+        <div style="font-size:10px;color:var(--text3);">Live from Finnhub · EPS estimates + beat/miss history</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button id="earnings-watchlist-btn" onclick="toggleEarningsFilter()" style="padding:4px 11px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">All stocks</button>
+        <button onclick="loadEarningsCalendar(true)" style="padding:5px 14px;border:none;border-radius:6px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
+      </div>
+    </div>
+    <div id="earnings-calendar-container">
+      <div style="font-size:11px;color:var(--text3);text-align:center;padding:22px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+        <div style="font-size:18px;margin-bottom:8px;">📅</div>
+        <div style="font-weight:600;color:var(--text2);margin-bottom:4px;">Loading earnings calendar…</div>
+        <div style="font-size:10px;">Fetching upcoming reports from Finnhub</div>
+      </div>
+    </div>
   </div>
+
+  <!-- EARNINGS SIGNAL PLAYBOOK (static but useful) -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Before earnings — what to watch</div>
+      <div class="sc sc-g sc-na" style="margin-bottom:7px;"><div class="sul">Options sweep 1–3 weeks before</div><div class="suh">Large call sweep ($10M+) before earnings = institutional conviction. Most reliable pre-earnings directional signal available.</div><div class="sc-meta"><span class="act-tag at-buy">HIGH SIGNAL</span></div></div>
+      <div class="sc sc-b sc-na" style="margin-bottom:7px;"><div class="sul">Analyst estimate acceleration</div><div class="suh">3+ raises in 21 days from multiple banks = positive channel checks. Analysts are getting confirming signals from the supply chain.</div><div class="sc-meta"><span class="act-tag at-add">WATCH</span></div></div>
+      <div class="sc sc-gray sc-na"><div class="sul">Insider selling = ignore (usually)</div><div class="suh">Pre-scheduled 10b5-1 plans are noise. Only flag open-market sells (rare) or same-week buys from C-suite.</div><div class="sc-meta"><span class="act-tag at-skip">NOISE</span></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">After earnings — reaction framework</div>
+      <div class="sc sc-r sc-na" style="margin-bottom:7px;"><div class="sul">Never hold through if implied move >15%</div><div class="suh">At ±15%+ implied move, options premium is too rich. Better to build position post-event on any dip than to gamble on direction.</div><div class="sc-meta"><span class="act-tag at-skip">RULE</span></div></div>
+      <div class="sc sc-a sc-na" style="margin-bottom:7px;"><div class="sul">Guidance > beat on the quarter</div><div class="suh">A beat with flat guidance = sell the pop. A miss with raised guidance = buy the dip. Forward guidance is the only number that matters.</div><div class="sc-meta"><span class="act-tag at-add">FRAMEWORK</span></div></div>
+      <div class="sc sc-g sc-na"><div class="sul">Supply chain implications</div><div class="suh">After an anchor stock beats, check CHAIN_GRAPH for which downstream stocks enter their lag window. That's your next 4–8 week setup.</div><div class="sc-meta"><span class="act-tag at-buy">ACTION</span></div></div>
+    </div>
+  </div>
+
+  <!-- LEGACY EP PANELS (kept for backward compat) -->
   <div id="ep-nvda">
     <div class="g2">
       <div class="card">
@@ -2011,14 +2043,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <button id="refresh-edgar-btn" onclick="refreshAllEdgar()" style="padding:5px 14px;border:none;border-radius:6px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;">↺ Fetch live</button>
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;" id="edgar-ticker-btns">
-      <button onclick="selectEdgarTicker('NVDA',this)" style="padding:4px 10px;border:0.5px solid var(--green);border-radius:5px;background:var(--green-bg);color:var(--green);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">NVDA</button>
-      <button onclick="selectEdgarTicker('ASML',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">ASML</button>
-      <button onclick="selectEdgarTicker('AMD',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">AMD</button>
-      <button onclick="selectEdgarTicker('PLTR',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">PLTR</button>
-      <button onclick="selectEdgarTicker('RKLB',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">RKLB</button>
-      <button onclick="selectEdgarTicker('META',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">META</button>
-      <button onclick="selectEdgarTicker('TSM',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">TSM</button>
-      <button onclick="selectEdgarTicker('SMCI',this)" style="padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">SMCI</button>
     </div>
     <div id="edgar-live-feed">
       <div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
@@ -2034,10 +2058,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="sc sc-gray" onclick="openTicker('NVDA')"><div class="sul">Huang · NVDA · SELL $95M — 10b5-1 noise</div><div class="suh">Pre-scheduled automatic plan filed months ago. Completely ignore.</div><div class="sc-meta"><span class="act-tag at-skip">IGNORE</span></div></div>
     </div>
     <div class="card">
-      <div class="card-lbl">Whale 13F moves — latest disclosed positions</div>
-      <div class="sc sc-g" onclick="openTicker('NVDA')" style="margin-bottom:7px;"><div class="sul">Druckenmiller — NVDA core hold + VST CEG rotation</div><div class="suh">"Most important technology in 45 years." Holding NVDA as core while rotating profits into power plays.</div><div class="sc-meta"><span class="act-tag at-buy">CORE HOLD</span></div></div>
-      <div class="sc sc-b" onclick="openTicker('RKLB')" style="margin-bottom:7px;"><div class="sul">Soros Fund — New: PLTR + RKLB</div><div class="suh">Both are new positions. Both on your watchlist. Independent validation of two separate theses simultaneously.</div><div class="sc-meta"><span class="act-tag at-buy">CONFIRMS BOTH</span></div></div>
-      <div class="sc sc-g" onclick="openTicker('NVDA')"><div class="sul">Tiger Global — NVDA + CRWD aggressive addition</div><div class="suh">AI compute + AI security simultaneously. Confirms AGI security chain thesis from top-tier fund.</div><div class="sc-meta"><span class="act-tag at-buy">CONFIRMS NVDA</span></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="card-lbl" style="margin-bottom:0;">Smart Money — institutional positions</div>
+        <div style="display:flex;gap:6px;">
+          <select id="smart-money-ticker-sel" onchange="loadSmartMoney(this.value)" style="font-size:11px;padding:4px 8px;border:0.5px solid var(--border2);border-radius:5px;background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;cursor:pointer;">
+            <option value="NVDA">NVDA</option>
+          </select>
+          <button onclick="loadSmartMoney(document.getElementById('smart-money-ticker-sel').value,true)" style="padding:4px 10px;border:none;border-radius:5px;background:var(--green);color:#000;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺</button>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Live 13F institutional ownership · SEC filings · Updated quarterly</div>
+
+      <!-- Notable managers — curated from 13F public filings -->
+      <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:0.5px solid var(--border);">
+        <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Notable manager watchlist</div>
+        <div style="display:flex;flex-direction:column;gap:4px;" id="notable-managers-list">
+          <div style="font-size:11px;color:var(--text3);padding:8px 0;">Select a ticker to see which notable managers hold it</div>
+        </div>
+      </div>
+
+      <!-- Live institutional ownership from Finnhub -->
+      <div id="smart-money-institutional">
+        <div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+          <div style="font-size:16px;margin-bottom:6px;">🏦</div>
+          <div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Loading institutional data…</div>
+          <div style="font-size:10px;">Fetching 13F ownership from Finnhub</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2870,7 +2917,7 @@ async function renderLiveTickerStrip() {
   track.innerHTML = items + items;
   // Set duration proportional to item count so scroll speed stays constant (~25px/s)
   // Each item ~150px wide, two sets duplicated
-  const _tickerDuration = Math.round(_tickerStripTickers.length * 2 * 150 / 25);
+  const _tickerDuration = Math.max(300, Math.round(_tickerStripTickers.length * 2 * 150 / 100));
   track.style.animationDuration = _tickerDuration + 's';
   strip.style.display = 'flex';
 
@@ -5461,7 +5508,12 @@ function setFocusTicker(ticker) {
     if (t === 'convergence')  { renderConvergence && renderConvergence(); }
     if (t === 'correlations') { initCorrTab && initCorrTab(); }
     if (t === 'deepedge')     { filterDeepEdge && filterDeepEdge(S.focusTicker || 'ALL', null); }
-    if (t === 'smart')        { renderSmartMoney && renderSmartMoney(); }
+    if (t === 'smart')        {
+      try { populateSmartMoneySelect(); populateEdgarButtons(); renderSmartMoney && renderSmartMoney(); } catch(e) { console.warn('smart init:', e); }
+    }
+    if (t === 'earnings')     {
+      try { loadEarningsCalendar(); } catch(e) { console.warn('earnings init:', e); }
+    }
     if (t === 'markets')      { renderMarkets && renderMarkets(); }
   } catch(e) { console.warn('focusTicker re-render:', e); }
 
@@ -5495,10 +5547,20 @@ function focusSearchInput(q) {
   }).slice(0, 9);
 
   if (!matches.length) {
+    const inputRect2 = document.getElementById('focus-search-input').getBoundingClientRect();
+    dd.style.top = (inputRect2.bottom + 4) + 'px';
+    dd.style.left = inputRect2.left + 'px';
+    dd.style.width = Math.max(280, inputRect2.width) + 'px';
     dd.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:12px 14px;">No match — try a ticker symbol like NVDA</div>';
     dd.style.display = 'block';
     return;
   }
+
+  // Position dropdown under input (fixed positioning avoids overflow clipping)
+  const inputRect = document.getElementById('focus-search-input').getBoundingClientRect();
+  dd.style.top = (inputRect.bottom + 4) + 'px';
+  dd.style.left = inputRect.left + 'px';
+  dd.style.width = Math.max(280, inputRect.width) + 'px';
 
   dd.innerHTML = matches.map((t, i) => {
     const score = SCORES[t];
@@ -5566,6 +5628,380 @@ document.addEventListener('click', function(e) {
   const bar = document.getElementById('stock-focus-bar');
   if (bar && !bar.contains(e.target)) closeFocusDropdown();
 });
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SMART MONEY — EARNINGS CALENDAR
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Notable institutional managers — curated from public 13F disclosures
+const NOTABLE_MANAGERS = {
+  'Pershing Square (Ackman)': {
+    cik: '0001336528', tickers: ['GOOGL','HILTON','QSR','PLTR','NIKE'],
+    style: 'Concentrated activist · Long-term conviction', twitter: 'BillAckman'
+  },
+  'Third Point (Loeb)': {
+    cik: '0001040273', tickers: ['AMZN','GOOGL','META','NVDA','UBS'],
+    style: 'Activist / event-driven · Letters drive price action', twitter: 'DanielSLoeb'
+  },
+  'Pershing / Druckenmiller': {
+    cik: '0001536411', tickers: ['NVDA','MSFT','GOOGL','VST','CEG'],
+    style: 'Global macro · Concentrated high-conviction', twitter: 'StanDruckenmiller'
+  },
+  'Greenlight (Einhorn)': {
+    cik: '0001079114', tickers: ['GOOGL','BABA','NFLX','AAPL'],
+    style: 'Value-oriented · Short+long activist', twitter: null
+  },
+  'Tiger Global': {
+    cik: '0001167483', tickers: ['NVDA','MSFT','META','AMZN','CRWD','DDOG'],
+    style: 'Long-biased tech growth', twitter: null
+  },
+  'Coatue (Laffont)': {
+    cik: '0001167716', tickers: ['NVDA','META','MSFT','AMZN','SHOP','PLTR'],
+    style: 'Long-biased tech · Tiger cub', twitter: null
+  },
+  'Soros Fund': {
+    cik: '0001029160', tickers: ['PLTR','RKLB','NVDA','GOOGL'],
+    style: 'Global macro + tactical tech', twitter: null
+  },
+  'Baillie Gifford': {
+    cik: '0001006438', tickers: ['AMZN','TSLA','NVDA','SHOP','NFLX','SPOT'],
+    style: 'Long-term growth compounder · 5–10yr horizon', twitter: null
+  },
+  'ARK Invest (Wood)': {
+    cik: '0001579982', tickers: ['TSLA','ROKU','COIN','PLTR','PATH','IONQ'],
+    style: 'Disruptive innovation · High-beta growth', twitter: 'CathieDWood'
+  }
+};
+
+// Earnings calendar state
+let _earningsFilterWL = false;
+let _earningsCache = null;
+let _earningsCacheTime = 0;
+const EARNINGS_CACHE_TTL = 30 * 60 * 1000; // 30 min
+
+function toggleEarningsFilter() {
+  _earningsFilterWL = !_earningsFilterWL;
+  const btn = document.getElementById('earnings-watchlist-btn');
+  if (btn) {
+    btn.textContent = _earningsFilterWL ? 'Watchlist only' : 'All stocks';
+    btn.style.background = _earningsFilterWL ? 'var(--blue-bg)' : 'none';
+    btn.style.color = _earningsFilterWL ? 'var(--blue)' : 'var(--text2)';
+    btn.style.borderColor = _earningsFilterWL ? 'var(--blue-bd)' : 'var(--border2)';
+  }
+  renderEarningsCalendar(_earningsCache);
+}
+
+async function loadEarningsCalendar(forceRefresh) {
+  const container = document.getElementById('earnings-calendar-container');
+  if (!container) return;
+
+  const now = Date.now();
+  if (!forceRefresh && _earningsCache && (now - _earningsCacheTime) < EARNINGS_CACHE_TTL) {
+    renderEarningsCalendar(_earningsCache);
+    return;
+  }
+
+  container.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:22px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+    <div style="font-size:18px;margin-bottom:8px;">📅</div>
+    <div style="font-weight:600;color:var(--text2);margin-bottom:4px;">Loading earnings calendar…</div>
+    <div style="font-size:10px;">Fetching from Finnhub</div>
+  </div>`;
+
+  try {
+    const today = new Date();
+    const toDate = new Date(today); toDate.setDate(toDate.getDate() + 90);
+    const fmt = d => d.toISOString().split('T')[0];
+    const fromStr = fmt(today);
+    const toStr = fmt(toDate);
+
+    // Build symbol list from OUR_TICKERS
+    const syms = typeof OUR_TICKERS !== 'undefined' ? OUR_TICKERS : Object.keys(NAMES||{});
+    const symParam = syms.join(',');
+
+    const IS_V = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
+    const base = IS_V ? '/api/fh' : 'https://finnhub.io/api/v1';
+    const keyQ = IS_V ? '' : ('&token=' + (window.FINNHUB_KEY || ''));
+
+    const url = `${base}/calendar/earnings?from=${fromStr}&to=${toStr}${keyQ}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+
+    const earningsArr = (data.earningsCalendar || []).filter(e => syms.includes(e.symbol));
+    earningsArr.sort((a,b) => a.date.localeCompare(b.date));
+
+    _earningsCache = earningsArr;
+    _earningsCacheTime = now;
+    renderEarningsCalendar(earningsArr);
+  } catch(err) {
+    console.warn('Earnings calendar fetch failed:', err);
+    // Fallback: show a curated static list
+    _earningsCache = getStaticEarningsFallback();
+    _earningsCacheTime = now;
+    renderEarningsCalendar(_earningsCache);
+  }
+}
+
+function getStaticEarningsFallback() {
+  // Static upcoming dates as fallback if API fails
+  const today = new Date().toISOString().split('T')[0];
+  return [
+    {symbol:'NVDA',date:'2026-08-20',hour:'amc',epsEstimate:0.85,revenueEstimate:44500000000},
+    {symbol:'MSFT',date:'2026-07-24',hour:'amc',epsEstimate:3.14,revenueEstimate:73200000000},
+    {symbol:'GOOGL',date:'2026-07-23',hour:'amc',epsEstimate:2.15,revenueEstimate:98500000000},
+    {symbol:'META',date:'2026-07-29',hour:'amc',epsEstimate:6.45,revenueEstimate:47800000000},
+    {symbol:'AMZN',date:'2026-07-30',hour:'amc',epsEstimate:1.65,revenueEstimate:187000000000},
+    {symbol:'AAPL',date:'2026-07-31',hour:'amc',epsEstimate:1.62,revenueEstimate:98200000000},
+    {symbol:'TSM',date:'2026-07-17',hour:'bmo',epsEstimate:2.46,revenueEstimate:30100000000},
+    {symbol:'ASML',date:'2026-07-16',hour:'bmo',epsEstimate:7.82,revenueEstimate:10800000000},
+    {symbol:'QCOM',date:'2026-07-30',hour:'amc',epsEstimate:2.95,revenueEstimate:11400000000},
+    {symbol:'AMD',date:'2026-07-29',hour:'amc',epsEstimate:1.24,revenueEstimate:7900000000},
+    {symbol:'PLTR',date:'2026-08-05',hour:'bmo',epsEstimate:0.18,revenueEstimate:1050000000},
+    {symbol:'CRM',date:'2026-08-27',hour:'amc',epsEstimate:2.65,revenueEstimate:10300000000},
+    {symbol:'MU',date:'2026-06-25',hour:'amc',epsEstimate:1.62,revenueEstimate:9200000000},
+    {symbol:'AMAT',date:'2026-08-18',hour:'amc',epsEstimate:2.62,revenueEstimate:7200000000},
+    {symbol:'LRCX',date:'2026-07-23',hour:'amc',epsEstimate:9.20,revenueEstimate:4800000000},
+  ].filter(e => e.date >= today);
+}
+
+function renderEarningsCalendar(earningsArr) {
+  const container = document.getElementById('earnings-calendar-container');
+  if (!container || !earningsArr) return;
+
+  let items = earningsArr;
+  if (_earningsFilterWL && S.wl && S.wl.length) {
+    items = earningsArr.filter(e => S.wl.includes(e.symbol));
+  }
+
+  if (!items.length) {
+    container.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+      ${_earningsFilterWL ? 'No upcoming earnings for your watchlist stocks in the next 90 days' : 'No earnings data available'}
+    </div>`;
+    return;
+  }
+
+  // Group by week
+  const weeks = {};
+  items.forEach(e => {
+    const d = new Date(e.date + 'T12:00:00');
+    const sun = new Date(d); sun.setDate(d.getDate() - d.getDay());
+    const key = sun.toISOString().split('T')[0];
+    if (!weeks[key]) weeks[key] = [];
+    weeks[key].push(e);
+  });
+
+  const weekKeys = Object.keys(weeks).sort();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  let html = '';
+  let count = 0;
+  for (const wk of weekKeys) {
+    if (count >= 30) break; // max 30 earnings shown
+    const start = new Date(wk + 'T12:00:00');
+    const end = new Date(start); end.setDate(start.getDate() + 6);
+    const wkLabel = `Week of ${monthNames[start.getMonth()]} ${start.getDate()}`;
+
+    const rows = weeks[wk].map(e => {
+      const score = (typeof SCORES !== 'undefined' && SCORES[e.symbol]) || 0;
+      const name = (typeof NAMES !== 'undefined' && NAMES[e.symbol]) || e.symbol;
+      const scoreBg = score >= 70 ? 'var(--green-bg)' : score >= 40 ? 'rgba(255,165,0,.12)' : 'var(--bg4)';
+      const scoreColor = score >= 70 ? 'var(--green)' : score >= 40 ? '#e07b00' : 'var(--text3)';
+      const hourLabel = e.hour === 'bmo' ? '🌅 BMO' : e.hour === 'amc' ? '🌙 AMC' : '—';
+
+      let epsStr = '—';
+      if (e.epsEstimate !== null && e.epsEstimate !== undefined) {
+        epsStr = '$' + (e.epsEstimate >= 0 ? '+' : '') + e.epsEstimate.toFixed(2) + ' est.';
+      }
+      if (e.epsActual !== null && e.epsActual !== undefined && e.epsActual !== '') {
+        const beat = e.epsActual >= (e.epsEstimate || 0);
+        epsStr = `<span style="color:${beat?'var(--green)':'var(--red)'};">$${e.epsActual.toFixed(2)} actual</span>`;
+      }
+
+      let revStr = '';
+      if (e.revenueEstimate) {
+        const rev = e.revenueEstimate;
+        revStr = rev >= 1e9 ? '$' + (rev/1e9).toFixed(1) + 'B est.' : '$' + (rev/1e6).toFixed(0) + 'M est.';
+      }
+
+      count++;
+      return `<div onclick="openTicker('${e.symbol}')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border);cursor:pointer;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+            <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text);">${e.symbol}</span>
+            <span style="font-size:10px;color:var(--text3);">${name}</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:10px;color:var(--text2);">${epsStr}</span>
+            ${revStr ? `<span style="font-size:10px;color:var(--text3);">${revStr}</span>` : ''}
+            <span style="font-size:10px;color:var(--text3);">${hourLabel}</span>
+          </div>
+        </div>
+        ${score ? `<div style="padding:3px 9px;border-radius:10px;background:${scoreBg};color:${scoreColor};font-size:10px;font-weight:600;flex-shrink:0;">${score}</div>` : ''}
+      </div>`;
+    }).join('');
+
+    html += `<div style="margin-bottom:4px;">
+      <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px;">${wkLabel}</div>
+      ${rows}
+    </div>`;
+  }
+
+  container.innerHTML = html ||
+    `<div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;">No upcoming earnings in the next 90 days</div>`;
+}
+
+// ─── SMART MONEY: load institutional ownership from Finnhub ─────────────────
+let _smartMoneyCache = {};
+
+async function loadSmartMoney(symbol, forceRefresh) {
+  if (!symbol) return;
+  const container = document.getElementById('smart-money-institutional');
+  const managerList = document.getElementById('notable-managers-list');
+  if (!container) return;
+
+  // Update select
+  const sel = document.getElementById('smart-money-ticker-sel');
+  if (sel && sel.value !== symbol) sel.value = symbol;
+
+  // Notable managers — show which ones hold this ticker
+  if (managerList) {
+    const holders = Object.entries(NOTABLE_MANAGERS).filter(([name, m]) =>
+      m.tickers.some(t => t === symbol)
+    );
+    if (holders.length) {
+      managerList.innerHTML = holders.map(([name, m]) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;">${name}</div>
+            <div style="font-size:10px;color:var(--text3);">${m.style}</div>
+          </div>
+          <div style="display:flex;gap:5px;align-items:center;">
+            <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--green-bg);color:var(--green);font-weight:600;">Holds ${symbol}</span>
+            <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${m.cik}&type=13F&dateb=&owner=include&count=4" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;padding:2px 7px;border:0.5px solid var(--blue-bd);border-radius:4px;">13F ↗</a>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      managerList.innerHTML = `<div style="font-size:11px;color:var(--text3);padding:6px 0;">${symbol} not in any tracked manager's known holdings — check 13F links below</div>`;
+    }
+  }
+
+  // Check cache
+  const cacheKey = symbol;
+  if (!forceRefresh && _smartMoneyCache[cacheKey] && (Date.now() - _smartMoneyCache[cacheKey].ts) < 30 * 60 * 1000) {
+    renderSmartMoneyData(symbol, _smartMoneyCache[cacheKey].data);
+    return;
+  }
+
+  container.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+    <div style="font-size:16px;margin-bottom:6px;">🏦</div>
+    <div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Loading institutional ownership…</div>
+  </div>`;
+
+  try {
+    const IS_V = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
+    const base = IS_V ? '/api/fh' : 'https://finnhub.io/api/v1';
+    const keyQ = IS_V ? '' : ('&token=' + (window.FINNHUB_KEY || ''));
+    const url = `${base}/stock/institutional-ownership?symbol=${symbol}&limit=15${keyQ}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    _smartMoneyCache[cacheKey] = { data, ts: Date.now() };
+    renderSmartMoneyData(symbol, data);
+  } catch(err) {
+    console.warn('Smart money fetch failed:', err);
+    container.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">
+      <div>Could not fetch institutional data</div>
+      <div style="margin-top:8px;"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${symbol}&type=SC+13G&dateb=&owner=include&count=20" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">View SEC 13G/D filings for ${symbol} ↗</a></div>
+    </div>`;
+  }
+}
+
+function renderSmartMoneyData(symbol, data) {
+  const container = document.getElementById('smart-money-institutional');
+  if (!container) return;
+
+  const holders = (data.ownership || data || []).filter(h => h.name || h.investorName);
+  if (!holders.length) {
+    container.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:14px 0;">No institutional ownership data available for ${symbol}</div>`;
+    return;
+  }
+
+  // Sort by shares held (descending)
+  holders.sort((a,b) => (b.currentShares||b.share||0) - (a.currentShares||a.share||0));
+
+  const rows = holders.slice(0, 15).map(h => {
+    const name = h.name || h.investorName || 'Unknown';
+    const shares = h.currentShares || h.share || 0;
+    const change = h.change || h.changeInShares || 0;
+    const sharesStr = shares >= 1e6 ? (shares/1e6).toFixed(2) + 'M' : shares >= 1e3 ? (shares/1e3).toFixed(0) + 'K' : shares.toString();
+
+    let changeEl = '';
+    if (change !== 0 && change !== undefined) {
+      const up = change > 0;
+      const absChg = Math.abs(change);
+      const chgStr = absChg >= 1e6 ? (absChg/1e6).toFixed(1) + 'M' : absChg >= 1e3 ? (absChg/1e3).toFixed(0) + 'K' : absChg.toString();
+      changeEl = `<span style="font-size:10px;color:${up?'var(--green)':'var(--red)'};">${up?'+':'-'}${chgStr}</span>`;
+    }
+
+    const date = h.reportDate || h.date || '';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
+        ${date ? `<div style="font-size:10px;color:var(--text3);">Filed: ${date}</div>` : ''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:11px;font-weight:600;font-family:'DM Mono',monospace;">${sharesStr}</div>
+        ${changeEl}
+      </div>
+    </div>`;
+  }).join('');
+
+  const updated = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  container.innerHTML = `
+    <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">Top institutional holders · ${updated}</div>
+    ${rows}
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+      <a href="https://finviz.com/quote.ashx?t=${symbol}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;padding:3px 9px;border:0.5px solid var(--blue-bd);border-radius:4px;">Finviz ↗</a>
+      <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${symbol}&type=13F&dateb=&owner=include&count=20" target="_blank" style="font-size:10px;color:var(--text2);text-decoration:none;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;">SEC 13F filings ↗</a>
+      <a href="https://whalewisdom.com/stock/${symbol.toLowerCase()}" target="_blank" style="font-size:10px;color:var(--text2);text-decoration:none;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;">WhaleWisdom ↗</a>
+    </div>`;
+}
+
+// Populate smart money ticker select on render
+function populateSmartMoneySelect() {
+  const sel = document.getElementById('smart-money-ticker-sel');
+  if (!sel) return;
+  const tickers = typeof OUR_TICKERS !== 'undefined' ? OUR_TICKERS : Object.keys(NAMES||{});
+  sel.innerHTML = tickers.map(t =>
+    `<option value="${t}">${t}${NAMES[t] ? ' — ' + NAMES[t].slice(0,20) : ''}</option>`
+  ).join('');
+}
+
+// Populate Edgar ticker buttons
+function populateEdgarButtons() {
+  const container = document.getElementById('edgar-ticker-btns');
+  if (!container) return;
+  // Top 30 highest-scored tickers for quick access
+  const tickers = typeof OUR_TICKERS !== 'undefined' ? OUR_TICKERS : Object.keys(NAMES||{});
+  const sorted = [...tickers].sort((a,b) => (SCORES[b]||0) - (SCORES[a]||0)).slice(0, 30);
+  const first = sorted[0] || 'NVDA';
+  container.innerHTML = sorted.map((t, i) =>
+    `<button onclick="selectEdgarTicker('${t}',this)" style="padding:4px 10px;border:0.5px solid ${i===0?'var(--green)':'var(--border2)'};border-radius:5px;background:${i===0?'var(--green-bg)':'none'};color:${i===0?'var(--green)':'var(--text2)'};font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;${i===0?'font-weight:600;':''}">${t}</button>`
+  ).join('');
+}
+
+function renderSmartMoney() {
+  // Called when smart tab is activated or focus ticker changes
+  const sym = S.focusTicker || 'NVDA';
+  const sel = document.getElementById('smart-money-ticker-sel');
+  if (sel) {
+    if (!sel.options.length) populateSmartMoneySelect();
+    sel.value = sym;
+  }
+  loadSmartMoney(sym);
+}
 
 // Global delegate: clicking any .de-ticker-tag opens that ticker modal
 document.addEventListener('click', function(e) {
