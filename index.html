@@ -701,18 +701,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- MORNING SUBSCRIBE CTA -->
   <div id="morning-subscribe-cta" style="margin-bottom:14px;"></div>
 
+  <!-- Full-width Morning Brief header — sits above the 2-col grid so both columns align at the same baseline -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">Morning Brief</div>
+      <div id="brief-timestamp" style="font-size:11px;color:var(--text3);margin-top:2px;">Live news · signal scores · market pulse</div>
+    </div>
+    <button id="brief-refresh-btn" onclick="fetchAVNews(true)" style="padding:6px 16px;border:none;border-radius:7px;background:var(--green);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
+  </div>
+
   <!-- 2-COLUMN LAYOUT: news left (2fr) · picks + signals right (1fr) -->
   <div id="morning-2col">
 
-    <!-- LEFT COLUMN: header + news feed -->
+    <!-- LEFT COLUMN: news feed (header moved above grid) -->
     <div id="morning-left">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-        <div>
-          <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">Morning Brief</div>
-          <div id="brief-timestamp" style="font-size:11px;color:var(--text3);margin-top:2px;">Live news · signal scores · market pulse</div>
-        </div>
-        <button id="brief-refresh-btn" onclick="fetchAVNews(true)" style="padding:6px 16px;border:none;border-radius:7px;background:var(--green);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
-      </div>
       <div class="card">
         <div style="margin-bottom:10px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
