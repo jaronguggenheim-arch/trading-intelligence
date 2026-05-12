@@ -853,6 +853,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="markets-panel">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:10px;">
       <div style="font-size:12px;color:var(--text2);">Click any market to open its detail page with constituents and price chart.</div>
+      <span id="markets-live-badge" style="font-size:10px;font-weight:600;color:var(--text3);font-family:'DM Mono',monospace;"></span>
       <div style="display:flex;gap:6px;">
         <input id="track-input" placeholder="Track any symbol (e.g. SPY, EURUSD, BTC)" style="padding:6px 10px;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;text-transform:uppercase;width:240px;">
         <button class="hbtn pri" onclick="trackInput()">Open</button>
@@ -4802,6 +4803,65 @@ function triggerTDLive(btn) {
   });
 }
 
+// ── Live market data from /api/markets (Vercel only) ─────────────────────────
+// Overlays live prices/changes onto the static MARKETS object, then re-renders.
+// Cached 60s so repeated tab switches don't hammer the endpoint.
+let _mktsCache = null;
+let _mktsCacheTs = 0;
+
+async function loadLiveMarketData() {
+  if (!IS_VERCEL) return; // proxy only available on Vercel
+  const now = Date.now();
+  if (_mktsCache && now - _mktsCacheTs < 60000) { renderMarkets(); return; }
+
+  // Show "fetching" badge
+  const badge = document.getElementById('markets-live-badge');
+  if (badge) { badge.textContent = 'Fetching…'; badge.style.color = 'var(--text3)'; }
+
+  try {
+    const r = await fetch('/api/markets', { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error('api/markets ' + r.status);
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || 'markets api error');
+
+    _mktsCache = d;
+    _mktsCacheTs = now;
+
+    // ── Overlay live values onto MARKETS object ─────────────────────────────
+    // indices
+    MARKETS.indices.forEach(m => {
+      const live = d.indices[m.id];
+      if (live) { m.val = live.val; m.chg = live.chg; m.up = live.up; m._live = true; }
+    });
+    // crypto
+    MARKETS.crypto.forEach(m => {
+      const live = d.crypto[m.id];
+      if (live) { m.val = live.val; m.chg = live.chg; m.up = live.up; m._live = true; }
+    });
+    // commodities
+    MARKETS.commodities.forEach(m => {
+      const live = d.commodities[m.id];
+      if (live) { m.val = live.val; m.chg = live.chg; m.up = live.up; m._live = true; }
+    });
+    // fx
+    MARKETS.fx.forEach(m => {
+      const live = d.fx[m.id];
+      if (live) { m.val = live.val; m.chg = live.chg; m.up = live.up; m._live = true; }
+    });
+    // yields
+    MARKETS.yields.forEach(m => {
+      const live = d.yields[m.id];
+      if (live) { m.val = live.val; m._live = true; }
+    });
+
+    const ts = new Date(d.computedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (badge) { badge.textContent = 'Live · ' + ts; badge.style.color = 'var(--green)'; }
+  } catch(e) {
+    if (badge) { badge.textContent = 'Prices may be delayed'; badge.style.color = 'var(--text3)'; }
+  }
+  renderMarkets();
+}
+
 function renderMarkets(){
   // Show/hide live button based on TD key
   const liveBtn = document.getElementById('td-live-btn');
@@ -6320,7 +6380,7 @@ function setFocusTicker(ticker) {
     if (t === 'earnings')     {
       try { loadEarningsCalendar(); } catch(e) { console.warn('earnings init:', e); }
     }
-    if (t === 'markets')      { renderMarkets && renderMarkets(); }
+    if (t === 'markets')      { loadLiveMarketData ? loadLiveMarketData() : renderMarkets && renderMarkets(); }
   } catch(e) { console.warn('focusTicker re-render:', e); }
 
 }
