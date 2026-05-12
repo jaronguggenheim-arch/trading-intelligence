@@ -8949,32 +8949,33 @@ function selectEdgarTicker(ticker, btn) {
 async function fetchEdgarForm4(ticker) {
   const cik = EDGAR_CIKS[ticker];
   if (!cik) return [];
-  // Use data.sec.gov — official SEC REST API with CORS headers
-  const url = `https://data.sec.gov/submissions/${cik.replace(/^0+/,'').padStart(10,'0').replace(/^/,'CIK')}.json`;
+  // Route through /api/edgar on Vercel (server-side, cached 30 min, avoids browser rate-limiting)
+  // Fall back to direct EDGAR call when running locally (file://)
+  const _isVercel2 = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
+  let data;
+  if (_isVercel2) {
+    const r = await fetch(`/api/edgar?cik=${encodeURIComponent(cik)}`, { signal: AbortSignal.timeout(12000) });
+    if (!r.ok) throw new Error(`/api/edgar HTTP ${r.status}`);
+    const json = await r.json();
+    if (!json.ok) throw new Error(json.error || 'edgar api error');
+    // Normalize to the old format: array of {_source} objects
+    return (json.filings || []).map(f => ({ _source: f }));
+  }
+  // Local fallback — direct EDGAR call
   const paddedCik = 'CIK' + cik.replace(/^0+/,'').padStart(10,'0');
   const res = await fetch(`https://data.sec.gov/submissions/${paddedCik}.json`);
   if (!res.ok) throw new Error(`EDGAR HTTP ${res.status}`);
-  const data = await res.json();
+  data = await res.json();
   const recent = data.filings?.recent || {};
   const forms = recent.form || [];
   const dates = recent.filingDate || [];
   const accs  = recent.accessionNumber || [];
   const sixMonthsAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
-  // Return Form 4s as normalized hit objects (matching old format)
   return forms.reduce((out, f, i) => {
     if (f !== '4' && f !== '4/A') return out;
-    const d = new Date(dates[i]);
-    if (d < sixMonthsAgo) return out;
-    out.push({
-      _source: {
-        file_date: dates[i],
-        form_type: f,
-        entity_name: data.name || ticker,
-        accessionNumber: accs[i],
-        // Build SEC filing link
-        secLink: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=4&dateb=&owner=include&count=40`
-      }
-    });
+    if (new Date(dates[i]) < sixMonthsAgo) return out;
+    out.push({ _source: { file_date: dates[i], form_type: f, entity_name: data.name || ticker,
+      accessionNumber: accs[i], secLink: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=4&dateb=&owner=include&count=40` } });
     return out;
   }, []).slice(0, 15);
 }
