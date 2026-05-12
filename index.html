@@ -5052,7 +5052,7 @@ function showTkT(n,btn){
   if(n==='score'){const el=document.getElementById('tk-score');if(!el._r){el.innerHTML=renderTkScore(sym);el._r=true;}}
   if(n==='chain'){const el=document.getElementById('tk-chain');if(!el._r){el.innerHTML=renderTkChain(sym);el._r=true;}}
   if(n==='dedge'){const el=document.getElementById('tk-dedge');el.innerHTML=renderTkDeep(sym);if(IS_VERCEL||(typeof S!=='undefined'&&S.fh)){fetchInsiderData(sym).then(function(){const e2=document.getElementById('tk-dedge');if(e2&&window._tkSym===sym)e2.innerHTML=renderTkDeep(sym);});}}
-  if(n==='ins'){const el=document.getElementById('tk-ins-content');if(el&&!el._r&&!TICKER_DATA[sym]){fillInsiderLive(sym);el._r=true;}}
+  if(n==='ins'){const el=document.getElementById('tk-ins-content');if(el&&!el._r){if(IS_VERCEL||(typeof S!=='undefined'&&S.fh)){fillInsiderLive(sym);el._r=true;}}}
 }
 
 /* ── TICKER MODAL DEEP-DIVE RENDERERS ──────────────── */
