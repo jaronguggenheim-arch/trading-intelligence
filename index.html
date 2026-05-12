@@ -1900,7 +1900,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div id="de-l4-propagation"><div style="font-size:11px;color:var(--text3);padding:8px 0;">Loading supply chain signals…</div></div>
   </div>
 
-  <!-- Supply chain visual cards -->
+  <!-- Live server L4 signal scores -->
+  <div id="de-l4-server" style="margin-bottom:12px;"></div>
+
+  <!-- Supply chain structural context (evergreen) -->
+  <div style="font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:8px;">Structural chain context — always relevant</div>
   <div class="g2" style="margin-bottom:10px;">
     <div class="card de-card" data-tickers="NVDA ASML">
       <div class="card-lbl" style="margin-bottom:8px;">NVDA AI compute supply chain</div>
@@ -2827,6 +2831,9 @@ async function loadServerScores() {
       } catch(e) {}
     }
 
+    // Stamp when server data was loaded so timestamps can show data age
+    try { localStorage.setItem('_server_scores_ts', String(Date.now())); } catch(e) {}
+
     console.log('[server scores] loaded ' + seeded + ' scores, ' +
       Object.keys(_SERVER_COMPONENTS).length + ' components, ' +
       Object.keys(_SERVER_SIGNALS).length + ' narratives for ' + (j.date || 'today'));
@@ -3074,6 +3081,24 @@ function syncSignalScoreCards() {
           + '</div>';
       }).join('');
     }
+    // ── Score velocity (7-day trend arrow) ────────────────────────────────
+    const tr = getScoreTrend(t);
+    let trendEl = card.querySelector('.sc-trend');
+    if (tr) {
+      if (!trendEl) {
+        trendEl = document.createElement('div');
+        trendEl.className = 'sc-trend';
+        trendEl.style.cssText = 'display:flex;align-items:center;gap:4px;margin-top:5px;';
+        const bar = card.querySelector('.sc-comp-bar');
+        if (bar) bar.after(trendEl); else card.appendChild(trendEl);
+      }
+      const sign = tr.delta > 0 ? '+' : '';
+      trendEl.innerHTML = '<span style="font-size:9px;font-weight:700;color:' + tr.color + ';">' + tr.arrow + sign + tr.delta + '</span>'
+        + '<span style="font-size:9px;color:var(--text3);">7d trend</span>'
+        + '<span style="font-size:9px;color:var(--text3);">· updated ' + tr.ageStr + '</span>';
+    } else if (trendEl) {
+      trendEl.remove();
+    }
   });
   // Mark the top pick with a sage badge
   try { markSagePick(); } catch(e) {}
@@ -3093,9 +3118,23 @@ async function globalRefresh() {
 function updateRefreshTimestamps() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  // Check server data age (nightly cron runs ~2am ET)
+  let serverAgeStr = '';
+  try {
+    const kvTs = localStorage.getItem('_server_scores_ts');
+    if (kvTs) {
+      const ageH = Math.round((Date.now() - parseInt(kvTs, 10)) / 3600000);
+      serverAgeStr = ageH < 2 ? ' · scores: live' : ' · scores: ' + ageH + 'h ago';
+    } else {
+      const hasServerData = (typeof _SERVER_COMPONENTS !== 'undefined') && Object.keys(_SERVER_COMPONENTS).length > 10;
+      serverAgeStr = hasServerData ? ' · nightly scores loaded' : ' · base scores';
+    }
+  } catch(e) {}
+
   ['convergence-updated-ts','correlations-updated-ts','deepedge-updated-ts'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.textContent = 'Updated ' + timeStr;
+    if (el) el.textContent = 'Updated ' + timeStr + serverAgeStr;
   });
 }
 
@@ -10866,12 +10905,69 @@ function _renderL4Html({ movers, downstreamOf }) {
 // ── Init: called on tab open and globalRefresh ────────────────────────────────
 let _deInitDone = false;
 
+function renderDeepEdgeServerL4() {
+  const el = document.getElementById('de-l4-server');
+  if (!el) return;
+  const comp = (typeof _SERVER_COMPONENTS !== 'undefined') ? _SERVER_COMPONENTS : null;
+  const sigs = (typeof _SERVER_SIGNALS !== 'undefined') ? _SERVER_SIGNALS : null;
+
+  if (!comp || Object.keys(comp).length < 5) {
+    el.innerHTML = '';
+    return;
+  }
+
+  const SIGNAL_NODES = new Set(['META','MSFT','GOOGL','TSM','AMZN','AAPL']);
+  // Rank all stocks by L4 score descending
+  const ranked = Object.entries(comp)
+    .map(([t, c]) => ({ t, l4: c.l4 || 0, total: (c.l1||0)+(c.l2||0)+(c.l3||0)+(c.l4||0)+(c.l5||0) }))
+    .filter(x => x.l4 > 0 && NAMES[x.t])
+    .sort((a, b) => b.l4 - a.l4)
+    .slice(0, 6);
+
+  if (!ranked.length) { el.innerHTML = ''; return; }
+
+  const hasServerDate = (typeof _SERVER_COMPONENTS !== 'undefined');
+  const dateLabel = hasServerDate ? 'Nightly computation · scores updated ~2am ET' : '';
+
+  const cards = ranked.map(({ t, l4 }) => {
+    const narrative = sigs && sigs[t] ? (sigs[t][2] || sigs[t][0] || '') : '';
+    const chainEntry = (typeof CHAIN_GRAPH !== 'undefined') && CHAIN_GRAPH[t];
+    const upstreamStr = chainEntry && chainEntry.upstream && chainEntry.upstream.length
+      ? chainEntry.upstream.slice(0, 2).map(u => u.ticker).join(', ')
+      : '';
+    const pct = Math.round((l4 / 10) * 100);
+    const col = l4 >= 7 ? 'var(--green)' : l4 >= 4 ? 'var(--amber)' : 'var(--text3)';
+    const scoreStr = l4 + '/10';
+    return `<div class="sc sc-a convergence-stock-card" data-ticker="${t}" onclick="openTicker('${t}','score')" style="margin-bottom:7px;">
+      <div class="sul">${t} — L4 chain score ${scoreStr}${upstreamStr ? ' · upstream: ' + upstreamStr : ''}</div>
+      <div class="suh">${narrative || 'Supply chain signal active. Click for full analysis.'}</div>
+      <div class="sc-meta">
+        <span class="act-tag at-watch">CHAIN SIGNAL</span>
+        <span style="font-size:9px;color:${col};font-weight:700;margin-left:4px;">L4: ${scoreStr}</span>
+        <div style="flex:1;height:3px;background:var(--border);border-radius:2px;margin-left:8px;overflow:hidden;max-width:60px;">
+          <div style="height:100%;width:${pct}%;background:${col};border-radius:2px;"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="card-lbl" style="margin:0;">Top supply chain signals today</div>
+      <span style="font-size:9px;color:var(--text3);">${dateLabel}</span>
+    </div>
+    ${cards}
+    <div style="padding-top:4px;font-size:10px;color:var(--text3);">Ranked by L4 (supply chain) score component · click any stock for full chain analysis</div>
+  </div>`;
+}
+
 async function initDeepEdge(force) {
   if (_deInitDone && !force) return;
   _deInitDone = true;
   const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   const hdrTs = document.getElementById('de-l1-ts');
   if (hdrTs) hdrTs.textContent = 'Live · ' + ts;
+  try { renderDeepEdgeServerL4(); } catch(e) {}
   await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3(), renderDeepEdgeL4()]);
 }
 // ═══════════════════════════════════════════════════════════════
