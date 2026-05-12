@@ -56,6 +56,61 @@ export default async function handler(req, res) {
   };
 
   // ── Fetch helpers ──────────────────────────────────────────────────────────
+
+  async function fhCandles(symbol, fromTs, toTs, resolution = 'W') {
+    try {
+      const r = await fetch(
+        `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${fromTs}&to=${toTs}&token=${FH}`,
+        { signal: AbortSignal.timeout(7000) }
+      );
+      if (!r.ok) return null;
+      const d = await r.json().catch(() => null);
+      return (d?.s === 'ok' && d.c?.length) ? d : null;
+    } catch { return null; }
+  }
+
+  // Compute TF percent changes from weekly candle data + current price
+  function computeTF(candles, currentPrice) {
+    if (!candles || !candles.c || !candles.t || !currentPrice) return null;
+    const closes = candles.c;
+    const times  = candles.t;
+    const n      = closes.length;
+    if (n < 2) return null;
+
+    // Helper: find close price nearest to a target Unix timestamp
+    function priceAt(targetTs) {
+      let best = 0, bestDiff = Infinity;
+      for (let i = 0; i < n; i++) {
+        const diff = Math.abs(times[i] - targetTs);
+        if (diff < bestDiff) { bestDiff = diff; best = i; }
+      }
+      return closes[best];
+    }
+
+    const now     = Math.floor(Date.now() / 1000);
+    const yearStart = Math.floor(new Date(new Date().getFullYear(), 0, 1).getTime() / 1000);
+
+    const refs = {
+      '5D':  priceAt(now - 5  * 86400),
+      '1M':  priceAt(now - 30 * 86400),
+      '3M':  priceAt(now - 91 * 86400),
+      'YTD': priceAt(yearStart),
+      '1Y':  closes[0]  // first available (oldest)
+    };
+
+    const result = {};
+    for (const [tf, ref] of Object.entries(refs)) {
+      if (!ref) continue;
+      const pct = ((currentPrice - ref) / ref) * 100;
+      result[tf] = {
+        chg: (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%',
+        up: pct >= 0,
+        raw: pct
+      };
+    }
+    return result;
+  }
+
   async function fhQuote(symbol) {
     try {
       const r = await fetch(
@@ -119,12 +174,17 @@ export default async function handler(req, res) {
   const commSymbols   = Object.values(COMMODITY_PROXIES);
   const yieldKeys     = Object.keys(YIELD_SERIES);
 
-  // Fetch all ETF/equity/crypto quotes in parallel
-  const [indexQuotes, cryptoQuotes, commQuotes, vixQuote] = await Promise.all([
+  // Timeframe windows for candle fetches
+  const nowTs      = Math.floor(Date.now() / 1000);
+  const oneYearAgo = nowTs - 366 * 86400;
+
+  // Fetch all ETF/equity/crypto quotes + index weekly candles in parallel
+  const [indexQuotes, cryptoQuotes, commQuotes, vixQuote, indexCandles] = await Promise.all([
     Promise.allSettled(indexSymbols.map(s => fhQuote(s))),
     Promise.allSettled(cryptoSymbols.map(s => fhQuote(s))),
     Promise.allSettled(commSymbols.map(s => fhQuote(s))),
-    fhQuote('^VIX')
+    fhQuote('^VIX'),
+    Promise.allSettled(indexSymbols.map(s => fhCandles(s, oneYearAgo, nowTs, 'W')))
   ]);
 
   // Fetch FX pairs (slightly different endpoint)
@@ -147,7 +207,12 @@ export default async function handler(req, res) {
   Object.keys(INDEX_PROXIES).forEach((id, i) => {
     const q = indexQuotes[i]?.status === 'fulfilled' ? indexQuotes[i].value : null;
     const r = fmt(q);
-    if (r) indices[id] = r;
+    if (!r) return;
+    // Attach multi-timeframe performance from weekly candles
+    const candles = indexCandles[i]?.status === 'fulfilled' ? indexCandles[i].value : null;
+    const tf = computeTF(candles, q?.c);
+    if (tf) r.tfChanges = tf;
+    indices[id] = r;
   });
   // VIX separately — already a direct quote
   if (vixQuote?.c) {
