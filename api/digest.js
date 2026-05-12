@@ -140,6 +140,47 @@ async function kvGet(url, token, key) {
   } catch (e) { return null; }
 }
 
+async function kvSet(url, token, key, value) {
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(['SET', key, JSON.stringify(value)])
+    });
+  } catch (e) {}
+}
+
+// ── Per-subscriber alert checker ─────────────────────────────────────────────
+// Loads ti:alerts:{email} from KV, checks which thresholds are crossed by
+// latestScores, respects 24h cooldown, updates lastTriggeredAt on fired alerts.
+// Returns array: [{ticker, score, threshold, type, name}]
+async function checkTriggeredAlerts(email, latestScores, kvUrl, kvToken) {
+  const key = `ti:alerts:${email.toLowerCase().trim()}`;
+  const alerts = await kvGet(kvUrl, kvToken, key);
+  if (!alerts || typeof alerts !== 'object') return [];
+
+  const triggered = [];
+  const now = Date.now();
+  const cooldown = 24 * 60 * 60 * 1000;
+
+  for (const [ticker, alert] of Object.entries(alerts)) {
+    const score = latestScores[ticker];
+    if (score == null) continue;
+    const { threshold = 75, type = 'above' } = alert;
+    const fired = type === 'above' ? score >= threshold : score <= threshold;
+    if (!fired) continue;
+    const lastTrig = alert.lastTriggeredAt || 0;
+    if (now - lastTrig < cooldown) continue;
+    triggered.push({ ticker, score, threshold, type, name: NAMES[ticker] || ticker });
+    alerts[ticker] = { ...alert, lastTriggeredAt: now };
+  }
+
+  if (triggered.length) {
+    await kvSet(kvUrl, kvToken, key, alerts);
+  }
+  return triggered;
+}
+
 // ── Unsubscribe token ─────────────────────────────────────────────────────────
 function makeUnsubToken(email) {
   let hash = 0;
@@ -274,7 +315,7 @@ async function buildMoverReason(moverTicker, sageTicker, dp, fhKey) {
 }
 
 // ── Email HTML template ───────────────────────────────────────────────────────
-function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date }) {
+function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date, triggeredAlerts }) {
   const sc = scoreColor(score);
   const appUrl = 'https://www.everythingisjustoneclickaway.com';
 
@@ -369,6 +410,34 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
     </table>
     <div style="margin-top:14px;">
       <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">See all signals →</a>
+    </div>
+  </div>` : ''}
+
+  ${triggeredAlerts && triggeredAlerts.length > 0 ? `
+  <!-- Triggered alerts -->
+  <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:2px solid #f59e0b;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#d97706;margin-bottom:14px;">⚡ Your alerts fired today</div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${triggeredAlerts.map(a => `
+      <tr>
+        <td style="padding:8px 0;border-bottom:1px solid #fef3c7;">
+          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+              <td style="font-size:14px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;">${a.ticker}</td>
+              <td style="font-size:12px;color:#71717a;padding:0 8px;">${a.name}</td>
+              <td style="font-size:13px;font-weight:700;color:${scoreColor(a.score)};font-family:'Courier New',monospace;text-align:right;">${a.score}/100</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="font-size:12px;color:#92400e;padding-top:3px;">
+                Score ${a.type === 'above' ? 'crossed above' : 'dropped below'} your ${a.threshold} threshold
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>`).join('')}
+    </table>
+    <div style="margin-top:12px;">
+      <a href="https://www.everythingisjustoneclickaway.com" style="display:inline-block;background:#f59e0b;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;">Review alerts →</a>
     </div>
   </div>` : ''}
 
@@ -482,10 +551,20 @@ export default async function handler(req, res) {
   }
 
   // ── Step 6: Send emails ────────────────────────────────────────────────────
-  let sent = 0, failed = 0;
+  let sent = 0, failed = 0, alertsFired = 0;
 
   for (const email of subscribers) {
     const unsubToken = makeUnsubToken(email);
+
+    // Check per-subscriber alerts (uses the same live scores already computed)
+    let triggeredAlerts = [];
+    if (KV_REST_API_URL && KV_REST_API_TOKEN) {
+      try {
+        triggeredAlerts = await checkTriggeredAlerts(email, effectiveScores, KV_REST_API_URL, KV_REST_API_TOKEN);
+        alertsFired += triggeredAlerts.length;
+      } catch (e) { /* non-fatal — continue without alerts */ }
+    }
+
     const htmlBody = buildEmailHtml({
       ticker: best.ticker,
       name: NAMES[best.ticker] || best.ticker,
@@ -495,7 +574,8 @@ export default async function handler(req, res) {
       changeColor: best.changeColor,
       signals,
       movers,
-      date: dateStr
+      date: dateStr,
+      triggeredAlerts
     })
       .replace('__EMAIL__', encodeURIComponent(email))
       .replace('__TOKEN__', unsubToken);
@@ -531,6 +611,7 @@ export default async function handler(req, res) {
     subscribers: subscribers.length,
     sent,
     failed,
+    alertsFired,
     date: dateStr
   });
 }
