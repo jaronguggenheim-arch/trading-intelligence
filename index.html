@@ -761,6 +761,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- FULL-WIDTH BELOW: ranked signal scores + market pulse -->
   <div class="g13">
     <div>
+      <div id="score-leaderboard" style="display:none;"></div>
       <div class="card">
         <div class="card-lbl">All signal scores — full ranked list</div>
         <div class="sc sc-r convergence-stock-card" data-ticker="ASML" onclick="openTicker('ASML')"><div class="sul">ASML — Score 91 · Triple insider cluster</div><div class="suh">CEO + CFO + Board bought open market same week. Rarest signal type available.</div><div class="sc-meta"><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="score-pill">91/100</span></div></div>
@@ -2766,6 +2767,7 @@ function _seedInitialScoreSnapshot() {
 var _SERVER_COMPONENTS = {};
 // { ticker: ['sentence1', 'sentence2', 'sentence3'] }
 var _SERVER_SIGNALS = {};
+var _SERVER_DELTAS  = {};  // { ticker: delta_vs_yesterday } — from nightly KV cron
 
 async function loadServerScores() {
   if (!IS_VERCEL) return false;
@@ -2789,6 +2791,11 @@ async function loadServerScores() {
     // Store Claude-generated signal narratives globally
     if (j.signals) {
       Object.assign(_SERVER_SIGNALS, j.signals);
+    }
+
+    // Store KV score deltas (vs yesterday) — powers velocity arrows
+    if (j.deltas) {
+      Object.assign(_SERVER_DELTAS, j.deltas);
     }
 
     // Merge server daily history into localStorage backtest store
@@ -2831,8 +2838,9 @@ function _refreshLiveScoreUI() {
     const pill = card.querySelector('.score-pill');
     if (pill) pill.textContent = SCORES[t] + '/100';
   });
-  // Sync card colors to live scores
+  // Sync card colors to live scores + refresh leaderboard
   syncSignalScoreCards();
+  try { renderScoreLeaderboard(); } catch(e) {}
   // Update signal card text with live signal headlines
   try { refreshSignalCardText(); } catch(e) {}
   // Refresh hot bar if morning brief is active
@@ -3054,10 +3062,25 @@ function syncSignalScoreCards() {
           + '</div>';
       }).join('');
     }
-    // ── Score velocity (7-day trend arrow) ────────────────────────────────
-    const tr = getScoreTrend(t);
+    // ── Score velocity — prefer KV server delta, fall back to localStorage 7d trend ──
     let trendEl = card.querySelector('.sc-trend');
-    if (tr) {
+    const serverDelta = (typeof _SERVER_DELTAS !== 'undefined') ? (_SERVER_DELTAS[t] ?? null) : null;
+    const tr = serverDelta !== null ? null : getScoreTrend(t);
+
+    if (serverDelta !== null) {
+      if (!trendEl) {
+        trendEl = document.createElement('div');
+        trendEl.className = 'sc-trend';
+        trendEl.style.cssText = 'display:flex;align-items:center;gap:4px;margin-top:5px;';
+        const bar = card.querySelector('.sc-comp-bar');
+        if (bar) bar.after(trendEl); else card.appendChild(trendEl);
+      }
+      const sdSign  = serverDelta > 0 ? '+' : '';
+      const sdArrow = serverDelta > 0 ? '↑' : serverDelta < 0 ? '↓' : '→';
+      const sdColor = serverDelta > 0 ? 'var(--green)' : serverDelta < 0 ? 'var(--red)' : 'var(--text3)';
+      trendEl.innerHTML = '<span style="font-size:9px;font-weight:700;color:' + sdColor + ';">' + sdArrow + sdSign + serverDelta + '</span>'
+        + '<span style="font-size:9px;color:var(--text3);">vs yesterday</span>';
+    } else if (tr) {
       if (!trendEl) {
         trendEl = document.createElement('div');
         trendEl.className = 'sc-trend';
@@ -3075,6 +3098,56 @@ function syncSignalScoreCards() {
   });
   // Mark the top pick with a sage badge
   try { markSagePick(); } catch(e) {}
+}
+
+function renderScoreLeaderboard() {
+  const el = document.getElementById('score-leaderboard');
+  if (!el) return;
+  if (typeof _SERVER_DELTAS === 'undefined' || Object.keys(_SERVER_DELTAS).length === 0) {
+    el.style.display = 'none';
+    return;
+  }
+  const entries = Object.entries(_SERVER_DELTAS).filter(function([, d]) { return d !== 0; });
+  if (!entries.length) { el.style.display = 'none'; return; }
+
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+  const gainers = entries.filter(function([, d]) { return d > 0; }).slice(0, 5);
+  const losers  = [...entries].filter(function([, d]) { return d < 0; }).sort(function(a,b){ return a[1]-b[1]; }).slice(0, 3);
+
+  const makeRow = function(ticker, delta) {
+    const score = (typeof SCORES !== 'undefined' && SCORES[ticker]) || 50;
+    const prev  = score - delta;
+    const isPos = delta > 0;
+    const arrow = isPos ? '▲' : '▼';
+    const color = isPos ? 'var(--green)' : 'var(--red)';
+    const sign  = isPos ? '+' : '';
+    const sBg   = score >= 70 ? 'rgba(16,185,129,0.08)' : score >= 50 ? 'rgba(245,158,11,0.08)' : 'rgba(0,0,0,0.03)';
+    const sCol  = score >= 70 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--text3)';
+    return '<div onclick="openTicker('' + ticker + '')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;background:' + sBg + ';margin-bottom:2px;">'
+      + '<span style="font-size:11px;font-weight:700;font-family:'DM Mono',monospace;min-width:46px;color:var(--text1);">' + ticker + '</span>'
+      + '<span style="font-size:11px;font-weight:700;color:' + color + ';font-family:'DM Mono',monospace;min-width:36px;">' + arrow + ' ' + sign + delta + '</span>'
+      + '<span style="font-size:10px;color:var(--text3);flex:1;">' + prev + ' → ' + score + '</span>'
+      + '<span style="font-size:10px;font-weight:700;color:' + sCol + ';font-family:'DM Mono',monospace;">' + score + '</span>'
+      + '</div>';
+  };
+
+  let html = '<div class="card" style="margin-bottom:12px;border-color:var(--border2);">'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+    + '<div class="card-lbl" style="margin-bottom:0;">📈 Biggest movers today</div>'
+    + '<span style="font-size:9px;color:var(--text3);margin-left:auto;">score change vs yesterday</span>'
+    + '</div>';
+
+  if (gainers.length) {
+    html += '<div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin-bottom:4px;">Top gainers</div>'
+      + gainers.map(function([t, d]) { return makeRow(t, d); }).join('');
+  }
+  if (losers.length) {
+    html += '<div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin-top:8px;margin-bottom:4px;">Biggest drops</div>'
+      + losers.map(function([t, d]) { return makeRow(t, d); }).join('');
+  }
+  html += '</div>';
+  el.innerHTML = html;
+  el.style.display = '';
 }
 
 // ─── GLOBAL REFRESH (15-min auto + manual ↺ button) ──────────────────────────
