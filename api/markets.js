@@ -1,0 +1,205 @@
+// api/markets.js — Live market data: indices, FX, yields, commodities, crypto
+// GET /api/markets → live quotes for all market categories
+// Cached 60s at Vercel edge — fast enough for a Markets tab refresh
+//
+// Data sources:
+//   Indices/Equities/Commodities/Crypto → Finnhub (via FH_KEY)
+//   Treasury yields → FRED API (free, no key needed for public series)
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Cache 60s at CDN edge, browser gets fresh data every minute max
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
+
+  const FH = process.env.FH_KEY;
+  if (!FH) return res.status(500).json({ ok: false, error: 'FH_KEY not configured' });
+
+  // ── Symbol maps ────────────────────────────────────────────────────────────
+  // Finnhub quote endpoint returns: c (current), d (change), dp (% change), h, l, o, pc
+  // We use ETF proxies for indices since Finnhub covers US-listed ETFs reliably.
+
+  const INDEX_PROXIES = {
+    SPX: 'SPY', NDX: 'QQQ', DJI: 'DIA', RUT: 'IWM',
+    AEX: 'EWN', DAX: 'EWG', CAC: 'EWQ', FTSE: 'EWU',
+    NKY: 'EWJ', HSI: 'EWH', AXJO: 'EWA', BVSP: 'EWZ',
+    SENSEX: 'INDA'
+  };
+
+  // VIX direct from Finnhub
+  const FX_PAIRS = {
+    EURUSD: 'EUR/USD', USDJPY: 'USD/JPY', GBPUSD: 'GBP/USD',
+    USDCNY: 'USD/CNY', USDCHF: 'USD/CHF', USDCAD: 'USD/CAD',
+    AUDUSD: 'AUD/USD', EURGBP: 'EUR/GBP', DXY: 'DXY'
+  };
+
+  const COMMODITY_PROXIES = {
+    GOLD: 'GLD', SLV: 'SLV', WTI: 'USO', BRENT: 'BNO',
+    NGAS: 'UNG', COPPER: 'CPER', PLAT: 'PPLT', PALL: 'PALL',
+    WHEAT: 'WEAT', CORN: 'CORN', URA: 'URA'
+  };
+
+  // Finnhub crypto format: BINANCE:BTCUSDT
+  const CRYPTO_SYMBOLS = {
+    BTC: 'BINANCE:BTCUSDT', ETH: 'BINANCE:ETHUSDT', SOL: 'BINANCE:SOLUSDT',
+    BNB: 'BINANCE:BNBUSDT', XRP: 'BINANCE:XRPUSDT', ADA: 'BINANCE:ADAUSDT',
+    DOGE: 'BINANCE:DOGEUSDT', AVAX: 'BINANCE:AVAXUSDT',
+    DOT: 'BINANCE:DOTUSDT', LINK: 'BINANCE:LINKUSDT'
+  };
+
+  // FRED series IDs for Treasury yields (free, no key required for public data)
+  const YIELD_SERIES = {
+    US10Y: 'DGS10', US2Y: 'DGS2', US30Y: 'DGS30',
+    DE10Y: 'IRLTLT01DEM156N', JP10Y: 'IRLTLT01JPM156N', UK10Y: 'IRLTLT01GBM156N'
+  };
+
+  // ── Fetch helpers ──────────────────────────────────────────────────────────
+  async function fhQuote(symbol) {
+    try {
+      const r = await fetch(
+        `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FH}`,
+        { signal: AbortSignal.timeout(6000) }
+      );
+      if (!r.ok) return null;
+      return r.json().catch(() => null);
+    } catch { return null; }
+  }
+
+  async function fhForex(from, to) {
+    try {
+      const symbol = `${from}/${to}`;
+      const r = await fetch(
+        `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FH}`,
+        { signal: AbortSignal.timeout(6000) }
+      );
+      if (!r.ok) return null;
+      const d = await r.json().catch(() => null);
+      return d;
+    } catch { return null; }
+  }
+
+  async function fredLatest(series) {
+    try {
+      const r = await fetch(
+        `https://api.stlouisfed.org/fred/series/observations?series_id=${series}&sort_order=desc&limit=1&file_type=json`,
+        { signal: AbortSignal.timeout(6000) }
+      );
+      if (!r.ok) return null;
+      const d = await r.json().catch(() => null);
+      const val = d?.observations?.[0]?.value;
+      return val && val !== '.' ? parseFloat(val) : null;
+    } catch { return null; }
+  }
+
+  function fmt(q, prefix = '') {
+    if (!q || !q.c) return null;
+    const chgPct = q.dp != null ? q.dp : (q.c - q.pc) / q.pc * 100;
+    return {
+      val: prefix + fmtNum(q.c),
+      chg: (chgPct >= 0 ? '+' : '') + chgPct.toFixed(2) + '%',
+      up: chgPct >= 0,
+      raw: q.c,
+      rawChg: chgPct
+    };
+  }
+
+  function fmtNum(n) {
+    if (n >= 10000) return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    if (n >= 1000)  return n.toLocaleString('en-US', { maximumFractionDigits: 1 });
+    if (n >= 100)   return n.toFixed(2);
+    if (n >= 10)    return n.toFixed(3);
+    return n.toFixed(4);
+  }
+
+  // ── Build all symbol lists for parallel fetching ───────────────────────────
+  const indexSymbols  = Object.values(INDEX_PROXIES);
+  const cryptoSymbols = Object.values(CRYPTO_SYMBOLS);
+  const commSymbols   = Object.values(COMMODITY_PROXIES);
+  const yieldKeys     = Object.keys(YIELD_SERIES);
+
+  // Fetch all ETF/equity/crypto quotes in parallel
+  const [indexQuotes, cryptoQuotes, commQuotes, vixQuote] = await Promise.all([
+    Promise.allSettled(indexSymbols.map(s => fhQuote(s))),
+    Promise.allSettled(cryptoSymbols.map(s => fhQuote(s))),
+    Promise.allSettled(commSymbols.map(s => fhQuote(s))),
+    fhQuote('^VIX')
+  ]);
+
+  // Fetch FX pairs (slightly different endpoint)
+  const fxKeys    = Object.keys(FX_PAIRS);
+  const fxResults = await Promise.allSettled(
+    fxKeys.map(k => {
+      if (k === 'DXY') return fhQuote('UUP'); // DXY via ETF proxy
+      const [from, to] = k.match(/[A-Z]{3}/g);
+      return fhForex(from, to);
+    })
+  );
+
+  // Fetch FRED yields in parallel
+  const yieldResults = await Promise.allSettled(
+    yieldKeys.map(k => fredLatest(YIELD_SERIES[k]))
+  );
+
+  // ── Assemble response ──────────────────────────────────────────────────────
+  const indices = {};
+  Object.keys(INDEX_PROXIES).forEach((id, i) => {
+    const q = indexQuotes[i]?.status === 'fulfilled' ? indexQuotes[i].value : null;
+    const r = fmt(q);
+    if (r) indices[id] = r;
+  });
+  // VIX separately — already a direct quote
+  if (vixQuote?.c) {
+    indices['VIX'] = {
+      val: vixQuote.c.toFixed(2),
+      chg: (vixQuote.dp >= 0 ? '+' : '') + (vixQuote.dp || 0).toFixed(2) + '%',
+      up: (vixQuote.dp || 0) >= 0,
+      raw: vixQuote.c,
+      rawChg: vixQuote.dp || 0
+    };
+  }
+
+  const crypto = {};
+  Object.keys(CRYPTO_SYMBOLS).forEach((id, i) => {
+    const q = cryptoQuotes[i]?.status === 'fulfilled' ? cryptoQuotes[i].value : null;
+    const r = fmt(q, id === 'BTC' || id === 'ETH' || q?.c > 100 ? '$' : '$');
+    if (r) crypto[id] = r;
+  });
+
+  const commodities = {};
+  Object.keys(COMMODITY_PROXIES).forEach((id, i) => {
+    const q = commQuotes[i]?.status === 'fulfilled' ? commQuotes[i].value : null;
+    const r = fmt(q, '$');
+    if (r) commodities[id] = r;
+  });
+
+  const fx = {};
+  fxKeys.forEach((id, i) => {
+    const q = fxResults[i]?.status === 'fulfilled' ? fxResults[i].value : null;
+    const r = fmt(q);
+    if (r) fx[id] = r;
+  });
+
+  const yields = {};
+  yieldKeys.forEach((id, i) => {
+    const val = yieldResults[i]?.status === 'fulfilled' ? yieldResults[i].value : null;
+    if (val != null) {
+      yields[id] = {
+        val: val.toFixed(2) + '%',
+        raw: val
+        // FRED doesn't give daily change — client can compute vs previous snapshot
+      };
+    }
+  });
+
+  return res.status(200).json({
+    ok: true,
+    computedAt: new Date().toISOString(),
+    indices,
+    crypto,
+    commodities,
+    fx,
+    yields
+  });
+}
