@@ -4782,7 +4782,8 @@ async function fetchTDChartData(id, tf, n, inst, cacheKey) {
     const d = await r.json();
     if (d.status === 'error' || !d.values || !d.values.length) {
       console.log('TD chart no data:', d.message || 'empty');
-      return genDemoSeries(n, id+tf, tf);
+      // On Vercel, return null so loadChart shows a clean error instead of fake data
+      return IS_VERCEL ? null : genDemoSeries(n, id+tf, tf);
     }
     // TD returns newest first — reverse to oldest-first
     const series = d.values.reverse().map(v => ({ date: v.datetime, close: parseFloat(v.close) }));
@@ -4793,7 +4794,7 @@ async function fetchTDChartData(id, tf, n, inst, cacheKey) {
     return data;
   } catch(e) {
     console.log('TD chart error:', e);
-    return genDemoSeries(n, id+tf, tf);
+    return IS_VERCEL ? null : genDemoSeries(n, id+tf, tf);
   }
 }
 
@@ -4953,7 +4954,7 @@ async function loadChart(target,id,tf){
   el.innerHTML='<div class="chart-loading">Loading chart…</div>';
   try{
     const data=await fetchChartData(id,tf);
-    if(!data||data.length<2){el.innerHTML=IS_VERCEL?'<div class="chart-loading">Fetching chart data…</div>':'<div class="chart-empty">No data available — add a free <a onclick="showAPI()" style="color:var(--blue);cursor:pointer;">Twelvedata or Alpha Vantage key</a> to load live charts.</div>';return;}
+    if(!data||data.length<2){el.innerHTML=IS_VERCEL?'<div class="chart-empty" style="padding:32px 0;text-align:center;color:var(--text3);font-size:12px;">Chart data temporarily unavailable — try a different timeframe or check back shortly.</div>':'<div class="chart-empty">No data available — add a free <a onclick="showAPI()" style="color:var(--blue);cursor:pointer;">Twelvedata or Alpha Vantage key</a> to load live charts.</div>';return;}
     el.innerHTML=renderChart(data,id,tf,target);
   }catch(e){console.log('chart err',e);el.innerHTML='<div class="chart-empty">Chart failed to load. Try a different timeframe or check your API key.</div>';}
 }
