@@ -390,12 +390,20 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
     };
   }
 
-  // ── Phase 3: Generate Claude narratives (batched, parallel within each batch)
+  // ── Phase 3: Generate Claude narratives — top 35 stocks only ─────────────
+  // Limiting to top scorers keeps cron well under the 60s Vercel function limit.
+  // Lower-scoring stocks get narratives on their next score climb.
   const signals = {};
   if (anthropicKey) {
-    const ANTHRO_BATCH = 15;
-    for (let i = 0; i < ALL_TICKERS.length; i += ANTHRO_BATCH) {
-      const batch = ALL_TICKERS.slice(i, i + ANTHRO_BATCH);
+    const NARRATIVE_LIMIT = 35;
+    const topTickers = Object.entries(scores)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, NARRATIVE_LIMIT)
+      .map(([t]) => t);
+
+    const ANTHRO_BATCH = 10;
+    for (let i = 0; i < topTickers.length; i += ANTHRO_BATCH) {
+      const batch = topTickers.slice(i, i + ANTHRO_BATCH);
       const results = await Promise.allSettled(
         batch.map(t => generateSignalNarrative(t, NAMES[t] || t, narrativeInputs[t], anthropicKey))
       );
@@ -403,19 +411,33 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
         if (r.status === 'fulfilled' && r.value) signals[batch[idx]] = r.value;
       });
       // Brief pause between Anthropic batches to respect rate limits
-      if (i + ANTHRO_BATCH < ALL_TICKERS.length) {
+      if (i + ANTHRO_BATCH < topTickers.length) {
         await new Promise(r => setTimeout(r, 200));
       }
     }
   }
 
-  // ── Phase 4: Write to KV ──────────────────────────────────────────────────
+  // ── Phase 4a: Compute score deltas vs yesterday ───────────────────────────
+  const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  let deltas = {};
+  try {
+    const prevSnap = await kvGet(kvUrl, kvToken, `ti:scores:daily:${yesterday}`);
+    if (prevSnap?.scores) {
+      for (const t of ALL_TICKERS) {
+        const d = (scores[t] || 50) - (prevSnap.scores[t] || 50);
+        if (d !== 0) deltas[t] = d;
+      }
+    }
+  } catch (e) { /* no prev snapshot yet — deltas stay empty */ }
+
+  // ── Phase 4b: Write to KV ─────────────────────────────────────────────────
   const snapshot = {
     date: today,
     scores,
     components,
     meta,
     signals,
+    deltas,   // score change vs yesterday — powers velocity arrows
     spyDp,
     computedAt: new Date().toISOString()
   };
@@ -432,21 +454,27 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
     await kvSet(kvUrl, kvToken, indexKey, index);
   }
 
+  const deltaVals = Object.values(deltas);
   return {
     date: today,
     tickers: Object.keys(scores).length,
     withSignals: Object.keys(signals).length,
+    withDeltas: deltaVals.length,
     scoreRange: {
       min: Math.min(...Object.values(scores)),
       max: Math.max(...Object.values(scores)),
       avg: Math.round(Object.values(scores).reduce((s, v) => s + v, 0) / Object.values(scores).length)
-    }
+    },
+    topMovers: Object.entries(deltas)
+      .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+      .slice(0, 5)
+      .map(([t, d]) => ({ ticker: t, delta: d, score: scores[t] }))
   };
 }
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
-  const { FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN, ANTHROPIC_API_KEY } = process.env;
+  const { FH_KEY, KV_REST_API_URL, KV_REST_API_TOKEN, ANTHROPIC_API_KEY, CRON_SECRET } = process.env;
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -465,7 +493,16 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, ...latest, dailyIndex: index });
   }
 
-  // ── POST/cron: compute and store ──────────────────────────────────────────
+  // ── POST/cron: protected — requires CRON_SECRET ───────────────────────────
+  // Vercel automatically sends Authorization: Bearer {CRON_SECRET} for scheduled crons.
+  // Manual triggers must include the same header.
+  if (CRON_SECRET) {
+    const auth = req.headers['authorization'];
+    if (auth !== `Bearer ${CRON_SECRET}`) {
+      return res.status(401).json({ error: 'Unauthorized — valid Authorization: Bearer <CRON_SECRET> required' });
+    }
+  }
+
   if (!FH_KEY) return res.status(500).json({ error: 'FH_KEY not configured' });
   if (!KV_REST_API_URL || !KV_REST_API_TOKEN) return res.status(500).json({ error: 'KV not configured' });
 
