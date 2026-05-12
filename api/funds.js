@@ -2,7 +2,7 @@
 // GET /api/funds?cik=0001336528  → latest 13F-HR holdings for a fund
 // Cached 6 hours at Vercel edge — EDGAR rate limits are generous for infrequent reads
 
-const https = require('https');
+import https from 'https';
 
 function httpsGet(url) {
   return new Promise((resolve, reject) => {
@@ -129,7 +129,7 @@ async function getLatest13F(rawCik) {
   };
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   // Cache aggressively — 13F filings are quarterly, data barely changes intraday
   res.setHeader('Cache-Control', 's-maxage=21600, stale-while-revalidate=3600');
@@ -149,4 +149,4 @@ module.exports = async (req, res) => {
     console.error('funds.js error:', e.message);
     res.status(500).json({ ok: false, error: e.message });
   }
-};
+}
