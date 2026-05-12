@@ -332,7 +332,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .nt{padding:11px 12px;font-size:12px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}.nt.active{color:var(--text);border-bottom-color:var(--text);font-weight:500;}.nt.corr-tab{color:var(--purple);}.nt.corr-tab.active{border-bottom-color:var(--purple);}.nt:hover:not(.active){color:var(--text);}
 .main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;max-width:100%;}.sec.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
-#morning-2col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:14px;}
+#morning-2col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:14px;align-items:start;}
+#morning-right{position:sticky;top:16px;}
 .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;font-weight:600;}
 .sm-stab{flex-shrink:0;padding:6px 14px;border:0.5px solid var(--border2);border-radius:20px;background:none;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
 .sm-stab.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:600;}
@@ -3344,6 +3345,12 @@ function getSagePick() {
     }).filter(r => r && r.length > 8);
     reasons = reasons.concat(layerReasons);
   }
+  // ── 3b. Server-computed narratives (nightly cron) ─────────────────────────
+  if (reasons.length < 2 && typeof _SERVER_SIGNALS !== 'undefined' && _SERVER_SIGNALS[ticker]) {
+    const srvSigs = _SERVER_SIGNALS[ticker].filter(s => s && s.length > 10);
+    reasons = reasons.concat(srvSigs.slice(0, 2 - reasons.length));
+  }
+
   if (reasons.length === 0 && td[ticker] && td[ticker].news) {
     reasons = td[ticker].news.slice(0, 2).map(n => n.hl).filter(Boolean);
   }
@@ -4228,10 +4235,12 @@ function _renderMorningSummaryBanner() {
   const buys = actionable.filter(([,s]) => s >= 75).length;
   const watches = actionable.filter(([,s]) => s >= 60 && s < 75).length;
   const [topTicker, topScore] = actionable[0] || ranked[0];
+  const scoreColor = topScore >= 75 ? 'var(--green)' : topScore >= 60 ? '#e07b00' : 'var(--text3)';
+
+  // Build context text — prefer server narratives, fall back to LAYER_DATA, then engine signals
+  const topSigs = (typeof _SERVER_SIGNALS !== 'undefined') ? (_SERVER_SIGNALS[topTicker] || null) : null;
   const topLayers = (ld[topTicker] || []).filter(l => l.pts > 0).sort((a,b) => (b.pts||0)-(a.pts||0));
   const topDesc = topLayers[0] ? (topLayers[0].desc || '') : '';
-  const scoreColor = topScore >= 75 ? 'var(--green)' : topScore >= 60 ? '#e07b00' : 'var(--text3)';
-  // Check for live signals from engines
   const l3key = 'l3_' + new Date().toDateString();
   const l3d = typeof DE_CACHE !== 'undefined' && DE_CACHE[l3key] && DE_CACHE[l3key].data;
   const analyzeCount = l3d ? Object.values(l3d).filter(v => v.ups && v.ups.length >= 2).length : 0;
@@ -4239,16 +4248,32 @@ function _renderMorningSummaryBanner() {
   const l4key = 'l4_' + new Date().toDateString();
   const l4d = typeof DE_CACHE !== 'undefined' && DE_CACHE[l4key] && DE_CACHE[l4key].data;
   const chainMovers = l4d && l4d.movers ? l4d.movers.length : 0;
+
   let liveContext = '';
-  if (analyzeCount > 0) liveContext += analyzeCount + ' analyst upgrade cluster' + (analyzeCount > 1 ? 's' : '') + ' detected. ';
-  if (cascadesActive > 0) liveContext += cascadesActive + ' cascade window' + (cascadesActive > 1 ? 's' : '') + ' open. ';
-  if (chainMovers > 0) liveContext += chainMovers + ' anchor stock move' + (chainMovers > 1 ? 's' : '') + ' propagating. ';
+  if (topSigs && topSigs[0]) {
+    // Server narrative: use first sentence as the top-stock signal context
+    liveContext = topSigs[0];
+  } else if (topDesc) {
+    liveContext = topDesc + '.';
+  } else {
+    if (analyzeCount > 0) liveContext += analyzeCount + ' analyst upgrade cluster' + (analyzeCount > 1 ? 's' : '') + ' detected. ';
+    if (cascadesActive > 0) liveContext += cascadesActive + ' cascade window' + (cascadesActive > 1 ? 's' : '') + ' open. ';
+    if (chainMovers > 0) liveContext += chainMovers + ' anchor stock move' + (chainMovers > 1 ? 's' : '') + ' propagating. ';
+  }
+
+  // Source badge — tells user where scores came from
+  const hasServerScores = (typeof _SERVER_COMPONENTS !== 'undefined') && Object.keys(_SERVER_COMPONENTS).length > 10;
+  const sourceBadge = hasServerScores
+    ? '<span style="font-size:9px;background:var(--green-bg);color:var(--green);border-radius:4px;padding:2px 6px;font-weight:600;vertical-align:middle;">LIVE</span>'
+    : '<span style="font-size:9px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:2px 6px;font-weight:600;vertical-align:middle;border:0.5px solid var(--border);">BASE</span>';
+
   const signalSummary = buys > 0
-    ? `${buys} buy signal${buys>1?'s':''}, ${watches} watch${watches!==1?'es':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}.`
-    : `${watches} watch signal${watches!==1?'s':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}. No high-conviction buys today.`;
-  el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:14px 18px;margin-bottom:14px;border:0.5px solid var(--border);">
-    <div><div style="font-size:38px;font-weight:700;letter-spacing:-2px;color:${scoreColor};font-family:'DM Mono',monospace;">${topScore}</div><div class="sml-lbl">Top signal</div></div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);">${liveContext || (topDesc ? topDesc + '. ' : '')}Click any card below for full analysis.</div></div>
+    ? `${buys} buy signal${buys>1?'s':''}, ${watches} watch${watches!==1?'es':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}. ${sourceBadge}`
+    : `${watches} watch signal${watches!==1?'s':''}. ${NAMES[topTicker]||topTicker} leads at ${topScore}. ${sourceBadge}`;
+
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:14px 18px;border:0.5px solid var(--border);" onclick="openTicker('${topTicker}','score')" style="cursor:pointer;">
+    <div style="flex-shrink:0;cursor:pointer;" onclick="openTicker('${topTicker}','score')"><div style="font-size:38px;font-weight:700;letter-spacing:-2px;color:${scoreColor};font-family:'DM Mono',monospace;">${topScore}</div><div style="font-size:9px;color:var(--text3);text-align:center;font-weight:600;">${topTicker}</div></div>
+    <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;margin-bottom:5px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">${liveContext || 'Click any card below for full analysis.'}</div></div>
   </div>`;
 }
 
@@ -4263,12 +4288,28 @@ function _renderMorningPicksCard() {
     .sort(([,a],[,b]) => b - a);
   if (!ranked.length) { el.innerHTML = ''; return; }
 
+  // Layer labels for server component fallback
+  const LAYER_LABELS = {l2:'Insider cluster',l3:'Analyst upgrades',l4:'Supply chain signal',l1:'Price momentum',l5:'Macro tailwind'};
+
   function getLayerInfo(t) {
+    // 1. Prefer static LAYER_DATA (most curated)
     const layers = (ld[t] || []).filter(l => l.pts > 0).sort((a,b) => (b.pts||0)-(a.pts||0));
-    const top = layers[0] || null;
-    if (!top) return { desc: '', signal: '' };
-    const signal = (top.signals && top.signals[0]) ? top.signals[0] : '';
-    return { desc: top.desc || '', signal };
+    if (layers.length) {
+      const top = layers[0];
+      return { desc: top.desc || '', signal: (top.signals && top.signals[0]) ? top.signals[0] : '', body: '' };
+    }
+    // 2. Fall back to server-computed narratives
+    const sigs = (typeof _SERVER_SIGNALS !== 'undefined') ? (_SERVER_SIGNALS[t] || null) : null;
+    const comp = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[t] || null) : null;
+    let shortDesc = '';
+    if (comp) {
+      const best = ['l2','l3','l4','l1','l5'].find(k => (comp[k] || 0) > 0);
+      if (best) shortDesc = LAYER_LABELS[best];
+    }
+    if (sigs && sigs.length) {
+      return { desc: shortDesc || '', signal: sigs[0] || '', body: sigs[1] || '' };
+    }
+    return { desc: shortDesc || '', signal: '', body: '' };
   }
 
   // Build top 4: #1 BUY/best, #2 WATCH, #3 signal node highlight, #4 SKIP
@@ -4288,14 +4329,22 @@ function _renderMorningPicksCard() {
     const info = getLayerInfo(p.t);
     const cat = cats[p.t];
     const catNote = cat ? ` · ${cat.label} ${cat.date}` : '';
-    const skipText = p.cat === 'SKIP' ? `Mixed or weak signals this week. Hold existing only. Do not add.${catNote}` : (info.signal || info.desc || NAMES[p.t] || p.t) + catNote;
+    // Title line: prefer LAYER_DATA desc (short, punchy); fall back to component label
+    const titleDesc = info.desc || info.signal.slice(0, 60) || NAMES[p.t] || p.t;
+    // Body text: prefer body (server sigs[1]), then signal (sigs[0] or layer signal), then desc
+    let bodyText;
+    if (p.cat === 'SKIP') {
+      bodyText = `Mixed or weak signals this week. Hold existing only. Do not add.${catNote}`;
+    } else {
+      bodyText = (info.body || info.signal || info.desc || NAMES[p.t] || p.t) + catNote;
+    }
     const tf = p.s >= 75 ? 'Mid-term' : p.s >= 60 ? 'Mid-term' : p.cat === 'SKIP' ? 'Revisit next week' : 'Monitor';
     const tr = getScoreTrend(p.t);
     const trendHtml = tr ? `<span style="font-size:9px;font-weight:700;color:${tr.color};margin-left:3px;">${tr.arrow}${Math.abs(tr.delta)}</span>` : '';
     const ageHtml = tr ? `<span style="font-size:9px;color:var(--text3);margin-left:4px;">${tr.ageStr}</span>` : '';
     return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}','score')">
-      <div class="sul">${p.t} — Score ${p.s} · ${info.desc || NAMES[p.t] || ''}</div>
-      <div class="suh">${skipText}</div>
+      <div class="sul">${p.t} — Score ${p.s} · ${titleDesc}</div>
+      <div class="suh">${bodyText}</div>
       <div class="sc-meta"><span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span>${trendHtml}${ageHtml}</div>
     </div>`;
   }).join('');
