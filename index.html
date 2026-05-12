@@ -2838,7 +2838,8 @@ function _refreshLiveScoreUI() {
     const pill = card.querySelector('.score-pill');
     if (pill) pill.textContent = SCORES[t] + '/100';
   });
-  // Sync card colors to live scores + refresh leaderboard
+  // Build missing dynamic cards then sync colors + refresh leaderboard
+  try { buildDynamicScoreCards(); } catch(e) {}
   syncSignalScoreCards();
   try { renderScoreLeaderboard(); } catch(e) {}
   // Update signal card text with live signal headlines
@@ -8095,8 +8096,95 @@ function sortConvergenceCards() {
   });
 }
 
+function buildDynamicScoreCards() {
+  // Build score cards for all OUR_TICKERS that don't already have a static HTML card
+  const OUR_TICKERS = ['NVDA','ASML','AMD','RKLB','PLTR','TSM','SMCI','META','MSFT','GOOGL',
+    'VST','CEG','AMAT','LRCX','MU','LMT','NOC','RTX','CRM','NOW','SNOW',
+    'CCJ','UEC','AMZN','ARM','QCOM','AAPL','PANW','CRWD','GEV',
+    'AVGO','MRVL','INTC','DELL','ORCL','NET','NEE','ETN','PWR','OKLO',
+    'GD','LHX','ADBE','TSLA','NFLX','APP','ON','HPE','WDAY','COIN',
+    'KLAC','ENTG','TER','MKSI','ONTO','V','MA','PYPL','SQ','HOOD',
+    'DDOG','MDB','ZS','ESTC','S','OKTA','FTNT','CYBR','HUBS','SHOP',
+    'TTD','PATH','CFLT','MCHP','TXN','MPWR','ADI','NXPI','FSLR','ENPH',
+    'WOLF','RIVN','ANET','PSTG','NTAP','WDC','ISRG','VEEV','RXRX','AMGN',
+    'UBER','SPOT','ABNB','DIS','AXON','GTLB','TWLO','SOFI','AFRM','NU',
+    'MRNA','REGN','DXCM','TDOC','ILMN','ALB','SQM','LTHM','CHPT','BLNK',
+    'BILL','ZI','MNDY','TOST','SMAR','FORM','ACMR','CAMT','IPGP','POWI',
+    'SOUN','AISP','IONQ','DUOL','RBLX','EQIX','DLR','AMT','IRM','VRT',
+    'KTOS','LDOS','BA','SAIC','HII','NIO','XPEV','LCID','F','GM',
+    'ROKU','SNAP','PINS','ZM','NTNX','MELI','SE','FLUT','UPST','LMND'];
+
+  // Find the score-card container
+  const container = document.querySelector('.card .convergence-stock-card')?.parentElement;
+  if (!container) return;
+
+  // Build set of tickers that already have static cards
+  const existing = new Set();
+  container.querySelectorAll('.convergence-stock-card[data-ticker]').forEach(function(c) {
+    existing.add(c.dataset.ticker);
+  });
+
+  // Build cards for each missing ticker
+  let added = 0;
+  OUR_TICKERS.forEach(function(ticker) {
+    if (existing.has(ticker)) return;
+    const score = (typeof SCORES !== 'undefined' && SCORES[ticker]) || 50;
+    const name  = (typeof NAMES !== 'undefined' && NAMES[ticker]) || ticker;
+
+    // Pick signal headline from KV narratives if available
+    const srvSigs = (typeof _SERVER_SIGNALS !== 'undefined') ? (_SERVER_SIGNALS[ticker] || null) : null;
+    const comp    = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[ticker] || null) : null;
+
+    let headline = name + ' — Score ' + score;
+    let subline  = 'Live signals computed nightly. Click for full analysis.';
+
+    if (srvSigs && srvSigs.length > 0) {
+      const first = srvSigs[0] || '';
+      if (first.length > 10) {
+        // First narrative sentence is the headline driver
+        const dotIdx = first.indexOf('.');
+        headline = ticker + ' — Score ' + score + ' · ' + (dotIdx > 0 ? first.slice(0, dotIdx) : first.slice(0, 60));
+        subline  = srvSigs[1] || srvSigs[0] || '';
+        if (subline.length > 120) subline = subline.slice(0, 120) + '…';
+      }
+    } else if (comp) {
+      // Build from component scores
+      const top = Object.entries({l1:comp.l1||0,l2:comp.l2||0,l3:comp.l3||0,l4:comp.l4||0,l5:comp.l5||0})
+        .sort(function(a,b){return b[1]-a[1];})[0];
+      const layerName = {l1:'Momentum',l2:'Insider',l3:'Analyst',l4:'Chain',l5:'Macro'}[top[0]] || top[0];
+      headline = ticker + ' — Score ' + score + ' · ' + layerName + ' signal active';
+      subline  = 'L' + top[0].slice(1) + ' strongest component at ' + top[1] + ' pts. Open for full signal breakdown.';
+    }
+
+    // Score class
+    const sc    = score >= 70 ? 'sc-r' : score >= 50 ? 'sc-a' : 'sc-gray';
+    const actCls = score >= 70 ? 'at-buy' : score >= 50 ? 'at-watch' : 'at-skip';
+    const actLbl = score >= 70 ? 'BUY' : score >= 50 ? 'WATCH' : 'HOLD';
+    const tfLbl  = score >= 70 ? 'tf-mid' : score >= 50 ? 'tf-mid' : 'tf-mixed';
+    const tfText = score >= 70 ? 'Mid-term' : score >= 50 ? 'Monitor' : 'Wait';
+
+    const card = document.createElement('div');
+    card.className = 'sc ' + sc + ' convergence-stock-card';
+    card.setAttribute('data-ticker', ticker);
+    card.onclick = function() { openTicker(ticker); };
+    card.innerHTML = '<div class="sul">' + headline + '</div>'
+      + '<div class="suh">' + subline + '</div>'
+      + '<div class="sc-meta">'
+      + '<span class="act-tag ' + actCls + '">' + actLbl + '</span>'
+      + '<span class="tf-tag ' + tfLbl + '">' + tfText + '</span>'
+      + '<span class="score-pill">' + score + '/100</span>'
+      + '</div>';
+    container.appendChild(card);
+    added++;
+  });
+
+  return added;
+}
+
 function renderConvergence() {
   const ft = S.focusTicker;
+  // Build dynamic cards for the 130 stocks not in static HTML
+  try { buildDynamicScoreCards(); } catch(e) {}
   // Render velocity leaderboard (reads localStorage score_history)
   try { renderVelocityLeaderboard(); } catch(e) {}
   // Run score truth test (lazy — only on first visit; refresh button forces re-run)
