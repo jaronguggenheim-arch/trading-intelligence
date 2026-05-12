@@ -427,38 +427,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .pro-waitlist-row button:hover{opacity:.88}
 .pro-free-note{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
 
-
-/* ═══ Freemium / Plan styles ══════════════════════════════════════ */
-.hdr-user-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#34d399;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap}
-.hdr-user-chip:hover{background:rgba(16,185,129,.22)}
-.hdr-signin-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--text);font-size:11px;font-weight:600;padding:4px 13px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap}
-.hdr-signin-btn:hover{background:rgba(255,255,255,.13)}
-.pro-badge{display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:9px;font-weight:800;letter-spacing:.07em;padding:2px 6px;border-radius:8px;vertical-align:middle;margin-left:5px;text-transform:uppercase}
-.plan-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.28);color:#f59e0b;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:.2s}
-.plan-chip:hover{background:rgba(245,158,11,.2)}
-.alert-btn{display:inline-flex;align-items:center;gap:4px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.28);color:#818cf8;font-size:10px;font-weight:600;padding:3px 9px;border-radius:10px;cursor:pointer;transition:.2s}
-.alert-btn:hover{background:rgba(99,102,241,.25)}
-.alert-btn.set{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.28);color:#34d399}
-/* Pro modal */
-.pro-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9800;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.25s ease}
-.pro-overlay.open{opacity:1;pointer-events:all}
-.pro-sheet{background:var(--card);border-radius:22px 22px 0 0;padding:28px 24px 42px;width:100%;max-width:500px;transform:translateY(48px);transition:.28s ease;max-height:86vh;overflow-y:auto}
-.pro-overlay.open .pro-sheet{transform:translateY(0)}
-.pro-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:0 auto 20px}
-.pro-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}
-.pro-row:last-child{border:none}
-.pro-row .pr-icon{font-size:15px;width:22px;flex-shrink:0;margin-top:1px}
-.pro-row .pr-label{color:var(--text);line-height:1.4}
-.pro-row .pr-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.pro-row.locked .pr-label{color:var(--muted)}
-.pro-waitlist-row{margin-top:22px}
-.pro-waitlist-row input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;box-sizing:border-box}
-.pro-waitlist-row input:focus{border-color:rgba(245,158,11,.5)}
-.pro-waitlist-row button{width:100%;margin-top:8px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:11px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
-.pro-waitlist-row button:hover{opacity:.88}
-.pro-free-note{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
-
-
 /* ── News sector filter pills ─── */
 .ns-pill{padding:3px 10px;border:0.5px solid var(--border2);border-radius:12px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;white-space:nowrap}
 .ns-pill:hover{border-color:var(--blue);color:var(--blue)}
@@ -4423,7 +4391,7 @@ function markSagePick() {
 }
 
 // ── END LIVE SCORE ENGINE ─────────────────────────────────────────────────────
-const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',CRWD:'CrowdStrike',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell Technology',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',ADBE:'Adobe',TSLA:'Tesla',NFLX:'Netflix',APP:'AppLovin',ON:'ON Semiconductor',HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corporation',ENTG:'Entegris',TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation',V:'Visa',MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood Markets',DDOG:'Datadog',MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic NV',S:'SentinelOne',OKTA:'Okta',FTNT:'Fortinet',CYBR:'CyberArk',HUBS:'HubSpot',SHOP:'Shopify',TTD:'The Trade Desk',PATH:'UiPath',CFLT:'Confluent',MCHP:'Microchip Technology',TXN:'Texas Instruments',MPWR:'Monolithic Power Systems',ADI:'Analog Devices',NXPI:'NXP Semiconductors',FSLR:'First Solar',ENPH:'Enphase Energy',WOLF:'Wolfspeed',RIVN:'Rivian Automotive',PSTG:'Pure Storage',NTAP:'NetApp',WDC:'Western Digital',ISRG:'Intuitive Surgical',VEEV:'Veeva Systems',RXRX:'Recursion Pharma',AMGN:'Amgen',UBER:'Uber Technologies',SPOT:'Spotify',ABNB:'Airbnb',DIS:'Walt Disney',AXON:'Axon Enterprise',GTLB:'GitLab',TWLO:'Twilio',SOFI:'SoFi Technologies',AFRM:'Affirm',NU:'Nu Holdings',MRNA:'Moderna',REGN:'Regeneron Pharmaceuticals',DXCM:'DexCom',TDOC:'Teladoc Health',ILMN:'Illumina',ALB:'Albemarle Corporation',SQM:'Sociedad Quimica y Minera',LTHM:'Livent',CHPT:'ChargePoint Holdings',BLNK:'Blink Charging',BILL:'Bill.com Holdings',ZI:'ZoomInfo Technologies',MNDY:'monday.com',TOST:'Toast',SMAR:'Smartsheet',FORM:'FormFactor',ACMR:'ACM Research',CAMT:'Camtek',IPGP:'IPG Photonics',POWI:'Power Integrations',SOUN:'SoundHound AI',AISP:'C3.ai',IONQ:'IonQ',DUOL:'Duolingo',RBLX:'Roblox',EQIX:'Equinix',DLR:'Digital Realty Trust',AMT:'American Tower',IRM:'Iron Mountain',VRT:'Vertiv Holdings',KTOS:'Kratos Defense & Security',LDOS:'Leidos Holdings',BA:'Boeing',SAIC:'Science Applications Intl',HII:'Huntington Ingalls',NIO:'NIO Inc.',XPEV:'XPeng',LCID:'Lucid Group',F:'Ford Motor',GM:'General Motors',ROKU:'Roku',SNAP:'Snap',PINS:'Pinterest',ZM:'Zoom Video',NTNX:'Nutanix',MELI:'MercadoLibre',SE:'Sea Limited',FLUT:'Flutter Entertainment',UPST:'Upstart Holdings',LMND:'Lemonade'};
+const NAMES={NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'Advanced Micro Devices',RKLB:'Rocket Lab USA',PLTR:'Palantir Technologies',META:'Meta Platforms',GOOGL:'Alphabet',MSFT:'Microsoft',TSM:'TSMC',CRWD:'CrowdStrike',VST:'Vistra Energy',CEG:'Constellation Energy',AMZN:'Amazon',MU:'Micron Technology',SNPS:'Synopsys',SMCI:'Super Micro Computer',AMAT:'Applied Materials',LRCX:'Lam Research',BAH:'Booz Allen Hamilton',INTC:'Intel',DELL:'Dell Technologies',ANET:'Arista Networks',LMT:'Lockheed Martin',NOC:'Northrop Grumman',RTX:'RTX Corp',CRM:'Salesforce',NOW:'ServiceNow',SNOW:'Snowflake',CCJ:'Cameco',UEC:'Uranium Energy',ARM:'Arm Holdings',QCOM:'Qualcomm',AAPL:'Apple',PANW:'Palo Alto Networks',GEV:'GE Vernova',AVGO:'Broadcom',MRVL:'Marvell Technology',ORCL:'Oracle',NET:'Cloudflare',NEE:'NextEra Energy',ETN:'Eaton',PWR:'Quanta Services',OKLO:'Oklo',GD:'General Dynamics',LHX:'L3Harris',ADBE:'Adobe',TSLA:'Tesla',NFLX:'Netflix',APP:'AppLovin',ON:'ON Semiconductor',HPE:'HPE',WDAY:'Workday',COIN:'Coinbase',KLAC:'KLA Corporation',ENTG:'Entegris',TER:'Teradyne',MKSI:'MKS Instruments',ONTO:'Onto Innovation',V:'Visa',MA:'Mastercard',PYPL:'PayPal',SQ:'Block',HOOD:'Robinhood Markets',DDOG:'Datadog',MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic NV',S:'SentinelOne',OKTA:'Okta',FTNT:'Fortinet',CYBR:'CyberArk',HUBS:'HubSpot',SHOP:'Shopify',TTD:'The Trade Desk',PATH:'UiPath',CFLT:'Confluent',MCHP:'Microchip Technology',TXN:'Texas Instruments',MPWR:'Monolithic Power Systems',ADI:'Analog Devices',NXPI:'NXP Semiconductors',FSLR:'First Solar',ENPH:'Enphase Energy',WOLF:'Wolfspeed',RIVN:'Rivian Automotive',PSTG:'Pure Storage',NTAP:'NetApp',WDC:'Western Digital',ISRG:'Intuitive Surgical',VEEV:'Veeva Systems',RXRX:'Recursion Pharma',AMGN:'Amgen',UBER:'Uber Technologies',SPOT:'Spotify',ABNB:'Airbnb',DIS:'Walt Disney',AXON:'Axon Enterprise',GTLB:'GitLab',TWLO:'Twilio',SOFI:'SoFi Technologies',AFRM:'Affirm',NU:'Nu Holdings',MRNA:'Moderna',REGN:'Regeneron Pharmaceuticals',DXCM:'DexCom',TDOC:'Teladoc Health',ILMN:'Illumina',ALB:'Albemarle Corporation',SQM:'Sociedad Quimica y Minera',LTHM:'Livent',CHPT:'ChargePoint Holdings',BLNK:'Blink Charging',BILL:'Bill.com Holdings',ZI:'ZoomInfo Technologies',MNDY:'monday.com',TOST:'Toast',SMAR:'Smartsheet',FORM:'FormFactor',ACMR:'ACM Research',CAMT:'Camtek',IPGP:'IPG Photonics',POWI:'Power Integrations',SOUN:'SoundHound AI',AISP:'Airship AI',IONQ:'IonQ',DUOL:'Duolingo',RBLX:'Roblox',EQIX:'Equinix',DLR:'Digital Realty Trust',AMT:'American Tower',IRM:'Iron Mountain',VRT:'Vertiv Holdings',KTOS:'Kratos Defense & Security',LDOS:'Leidos Holdings',BA:'Boeing',SAIC:'Science Applications Intl',HII:'Huntington Ingalls',NIO:'NIO Inc.',XPEV:'XPeng',LCID:'Lucid Group',F:'Ford Motor',GM:'General Motors',ROKU:'Roku',SNAP:'Snap',PINS:'Pinterest',ZM:'Zoom Video',NTNX:'Nutanix',MELI:'MercadoLibre',SE:'Sea Limited',FLUT:'Flutter Entertainment',UPST:'Upstart Holdings',LMND:'Lemonade'};
 const COMMUNITY=['NVDA','ASML','META','GOOGL','MSFT','AMD','PLTR','RKLB','TSM','CRWD','VST','CEG','MU','AMAT','SMCI'];
 const MARKETS={
   indices:[
@@ -11069,43 +11037,6 @@ async function initDeepEdge(force) {
     <div class="pro-free-note">No credit card. No paywall. Just signals.</div>
   </div>
 </div>
-
-
-<!-- PRO MODAL -->
-<div class="pro-overlay" id="pro-overlay" onclick="if(event.target===this)closeProModal()">
-  <div class="pro-sheet" id="pro-sheet">
-    <div class="pro-sheet-handle"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <div>
-        <div style="font-size:18px;font-weight:800;color:var(--text)">Everything is free. <span style="color:#f59e0b">Pro is coming.</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px">Join the waitlist — first access, no spam</div>
-      </div>
-      <button onclick="closeProModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px">&times;</button>
-    </div>
-
-    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Free forever</div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 23+ stocks &amp; signal scores</div></div></div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Morning Brief &amp; Sage Mode picks</div></div></div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Supply chain &amp; correlation maps</div></div></div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">My Intel watchlist (Google login)</div></div></div>
-
-    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">Pro — coming soon</div>
-    <div class="pro-row locked"><div class="pr-icon">🔔</div><div><div class="pr-label">Email alerts when score crosses threshold</div><div class="pr-sub">Get notified when NVDA hits 90+ or PLTR spikes</div></div></div>
-    <div class="pro-row locked"><div class="pr-icon">⚡</div><div><div class="pr-label">Real-time signals <span class="pro-badge">PRO</span></div><div class="pr-sub">Live data vs 15-min delay on free tier</div></div></div>
-    <div class="pro-row locked"><div class="pr-icon">📊</div><div><div class="pr-label">Portfolio P&amp;L tracking</div><div class="pr-sub">Enter positions, track against signals over time</div></div></div>
-    <div class="pro-row locked"><div class="pr-icon">🕐</div><div><div class="pr-label">90-day signal history</div><div class="pr-sub">See how scores moved before earnings, catalysts</div></div></div>
-    <div class="pro-row locked"><div class="pr-icon">🔌</div><div><div class="pr-label">API access</div><div class="pr-sub">Pull scores and signals into your own tools</div></div></div>
-
-    <div class="pro-waitlist-row">
-      <input type="email" id="pro-waitlist-email" placeholder="your@email.com — join the Pro waitlist">
-      <button onclick="joinProWaitlist()">Join waitlist — free, no spam</button>
-    </div>
-    <div class="pro-free-note" id="pro-waitlist-confirm" style="display:none;color:#34d399;font-weight:600">✓ You're on the list — we'll reach out when Pro launches</div>
-    <div class="pro-free-note">No credit card. No paywall. Just signals.</div>
-  </div>
-</div>
-
 
 <div class="toast" id="share-toast"></div>
 </body>
