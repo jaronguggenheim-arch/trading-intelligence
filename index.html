@@ -240,7 +240,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
   .live-p{display:none;}
 
   /* ── Grids collapse to single column ─────── */
-  .g13,.g2{grid-template-columns:1fr !important;}
+  .g13,.g2,#morning-2col{grid-template-columns:1fr !important;}
   .g3{grid-template-columns:1fr 1fr !important;}
   .g4{grid-template-columns:1fr 1fr !important;}
 
@@ -332,6 +332,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .nt{padding:11px 12px;font-size:12px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}.nt.active{color:var(--text);border-bottom-color:var(--text);font-weight:500;}.nt.corr-tab{color:var(--purple);}.nt.corr-tab.active{border-bottom-color:var(--purple);}.nt:hover:not(.active){color:var(--text);}
 .main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;max-width:100%;}.sec.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
+#morning-2col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:14px;}
 .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;font-weight:600;}
 .sm-stab{flex-shrink:0;padding:6px 14px;border:0.5px solid var(--border2);border-radius:20px;background:none;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
 .sm-stab.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:600;}
@@ -731,52 +732,62 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- MORNING SUBSCRIBE CTA -->
   <div id="morning-subscribe-cta" style="margin-bottom:14px;"></div>
 
-  <!-- LIVE NEWS HEADER -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-    <div>
-      <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">Morning Brief</div>
-      <div id="brief-timestamp" style="font-size:11px;color:var(--text3);margin-top:2px;">Live news · signal scores · market pulse</div>
-    </div>
-    <button id="brief-refresh-btn" onclick="fetchAVNews(true)" style="padding:6px 16px;border:none;border-radius:7px;background:var(--green);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
-  </div>
+  <!-- 2-COLUMN LAYOUT: news left (2fr) · picks + signals right (1fr) -->
+  <div id="morning-2col">
 
-  <!-- LIVE NEWS FEED -->
-  <div class="card" style="margin-bottom:14px;">
-    <div style="margin-bottom:10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-        <div class="card-lbl" style="margin:0;">Morning brief · your stocks first</div>
-        <div style="font-size:10px;color:var(--text3);" id="news-count-lbl"></div>
+    <!-- LEFT COLUMN: header + news feed -->
+    <div id="morning-left">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">Morning Brief</div>
+          <div id="brief-timestamp" style="font-size:11px;color:var(--text3);margin-top:2px;">Live news · signal scores · market pulse</div>
+        </div>
+        <button id="brief-refresh-btn" onclick="fetchAVNews(true)" style="padding:6px 16px;border:none;border-radius:7px;background:var(--green);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
       </div>
-      <!-- Topic filters -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;" id="news-topic-btns">
-        <div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:4px;">Topics:</div>
-        <button onclick="filterNewsTopic('all',this)" style="padding:3px 9px;border:0.5px solid var(--green);border-radius:5px;background:var(--green-bg);color:var(--green);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">All</button>
-        <button onclick="filterNewsTopic('financial_markets',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Markets</button>
-        <button onclick="filterNewsTopic('economy_macro',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Macro</button>
-        <button onclick="filterNewsTopic('earnings',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Earnings</button>
-        <button onclick="filterNewsTopic('technology',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Tech</button>
-        <button onclick="filterNewsTopic('mergers_and_acquisitions',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">M&amp;A</button>
-        <button onclick="filterNewsTopic('ipo',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">IPO</button>
+      <div class="card">
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <div class="card-lbl" style="margin:0;">Morning brief · your stocks first</div>
+            <div style="font-size:10px;color:var(--text3);" id="news-count-lbl"></div>
+          </div>
+          <!-- Topic filters -->
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;" id="news-topic-btns">
+            <div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:4px;">Topics:</div>
+            <button onclick="filterNewsTopic('all',this)" style="padding:3px 9px;border:0.5px solid var(--green);border-radius:5px;background:var(--green-bg);color:var(--green);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">All</button>
+            <button onclick="filterNewsTopic('financial_markets',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Markets</button>
+            <button onclick="filterNewsTopic('economy_macro',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Macro</button>
+            <button onclick="filterNewsTopic('earnings',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Earnings</button>
+            <button onclick="filterNewsTopic('technology',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Tech</button>
+            <button onclick="filterNewsTopic('mergers_and_acquisitions',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">M&amp;A</button>
+            <button onclick="filterNewsTopic('ipo',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">IPO</button>
+          </div>
+          <!-- Sector + Ticker filters (dynamic) -->
+          <div id="news-sector-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;overflow:visible;"></div>
+          <div id="news-filter-btns" style="display:flex;gap:5px;flex-wrap:wrap;overflow:visible;"></div>
+        </div>
+        <div id="av-news-feed">
+          <div style="font-size:11px;color:var(--text3);text-align:center;padding:16px 0;">Loading news...</div>
+        </div>
+        <div id="av-news-load-more" style="display:none;text-align:center;padding:10px 0;">
+          <button onclick="newsLoadMore()" style="padding:6px 18px;border:0.5px solid var(--border2);border-radius:6px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Load more articles</button>
+        </div>
       </div>
-      <!-- Sector + Ticker filters (dynamic) -->
-      <div id="news-sector-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;overflow:visible;"></div>
-      <div id="news-filter-btns" style="display:flex;gap:5px;flex-wrap:wrap;overflow:visible;"></div>
-    </div>
-    <div id="av-news-feed">
-      <div style="font-size:11px;color:var(--text3);text-align:center;padding:16px 0;">Loading news...</div>
-    </div>
-    <div id="av-news-load-more" style="display:none;text-align:center;padding:10px 0;">
-      <button onclick="newsLoadMore()" style="padding:6px 18px;border:0.5px solid var(--border2);border-radius:6px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Load more articles</button>
-    </div>
-  </div>
+    </div><!-- end #morning-left -->
 
-  <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
-  <div id="morning-chain-card" style="margin-bottom:14px;"></div>
-  <div id="morning-insider-card" style="margin-bottom:14px;"></div>
-  <div id="morning-analyst-card" style="margin-bottom:14px;"></div>
+    <!-- RIGHT COLUMN: summary + today's pick + signal cards -->
+    <div id="morning-right">
+      <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
+      <div id="morning-picks-card" class="card" style="margin-bottom:14px;"></div>
+      <div id="morning-chain-card" style="margin-bottom:14px;"></div>
+      <div id="morning-insider-card" style="margin-bottom:14px;"></div>
+      <div id="morning-analyst-card" style="margin-bottom:14px;"></div>
+    </div><!-- end #morning-right -->
+
+  </div><!-- end #morning-2col -->
+
+  <!-- FULL-WIDTH BELOW: ranked signal scores + market pulse -->
   <div class="g13">
     <div>
-      <div id="morning-picks-card" class="card" style="margin-bottom:12px;"></div>
       <div class="card">
         <div class="card-lbl">All signal scores — full ranked list</div>
         <div class="sc sc-r convergence-stock-card" data-ticker="ASML" onclick="openTicker('ASML')"><div class="sul">ASML — Score 91 · Triple insider cluster</div><div class="suh">CEO + CFO + Board bought open market same week. Rarest signal type available.</div><div class="sc-meta"><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-mid">Mid-term</span><span class="score-pill">91/100</span></div></div>
@@ -4282,7 +4293,7 @@ function _renderMorningPicksCard() {
     const tr = getScoreTrend(p.t);
     const trendHtml = tr ? `<span style="font-size:9px;font-weight:700;color:${tr.color};margin-left:3px;">${tr.arrow}${Math.abs(tr.delta)}</span>` : '';
     const ageHtml = tr ? `<span style="font-size:9px;color:var(--text3);margin-left:4px;">${tr.ageStr}</span>` : '';
-    return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}')">
+    return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}','score')">
       <div class="sul">${p.t} — Score ${p.s} · ${info.desc || NAMES[p.t] || ''}</div>
       <div class="suh">${skipText}</div>
       <div class="sc-meta"><span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span>${trendHtml}${ageHtml}</div>
@@ -4934,10 +4945,12 @@ function buildTickerFallback(sym) {
   };
 }
 
-function openTicker(sym){const d=TICKER_DATA[sym]||buildTickerFallback(sym);const inWL=S.wl.includes(sym);const score=SCORES[sym]||0;const sColor=score>=80?'var(--blue)':score>=60?'var(--text2)':'var(--text3)';const sBg=score>=80?'var(--blue-bg)':'var(--bg3)';const sBd=score>=80?'var(--blue-bd)':'var(--border)';const _isVercel = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
+function openTicker(sym, startTab){const d=TICKER_DATA[sym]||buildTickerFallback(sym);const inWL=S.wl.includes(sym);const score=SCORES[sym]||0;const sColor=score>=80?'var(--blue)':score>=60?'var(--text2)':'var(--text3)';const sBg=score>=80?'var(--blue-bg)':'var(--bg3)';const sBd=score>=80?'var(--blue-bd)':'var(--border)';const _isVercel = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
 const newsH=d.news.map(n=>`<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:3px;">${n.src}</div><div style="font-size:12px;font-weight:500;line-height:1.5;margin-bottom:5px;">${n.hl}</div><span class="b ${n.tag||'b-b'}">${n.label||'Signal'}</span></div>`).join('')||(_isVercel?'<div style="font-size:11px;color:var(--text3);padding:10px 0;text-align:center;">Fetching live news from Finnhub…</div>':'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No recent news tracked</div>');const insH=d.insider.map(i=>`<div class="sc ${i.type==='BUY'?'sc-g':'sc-gray'} sc-na" style="cursor:default;margin-bottom:6px;"><div class="sul">${i.name} · ${i.type} ${i.amount}</div><div class="suh">${i.date} · ${i.note}</div></div>`).join('')||'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No recent insider filings tracked</div>';const revH=d.revenue.map(r=>`<div class="rev-bar-wrap"><div class="rev-bar-label"><span style="font-weight:500;">${r.seg}</span><span>${r.pct}%</span></div><div class="rev-bar-outer"><div class="rev-bar-inner" style="width:${r.pct}%;background:${r.pct>50?'var(--green)':r.pct>25?'var(--blue)':'var(--amber)'};"></div></div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${r.vs}</div></div>`).join('')||'<div style="font-size:11px;color:var(--text3);">No revenue breakdown data</div>';
 document.getElementById('ticker-content').innerHTML=`<div class="ticker-hdr"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div class="ticker-back" onclick="goBack()">← Back</div><button class="share-btn" onclick="shareStock('${sym}',event)"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg> Share</button></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.5px;">${sym}</div><div id="tk-hdr-name" style="font-size:13px;color:var(--text2);margin-top:2px;">${d.name}</div></div><div style="text-align:right;"><div id="tk-hdr-price" style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;">${d.price==='—'?'—':'$'+d.price}</div><div id="tk-hdr-change" class="${d.up?'up':'dn'}" style="font-size:13px;font-weight:500;margin-top:2px;">${d.change}</div></div></div><div class="ticker-stats"><div class="ts-cell"><div id="tk-hdr-mktcap" class="ts-val">${d.mktcap}</div><div class="ts-lbl">Market cap</div></div><div class="ts-cell"><div id="tk-hdr-vol" class="ts-val">${d.vol}</div><div class="ts-lbl">Volume</div></div><div class="ts-cell"><div id="tk-hdr-w52" class="ts-val">${d.week52}</div><div class="ts-lbl">52-week range</div></div><div class="ts-cell" style="background:${sBg};border-color:${sBd};"><div class="ts-val" style="color:${sColor};">${score||'—'}/100</div><div class="ts-lbl">Signal score</div></div></div><div class="ticker-action-bar"><button class="tab-watch-btn ${inWL?'watching':''}" onclick="toggleWL('${sym}',this)">${inWL?'Watching ✓':'+ Add to watchlist'}</button><button class="mirror-btn" onclick="mirrorTrade('${sym}','${d.price}','Score ${score}')">Mirror trade</button><button class="supply-btn" onclick="gT('correlations',document.querySelector('.nt[onclick*="correlations"]'))">Supplier chain →</button></div></div><div class="ticker-tabs"><button class="ticker-tab active" onclick="showTkT('ov',this)">Overview</button><button class="ticker-tab" onclick="showTkT('news',this)">News & Signals</button><button class="ticker-tab" onclick="showTkT('flow',this)">Options Flow</button><button class="ticker-tab" onclick="showTkT('ins',this)">Insider + Congress</button><button class="ticker-tab" onclick="showTkT('rev',this)">Revenue</button><button class="ticker-tab" onclick="showTkT('score',this)">Signal Score</button><button class="ticker-tab" onclick="showTkT('chain',this)">Supply Chain</button><button class="ticker-tab" onclick="showTkT('dedge',this)">Deep Edge</button></div><div class="card"><div class="card-lbl">Price chart — click a timeframe</div><div class="tf-bar" id="tf-bar-ticker">${['1D','5D','1M','3M','6M','1Y','5Y'].map(t=>`<button class="tf-btn ${t==='3M'?'active':''}" onclick="setTF('ticker','${sym}','${t}',this)">${t}</button>`).join('')}</div><div class="chart-wrap" id="chart-ticker"><div class="chart-loading">Loading chart…</div></div></div><div id="tk-ov"><div class="card"><div class="card-lbl">Synopsis</div><p id="tk-ov-synopsis" style="font-size:13px;line-height:1.75;">${d.synopsis}</p></div></div><div id="tk-news" style="display:none;"><div class="card"><div class="card-lbl">News + signal events — last 14 days</div><div id="tk-news-list">${newsH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://finance.yahoo.com/quote/${sym}/news/" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Yahoo Finance ↗</a><a href="https://unusualwhales.com/stocks/${sym}" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Unusual Whales ↗</a></div></div></div><div id="tk-flow" style="display:none;"><div id="tk-options-flow"><div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;"><div style="font-size:18px;margin-bottom:6px;">📊</div><div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Click to load options flow</div><div style="font-size:10px;">Volume analysis · Options positioning · Dark pool news</div></div></div></div><div id="tk-ins" style="display:none;"><div class="card"><div class="card-lbl">Insider + congress activity</div><div id="tk-ins-content">${insH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${sym}&type=4" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">SEC Form 4 ↗</a><a href="http://openinsider.com/search?q=${sym}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;padding:5px 10px;border:0.5px solid var(--green-bd);border-radius:5px;">OpenInsider ↗</a><a href="https://www.quiverquant.com/congresstrading/" target="_blank" style="font-size:11px;color:var(--amber);text-decoration:none;padding:5px 10px;border:0.5px solid var(--amber-bd);border-radius:5px;">Quiver Congress ↗</a></div></div></div><div id="tk-rev" style="display:none;"><div class="card"><div class="card-lbl">Revenue breakdown by segment</div>${revH}</div></div><div id="tk-score" style="display:none;"></div><div id="tk-chain" style="display:none;"></div><div id="tk-dedge" style="display:none;"></div>`;
-window._tkSym=sym;if(S.activeTab&&S.activeTab!=='ticker'&&S.activeTab!=='instrument')S.prevTab=S.activeTab;else S.prevTab=S.prevTab||'morning';gT('ticker',null);setTimeout(()=>loadChart('ticker',sym,'3M'),40);if(S.fh||IS_VERCEL){setTimeout(()=>fillTickerLive(sym),80);}}
+window._tkSym=sym;if(S.activeTab&&S.activeTab!=='ticker'&&S.activeTab!=='instrument')S.prevTab=S.activeTab;else S.prevTab=S.prevTab||'morning';gT('ticker',null);setTimeout(()=>loadChart('ticker',sym,'3M'),40);if(S.fh||IS_VERCEL){setTimeout(()=>fillTickerLive(sym),80);}
+  // Jump to a specific tab if requested (e.g. 'score' from morning picks)
+  if(startTab){setTimeout(function(){const btn=document.querySelector('.ticker-tab[onclick*="\''+startTab+'\'"]');showTkT(startTab,btn||null);},60);}}
 
 function showTkT(n,btn){
   if(id==='flow'){setTimeout(function(){try{if(window._tkSym)loadOptionsFlowInModal(window._tkSym);}catch(e){}},50);}
@@ -4960,7 +4973,31 @@ function renderTkScore(sym){
   const _tr=getScoreTrend(sym);
   const _tBadge=_tr?'<span style="font-size:11px;font-weight:700;color:'+_tr.color+';margin-left:5px;">'+_tr.arrow+(_tr.delta>0?'+':'')+_tr.delta+'</span>':'';
   const _tAge=_tr?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Updated '+_tr.ageStr+'</div>':'';
-  if(!layers)return '<div class="card"><div class="card-lbl">Signal Score</div><div style="font-size:12px;color:var(--text3);padding:8px 0;">No signal data for '+sym+' yet.</div></div>';
+  if(!layers){
+    // Fallback for stocks without LAYER_DATA — show server components + narratives if available
+    const sComp = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[sym] || null) : null;
+    const sSigs = (typeof _SERVER_SIGNALS   !== 'undefined') ? (_SERVER_SIGNALS[sym]   || null) : null;
+    const sc = SCORES[sym] || 0;
+    const scColor = sc >= 75 ? 'var(--green)' : sc >= 55 ? 'var(--amber)' : 'var(--text3)';
+    let html = '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+scColor+';">'+sc+'<span style="font-size:13px;color:var(--text3);">/100</span></div></div>';
+    if(sSigs){
+      html += '<div style="background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:8px;padding:10px 12px;margin-bottom:14px;"><div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">● Live Intelligence · computed last night</div>'
+        + sSigs.map(function(s){ return '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:6px;padding-left:10px;border-left:2px solid var(--green-bd);">'+s+'</div>'; }).join('') + '</div>';
+    }
+    if(sComp){
+      const LAYER_META = [{id:'l1',name:'Market & Momentum',max:30},{id:'l2',name:'Insider & Regulatory',max:25},{id:'l3',name:'Analyst & Corporate',max:25},{id:'l4',name:'Supply Chain',max:10},{id:'l5',name:'Macro & Structural',max:10}];
+      html += LAYER_META.map(function(lm){
+        const pts = Math.min(lm.max, Math.max(0, sComp[lm.id]||0));
+        const pct = Math.round((pts/lm.max)*100);
+        const col = pts/lm.max >= 0.6 ? 'var(--blue)' : 'var(--text3)';
+        return '<div style="margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:var(--text3);width:18px;font-family:\'DM Mono\',monospace;">'+lm.id.toUpperCase()+'</span><span style="font-size:12px;font-weight:600;flex:1;">'+lm.name+'</span><span style="font-size:10px;font-family:\'DM Mono\',monospace;color:'+col+';font-weight:700;">'+pts+'/'+lm.max+'</span><span style="font-size:9px;color:var(--green);font-weight:600;margin-left:4px;">● live</span></div><div style="height:4px;background:var(--bg4);border-radius:2px;"><div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:2px;"></div></div></div>';
+      }).join('');
+    } else {
+      html += '<div style="font-size:12px;color:var(--text3);padding:8px 0;border:0.5px dashed var(--border2);border-radius:7px;text-align:center;padding:14px;">Deep layer analysis building for '+sym+' — check back after the next nightly cron.</div>';
+    }
+    html += '</div>';
+    return html;
+  }
 
   // Use server-computed component scores if available (real L1-L5 from live data)
   const serverComp = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[sym] || null) : null;
@@ -8352,11 +8389,13 @@ function renderNewsFilter(ticker) {
     // First article auto-expands; others start collapsed
     const isFirst = (i === 0);
     const expandedDefault = isFirst;
-    // Preview: first sentence shown inline for collapsed articles
-    const previewText = hasSummary && !expandedDefault
-      ? (a.summary.split('. ')[0] + (a.summary.indexOf('. ') > 0 ? '.' : ''))
+    // Preview: first sentence shown inline only if expansion has substantially more content (>80 chars after)
+    const previewText = hasSummary && !expandedDefault && remainingLen > 80
+      ? (a.summary.slice(0, firstSentEnd + 1))
       : '';
-    // Full body panel
+    // Full body panel — only show preview sentence if expansion has meaningfully more content
+    const firstSentEnd = (a.summary||'').indexOf('. ');
+    const remainingLen = firstSentEnd > 0 ? (a.summary.length - firstSentEnd - 2) : 0;
     const expandBody = `<div id="ni-${idx}" style="display:${expandedDefault?'':'none'};margin-top:9px;padding:11px 13px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
       <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${a.summary||'No summary available for this article.'}</p>
       ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — add Finnhub key for live news</span>` : ''}
