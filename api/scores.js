@@ -333,7 +333,10 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
   const spyQuote = await fhFetch('quote', { symbol: 'SPY' }, fhKey);
   const spyDp = spyQuote?.dp || 0;
 
-  const BATCH = 8;
+  // BATCH = 3: fires 3 tickers × 3 endpoints = 9 concurrent Finnhub calls per batch.
+  // Finnhub free tier bursts at ~30/s but sustained concurrency >10 triggers 429s.
+  // 150 tickers / 3 = 50 batches × 2s delay = ~100s total — well within 300s limit.
+  const BATCH = 3;
   for (let i = 0; i < ALL_TICKERS.length; i += BATCH) {
     const batch = ALL_TICKERS.slice(i, i + BATCH);
 
@@ -352,10 +355,9 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
       if (insiders[idx]?.status === 'fulfilled') insiderMap[t] = insiders[idx].value;
     });
 
-    // Stagger batches — 3 API calls per ticker × 8 tickers = 24 calls per batch
-    // Finnhub free tier: 30/s, so ~800ms stagger keeps us well within limits
+    // 2s between batches — 9 calls settled before next 9 start, no burst spikes
     if (i + BATCH < ALL_TICKERS.length) {
-      await new Promise(r => setTimeout(r, 900));
+      await new Promise(r => setTimeout(r, 2000));
     }
   }
 
