@@ -4787,7 +4787,7 @@ async function loadLiveMarketData() {
   if (badge) { badge.textContent = 'Fetching…'; badge.style.color = 'var(--text3)'; }
 
   try {
-    const r = await fetch('/api/markets', { signal: AbortSignal.timeout(10000) });
+    const r = await fetch('/api/markets', { signal: AbortSignal.timeout(22000) });
     if (!r.ok) throw new Error('api/markets ' + r.status);
     const d = await r.json();
     if (!d.ok) throw new Error(d.error || 'markets api error');
@@ -4796,10 +4796,18 @@ async function loadLiveMarketData() {
     _mktsCacheTs = now;
 
     // ── Overlay live values onto MARKETS object ─────────────────────────────
-    // indices
+    // indices (also overlay live TF performance if available)
     MARKETS.indices.forEach(m => {
       const live = d.indices[m.id];
-      if (live) { m.val = live.val; m.chg = live.chg; m.up = live.up; m._live = true; }
+      if (!live) return;
+      m.val = live.val; m.chg = live.chg; m.up = live.up; m._live = true;
+      // Overlay live multi-timeframe changes — replaces the frozen INDEX_TF_CHANGES values
+      if (live.tfChanges) {
+        m.changes = live.tfChanges;
+        if (INDEX_TF_CHANGES && INDEX_TF_CHANGES[m.id]) {
+          INDEX_TF_CHANGES[m.id] = live.tfChanges;
+        }
+      }
     });
     // crypto
     MARKETS.crypto.forEach(m => {
