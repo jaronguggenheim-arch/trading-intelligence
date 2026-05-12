@@ -3204,13 +3204,16 @@ async function renderLiveTickerStrip() {
   const key = S.fh || localStorage.getItem('ti72_fh') || '';
   const liveData = {};
 
-  // Fetch live quotes in parallel if key exists
-  if (key) {
-    const base = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'https://finnhub.io/api/v1' : '/api/fh';
-    await Promise.allSettled(_tickerStripTickers.map(async t => {
+  // Fetch live quotes — use Vercel proxy on Vercel (no user key needed), or direct Finnhub with key
+  // Limit to first 40 tickers on Vercel to stay within Finnhub free-tier rate limits; warm CDN cache serves the rest
+  if (key || IS_VERCEL) {
+    const toFetch = IS_VERCEL && !key ? _tickerStripTickers.slice(0, 40) : _tickerStripTickers;
+    await Promise.allSettled(toFetch.map(async t => {
       try {
-        const r = await fetch(`${base}/quote?symbol=${t}&token=${key}`);
+        const url = IS_VERCEL
+          ? fhURL('quote', { symbol: t })
+          : `https://finnhub.io/api/v1/quote?symbol=${t}&token=${key}`;
+        const r = await fetch(url);
         const d = await r.json();
         if (d && d.c) liveData[t] = { price: d.c, change: d.dp, up: d.dp >= 0 };
       } catch(e) {}
@@ -4957,15 +4960,17 @@ async function loadChart(target,id,tf){
 
 async function fetchChartData(id,tf){
   const key=id+':'+tf;
+  // 15-min cache for intraday (1D/5D), 1-hour for daily/weekly
+  const chartTTL=(tf==='1D'||tf==='5D')?900000:3600000;
   const cached=CHART_CACHE[key];
-  if(cached&&Date.now()-cached.t<3600000)return cached.data;
-  try{const stored=localStorage.getItem('ti72_chart_'+key);if(stored){const o=JSON.parse(stored);if(Date.now()-o.t<3600000){CHART_CACHE[key]=o;return o.data;}}}catch(e){}
+  if(cached&&Date.now()-cached.t<chartTTL)return cached.data;
+  try{const stored=localStorage.getItem('ti72_chart_'+key);if(stored){const o=JSON.parse(stored);if(Date.now()-o.t<chartTTL){CHART_CACHE[key]=o;return o.data;}}}catch(e){}
   const TF_PTS={'1D':78,'5D':65,'1M':22,'3M':63,'6M':126,'1Y':252,'5Y':260};
   const n=TF_PTS[tf]||100;
+  const inst=getInstrument(id);
   // Twelvedata: if TD key set and no AV key, fetch real data
   if(!S.av&&(S.td||IS_VERCEL)){return fetchTDChartData(id,tf,n,inst,key);}
   if(!S.av){return genDemoSeries(n,id+tf,tf);}
-  const inst=getInstrument(id);
   let url='';
   const sym=inst?.proxy||id;
   if(inst&&inst.category==='fx'&&inst.from&&inst.to){
