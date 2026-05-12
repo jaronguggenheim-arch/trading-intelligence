@@ -331,9 +331,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 @keyframes ticker-run{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .nt{padding:11px 12px;font-size:12px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}.nt.active{color:var(--text);border-bottom-color:var(--text);font-weight:500;}.nt.corr-tab{color:var(--purple);}.nt.corr-tab.active{border-bottom-color:var(--purple);}.nt:hover:not(.active){color:var(--text);}
 .main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;max-width:100%;}.sec.active{display:block;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
 #morning-2col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:14px;align-items:start;}
 #morning-right{position:sticky;top:16px;}
+#morning-chain-card:empty,#morning-insider-card:empty,#morning-analyst-card:empty,#morning-summary-banner:empty{display:none;}
 .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;font-weight:600;}
 .sm-stab{flex-shrink:0;padding:6px 14px;border:0.5px solid var(--border2);border-radius:20px;background:none;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
 .sm-stab.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:600;}
@@ -749,9 +750,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div id="morning-right">
       <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
       <div id="morning-picks-card" class="card" style="margin-bottom:14px;"></div>
-      <div id="morning-chain-card" style="margin-bottom:14px;"></div>
-      <div id="morning-insider-card" style="margin-bottom:14px;"></div>
-      <div id="morning-analyst-card" style="margin-bottom:14px;"></div>
+      <div id="morning-chain-card" style="margin-bottom:14px;min-height:0;"></div>
+      <div id="morning-insider-card" style="margin-bottom:14px;min-height:0;"></div>
+      <div id="morning-analyst-card" style="margin-bottom:14px;min-height:0;"></div>
     </div><!-- end #morning-right -->
 
   </div><!-- end #morning-2col -->
