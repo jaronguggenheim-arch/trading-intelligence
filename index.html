@@ -699,6 +699,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
   <!-- SAGE MODE CARD -->
   <div id="sage-mode-card" style="margin-bottom:14px;"></div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;margin-top:-8px;padding:0 2px;">
+    <span id="sage-freshness-lbl" style="font-size:10px;color:var(--text3);display:none;"></span>
+  </div>
 
   <!-- MORNING SUBSCRIBE CTA -->
   <div id="morning-subscribe-cta" style="margin-bottom:14px;"></div>
@@ -707,7 +710,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
     <div>
       <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;">Morning Brief</div>
-      <div id="brief-timestamp" style="font-size:11px;color:var(--text3);margin-top:2px;">Live news · signal scores · market pulse</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px;">
+        <div id="brief-timestamp" style="font-size:11px;color:var(--text3);">Live news · signal scores · market pulse</div>
+        <span id="scores-freshness-lbl" style="font-size:10px;color:var(--text3);padding:1px 6px;border-radius:4px;background:var(--bg3);border:0.5px solid var(--border);display:none;"></span>
+      </div>
     </div>
     <button id="brief-refresh-btn" onclick="fetchAVNews(true)" style="padding:6px 16px;border:none;border-radius:7px;background:var(--green);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
   </div>
@@ -2813,6 +2819,8 @@ async function loadServerScores() {
 
     // Stamp when server data was loaded so timestamps can show data age
     try { localStorage.setItem('_server_scores_ts', String(Date.now())); } catch(e) {}
+    // Immediately refresh freshness labels now that we have server data
+    try { updateRefreshTimestamps(); } catch(e) {}
 
     console.log('[server scores] loaded ' + seeded + ' scores, ' +
       Object.keys(_SERVER_COMPONENTS).length + ' components, ' +
@@ -3162,32 +3170,76 @@ async function globalRefresh() {
   updateRefreshTimestamps();
 }
 
+function timeAgo(ts) {
+  if (!ts) return null;
+  var diff = Date.now() - ts;
+  var min = Math.floor(diff / 60000);
+  if (min < 2) return 'just now';
+  if (min < 60) return min + ' min ago';
+  var hr = Math.floor(min / 60);
+  if (hr < 24) return hr + (hr === 1 ? ' hr ago' : ' hrs ago');
+  var d = Math.floor(hr / 24);
+  if (d === 1) return 'yesterday';
+  return d + ' days ago';
+}
+
 function updateRefreshTimestamps() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-  // Check server data age (nightly cron runs ~2am ET)
-  let serverAgeStr = '';
+  // Compute server data age using timeAgo()
+  let scoresAgeStr = '';
+  let scoresAgeFull = '';
   try {
     const kvTs = localStorage.getItem('_server_scores_ts');
     if (kvTs) {
-      const ageH = Math.round((Date.now() - parseInt(kvTs, 10)) / 3600000);
-      serverAgeStr = ageH < 2 ? ' · scores: live' : ' · scores: ' + ageH + 'h ago';
+      const ts = parseInt(kvTs, 10);
+      const diffMin = Math.floor((Date.now() - ts) / 60000);
+      if (diffMin < 5) {
+        scoresAgeStr = ' · scores: live';
+        scoresAgeFull = 'live';
+      } else {
+        const ago = timeAgo(ts);
+        scoresAgeStr = ' · scores: ' + ago;
+        scoresAgeFull = ago;
+      }
     } else {
-      const hasServerData = (typeof _SERVER_COMPONENTS !== 'undefined') && Object.keys(_SERVER_COMPONENTS).length > 10;
-      serverAgeStr = hasServerData ? ' · nightly scores loaded' : ' · base scores';
+      const hasData = (typeof _SERVER_COMPONENTS !== 'undefined') && Object.keys(_SERVER_COMPONENTS).length > 10;
+      scoresAgeStr = hasData ? ' · nightly scores' : ' · base scores';
+      scoresAgeFull = hasData ? 'nightly' : 'base';
     }
   } catch(e) {}
 
+  // Update tab-level timestamps (convergence, supply chain, deep edge headers)
   ['convergence-updated-ts','correlations-updated-ts','deepedge-updated-ts'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.textContent = 'Updated ' + timeStr + serverAgeStr;
+    if (el) el.textContent = 'Updated ' + timeStr + scoresAgeStr;
+  });
+
+  // Update the scores-freshness-lbl used in Morning Brief + Sage area
+  ['scores-freshness-lbl','sage-freshness-lbl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (scoresAgeFull === 'live') {
+      el.textContent = 'Scores: live';
+      el.style.color = 'var(--green)';
+      el.style.display = '';
+    } else if (scoresAgeFull && scoresAgeFull !== 'base') {
+      el.textContent = 'Scores: ' + scoresAgeFull;
+      el.style.color = 'var(--text3)';
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
   });
 }
 
 function startGlobalRefresh() {
   if (_globalRefreshTimer) clearInterval(_globalRefreshTimer);
   _globalRefreshTimer = setInterval(globalRefresh, 15 * 60 * 1000); // 15 min
+  // Update freshness labels every 60s so "X min ago" stays accurate
+  if (window._tsRefreshTimer) clearInterval(window._tsRefreshTimer);
+  window._tsRefreshTimer = setInterval(function() { try { updateRefreshTimestamps(); } catch(e) {} }, 60000);
   globalRefresh(); // run immediately on start
 }
 // ─────────────────────────────────────────────────────────────────────────────
