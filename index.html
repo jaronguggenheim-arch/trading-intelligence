@@ -8854,6 +8854,7 @@ function renderNewsFilter(ticker) {
         <span style="font-size:10px;color:var(--text3);">${a.source||'\u2014'} \u00b7 ${_fmtTime(a.time_published)}</span>
         ${topicTags}${relTickers}
       </div>
+      ${chainContextTag}
       ${expandBody}
     </div>`;
   }).join('');
