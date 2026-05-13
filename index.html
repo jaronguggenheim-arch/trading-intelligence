@@ -924,8 +924,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 <div class="sec" id="tab-convergence">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
     <div style="font-size:11px;color:var(--text3);">A score of 50+ means meaningful signal alignment across layers. 70+ = strong conviction. Use the stock selector above to focus on one stock.</div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;">
       <span id="convergence-updated-ts" style="font-size:10px;color:var(--text3);"></span>
+      <div style="display:flex;align-items:center;gap:0;border:0.5px solid var(--border2);border-radius:6px;overflow:hidden;">
+        <span style="font-size:10px;color:var(--text3);padding:3px 8px;background:var(--bg3);border-right:0.5px solid var(--border2);">Sort:</span>
+        <button id="sort-btn-velocity" onclick="setConvergenceSort('velocity')" style="font-size:10px;padding:3px 9px;border:none;background:var(--amber-bg,rgba(245,158,11,0.12));color:var(--amber,#f59e0b);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">⚡ Velocity</button>
+        <button id="sort-btn-score" onclick="setConvergenceSort('score')" style="font-size:10px;padding:3px 9px;border:none;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;border-left:0.5px solid var(--border2);">Score</button>
+      </div>
       <button onclick="globalRefresh()" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
     </div>
   </div>
@@ -8219,7 +8224,39 @@ async function _runScoreBacktest(force) {
   el.innerHTML = html;
 }
 
+// ═══════════════════════════════════════════════════════════
+// P1-C: Signal Scores — sort by velocity (default) or score
+// ═══════════════════════════════════════════════════════════
+var _convergenceSortMode = 'velocity'; // default: 7-day delta
+
+function setConvergenceSort(mode) {
+  _convergenceSortMode = mode;
+  // Update button styles
+  const vBtn = document.getElementById('sort-btn-velocity');
+  const sBtn = document.getElementById('sort-btn-score');
+  if (vBtn && sBtn) {
+    if (mode === 'velocity') {
+      vBtn.style.background = 'var(--amber-bg,rgba(245,158,11,0.12))';
+      vBtn.style.color = 'var(--amber,#f59e0b)';
+      vBtn.style.fontWeight = '600';
+      sBtn.style.background = 'none';
+      sBtn.style.color = 'var(--text2)';
+      sBtn.style.fontWeight = '400';
+    } else {
+      sBtn.style.background = 'var(--blue-bg,rgba(59,130,246,0.1))';
+      sBtn.style.color = 'var(--blue)';
+      sBtn.style.fontWeight = '600';
+      vBtn.style.background = 'none';
+      vBtn.style.color = 'var(--text2)';
+      vBtn.style.fontWeight = '400';
+    }
+  }
+  sortConvergenceCards();
+}
+
 function sortConvergenceCards() {
+  const hasDeltas = typeof _SERVER_DELTAS !== 'undefined' && Object.keys(_SERVER_DELTAS).length > 0;
+  const useVelocity = (_convergenceSortMode === 'velocity') && hasDeltas;
   // Collect all unique parent containers
   const containers = new Set();
   document.querySelectorAll('.convergence-stock-card').forEach(card => {
@@ -8229,6 +8266,17 @@ function sortConvergenceCards() {
     const cards = Array.from(container.querySelectorAll(':scope > .convergence-stock-card'));
     if (cards.length < 2) return;
     cards.sort((a, b) => {
+      if (useVelocity) {
+        // Sort by absolute delta descending (biggest movers first, up or down)
+        const dA = Math.abs(_SERVER_DELTAS[a.dataset.ticker] ?? 0);
+        const dB = Math.abs(_SERVER_DELTAS[b.dataset.ticker] ?? 0);
+        if (dA !== dB) return dB - dA;
+        // Tiebreak: direction (positive delta first)
+        const rA = (_SERVER_DELTAS[a.dataset.ticker] ?? 0);
+        const rB = (_SERVER_DELTAS[b.dataset.ticker] ?? 0);
+        if (rA !== rB) return rB - rA;
+      }
+      // Fallback / score mode: highest score first
       const sA = SCORES[a.dataset.ticker] || 0;
       const sB = SCORES[b.dataset.ticker] || 0;
       return sB - sA;
