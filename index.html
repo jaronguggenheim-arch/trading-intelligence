@@ -471,6 +471,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
     <span class="plan-chip" onclick="showProModal()" id="hdr-pro-chip" style="display:none;">✦ Pro</span>
     <button type="button" class="hbtn pri" onclick="showPinSetup()" id="pinLbl">Set PIN</button>
+    <button type="button" id="push-bell-btn" onclick="togglePushSubscription()" title="Signal Alerts" style="background:none;border:none;cursor:pointer;padding:4px 6px;font-size:16px;opacity:0.6;transition:opacity .2s;" aria-label="Enable push notifications">&#128276;</button>
     <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
 </div>
@@ -6141,6 +6142,7 @@ function updateTickerScrollActive(sym) {
 }
 
 function enterApp(){
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(function(reg){window._swReg=reg;updatePushBellState();}).catch(function(){});}
   updateHeaderUser();
   updateHeaderUser();
   setTimeout(function(){try{buildTickerScrollTrack();}catch(e){}},200);
@@ -11232,6 +11234,85 @@ async function initDeepEdge(force) {
 }
 // ═══════════════════════════════════════════════════════════════
 // END DEEP EDGE LIVE ENGINE
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// PUSH NOTIFICATION — P2-A
+// ═══════════════════════════════════════════════════════════════
+var _VAPID_PUBLIC_KEY='BC5CsIpbzSaqwd9pe1nkaKG0df1jaGRaf2P9LyOp46ui3Dpm3wdiBFzMRc5_yP8Es-gpFfs8PVdhZOvGMIjXs7E';
+
+function _urlB64ToUint8(b){
+  var p=(4-b.length%4)%4;
+  var s=b.replace(/-/g,'+').replace(/_/g,'/')+('===='.slice(0,p));
+  var r=atob(s);
+  var u=new Uint8Array(r.length);
+  for(var i=0;i<r.length;i++)u[i]=r.charCodeAt(i);
+  return u;
+}
+
+function updatePushBellState(){
+  var btn=document.getElementById('push-bell-btn');
+  if(!btn)return;
+  if(!('PushManager' in window)){btn.style.display='none';return;}
+  navigator.serviceWorker.ready.then(function(reg){
+    reg.pushManager.getSubscription().then(function(sub){
+      btn.style.opacity=sub?'1':'0.45';
+      btn.title=sub?'Signal Alerts ON — click to disable':'Enable Signal Alerts';
+    });
+  }).catch(function(){});
+}
+
+function togglePushSubscription(){
+  if(!('PushManager' in window)){showToast('Push notifications not supported in this browser');return;}
+  navigator.serviceWorker.ready.then(function(reg){
+    reg.pushManager.getSubscription().then(function(sub){
+      if(sub){
+        sub.unsubscribe().then(function(){
+          updatePushBellState();
+          showToast('Signal alerts disabled');
+        });
+      } else {
+        Notification.requestPermission().then(function(perm){
+          if(perm!=='granted'){showToast('Notification permission denied');return;}
+          reg.pushManager.subscribe({
+            userVisibleOnly:true,
+            applicationServerKey:_urlB64ToUint8(_VAPID_PUBLIC_KEY)
+          }).then(function(newSub){
+            var email='';try{var u=getUser&&getUser();email=u&&u.email||'';}catch(e){}
+            fetch('/api/push',{method:'POST',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'subscribe',subscription:newSub.toJSON(),email:email})
+            }).then(function(){
+              updatePushBellState();
+              showToast('Signal alerts enabled!');
+            }).catch(function(){
+              updatePushBellState();
+              showToast('Subscribed (offline sync pending)');
+            });
+          }).catch(function(err){
+            showToast('Could not subscribe: '+err.message);
+          });
+        });
+      }
+    });
+  });
+}
+
+function showToast(msg,duration){
+  duration=duration||3000;
+  var t=document.getElementById('ti-toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='ti-toast';
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#e2e8f0;padding:10px 20px;border-radius:8px;font-size:13px;z-index:99999;pointer-events:none;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.opacity='1';
+  clearTimeout(t._tid);
+  t._tid=setTimeout(function(){t.style.opacity='0';},duration);
+}
+// ═══════════════════════════════════════════════════════════════
+// END PUSH NOTIFICATION
 // ═══════════════════════════════════════════════════════════════
 </script>
 
