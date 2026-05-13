@@ -28,6 +28,88 @@ const NAMES = {
   MDB:'MongoDB',ZS:'Zscaler',ESTC:'Elastic',AXON:'Axon Enterprise'
 };
 
+// ── Supply chain event windows ────────────────────────────────────────────────
+// Upstream events with dated triggers and lag windows (weeks).
+// Used to compute whether a downstream stock's lag window is currently active.
+const SIGNAL_EVENTS = {
+  ASML: [
+    { upstream:'TSM',   date:'2026-01-15', desc:'TSMC raised FY2026 capex to $38–42B — 15% above prior year', lagMin:6, lagMax:9 },
+    { upstream:'TSM',   date:'2025-07-18', desc:'TSMC Q2 2025 capex beat — $10.4B single quarter record',     lagMin:6, lagMax:9 },
+  ],
+  NVDA: [
+    { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT guided $80B AI capex FY2026',                           lagMin:0, lagMax:8 },
+    { upstream:'META',  date:'2026-01-22', desc:'META raised FY2026 capex to $64–72B',                        lagMin:0, lagMax:8 },
+    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL guided $75B capex FY2026',                             lagMin:2, lagMax:10 },
+    { upstream:'MSFT',  date:'2026-04-30', desc:'MSFT Q3 2026 Azure +33% YoY',                                lagMin:0, lagMax:8 },
+  ],
+  TSM: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA Q4 FY2025: Data Center $30.8B (+93% YoY)',              lagMin:0, lagMax:6 },
+  ],
+  SMCI: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA data center beat — Blackwell rack integration expanding', lagMin:0, lagMax:6 },
+    { upstream:'NVDA',  date:'2026-04-15', desc:'NVDA Blackwell GB200 NVL72 shipments accelerating',          lagMin:0, lagMax:6 },
+  ],
+  AMD: [
+    { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT MI300X Azure AI deployment confirmed',                  lagMin:4, lagMax:16 },
+    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL expanded MI300X usage for Cloud AI',                   lagMin:4, lagMax:16 },
+  ],
+  MU: [
+    { upstream:'NVDA',  date:'2026-02-26', desc:'NVDA Q4 FY2026: data center beat — HBM demand letter sent',  lagMin:4, lagMax:8 },
+    { upstream:'NVDA',  date:'2026-04-15', desc:'NVDA Blackwell ramp accelerating — HBM allocation secured',  lagMin:2, lagMax:6 },
+  ],
+  AMAT: [
+    { upstream:'TSM',   date:'2026-01-16', desc:'TSMC capex raised to $38–42B FY2026 · N2 node yield improving', lagMin:8, lagMax:12 },
+  ],
+  LRCX: [
+    { upstream:'TSM',   date:'2026-01-16', desc:'TSMC capex raise · CoWoS advanced packaging requires Lam etch', lagMin:6, lagMax:10 },
+    { upstream:'MU',    date:'2026-03-20', desc:'Micron HBM3E revenue tripled · Lam etch tool orders expanding', lagMin:4, lagMax:8 },
+  ],
+  VST: [
+    { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT $80B capex — Texas data center power demand surge',     lagMin:5, lagMax:16 },
+    { upstream:'META',  date:'2026-01-22', desc:'META $65B capex — AI data center corridor power demand',     lagMin:5, lagMax:16 },
+  ],
+  CEG: [
+    { upstream:'MSFT',  date:'2026-01-13', desc:'Three Mile Island PPA signed — 835MW · 20yr',                lagMin:0, lagMax:104 },
+  ],
+  LMT: [
+    { upstream:'DOD',   date:'2026-03-14', desc:'US DoD FY2027 budget: F-35 procurement rate increase',       lagMin:0, lagMax:12 },
+    { upstream:'NATO',  date:'2026-04-25', desc:'NATO 32-member 2% GDP commit — allied F-35 orders accelerating', lagMin:0, lagMax:24 },
+  ],
+  CCJ: [
+    { upstream:'CEG',   date:'2026-03-15', desc:'CEG signed 3 new nuclear PPAs with hyperscalers',            lagMin:26, lagMax:78 },
+    { upstream:'VST',   date:'2026-02-20', desc:'VST Comanche Peak life-extension approved through 2045',     lagMin:13, lagMax:39 },
+  ],
+  PLTR: [
+    { upstream:'DOD',   date:'2026-03-15', desc:'TITAN contract $619M — DoD AI budget +40% YoY',             lagMin:0, lagMax:12 },
+  ],
+  RKLB: [
+    { upstream:'SDA',   date:'2026-03-20', desc:'SDA Tranche 2 — 18 satellites · $515M contract',            lagMin:0, lagMax:16 },
+  ],
+};
+
+// Compute active lag windows for a ticker (windows where today falls between event+lagMin and event+lagMax)
+function computeActiveWindows(ticker) {
+  const events = SIGNAL_EVENTS[ticker] || [];
+  const now = Date.now();
+  const week = 7 * 24 * 60 * 60 * 1000;
+  const active = [];
+  const forming = [];
+  events.forEach(ev => {
+    const evDate = new Date(ev.date).getTime();
+    const windowStart = evDate + ev.lagMin * week;
+    const windowEnd   = evDate + ev.lagMax * week;
+    if (now >= windowStart && now <= windowEnd) {
+      const weeksIn  = Math.round((now - windowStart) / week);
+      const weeksLeft= Math.round((windowEnd - now) / week);
+      active.push({ ...ev, weeksIn, weeksLeft });
+    } else if (now < windowStart && (windowStart - now) <= 2 * week) {
+      const weeksUntil = Math.round((windowStart - now) / week);
+      forming.push({ ...ev, weeksUntil });
+    }
+  });
+  return { active, forming };
+}
+
 // ── Supply chain link table ───────────────────────────────────────────────────
 // [source, target, lag, description]
 // source move/beat → target enters the lag window
@@ -315,7 +397,7 @@ async function buildMoverReason(moverTicker, sageTicker, dp, fhKey) {
 }
 
 // ── Email HTML template ───────────────────────────────────────────────────────
-function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date, triggeredAlerts }) {
+function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date, triggeredAlerts, chainWindows }) {
   const sc = scoreColor(score);
   const appUrl = 'https://www.everythingisjustoneclickaway.com';
 
@@ -394,6 +476,47 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
       ${signalDots}
     </table>
+
+    ${chainWindows && (chainWindows.active.length > 0 || chainWindows.forming.length > 0) ? `
+    <div style="height:1px;background:#f4f4f5;margin:16px 0;"></div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#f59e0b;margin-bottom:10px;">⚡ Active chain windows</div>
+      ${chainWindows.active.map(w => `
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:8px;background:#fffbeb;border-radius:8px;border:1px solid #fde68a;padding:0;overflow:hidden;">
+        <tr>
+          <td style="padding:10px 14px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:3px;">
+                  <span style="font-family:'Courier New',monospace;">${w.upstream}</span>
+                  <span style="color:#d97706;margin:0 5px;">→</span>
+                  <span style="font-family:'Courier New',monospace;">${ticker}</span>
+                  <span style="font-size:11px;color:#92400e;font-weight:400;margin-left:6px;">· ${w.lagMin}–${w.lagMax} week lag</span>
+                </div>
+                <div style="font-size:12px;color:#78350f;line-height:1.55;">${w.desc}</div>
+                <div style="font-size:11px;color:#92400e;margin-top:4px;">
+                  Window in for <strong>${w.weeksIn}w</strong>${w.weeksLeft > 0 ? ` · <strong>${w.weeksLeft}w remaining</strong>` : ' · closing soon'}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>`).join('')}
+      ${chainWindows.forming.map(w => `
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:8px;background:#fff7ed;border-radius:8px;border:1px solid #fed7aa;padding:0;overflow:hidden;">
+        <tr>
+          <td style="padding:10px 14px;">
+            <div style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:3px;">
+              <span style="font-family:'Courier New',monospace;">${w.upstream}</span>
+              <span style="color:#ea580c;margin:0 5px;">→</span>
+              <span style="font-family:'Courier New',monospace;">${ticker}</span>
+              <span style="font-size:11px;color:#c2410c;font-weight:400;margin-left:6px;">opens in ~${w.weeksUntil}w</span>
+            </div>
+            <div style="font-size:12px;color:#7c2d12;line-height:1.55;">${w.desc}</div>
+          </td>
+        </tr>
+      </table>`).join('')}
+    </div>` : ''}
 
     <div style="margin-top:18px;">
       <a href="${appUrl}/?t=${ticker}" style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:11px 22px;border-radius:8px;margin-right:8px;">Open signal →</a>
@@ -511,6 +634,9 @@ export default async function handler(req, res) {
   // ── Step 3: Build live narrative for the Sage pick ────────────────────────
   const signals = await buildSignalNarrative(best.ticker, FH_KEY);
 
+  // Compute active chain windows for the Sage pick
+  const chainWindows = computeActiveWindows(best.ticker);
+
   // ── Step 4: Build "also watching" movers with chain context ──────────────
   const moverCandidates = actionable.slice(1, 4);
 
@@ -544,6 +670,7 @@ export default async function handler(req, res) {
       score: best.score,
       scoreSource,
       signals,
+      chainWindows,
       movers: movers.map(m => ({ ticker: m.ticker, reason: m.reason })),
       subscribers: 0,
       message: 'No subscribers yet — digest ready when they sign up'
@@ -575,7 +702,8 @@ export default async function handler(req, res) {
       signals,
       movers,
       date: dateStr,
-      triggeredAlerts
+      triggeredAlerts,
+      chainWindows
     })
       .replace('__EMAIL__', encodeURIComponent(email))
       .replace('__TOKEN__', unsubToken);
@@ -607,6 +735,7 @@ export default async function handler(req, res) {
     score: best.score,
     scoreSource,
     signals,
+    chainWindows: { active: chainWindows.active.length, forming: chainWindows.forming.length },
     movers: movers.map(m => ({ ticker: m.ticker, reason: m.reason })),
     subscribers: subscribers.length,
     sent,
