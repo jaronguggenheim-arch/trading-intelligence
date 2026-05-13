@@ -2162,7 +2162,7 @@ window.LAYER_DATA = {
       signals:['Chewy: white-label Lemonade pet insurance — distribution through 20M Chewy customers','GEICO: strategic partnership pilot for renters insurance — White-label model for distribution','Progressive: reinsurance agreement reduces catastrophic loss exposure — capital efficiency improving'] },
     { id:'L5', name:'Macro / structural',      horizon:'60–365 days',  pts:6, max:5,  desc:'Insurance is the last major financial service to be AI-disrupted — Lemonade is building the model',
       signals:['Insurance incumbents: claims processing costs 25-40% of premium — Lemonade targets 15% with AI','Climate risk: traditional actuarial tables failing with new weather patterns — AI recalibrates faster','Behavioral data: Lemonade app engagement data predicts risk better than demographics — learning moat deepening'] },
-  ],,
+  ],
 
   SNDK: [
     { id:'L1', name:'Market structure',        horizon:'0–5 days',     pts:14, max:25, desc:'Post-spinoff price discovery — institutional re-rating underway as pure-play NAND premium develops',
