@@ -10517,13 +10517,55 @@ function _fmtCatalystDate(d) {
 }
 
 function refreshChainStatuses() {
+  const now = new Date();
+  const computedAt = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) + ' · ' +
+                     now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+
   document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(card => {
     const ticker = card.dataset.chainTicker;
-    if (!SIGNAL_EVENTS[ticker]) return; // no events defined — leave static
-    const { dotClass, color, text } = computeWindowStatus(ticker);
+
+    // Compute status — fall back to 'watch' for tickers without SIGNAL_EVENTS
+    const { dotClass, color, text } = SIGNAL_EVENTS[ticker]
+      ? computeWindowStatus(ticker)
+      : { dotClass:'status-watch', color:'var(--blue)',
+          text:'<strong style="color:var(--blue);">Watch.</strong> No lag window events configured. Monitor upstream signals.' };
+
+    // Update status dot + text
     const statusEl = card.querySelector('.chain-status');
-    if (!statusEl) return;
-    statusEl.innerHTML = `<div class="status-dot ${dotClass}"></div><span style="font-size:11px;font-weight:500;color:${color};">${text}</span>`;
+    if (statusEl) {
+      statusEl.innerHTML = `<div class="status-dot ${dotClass}"></div><span style="font-size:11px;font-weight:500;color:${color};">${text}</span>`;
+    }
+
+    // Update the header action badge to reflect live status
+    const actionEl = card.querySelector('.chain-action');
+    if (actionEl) {
+      if (dotClass === 'status-active') {
+        actionEl.textContent = '🟢 Window active';
+        actionEl.style.background = 'var(--green-bg)';
+        actionEl.style.color = 'var(--green)';
+        actionEl.style.borderColor = 'var(--green-bd)';
+      } else if (dotClass === 'status-forming') {
+        actionEl.textContent = '🟡 Forming';
+        actionEl.style.background = 'rgba(245,158,11,0.1)';
+        actionEl.style.color = 'var(--amber)';
+        actionEl.style.borderColor = 'rgba(245,158,11,0.3)';
+      } else {
+        actionEl.textContent = '⚪ Watch';
+        actionEl.style.background = 'rgba(99,102,241,0.08)';
+        actionEl.style.color = 'var(--blue)';
+        actionEl.style.borderColor = 'rgba(99,102,241,0.25)';
+      }
+    }
+
+    // Inject or update a computed-at timestamp below the status row
+    let tsEl = card.querySelector('.chain-computed-ts');
+    if (!tsEl) {
+      tsEl = document.createElement('div');
+      tsEl.className = 'chain-computed-ts';
+      tsEl.style.cssText = 'font-size:9px;color:var(--text3);margin-top:-4px;margin-bottom:8px;padding-left:15px;';
+      if (statusEl) statusEl.insertAdjacentElement('afterend', tsEl);
+    }
+    tsEl.textContent = 'Status computed ' + computedAt;
   });
 }
 // ── END LAG WINDOW ENGINE ──────────────────────────────────────────
