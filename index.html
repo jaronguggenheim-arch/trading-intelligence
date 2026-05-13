@@ -8921,12 +8921,12 @@ function renderNewsFilter(ticker) {
     const isMobile = window.innerWidth <= 640;
     const expandedDefault = isFirst && !isMobile;
     // Preview: first sentence shown inline only if expansion has substantially more content (>80 chars after)
+    const firstSentEnd = (a.summary||'').indexOf('. ');
+    const remainingLen = firstSentEnd > 0 ? (a.summary.length - firstSentEnd - 2) : 0;
     const previewText = hasSummary && !expandedDefault && remainingLen > 80
       ? (a.summary.slice(0, firstSentEnd + 1))
       : '';
     // Full body panel — only show preview sentence if expansion has meaningfully more content
-    const firstSentEnd = (a.summary||'').indexOf('. ');
-    const remainingLen = firstSentEnd > 0 ? (a.summary.length - firstSentEnd - 2) : 0;
     const expandBody = `<div id="ni-${idx}" style="display:${expandedDefault?'':'none'};margin-top:9px;padding:11px 13px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
       <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${a.summary||'No summary available for this article.'}</p>
       ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — add Finnhub key for live news</span>` : ''}
