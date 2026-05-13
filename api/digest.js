@@ -567,7 +567,7 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
   <!-- Footer -->
   <div style="text-align:center;padding:16px 0;">
     <p style="font-size:11px;color:#a1a1aa;margin:0 0 6px;">You're receiving this because you subscribed to Morning Brief.</p>
-    <p style="margin:0;"><a style="font-size:11px;color:#a1a1aa;" href="${appUrl}/api/subscribe?action=unsub&email=__EMAIL__&token=__TOKEN__">Unsubscribe</a></p>
+    <p style="margin:0;"><a style="font-size:11px;color:#a1a1aa;" href="${appUrl}/api/push?action=unsub&email=__EMAIL__&token=__TOKEN__">Unsubscribe</a></p>
   </div>
 </div>
 </body>
