@@ -480,6 +480,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
     <span class="plan-chip" onclick="showProModal()" id="hdr-pro-chip" style="display:none;">✦ Pro</span>
     <button type="button" class="hbtn pri" onclick="showPinSetup()" id="pinLbl">Set PIN</button>
+    <button type="button" id="push-bell-btn" onclick="togglePushSubscription()" title="Signal Alerts" style="background:none;border:none;cursor:pointer;padding:4px 6px;font-size:16px;opacity:0.6;transition:opacity .2s;" aria-label="Enable push notifications">&#128276;</button>
     <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
 </div>
@@ -6284,6 +6285,12 @@ function updateTickerScrollActive(sym) {
 function enterApp(){
   updateHeaderUser();
   updateHeaderUser();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(function(reg){
+      window._swReg = reg;
+      updatePushBellState();
+    }).catch(function(){});
+  }
   setTimeout(function(){try{buildTickerScrollTrack();}catch(e){}},200);
   try{localStorage.setItem('ti72_visited','1');}catch(e){}
   /* Direct DOM manipulation — show app chrome */
@@ -11645,6 +11652,78 @@ async function initDeepEdge(force) {
 // ═══════════════════════════════════════════════════════════════
 // END DEEP EDGE LIVE ENGINE
 // ═══════════════════════════════════════════════════════════════
+
+// ── Push Notification Subscription ──────────────────────────────────────────
+const _VAPID_PUBLIC_KEY = 'BC5CsIpbzSaqwd9pe1nkaKG0df1jaGRaf2P9LyOp46ui3Dpm3wdiBFzMRc5_yP8Es-gpFfs8PVdhZOvGMIjXs7E';
+
+function _urlB64ToUint8(b) {
+  const p = '='.repeat((4 - b.length % 4) % 4);
+  const s = atob((b + p).replace(/-/g,'+').replace(/_/g,'/'));
+  return new Uint8Array([...s].map(c => c.charCodeAt(0)));
+}
+
+async function togglePushSubscription() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    showToast('Push notifications not supported in this browser.');
+    return;
+  }
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) {
+      await existing.unsubscribe();
+      updatePushBellState();
+      showToast('Push alerts disabled');
+      return;
+    }
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { showToast('Notification permission denied'); return; }
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: _urlB64ToUint8(_VAPID_PUBLIC_KEY)
+    });
+    const email = (window._user && window._user.email) || 'anon';
+    await fetch('/api/push', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'subscribe', subscription: sub.toJSON(), email })
+    });
+    updatePushBellState();
+    showToast('\u26a1 Push alerts ON \u2014 you\'ll be notified when chain windows fire');
+  } catch(e) { showToast('Could not enable alerts: ' + (e.message || e)); }
+}
+
+async function updatePushBellState() {
+  const btn = document.getElementById('push-bell-btn');
+  if (!btn) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    btn.style.opacity = sub ? '1' : '0.45';
+    btn.style.filter  = sub ? 'none' : 'grayscale(0.8)';
+    btn.title = sub ? 'Push alerts ON \u2014 click to disable' : 'Enable chain signal alerts';
+  } catch(e) {}
+}
+
+function showToast(msg, duration) {
+  let t = document.getElementById('_push-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_push-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
+      + 'background:rgba(15,15,15,0.96);color:#fff;padding:11px 20px;border-radius:9px;'
+      + 'font-size:13px;z-index:9999;max-width:340px;text-align:center;'
+      + 'box-shadow:0 4px 24px rgba(0,0,0,.6);pointer-events:none;'
+      + 'transition:opacity .35s;border:0.5px solid rgba(255,255,255,.1);';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.opacity = '0'; }, duration || 4500);
+}
+// ── End Push ──────────────────────────────────────────────────────────────────
+
 </script>
 
 <!-- PRO MODAL -->
