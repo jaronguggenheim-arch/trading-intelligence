@@ -294,6 +294,14 @@ body.mkt-mode .main{padding:0;max-width:none;}
 
   /* ── Focus bar layer buttons: hide on very small ─ */
   #layer-ticker-btns{display:none !important;}
+
+  /* ── Morning Brief mobile: picks/signals column above news ──── */
+  #morning-2col{display:flex;flex-direction:column;}
+  #morning-right{order:-1;position:static !important;}
+  /* Collapse topic filter row on mobile — saves space above the fold */
+  #news-topic-btns{display:none !important;}
+  /* Tighter news items on mobile */
+  #av-news-feed > div{padding:7px 0 !important;}
 }
 
 
@@ -333,7 +341,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .main{padding:16px 20px;max-width:1400px;margin:0 auto;}.sec{display:none;max-width:100%;}.sec.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}.g13{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
 #morning-2col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:14px;align-items:start;}
-#morning-right{position:sticky;top:16px;}
+#morning-right{position:sticky;top:16px;}@media(max-width:600px){#morning-right{position:static;}}
 #morning-chain-card:empty,#morning-insider-card:empty,#morning-analyst-card:empty,#morning-summary-banner:empty{display:none;}
 #news-sector-btns:empty,#news-filter-btns:empty{display:none;margin:0;}
 .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;font-weight:600;}
@@ -8770,7 +8778,8 @@ function renderNewsFilter(ticker) {
     return;
   }
   const total = articles.length;
-  const showing = Math.min(_newsDisplayCount, total);
+  const mobileNewsLimit = window.innerWidth <= 640 ? 5 : _newsDisplayCount;
+  const showing = Math.min(mobileNewsLimit, total);
   if (countLbl) {
     const demoNote = _avNewsCache[0]?._isDemo ? ' · <span style="color:var(--amber);">demo</span>' : '';
     countLbl.innerHTML = `${showing} of ${total} articles${demoNote}`;
@@ -8794,9 +8803,10 @@ function renderNewsFilter(ticker) {
       .map(t=>{const tsl=t.ticker_sentiment_label||'Neutral';return `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${_sBg(tsl)};color:${_sColor(tsl)};border:0.5px solid ${_sBd(tsl)};font-family:'DM Mono',monospace;font-weight:600;">${t.ticker}</span>`;}).join('');
     const hasSummary = !!(a.summary && a.summary.length > 10);
     const isDemo = !!a._isDemo;
-    // First article auto-expands; others start collapsed
+    // First article auto-expands on desktop; on mobile keep all collapsed for speed
     const isFirst = (i === 0);
-    const expandedDefault = isFirst;
+    const isMobile = window.innerWidth <= 640;
+    const expandedDefault = isFirst && !isMobile;
     // Preview: first sentence shown inline only if expansion has substantially more content (>80 chars after)
     const previewText = hasSummary && !expandedDefault && remainingLen > 80
       ? (a.summary.slice(0, firstSentEnd + 1))
