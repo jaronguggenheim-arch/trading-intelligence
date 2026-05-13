@@ -3311,7 +3311,13 @@ function getSagePick() {
     .sort(([,a],[,b]) => b - a);
   if (!allScored.length) return null;
 
-  const [ticker, score] = allScored[0];
+  // Watchlist bias — if user has tickers saved, prefer the highest-scoring one
+  // within 8 points of the global top (so we don't surface a weak stock)
+  const _wl = (typeof S !== 'undefined' && Array.isArray(S.wl)) ? S.wl : [];
+  const _topScore = allScored[0][1];
+  const _wlCandidates = allScored.filter(([t, s]) => _wl.includes(t) && s >= _topScore - 8);
+  const isPersonalized = _wlCandidates.length > 0;
+  const [ticker, score] = isPersonalized ? _wlCandidates[0] : allScored[0];
   const runnerEntry = allScored.find(([t]) => t !== ticker);
   const runner = runnerEntry ? { ticker: runnerEntry[0], score: runnerEntry[1] } : null;
   const name = NAMES[ticker] || ticker;
@@ -3457,7 +3463,7 @@ function getSagePick() {
   const action = score >= 75 ? 'BUY' : score >= 60 ? 'WATCH' : 'MONITOR';
   const actionColor = score >= 75 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--text3)';
 
-  return { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals };
+  return { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals, isPersonalized };
 }
 
 function renderSageCard() {
@@ -3470,7 +3476,7 @@ function renderSageCard() {
   const pick = getSagePick();
   if (!pick) { el.innerHTML = ''; return; }
 
-  const { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals } = pick;
+  const { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals, isPersonalized } = pick;
   const name = NAMES[ticker] || ticker;
   const scoreColor = score >= 75 ? 'var(--green)' : score >= 60 ? '#e07b00' : 'var(--text3)';
 
@@ -3518,7 +3524,8 @@ function renderSageCard() {
 
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap;">
         <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#6366f1;text-transform:uppercase;">🌿 Sage Mode</span>
-        <span style="font-size:9px;color:var(--text3);">· highest signal convergence today</span>
+        <span style="font-size:9px;color:var(--text3);">${isPersonalized ? '· best signal in your watchlist' : '· highest signal convergence today'}</span>
+        ${isPersonalized ? '<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:#6366f118;color:#6366f1;letter-spacing:.3px;">For You</span>' : ''}
         <span style="margin-left:auto;">${liveLabel}</span>
       </div>
 
@@ -6323,14 +6330,29 @@ function renderBriefWL(){
   if(!S.wl||!S.wl.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);">Add tickers in the Watchlist tab</div>';return;}
   el.innerHTML=S.wl.map(sym=>{
     const d=TICKER_DATA[sym]||{};
-    const score=SCORES[sym]||'—';
+    const score=SCORES[sym]||0;
     const sBg=score>=70?'var(--green-bg)':score>=40?'var(--amber-bg)':'var(--red-bg)';
     const sColor=score>=70?'var(--green)':score>=40?'var(--amber)':'var(--red)';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('${sym}')">
-      <div><div style="font-size:13px;font-weight:600;">${sym}</div><div style="font-size:11px;color:var(--text2);">${d.name||''}</div></div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="font-size:12px;font-family:'DM Mono',monospace;color:${d.up?'var(--green)':'var(--red)'}">${d.price?'$'+d.price:'—'} <span>${d.change||''}</span></div>
-        <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${sBg};color:${sColor};">${score}</span>
+    // Velocity arrow from KV score deltas
+    const delta = window._SCORE_DELTAS && window._SCORE_DELTAS[sym];
+    const velArr = delta > 4 ? '<span style="color:var(--green);font-size:11px;">▲</span>' :
+                   delta < -4 ? '<span style="color:var(--red);font-size:11px;">▼</span>' :
+                   delta != null ? '<span style="color:var(--text3);font-size:11px;">→</span>' : '';
+    // Top chain signal
+    const chainW = window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.windowMap && window._CHAIN_SIGNALS.windowMap[sym];
+    const chainNote = chainW && chainW.length ? chainW[0].anchor + ' lag window active' : '';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border);cursor:pointer;gap:8px;" onclick="openTicker('${sym}')">
+      <div style="min-width:0;flex:1;">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="font-size:13px;font-weight:700;">${sym}</span>
+          <span style="font-size:10px;color:var(--text3);">${NAMES[sym]||d.name||''}</span>
+        </div>
+        ${chainNote?`<div style="font-size:10px;color:#6366f1;margin-top:2px;">⚡ ${chainNote}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);">${d.price?'$'+d.price:''}</span>
+        <span style="padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;background:${sBg};color:${sColor};">${score||'—'}</span>
+        ${velArr}
       </div>
     </div>`;
   }).join('');
