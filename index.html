@@ -3104,6 +3104,33 @@ function syncSignalScoreCards() {
     } else if (trendEl) {
       trendEl.remove();
     }
+
+    // ── Score changelog: "Why it moved" — shown when server signals + delta available ──
+    const sigs  = (typeof _SERVER_SIGNALS !== 'undefined') ? (_SERVER_SIGNALS[t] || null) : null;
+    const dLog  = (typeof _SERVER_DELTAS  !== 'undefined') ? (_SERVER_DELTAS[t]  ?? null) : null;
+    let logEl   = card.querySelector('.sc-changelog');
+
+    if (sigs && sigs.length > 0 && dLog !== null && dLog !== 0) {
+      if (!logEl) {
+        logEl = document.createElement('div');
+        logEl.className = 'sc-changelog';
+        const anchor = card.querySelector('.sc-trend') || card.querySelector('.sc-comp-bar');
+        if (anchor) anchor.after(logEl); else card.appendChild(logEl);
+      }
+      const dSign  = dLog > 0 ? '+' : '';
+      const dColor = dLog > 0 ? 'var(--green)' : 'var(--red,#f87171)';
+      const borderC = dLog > 0 ? 'var(--green-bd,rgba(34,197,94,.3))' : 'rgba(248,113,113,.35)';
+      logEl.style.cssText = 'margin-top:6px;padding:5px 8px;background:var(--bg4,var(--bg3));border-radius:5px;border-left:2px solid ' + borderC + ';';
+      // Use first signal narrative; truncate at 130 chars
+      const raw = (sigs[0] || '').replace(/<[^>]+>/g,''); // strip any HTML tags
+      const line = raw.length > 130 ? raw.slice(0,130) + '…' : raw;
+      logEl.innerHTML =
+        '<span style="font-size:9px;font-weight:700;color:' + dColor + ';">' + dSign + dLog + ' vs yesterday</span>'
+        + ' <span style="font-size:9px;color:var(--text3);">·</span>'
+        + ' <span style="font-size:10px;color:var(--text2);line-height:1.45;">' + line + '</span>';
+    } else if (logEl) {
+      logEl.remove();
+    }
   });
   // Mark the top pick with a sage badge
   try { markSagePick(); } catch(e) {}
