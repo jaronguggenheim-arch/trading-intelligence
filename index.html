@@ -3196,7 +3196,7 @@ function renderScoreLeaderboard() {
     const sign  = isPos ? '+' : '';
     const sBg   = score >= 70 ? 'rgba(16,185,129,0.08)' : score >= 50 ? 'rgba(245,158,11,0.08)' : 'rgba(0,0,0,0.03)';
     const sCol  = score >= 70 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--text3)';
-    const mono  = "font-family:"DM Mono",monospace;";
+    const mono  = 'font-family:"DM Mono",monospace;';
     return '<div onclick="openTicker(\'' + ticker + '\')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;background:' + sBg + ';margin-bottom:2px;">'
       + '<span style="font-size:11px;font-weight:700;' + mono + 'min-width:46px;color:var(--text1);">' + ticker + '</span>'
       + '<span style="font-size:11px;font-weight:700;color:' + color + ';' + mono + 'min-width:36px;">' + arrow + ' ' + sign + delta + '</span>'
