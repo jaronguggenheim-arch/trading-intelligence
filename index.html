@@ -747,6 +747,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
             <button onclick="filterNewsTopic('technology',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Tech</button>
             <button onclick="filterNewsTopic('mergers_and_acquisitions',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">M&amp;A</button>
             <button onclick="filterNewsTopic('ipo',this)" style="padding:3px 9px;border:0.5px solid var(--border2);border-radius:5px;background:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">IPO</button>
+            <button onclick="filterNewsTopic('upstream',this)" style="padding:3px 9px;border:0.5px solid var(--amber,#f59e0b);border-radius:5px;background:rgba(245,158,11,0.08);color:var(--amber,#f59e0b);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">⚡ Chain Events</button>
           </div>
           <!-- Sector + Ticker filters (dynamic) -->
           <div id="news-sector-btns" style="display:flex;gap:5px;flex-wrap:wrap;overflow:visible;"></div>
@@ -8759,8 +8760,23 @@ function renderNewsFilter(ticker) {
       return (linked && sectorTickers.has(linked)) || ts.some(t => sectorTickers.has(t));
     });
   }
-  if (_newsActiveTopic && _newsActiveTopic !== 'all') {
+  if (_newsActiveTopic && _newsActiveTopic !== 'all' && _newsActiveTopic !== 'upstream') {
     articles = articles.filter(a => (a._cats||(a.topics||[]).map(t=>t.topic)).includes(_newsActiveTopic));
+  }
+  // Upstream events filter
+  if (_newsActiveTopic === 'upstream') {
+    const UPSTREAM_TRIGGER_TICKERS = new Set(['TSM','NVDA','META','MSFT','GOOGL','AMZN','CEG','VST','ARM','MU','ASML','AMAT','LMT','PLTR']);
+    articles = articles.filter(a => {
+      const ts = (a.ticker_sentiment||[]);
+      return ts.some(t => UPSTREAM_TRIGGER_TICKERS.has(t.ticker) && parseFloat(t.relevance_score||0) > 0.12);
+    });
+    articles = [...articles].sort((a,b) => {
+      const getBest = art => {
+        const ts = (art.ticker_sentiment||[]).filter(t => UPSTREAM_TRIGGER_TICKERS.has(t.ticker));
+        return ts.length ? Math.max(...ts.map(t => parseFloat(t.relevance_score||0))) : 0;
+      };
+      return getBest(b) - getBest(a);
+    });
   }
   if (ticker && ticker !== 'ALL') {
     articles = articles.filter(a => (a.ticker_sentiment||[]).some(t => t.ticker===ticker && parseFloat(t.relevance_score||0)>0.08));
@@ -8824,6 +8840,31 @@ function renderNewsFilter(ticker) {
       .sort((x,y)=>parseFloat(y.relevance_score||0)-parseFloat(x.relevance_score||0))
       .slice(0,4)
       .map(t=>{const tsl=t.ticker_sentiment_label||'Neutral';return `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${_sBg(tsl)};color:${_sColor(tsl)};border:0.5px solid ${_sBd(tsl)};font-family:'DM Mono',monospace;font-weight:600;">${t.ticker}</span>`;}).join('');
+    // Chain-context tag: upstream article → show which lag windows it opens
+    const UPSTREAM_CHAIN_MAP = {
+      'TSM':  [{downstream:'ASML',lag:'6–9 wks'},{downstream:'AMAT',lag:'8–12 wks'},{downstream:'LRCX',lag:'6–10 wks'}],
+      'NVDA': [{downstream:'MU',lag:'4–8 wks'},{downstream:'SMCI',lag:'0–6 wks'}],
+      'META': [{downstream:'NVDA',lag:'0–8 wks'},{downstream:'VST',lag:'5–16 mo'}],
+      'MSFT': [{downstream:'NVDA',lag:'0–8 wks'},{downstream:'AMD',lag:'4–16 wks'},{downstream:'VST',lag:'5–16 mo'}],
+      'GOOGL':[{downstream:'NVDA',lag:'2–10 wks'},{downstream:'AMD',lag:'4–16 wks'}],
+      'AMZN': [{downstream:'NVDA',lag:'0–8 wks'},{downstream:'VST',lag:'5–16 mo'}],
+      'CEG':  [{downstream:'CCJ',lag:'6–18 mo'}],
+      'VST':  [{downstream:'CCJ',lag:'13–39 wks'}],
+    };
+    let chainContextTag = '';
+    try {
+      const articleUpstreamTickers = (a.ticker_sentiment||[])
+        .filter(t => UPSTREAM_CHAIN_MAP[t.ticker] && parseFloat(t.relevance_score||0) > 0.12)
+        .sort((x,y)=>parseFloat(y.relevance_score||0)-parseFloat(x.relevance_score||0));
+      if (articleUpstreamTickers.length > 0) {
+        const topUpstream = articleUpstreamTickers[0].ticker;
+        const chains = UPSTREAM_CHAIN_MAP[topUpstream] || [];
+        if (chains.length) {
+          const chainStr = chains.slice(0,2).map(c => '<span style="font-size:9px;color:var(--amber,#f59e0b);cursor:pointer;font-weight:600;" onclick="event.stopPropagation();openTicker(\'' + c.downstream + '\')">' + c.downstream + '</span> <span style="font-size:9px;color:var(--text3);">(' + c.lag + ')</span>').join('<span style="font-size:9px;color:var(--text3);margin:0 2px;">·</span>');
+          chainContextTag = '<div style="display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,0.08);border:0.5px solid rgba(245,158,11,0.3);margin-top:3px;flex-wrap:wrap;"><span style="font-size:9px;color:var(--amber,#f59e0b);font-weight:700;">⚡ opens window →</span> ' + chainStr + '</div>';
+        }
+      }
+    } catch(e) {}
     const hasSummary = !!(a.summary && a.summary.length > 10);
     const isDemo = !!a._isDemo;
     // First article auto-expands on desktop; on mobile keep all collapsed for speed
