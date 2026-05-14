@@ -8796,16 +8796,54 @@ function renderNewsFilter(ticker) {
     // First article auto-expands; others start collapsed
     const isFirst = (i === 0);
     const expandedDefault = isFirst;
-    // Preview: first sentence shown inline only if expansion has substantially more content (>80 chars after)
-    const previewText = hasSummary && !expandedDefault && remainingLen > 80
-      ? (a.summary.slice(0, firstSentEnd + 1))
+    // Full body: prefer DEMO_NEWS body field (longer) over summary
+    const bodyText = (a.body && a.body.length > (a.summary||'').length) ? a.body : (a.summary || '');
+    // Preview: first sentence shown inline for collapsed articles
+    const firstSentEnd = (bodyText).indexOf('. ');
+    const remainingLen = firstSentEnd > 0 ? (bodyText.length - firstSentEnd - 2) : 0;
+    const previewText = bodyText && !expandedDefault && remainingLen > 80
+      ? (bodyText.slice(0, firstSentEnd + 1))
       : '';
-    // Full body panel — only show preview sentence if expansion has meaningfully more content
-    const firstSentEnd = (a.summary||'').indexOf('. ');
-    const remainingLen = firstSentEnd > 0 ? (a.summary.length - firstSentEnd - 2) : 0;
+    // ── Intelligence Context — enriched block for covered tickers ────────────
+    const primaryTicker = (a.ticker_sentiment||[])
+      .filter(function(t){ return typeof NAMES !== 'undefined' && NAMES[t.ticker]; })
+      .sort(function(x,y){ return parseFloat(y.relevance_score||0) - parseFloat(x.relevance_score||0); })[0];
+    const pt = primaryTicker ? primaryTicker.ticker : null;
+    let intelBlock = '';
+    if (pt) {
+      const ptScore = (typeof SCORES !== 'undefined' && SCORES[pt]) ? SCORES[pt] : 0;
+      const ptTrend = (typeof getScoreTrend === 'function') ? getScoreTrend(pt) : null;
+      const trendStr = ptTrend && Math.abs(ptTrend.delta) >= 2
+        ? ` <span style="color:${ptTrend.color};font-weight:700;">${ptTrend.arrow}${Math.abs(ptTrend.delta)} (${ptTrend.days}d)</span>` : '';
+      const serverDelta = (typeof _SERVER_DELTAS !== 'undefined' && _SERVER_DELTAS[pt] != null) ? _SERVER_DELTAS[pt] : null;
+      const deltaStr = serverDelta != null && Math.abs(serverDelta) >= 2
+        ? ` <span style="color:${serverDelta>0?'var(--green)':'var(--red)'};font-weight:700;">${serverDelta>0?'↑':'↓'}${Math.abs(serverDelta)} vs yesterday</span>` : trendStr;
+      const scoreColor = ptScore >= 70 ? 'var(--green)' : ptScore >= 50 ? 'var(--amber)' : 'var(--red)';
+      const ld = (typeof LAYER_DATA !== 'undefined' && LAYER_DATA[pt]) ? LAYER_DATA[pt] : [];
+      const topSignal = ld.filter(function(l){ return l.pts > 0; }).sort(function(a,b){ return (b.pts||0)-(a.pts||0); })[0];
+      const serverSig = (typeof _SERVER_SIGNALS !== 'undefined' && _SERVER_SIGNALS[pt]) ? _SERVER_SIGNALS[pt] : null;
+      // Chain propagation — find downstream stocks from this ticker
+      const cgEntry = (typeof CHAIN_GRAPH !== 'undefined') && CHAIN_GRAPH[pt];
+      const downstreamStocks = cgEntry ? (cgEntry.downstream || []).slice(0, 4).map(function(d){ return d.sym || d; }) : [];
+      const chainPropHtml = downstreamStocks.length
+        ? `<div style="font-size:11px;color:var(--text2);margin-top:5px;">⛓ Propagates to: ${downstreamStocks.map(function(s){ return `<span onclick="event.stopPropagation();openTicker('${s}')" style="cursor:pointer;color:var(--blue);font-weight:600;">${s}</span>`; }).join(', ')}</div>`
+        : '';
+      intelBlock = `<div style="margin-top:11px;padding:11px 13px;background:rgba(99,102,241,.07);border-radius:8px;border-left:3px solid #6366f1;" onclick="event.stopPropagation()">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;letter-spacing:.04em;margin-bottom:8px;">⚡ INTELLIGENCE CONTEXT · ${pt}</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+          <div style="font-size:26px;font-weight:700;font-family:'DM Mono',monospace;color:${scoreColor};letter-spacing:-1px;">${ptScore}<span style="font-size:12px;color:var(--text3);font-weight:400;">/100</span></div>
+          <div style="font-size:11px;color:var(--text2);">Convergence Score${deltaStr}</div>
+        </div>
+        ${topSignal ? `<div style="font-size:11px;color:var(--text2);margin-bottom:4px;">▸ <strong>${topSignal.name}</strong>: ${topSignal.desc || 'Active signal'}</div>` : ''}
+        ${serverSig ? `<div style="font-size:11px;color:var(--text2);margin-bottom:4px;line-height:1.5;">▸ ${serverSig}</div>` : ''}
+        ${chainPropHtml}
+        <button onclick="event.stopPropagation();openTicker('${pt}')" style="margin-top:10px;padding:6px 16px;border:none;border-radius:6px;background:#6366f1;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Full analysis →</button>
+      </div>`;
+    }
     const expandBody = `<div id="ni-${idx}" style="display:${expandedDefault?'':'none'};margin-top:9px;padding:11px 13px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
-      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${a.summary||'No summary available for this article.'}</p>
-      ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — add Finnhub key for live news</span>` : ''}
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${bodyText || 'No summary available for this article.'}</p>
+      ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;" onclick="event.stopPropagation()">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — live news loads automatically on Vercel</span>` : ''}
+      ${intelBlock}
     </div>`;
     return divider + `<div style="padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="toggleNewsItem(${idx}, this)">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;">
