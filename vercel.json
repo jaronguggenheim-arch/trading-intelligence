@@ -3,15 +3,15 @@
     "api/fh.js":         { "memory": 128, "maxDuration": 10 },
     "api/td.js":         { "memory": 128, "maxDuration": 10 },
     "api/sync.js":       { "memory": 128, "maxDuration": 10 },
-    "api/subscribe.js":  { "memory": 128, "maxDuration": 10 },
     "api/markets.js":    { "memory": 128, "maxDuration": 20 },
     "api/digest.js":     { "memory": 256, "maxDuration": 30 },
     "api/scores.js":     { "memory": 256, "maxDuration": 300 },
     "api/funds.js":      { "memory": 128, "maxDuration": 15 },
-    "api/edgar.js":     { "memory": 128, "maxDuration": 15 },
-    "api/congress.js":  { "memory": 128, "maxDuration": 20 },
-    "api/sam.js":       { "memory": 128, "maxDuration": 15 },
-    "api/alerts.js":    { "memory": 128, "maxDuration": 10 }
+    "api/edgar.js":      { "memory": 128, "maxDuration": 15 },
+    "api/congress.js":   { "memory": 128, "maxDuration": 20 },
+    "api/sam.js":        { "memory": 128, "maxDuration": 15 },
+    "api/alerts.js":     { "memory": 128, "maxDuration": 10 },
+    "api/push.js":       { "memory": 128, "maxDuration": 10 }
   },
   "crons": [
     {
