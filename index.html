@@ -1,68 +1,4 @@
-<!DO,
-  AMZN: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 ,
-  SMCI:[
-    {src:'Wedbush · May 7',hl:'Compliance resolution complete + Blackwell rack demand accelerating = re-rating opportunity. PT raised $35→$65.',tag:'b-g',sym:'SMCI'},
-    {src:'SMCI filing · Apr 30',hl:'Q3 FY2026 preliminary revenue $4.6B (+45% YoY). Direct-liquid-cooling now 30% of all shipments.',tag:'b-g',sym:'SMCI'},
-    {src:'Insider · Apr 25',hl:'CEO Charles Liang acquired 200,000 shares at $38.40. First open-market purchase since accounting review.',tag:'b-g',sym:'SMCI'},
-    {src:'Options flow · May 6',hl:'$45M in $45-strike calls expiring May — aggressive near-term positioning into earnings.',tag:'b-g',sym:'SMCI'}
-  ],},
-  TSM:{name:'Taiwan Semiconductor Manufacturing',price:178.40,chg:+1.3,up:true,mktcap:'$925B',vol:'18.4M',week52:'$127–$226',
-    synopsis:'TSMC is the world\'s dominant contract chip foundry, manufacturing semiconductors for NVIDIA, Apple, AMD, ARM, and Qualcomm. CoWoS advanced packaging capacity is the critical bottleneck for AI chip production globally. TSMC capex trajectory is the single most important leading indicator for the entire semiconductor supply chain.',
-    news:[
-      {src:'Morgan Stanley · May 5',hl:'CoWoS capacity revision up 40% for 2026. N2 yield rates exceeding expectations. Maintain Overweight, PT $220.',tag:'b-g',label:'PT raise'},
-      {src:'TSMC earnings · Apr 17',hl:'Q1 2026 revenue NT$839.3B (+41.6% YoY). 3nm = 22% revenue. Advanced packaging fully booked through 2027.',tag:'b-g',label:'Beat'},
-      {src:'Options flow · May 3',hl:'$180M in $180-strike calls expiring June — largest single-day call sweep in 2 years. Unusual institutional accumulation.',tag:'b-g',label:'Flow'},
-      {src:'Supply chain · May 1',hl:'ASML EUV deliveries to TSMC accelerating — 12 High-NA systems scheduled H2 2026. 2nm ramp on track.',tag:'b-g',label:'Chain'}
-    ],
-    insider:[
-      {name:'CC Wei (CEO)',action:'Buy',shares:'120,000',value:'$21.4M',date:'Mar 2026',form:'Form 4'},
-      {name:'Mark Liu (Chairman)',action:'Buy',shares:'85,000',value:'$15.2M',date:'Feb 2026',form:'Form 4'}
-    ],
-    revenue:[
-      {q:'Q1 2026',val:27.8},{q:'Q4 2025',val:26.9},{q:'Q3 2025',val:23.5},{q:'Q2 2025',val:20.8}
-    ]
-  },
-  SMCI:{name:'Super Micro Computer',price:41.80,chg:+3.1,up:true,mktcap:'$24.4B',vol:'22.1M',week52:'$17–$122',
-    synopsis:'Super Micro Computer is the leading AI server integrator, building liquid-cooled rack systems using NVIDIA Blackwell and Hopper GPUs. After accounting restatements in 2024, SMCI has resolved compliance issues and is positioned as a key infrastructure beneficiary of the AI datacenter buildout. Direct-liquid-cooling (DLC) expertise is a structural moat as GPU power density rises above 1kW per chip.',
-    news:[
-      {src:'Wedbush · May 7',hl:'Compliance resolution + Blackwell rack demand = re-rating opportunity. PT raised $35→$65. Outperform.',tag:'b-g',label:'PT raise'},
-      {src:'SMCI filing · Apr 30',hl:'Q3 FY2026 preliminary revenue $4.6B (+45% YoY). DLC now 30% of shipments, up from 8% a year ago.',tag:'b-g',label:'Beat'},
-      {src:'Options flow · May 6',hl:'$45M in $45-strike calls expiring May — aggressive near-term positioning into earnings catalyst.',tag:'b-g',label:'Flow'},
-      {src:'Insider · Apr 25',hl:'CEO Charles Liang acquired 200,000 shares at $38.40. First open-market purchase since the accounting review.',tag:'b-g',label:'Insider'}
-    ],
-    insider:[
-      {name:'Charles Liang (CEO)',action:'Buy',shares:'200,000',value:'$7.7M',date:'Apr 2026',form:'Form 4'},
-      {name:'David Weigand (CFO)',action:'Buy',shares:'50,000',value:'$1.9M',date:'Mar 2026',form:'Form 4'}
-    ],
-    revenue:[
-      {q:'Q3 FY26',val:4.6},{q:'Q2 FY26',val:3.7},{q:'Q1 FY26',val:3.0},{q:'Q4 FY25',val:2.2}
-    ]
-  },
-    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure AI revenue signals enterprise cloud adoption · AWS follows same enterprise demand trends', lagMin:2, lagMax:6 },
-  ],
-  ARM: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell uses Grace ARM CPU — every server sold pays ARM royalty · Blackwell shipments = ARM royalty revenue', lagMin:1, lagMax:3 },
-  ],
-  QCOM: [
-    { upstream:'ARM', date:'2026-02-14', desc:'ARM v9 architecture royalty rate increase · QCOM Snapdragon X Elite built on ARM · Higher ARM rates flow through to cost structure', lagMin:1, lagMax:4 },
-  ],
-  AAPL: [
-    { upstream:'TSM', date:'2026-03-20', desc:'TSM N3 process yield improvements · AAPL locked 60% of N3 capacity · Better yields = lower cost = better margins for iPhone', lagMin:2, lagMax:6 },
-  ],
-  PANW: [
-    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure security spend +40% YoY · PANW XSIAM deployed on Azure · Enterprise cloud migration drives PANW TAM', lagMin:2, lagMax:8 },
-    { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Cloud +28% · PANW preferred security partner for GCP · Cloud growth = PANW customer growth', lagMin:2, lagMax:6 },
-  ],
-  CRWD: [
-    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure growth drives enterprise adoption · CRWD Falcon deployed in Azure-native environments', lagMin:2, lagMax:8 },
-    { upstream:'AMZN', date:'2026-04-29', desc:'AWS marketplace: CRWD Falcon natively available · AWS customer growth = CRWD distribution expansion', lagMin:1, lagMax:4 },
-  ],
-  GEV: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · Each new datacenter needs 50-200MW of power · GEV makes the turbines that generate it', lagMin:6, lagMax:18 },
-    { upstream:'VST', date:'2026-02-20', desc:'VST capacity expansion requires GEV power equipment · Nuclear life extensions need GEV steam turbine upgrades', lagMin:4, lagMax:12 },
-  ]
-};PE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6297,7 +6233,6 @@ function enterApp(){
   try { updateProBadge(); var _pu=S.gUser&&S.gUser.email; if(_pu)checkProStatus(_pu).then(updateProBadge); } catch(e) {}
   if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(function(reg){window._swReg=reg;updatePushBellState();}).catch(function(){});}
   updateHeaderUser();
-  updateHeaderUser();
   setTimeout(function(){try{buildTickerScrollTrack();}catch(e){}},200);
   try{localStorage.setItem('ti72_visited','1');}catch(e){}
   /* Direct DOM manipulation — show app chrome */
@@ -9128,8 +9063,22 @@ const EDGAR_CIKS = {
   RKLB: '0001819994',
   PLTR: '0001321655',
   META: '0001326801',
-  TSM:  '0001046179',
-  SMCI: '0001375365',
+  TSM:{name:'Taiwan Semiconductor Manufacturing',price:'178.40',change:'+1.3%',up:true,mktcap:'$925B',vol:'18.4M',week52:'$127–$226',
+    signals:['CoWoS capacity +40% for 2026','N2 yield rates exceeding plan','ASML EUV deliveries accelerating','Advanced packaging fully booked 2027'],
+    verdict:"TSMC is the world's dominant contract chip foundry. CoWoS advanced packaging capacity is the single most important bottleneck for AI chip production globally. TSMC capex trajectory is the leading indicator for the entire semiconductor supply chain.",
+    tags:['Semis','Foundry'],
+    news:[{h:'TSMC Q1 2026 revenue NT$839.3B (+41.6% YoY) — advanced packaging fully booked through 2027',s:'TSMC earnings · Apr 17',t:'4w ago'},{h:'Morgan Stanley raises TSMC PT to $220 — CoWoS capacity revision up 40% for 2026',s:'Morgan Stanley · May 5',t:'1w ago'}],
+    insider:[{n:'CC Wei (CEO)',r:'CEO',a:'Buy',sh:'120,000',v:'$21.4M',d:'2026-03-01'},{n:'Mark Liu (Chairman)',r:'Chairman',a:'Buy',sh:'85,000',v:'$15.2M',d:'2026-02-01'}],
+    revenue:[{q:'Q1 2026',v:27.8},{q:'Q4 2025',v:26.9},{q:'Q3 2025',v:23.5},{q:'Q2 2025',v:20.8}]},
+  TSM_CIK:  '0001046179',
+  SMCI:{name:'Super Micro Computer',price:'41.80',change:'+3.1%',up:true,mktcap:'$24.4B',vol:'22.1M',week52:'$17–$122',
+    signals:['Compliance resolution complete','Blackwell rack demand accelerating','DLC now 30% of shipments','CEO $7.7M insider buy Apr 2026'],
+    verdict:'Super Micro Computer is the leading AI server integrator. After resolving accounting restatements in 2024, SMCI is positioned as a key AI datacenter infrastructure beneficiary. Direct-liquid-cooling (DLC) expertise is a structural moat as GPU power density exceeds 1kW per chip.',
+    tags:['AI Infra','Servers'],
+    news:[{h:'SMCI Q3 FY2026 preliminary revenue $4.6B (+45% YoY) — DLC now 30% of shipments',s:'SMCI filing · Apr 30',t:'2w ago'},{h:'Wedbush raises SMCI PT $35→$65 — compliance resolution + Blackwell rack demand',s:'Wedbush · May 7',t:'1w ago'}],
+    insider:[{n:'Charles Liang (CEO)',r:'CEO',a:'Buy',sh:'200,000',v:'$7.7M',d:'2026-04-25'},{n:'David Weigand (CFO)',r:'CFO',a:'Buy',sh:'50,000',v:'$1.9M',d:'2026-03-15'}],
+    revenue:[{q:'Q3 FY26',v:4.6},{q:'Q2 FY26',v:3.7},{q:'Q1 FY26',v:3.0},{q:'Q4 FY25',v:2.2}]},
+  SMCI_CIK: '0001375365',
   CCJ:  '0001009001',
   UEC:  '0001334933',
   LMT:  '0000936468',
@@ -10424,6 +10373,31 @@ const SIGNAL_EVENTS = {
   UEC: [
     { upstream:'CEG',  date:'2026-03-15', desc:'CEG nuclear expansion accelerating · domestic uranium sourcing priority increasing post-IRA · UEC ISR production positioned to fill US supply gap', lagMin:39, lagMax:78 },
   ]
+  AMZN: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 },
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure AI revenue signals enterprise cloud adoption · AWS follows same enterprise demand trends', lagMin:2, lagMax:6 },
+  ],
+  ARM: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell uses Grace ARM CPU — every server sold pays ARM royalty · Blackwell shipments = ARM royalty revenue', lagMin:1, lagMax:3 },
+  ],
+  QCOM: [
+    { upstream:'ARM', date:'2026-02-14', desc:'ARM v9 architecture royalty rate increase · QCOM Snapdragon X Elite built on ARM · Higher ARM rates flow through to cost structure', lagMin:1, lagMax:4 },
+  ],
+  AAPL: [
+    { upstream:'TSM', date:'2026-03-20', desc:'TSM N3 process yield improvements · AAPL locked 60% of N3 capacity · Better yields = lower cost = better margins for iPhone', lagMin:2, lagMax:6 },
+  ],
+  PANW: [
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure security spend +40% YoY · PANW XSIAM deployed on Azure · Enterprise cloud migration drives PANW TAM', lagMin:2, lagMax:8 },
+    { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Cloud +28% · PANW preferred security partner for GCP · Cloud growth = PANW customer growth', lagMin:2, lagMax:6 },
+  ],
+  CRWD: [
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure growth drives enterprise adoption · CRWD Falcon deployed in Azure-native environments', lagMin:2, lagMax:8 },
+    { upstream:'AMZN', date:'2026-04-29', desc:'AWS marketplace: CRWD Falcon natively available · AWS customer growth = CRWD distribution expansion', lagMin:1, lagMax:4 },
+  ],
+  GEV: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · Each new datacenter needs 50-200MW of power · GEV makes the turbines that generate it', lagMin:6, lagMax:18 },
+    { upstream:'VST', date:'2026-02-20', desc:'VST capacity expansion requires GEV power equipment · Nuclear life extensions need GEV steam turbine upgrades', lagMin:4, lagMax:12 },
+  ],
 };
 
 const UPCOMING_CATALYSTS = {
@@ -11545,7 +11519,7 @@ function _setProCache(active) {
   try { localStorage.setItem(_PRO_CACHE_KEY, JSON.stringify({ pro: active, ts: Date.now() })); } catch(e) {}
 }
 
-async function checkProStatus(email) {
+async async function checkProStatus(email) {
   if (!email) return false;
   try {
     var r = await fetch('/api/push?action=stripe-check&email=' + encodeURIComponent(email));
