@@ -7764,7 +7764,14 @@ async function renderDailyIntelCard() {
   const dateStr = dayName + ' ' + monthName + ' ' + today.getDate();
 
   // ── Score movers ─────────────────────────────────────────────────────────
-  const movers = getScoreMovers(4); // min delta = 4 pts to surface
+  // Try local score_history first; fall back to server deltas (from nightly cron)
+  let movers = getScoreMovers(4);
+  if (!movers.length && typeof _SERVER_DELTAS !== 'undefined' && Object.keys(_SERVER_DELTAS).length) {
+    movers = Object.entries(_SERVER_DELTAS)
+      .filter(function(e){ return typeof NAMES !== 'undefined' && NAMES[e[0]] && Math.abs(e[1]) >= 4; })
+      .map(function(e){ var t=e[0],d=e[1]; return { ticker:t, now:SCORES[t]||0, was:(SCORES[t]||0)-d, delta:d, ts:Date.now() }; })
+      .sort(function(a,b){ return Math.abs(b.delta)-Math.abs(a.delta); });
+  }
   const upMovers   = movers.filter(function(m){ return m.delta > 0; }).slice(0, 4);
   const downMovers = movers.filter(function(m){ return m.delta < 0; }).slice(0, 2);
 
@@ -7807,7 +7814,7 @@ async function renderDailyIntelCard() {
       const ld = typeof LAYER_DATA !== 'undefined' && LAYER_DATA[m.ticker];
       const topLayer = ld ? ld.filter(function(l){return l.pts>0;}).sort(function(a,b){return (b.pts||0)-(a.pts||0);})[0] : null;
       const reason = topLayer ? (topLayer.desc || topLayer.name || '') : '';
-      return '<div onclick="showScoreBreakdown(\'' + m.ticker + '\',event)" style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
+      return '<div onclick="openTicker(\'' + m.ticker + '\')" style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
         + '<span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:700;color:var(--text);min-width:44px;">' + m.ticker + '</span>'
         + '<span style="font-size:11px;font-weight:700;color:' + color + ';min-width:48px;">' + arrow + Math.abs(m.delta) + ' → ' + m.now + '</span>'
         + '<span style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + reason + '</span>'
@@ -8579,6 +8586,8 @@ async function fetchAVNews(forceRefresh) {
     renderNewsFilter('ALL');
   }
   if (btn) { btn.disabled = false; btn.textContent = '\u21ba Refresh'; }
+  // Re-render Daily Intelligence now that news signals are available
+  try { renderDailyIntelCard(); } catch(e) {}
 }
 
 function _resetNewsFilterButtons() {
