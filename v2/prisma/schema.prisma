@@ -1,0 +1,329 @@
+// Prisma schema for Trading Intelligence v2
+// Database: PostgreSQL (Neon or Supabase)
+// Run: npx prisma db push  (dev)
+//      npx prisma migrate dev --name init  (prod)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Core stock data ────────────────────────────────────────────────────────────
+model Ticker {
+  id          String   @id               // e.g. "NVDA"
+  name        String                     // e.g. "NVIDIA Corporation"
+  sector      String                     // e.g. "AI/Semi"
+  description String?
+  edgarCik    String?                    // SEC CIK for EDGAR Form 4
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  scores          Score[]
+  signals         Signal[]
+  chainUpstream   ChainRelationship[]  @relation("DownstreamTicker")
+  chainDownstream ChainRelationship[]  @relation("UpstreamTicker")
+  insiderEvents   InsiderEvent[]
+  analystEvents   AnalystEvent[]
+  priceSnapshots  PriceSnapshot[]
+  sagePicks       SagePick[]
+
+  @@index([sector])
+}
+
+// ── Daily score snapshots ─────────────────────────────────────────────────────
+model Score {
+  id       String   @id @default(cuid())
+  tickerId String
+  date     DateTime @db.Date
+  score    Int                          // 0-100 composite
+  l1Score  Int?                         // Market structure
+  l2Score  Int?                         // Insider/regulatory
+  l3Score  Int?                         // Corporate intel
+  l4Score  Int?                         // Supply chain
+  l5Score  Int?                         // Macro/structural
+  delta7d  Int?                         // 7-day score change
+  delta30d Int?                         // 30-day score change
+  computedAt DateTime @default(now())
+
+  ticker Ticker @relation(fields: [tickerId], references: [id])
+
+  @@unique([tickerId, date])
+  @@index([tickerId, date])
+  @@index([date])
+}
+
+// ── Live signals ──────────────────────────────────────────────────────────────
+model Signal {
+  id        String      @id @default(cuid())
+  tickerId  String
+  type      SignalType
+  layer     Int         // 1-5
+  title     String
+  body      String
+  direction String?     // "bull" | "bear" | "neutral"
+  strength  Int?        // 1-10
+  source    String?     // "finnhub" | "edgar" | "sam" | "manual"
+  expiresAt DateTime?
+  createdAt DateTime    @default(now())
+
+  ticker Ticker @relation(fields: [tickerId], references: [id])
+
+  @@index([tickerId, type])
+  @@index([createdAt])
+}
+
+enum SignalType {
+  CHAIN_WINDOW
+  INSIDER_CLUSTER
+  ANALYST_UPGRADE
+  ANALYST_CASCADE
+  SCORE_SPIKE
+  SUPPLY_DISRUPTION
+  EARNINGS_CATALYST
+  MACRO_SHIFT
+  OPTIONS_FLOW
+  CONGRESS_TRADE
+}
+
+// ── Supply chain relationships ────────────────────────────────────────────────
+model ChainRelationship {
+  id           String @id @default(cuid())
+  upstreamId   String
+  downstreamId String
+  metric       String    // e.g. "capex", "revenue", "order_intake"
+  lagWeeks     Int       // historical average lag in weeks
+  lagMin       Int?
+  lagMax       Int?
+  description  String
+  direction    String    @default("bull") // "bull" | "bear"
+  strength     Float     @default(0.7)   // 0-1 correlation strength
+  backtestN    Int?      // number of historical occurrences
+  backtestWinRate Float? // win rate in backtests
+
+  upstream   Ticker @relation("UpstreamTicker",   fields: [upstreamId],   references: [id])
+  downstream Ticker @relation("DownstreamTicker",  fields: [downstreamId], references: [id])
+
+  chainEvents ChainEvent[]
+
+  @@unique([upstreamId, downstreamId, metric])
+  @@index([downstreamId])
+}
+
+// ── Chain propagation events ──────────────────────────────────────────────────
+model ChainEvent {
+  id             String    @id @default(cuid())
+  relationshipId String
+  triggeredAt    DateTime
+  anchorValue    Float?    // the metric value that triggered (e.g. capex $B)
+  anchorDelta    Float?    // % change in anchor metric
+  windowOpenAt   DateTime
+  windowCloseAt  DateTime
+  status         ChainEventStatus @default(ACTIVE)
+  resolvedAt     DateTime?
+  resolvedReturn Float?    // downstream stock % return during window
+  createdAt      DateTime  @default(now())
+
+  relationship ChainRelationship @relation(fields: [relationshipId], references: [id])
+
+  @@index([status])
+  @@index([windowCloseAt])
+}
+
+enum ChainEventStatus {
+  ACTIVE
+  WIN
+  LOSS
+  NEUTRAL
+  EXPIRED
+}
+
+// ── Insider transactions ──────────────────────────────────────────────────────
+model InsiderEvent {
+  id              String   @id @default(cuid())
+  tickerId        String
+  insiderName     String
+  insiderTitle    String?
+  transactionType String   // "BUY" | "SELL"
+  shares          Int
+  pricePerShare   Float?
+  totalValue      Float?
+  transactionDate DateTime @db.Date
+  filedDate       DateTime?
+  source          String   @default("edgar")
+  formType        String   @default("4")
+  createdAt       DateTime @default(now())
+
+  ticker Ticker @relation(fields: [tickerId], references: [id])
+
+  @@index([tickerId, transactionDate])
+  @@index([transactionDate])
+}
+
+// ── Analyst events ────────────────────────────────────────────────────────────
+model AnalystEvent {
+  id          String   @id @default(cuid())
+  tickerId    String
+  firm        String
+  analyst     String?
+  action      String   // "UPGRADE" | "DOWNGRADE" | "INITIATE" | "REITERATE"
+  fromRating  String?
+  toRating    String?
+  priceTarget Float?
+  headline    String
+  publishedAt DateTime
+  source      String   @default("finnhub")
+  createdAt   DateTime @default(now())
+
+  ticker Ticker @relation(fields: [tickerId], references: [id])
+
+  @@index([tickerId, publishedAt])
+}
+
+// ── Price snapshots ───────────────────────────────────────────────────────────
+model PriceSnapshot {
+  id       String   @id @default(cuid())
+  tickerId String
+  date     DateTime @db.Date
+  open     Float?
+  high     Float?
+  low      Float?
+  close    Float
+  volume   BigInt?
+  source   String   @default("finnhub")
+
+  ticker Ticker @relation(fields: [tickerId], references: [id])
+
+  @@unique([tickerId, date])
+  @@index([tickerId, date])
+}
+
+// ── Users ─────────────────────────────────────────────────────────────────────
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  picture       String?
+  googleId      String?   @unique
+  isPro         Boolean   @default(false)
+  proSince      DateTime?
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  watchlist       WatchlistItem[]
+  sagePicks       SagePick[]
+  signalResolutions SignalResolution[]
+  alerts          Alert[]
+  pushSubscriptions PushSubscription[]
+
+  @@index([email])
+}
+
+// ── Watchlist ─────────────────────────────────────────────────────────────────
+model WatchlistItem {
+  id       String   @id @default(cuid())
+  userId   String
+  tickerId String
+  addedAt  DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tickerId])
+  @@index([userId])
+}
+
+// ── Sage picks (for track record) ─────────────────────────────────────────────
+model SagePick {
+  id             String    @id @default(cuid())
+  userId         String?   // null = global pick
+  tickerId       String
+  score          Int
+  entryPrice     Float?
+  pickDate       DateTime  @db.Date
+  reasons        String[]
+  status         PickStatus @default(OPEN)
+  resolvedAt     DateTime?
+  resolvedPrice  Float?
+  returnPct      Float?
+  createdAt      DateTime  @default(now())
+
+  user   User?   @relation(fields: [userId], references: [id])
+  ticker Ticker  @relation(fields: [tickerId], references: [id])
+
+  @@index([userId, pickDate])
+  @@index([status])
+}
+
+enum PickStatus {
+  OPEN
+  WIN
+  LOSS
+  NEUTRAL
+}
+
+// ── Signal resolution tracker ─────────────────────────────────────────────────
+model SignalResolution {
+  id           String    @id @default(cuid())
+  userId       String
+  tickerId     String
+  signalType   SignalType
+  signalDate   DateTime  @db.Date
+  scoreAtTime  Int
+  priceAtTime  Float?
+  resolvedAt   DateTime?
+  resolvedPrice Float?
+  returnPct    Float?
+  outcome      String?   // "win" | "loss" | "neutral"
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, signalDate])
+}
+
+// ── Alerts ────────────────────────────────────────────────────────────────────
+model Alert {
+  id        String      @id @default(cuid())
+  userId    String
+  tickerId  String
+  type      AlertType
+  threshold Float?
+  message   String?
+  isActive  Boolean     @default(true)
+  lastFired DateTime?
+  createdAt DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+enum AlertType {
+  SCORE_ABOVE
+  SCORE_BELOW
+  PRICE_ABOVE
+  PRICE_BELOW
+  CHAIN_WINDOW_OPEN
+  INSIDER_CLUSTER
+}
+
+// ── Push subscriptions ────────────────────────────────────────────────────────
+model PushSubscription {
+  id         String   @id @default(cuid())
+  userId     String
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
