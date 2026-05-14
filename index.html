@@ -7814,8 +7814,19 @@ async function renderDailyIntelCard() {
         + '<span style="font-size:10px;color:var(--text3);flex-shrink:0;">Score ↗</span>'
         + '</div>';
     }).join('');
+    // Use server scores timestamp if available, else now
+    let _mvTs = '';
+    try {
+      const _kvTs = localStorage.getItem('_server_scores_ts');
+      _mvTs = _kvTs
+        ? new Date(parseInt(_kvTs,10)).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
+        : new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    } catch(e) { _mvTs = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}); }
     moversHtml = '<div style="margin-bottom:12px;">'
-      + '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Score Moves (48h)</div>'
+      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">'
+      + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Score Moves (48h)</span>'
+      + '<span style="font-size:9px;color:var(--text3);margin-left:auto;">as of ' + _mvTs + '</span>'
+      + '</div>'
       + rows + '</div>';
   }
 
@@ -7835,8 +7846,14 @@ async function renderDailyIntelCard() {
         + '</div>'
         + '</div>';
     }).join('');
+    const _newsTs = newsCache.length && newsCache[0]?.time
+      ? new Date(newsCache[0].time * 1000).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
+      : null;
     newsHtml = '<div style="margin-bottom:12px;">'
-      + '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Signals From News</div>'
+      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">'
+      + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Signals From News</span>'
+      + (_newsTs ? '<span style="font-size:9px;color:var(--text3);margin-left:auto;">latest ' + _newsTs + '</span>' : '')
+      + '</div>'
       + rows + '</div>';
   }
 
@@ -7994,8 +8011,9 @@ function renderVelocityLeaderboard() {
   }
 
   const total = rising.length + falling.length;
+  const _velTs = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   out += '<div style="font-size:10px;color:var(--text3);margin-top:8px;text-align:right;">'
-       + total + ' stock' + (total===1?'':'s') + ' with score movement in last 7 days · updates on each app open</div>';
+       + total + ' stock' + (total===1?'':'s') + ' with score movement · computed ' + _velTs + '</div>';
   el.innerHTML = out;
 }
 
