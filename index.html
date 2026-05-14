@@ -1,4 +1,68 @@
-<!DOCTYPE html>
+<!DO,
+  AMZN: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 ,
+  SMCI:[
+    {src:'Wedbush · May 7',hl:'Compliance resolution complete + Blackwell rack demand accelerating = re-rating opportunity. PT raised $35→$65.',tag:'b-g',sym:'SMCI'},
+    {src:'SMCI filing · Apr 30',hl:'Q3 FY2026 preliminary revenue $4.6B (+45% YoY). Direct-liquid-cooling now 30% of all shipments.',tag:'b-g',sym:'SMCI'},
+    {src:'Insider · Apr 25',hl:'CEO Charles Liang acquired 200,000 shares at $38.40. First open-market purchase since accounting review.',tag:'b-g',sym:'SMCI'},
+    {src:'Options flow · May 6',hl:'$45M in $45-strike calls expiring May — aggressive near-term positioning into earnings.',tag:'b-g',sym:'SMCI'}
+  ],},
+  TSM:{name:'Taiwan Semiconductor Manufacturing',price:178.40,chg:+1.3,up:true,mktcap:'$925B',vol:'18.4M',week52:'$127–$226',
+    synopsis:'TSMC is the world\'s dominant contract chip foundry, manufacturing semiconductors for NVIDIA, Apple, AMD, ARM, and Qualcomm. CoWoS advanced packaging capacity is the critical bottleneck for AI chip production globally. TSMC capex trajectory is the single most important leading indicator for the entire semiconductor supply chain.',
+    news:[
+      {src:'Morgan Stanley · May 5',hl:'CoWoS capacity revision up 40% for 2026. N2 yield rates exceeding expectations. Maintain Overweight, PT $220.',tag:'b-g',label:'PT raise'},
+      {src:'TSMC earnings · Apr 17',hl:'Q1 2026 revenue NT$839.3B (+41.6% YoY). 3nm = 22% revenue. Advanced packaging fully booked through 2027.',tag:'b-g',label:'Beat'},
+      {src:'Options flow · May 3',hl:'$180M in $180-strike calls expiring June — largest single-day call sweep in 2 years. Unusual institutional accumulation.',tag:'b-g',label:'Flow'},
+      {src:'Supply chain · May 1',hl:'ASML EUV deliveries to TSMC accelerating — 12 High-NA systems scheduled H2 2026. 2nm ramp on track.',tag:'b-g',label:'Chain'}
+    ],
+    insider:[
+      {name:'CC Wei (CEO)',action:'Buy',shares:'120,000',value:'$21.4M',date:'Mar 2026',form:'Form 4'},
+      {name:'Mark Liu (Chairman)',action:'Buy',shares:'85,000',value:'$15.2M',date:'Feb 2026',form:'Form 4'}
+    ],
+    revenue:[
+      {q:'Q1 2026',val:27.8},{q:'Q4 2025',val:26.9},{q:'Q3 2025',val:23.5},{q:'Q2 2025',val:20.8}
+    ]
+  },
+  SMCI:{name:'Super Micro Computer',price:41.80,chg:+3.1,up:true,mktcap:'$24.4B',vol:'22.1M',week52:'$17–$122',
+    synopsis:'Super Micro Computer is the leading AI server integrator, building liquid-cooled rack systems using NVIDIA Blackwell and Hopper GPUs. After accounting restatements in 2024, SMCI has resolved compliance issues and is positioned as a key infrastructure beneficiary of the AI datacenter buildout. Direct-liquid-cooling (DLC) expertise is a structural moat as GPU power density rises above 1kW per chip.',
+    news:[
+      {src:'Wedbush · May 7',hl:'Compliance resolution + Blackwell rack demand = re-rating opportunity. PT raised $35→$65. Outperform.',tag:'b-g',label:'PT raise'},
+      {src:'SMCI filing · Apr 30',hl:'Q3 FY2026 preliminary revenue $4.6B (+45% YoY). DLC now 30% of shipments, up from 8% a year ago.',tag:'b-g',label:'Beat'},
+      {src:'Options flow · May 6',hl:'$45M in $45-strike calls expiring May — aggressive near-term positioning into earnings catalyst.',tag:'b-g',label:'Flow'},
+      {src:'Insider · Apr 25',hl:'CEO Charles Liang acquired 200,000 shares at $38.40. First open-market purchase since the accounting review.',tag:'b-g',label:'Insider'}
+    ],
+    insider:[
+      {name:'Charles Liang (CEO)',action:'Buy',shares:'200,000',value:'$7.7M',date:'Apr 2026',form:'Form 4'},
+      {name:'David Weigand (CFO)',action:'Buy',shares:'50,000',value:'$1.9M',date:'Mar 2026',form:'Form 4'}
+    ],
+    revenue:[
+      {q:'Q3 FY26',val:4.6},{q:'Q2 FY26',val:3.7},{q:'Q1 FY26',val:3.0},{q:'Q4 FY25',val:2.2}
+    ]
+  },
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure AI revenue signals enterprise cloud adoption · AWS follows same enterprise demand trends', lagMin:2, lagMax:6 },
+  ],
+  ARM: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell uses Grace ARM CPU — every server sold pays ARM royalty · Blackwell shipments = ARM royalty revenue', lagMin:1, lagMax:3 },
+  ],
+  QCOM: [
+    { upstream:'ARM', date:'2026-02-14', desc:'ARM v9 architecture royalty rate increase · QCOM Snapdragon X Elite built on ARM · Higher ARM rates flow through to cost structure', lagMin:1, lagMax:4 },
+  ],
+  AAPL: [
+    { upstream:'TSM', date:'2026-03-20', desc:'TSM N3 process yield improvements · AAPL locked 60% of N3 capacity · Better yields = lower cost = better margins for iPhone', lagMin:2, lagMax:6 },
+  ],
+  PANW: [
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure security spend +40% YoY · PANW XSIAM deployed on Azure · Enterprise cloud migration drives PANW TAM', lagMin:2, lagMax:8 },
+    { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Cloud +28% · PANW preferred security partner for GCP · Cloud growth = PANW customer growth', lagMin:2, lagMax:6 },
+  ],
+  CRWD: [
+    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure growth drives enterprise adoption · CRWD Falcon deployed in Azure-native environments', lagMin:2, lagMax:8 },
+    { upstream:'AMZN', date:'2026-04-29', desc:'AWS marketplace: CRWD Falcon natively available · AWS customer growth = CRWD distribution expansion', lagMin:1, lagMax:4 },
+  ],
+  GEV: [
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · Each new datacenter needs 50-200MW of power · GEV makes the turbines that generate it', lagMin:6, lagMax:18 },
+    { upstream:'VST', date:'2026-02-20', desc:'VST capacity expansion requires GEV power equipment · Nuclear life extensions need GEV steam turbine upgrades', lagMin:4, lagMax:12 },
+  ]
+};PE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -407,7 +471,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
     <span class="plan-chip" onclick="showProModal()" id="hdr-pro-chip" style="display:none;">✦ Pro</span>
     <button type="button" class="hbtn pri" onclick="showPinSetup()" id="pinLbl">Set PIN</button>
-    <button type="button" id="push-bell-btn" onclick="togglePushSubscription()" title="Signal Alerts" style="background:none;border:none;cursor:pointer;padding:4px 6px;font-size:16px;opacity:0.6;transition:opacity .2s;" aria-label="Enable push notifications">&#128276;</button>
     <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
 </div>
@@ -752,13 +815,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="card">
         <div class="card-lbl">Your watchlist — quick view</div>
         <div id="morning-wl"><div style="font-size:11px;color:var(--text3);">Add tickers in the Watchlist tab</div></div>
-      </div>
-      <div class="card" id="signal-tracker-card" style="display:none;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <div class="card-lbl" style="margin-bottom:0;">Signal track record</div>
-          <span id="signal-tracker-winrate" style="font-size:10px;padding:2px 7px;border-radius:3px;background:var(--bg3);color:var(--text2);font-weight:600;"></span>
-        </div>
-        <div id="signal-tracker-list"></div>
       </div>
     </div>
   </div>
@@ -2144,7 +2200,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">📊 P&L tracking</span>
       <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">🔌 API access</span>
     </div>
-    <button onclick="showProModal()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Get Pro — $19/month</button>
+    <button onclick="showProModal()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Join the Pro waitlist — free, no spam</button>
   </div>
 
 </div>
@@ -2650,7 +2706,6 @@ async function initLiveScores() {
   // Re-render morning brief with freshly computed scores
   try { renderMorningBriefDynamic(); } catch(e) {}
   try { renderSageCard(); markSagePick(); } catch(e) {}
-  try { renderBriefWL(); renderSignalTracker(); } catch(e) {}
   // Save daily score snapshot AFTER live scores are computed (truth test uses this)
   try { _saveDailyScoreSnapshot(); } catch(e) {}
   // Update picks card label to confirm live scores
@@ -3255,13 +3310,7 @@ function getSagePick() {
     .sort(([,a],[,b]) => b - a);
   if (!allScored.length) return null;
 
-  // Watchlist bias — if user has tickers saved, prefer the highest-scoring one
-  // within 8 points of the global top (so we don't surface a weak stock)
-  const _wl = (typeof S !== 'undefined' && Array.isArray(S.wl)) ? S.wl : [];
-  const _topScore = allScored[0][1];
-  const _wlCandidates = allScored.filter(([t, s]) => _wl.includes(t) && s >= _topScore - 8);
-  const isPersonalized = _wlCandidates.length > 0;
-  const [ticker, score] = isPersonalized ? _wlCandidates[0] : allScored[0];
+  const [ticker, score] = allScored[0];
   const runnerEntry = allScored.find(([t]) => t !== ticker);
   const runner = runnerEntry ? { ticker: runnerEntry[0], score: runnerEntry[1] } : null;
   const name = NAMES[ticker] || ticker;
@@ -3407,7 +3456,7 @@ function getSagePick() {
   const action = score >= 75 ? 'BUY' : score >= 60 ? 'WATCH' : 'MONITOR';
   const actionColor = score >= 75 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--text3)';
 
-  return { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals, isPersonalized };
+  return { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals };
 }
 
 function renderSageCard() {
@@ -3420,7 +3469,7 @@ function renderSageCard() {
   const pick = getSagePick();
   if (!pick) { el.innerHTML = ''; return; }
 
-  const { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals, isPersonalized } = pick;
+  const { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals } = pick;
   const name = NAMES[ticker] || ticker;
   const scoreColor = score >= 75 ? 'var(--green)' : score >= 60 ? '#e07b00' : 'var(--text3)';
 
@@ -3461,9 +3510,6 @@ function renderSageCard() {
        </div>`
     : '';
 
-  // Track this pick for signal resolution
-  try { trackSagePick(ticker, score, reasons); } catch(e) {}
-
   el.innerHTML = `
     <div style="border:0.5px solid var(--border2);border-left:3px solid #6366f1;border-radius:10px;padding:14px 16px;background:var(--bg2);position:relative;">
       <button onclick="(function(){try{localStorage.setItem('sage_dismissed','${today}');}catch(e){}; document.getElementById('sage-mode-card').innerHTML='';})()"
@@ -3471,8 +3517,7 @@ function renderSageCard() {
 
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap;">
         <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#6366f1;text-transform:uppercase;">🌿 Sage Mode</span>
-        <span style="font-size:9px;color:var(--text3);">${isPersonalized ? '· best signal in your watchlist' : '· highest signal convergence today'}</span>
-        ${isPersonalized ? '<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:#6366f118;color:#6366f1;letter-spacing:.3px;">For You</span>' : ''}
+        <span style="font-size:9px;color:var(--text3);">· highest signal convergence today</span>
         <span style="margin-left:auto;">${liveLabel}</span>
       </div>
 
@@ -3528,10 +3573,10 @@ function _subscribeDigest() {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--amber);">Digest available on the live app</span>';
     return;
   }
-  fetch('/api/push', {
+  fetch('/api/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'email', email })
+    body: JSON.stringify({ email })
   }).then(r => r.json()).then(j => {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--green);">✓ Subscribed — Morning Brief arrives at 6:50am weekdays</span>';
     try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
@@ -3551,10 +3596,10 @@ function _subscribeMorning() {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--amber);">Digest available on the live app at everythingisjustoneclickaway.com</span>';
     return;
   }
-  fetch('/api/push', {
+  fetch('/api/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'email', email })
+    body: JSON.stringify({ email })
   }).then(r => r.json()).then(j => {
     if (row) row.innerHTML = '<span style="font-size:12px;color:var(--green);">✓ Subscribed — you\'ll get the Morning Brief at 6:50am weekdays</span>';
     try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
@@ -3875,10 +3920,10 @@ function joinProWaitlist() {
   if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.style.background = '#059669'; }
   // Also subscribe to Morning Brief digest
   if (typeof IS_VERCEL !== 'undefined' && IS_VERCEL) {
-    fetch('/api/push', {
+    fetch('/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'email', email })
+      body: JSON.stringify({ email })
     }).catch(() => {});
   }
   const conf = document.getElementById('pro-waitlist-confirm');
@@ -5188,139 +5233,6 @@ function renderTkScore(sym){
   return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);">'+total+'<span style="font-size:13px;color:var(--text3);">/100</span>'+_tBadge+'</div></div>'+_tAge+liveIntelBlock+bars+'</div>';
 }
 
-
-// ═══════════════════════════════════════════════════════════════
-// CHAIN EVENT TIMELINE — P2-D
-// ═══════════════════════════════════════════════════════════════
-function renderChainTimeline(sym) {
-  var events = [];
-
-  // ── Source 1: Active chain windows ─────────────────────────────────────
-  var wm = window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.windowMap;
-  if (wm && wm[sym]) {
-    wm[sym].forEach(function(w) {
-      events.push({
-        type: 'chain',
-        icon: '⚡',
-        date: w.triggeredAt ? new Date(w.triggeredAt).toISOString().slice(0,10) : null,
-        label: (NAMES[w.anchor] || w.anchor) + ' event',
-        detail: (w.desc || w.metric || 'Supply chain signal') + ' · lag ' + (w.lag || '?'),
-        status: 'active',
-        statusColor: 'var(--green)'
-      });
-    });
-  }
-
-  // ── Source 2: Analyst upgrades ──────────────────────────────────────────
-  var as = window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.signals && window._ANALYST_SIGNALS.signals[sym];
-  if (as && as.ups && as.ups.length) {
-    as.ups.slice(0, 3).forEach(function(u) {
-      events.push({
-        type: 'analyst',
-        icon: '🔬',
-        date: u.date || null,
-        label: 'Analyst upgrade',
-        detail: (u.headline || '').slice(0, 80) + (u.headline && u.headline.length > 80 ? '…' : ''),
-        status: 'signal',
-        statusColor: '#6366f1'
-      });
-    });
-  }
-
-  // ── Source 3: Recent insider buys ───────────────────────────────────────
-  var ic = typeof INSIDER_CACHE !== 'undefined' && INSIDER_CACHE[sym];
-  if (ic && ic.txns) {
-    var buys = ic.txns.filter(function(t){ return t.change > 0; }).slice(0, 3);
-    buys.forEach(function(t) {
-      var val = Math.abs(t.change * (t.transactionPrice || 0));
-      var valStr = val >= 1e6 ? '$' + (val/1e6).toFixed(1) + 'M' : val >= 1e3 ? '$' + Math.round(val/1e3) + 'K' : '';
-      events.push({
-        type: 'insider',
-        icon: '👁',
-        date: t.transactionDate || null,
-        label: (t.name || 'Insider') + ' buy' + (valStr ? ' ' + valStr : ''),
-        detail: t.name || '',
-        status: 'insider',
-        statusColor: '#f59e0b'
-      });
-    });
-  }
-
-  // ── Source 4: Score spikes from history ─────────────────────────────────
-  try {
-    var hist = JSON.parse(localStorage.getItem('score_history') || '[]');
-    var prev = null;
-    hist.slice(-14).forEach(function(snap) {
-      if (!snap || !snap.scores || !snap.scores[sym]) return;
-      var cur = snap.scores[sym];
-      if (prev !== null && cur - prev >= 5) {
-        events.push({
-          type: 'score',
-          icon: '📈',
-          date: snap.date || null,
-          label: 'Score spike +' + (cur - prev) + 'pts',
-          detail: 'Score moved ' + prev + ' → ' + cur,
-          status: 'score',
-          statusColor: 'var(--green)'
-        });
-      }
-      prev = cur;
-    });
-  } catch(e) {}
-
-  // ── Source 5: Past Sage picks for this stock ─────────────────────────────
-  try {
-    var tracked = JSON.parse(localStorage.getItem('ti72_signal_track') || '[]');
-    tracked.filter(function(e){ return e.ticker === sym; }).slice(0, 3).forEach(function(e) {
-      var outcomeStr = e.status === 'win' ? ' · +' + e.pct + '%' :
-                       e.status === 'loss' ? ' · ' + e.pct + '%' :
-                       e.status === 'neutral' ? ' · flat' : ' · pending';
-      var outcomeColor = e.status === 'win' ? 'var(--green)' : e.status === 'loss' ? 'var(--red)' : 'var(--text3)';
-      events.push({
-        type: 'sage',
-        icon: '🌿',
-        date: e.date || null,
-        label: 'Sage pick · score ' + e.score + outcomeStr,
-        detail: (e.reasons && e.reasons[0]) || '',
-        status: e.status === 'open' ? 'tracking' : e.status,
-        statusColor: outcomeColor
-      });
-    });
-  } catch(e) {}
-
-  // ── Sort by date descending ─────────────────────────────────────────────
-  events.sort(function(a, b) {
-    var da = a.date ? new Date(a.date).getTime() : 0;
-    var db = b.date ? new Date(b.date).getTime() : 0;
-    return db - da;
-  });
-
-  if (!events.length) return '';
-
-  var rows = events.map(function(ev) {
-    var dateStr = ev.date ? ev.date.slice(5) : '—';
-    return '<div style="display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);">'
-      + '<div style="font-size:15px;width:22px;flex-shrink:0;padding-top:1px;">' + ev.icon + '</div>'
-      + '<div style="flex:1;min-width:0;">'
-      +   '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
-      +     '<span style="font-size:12px;font-weight:600;">' + ev.label + '</span>'
-      +     '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--bg3);color:' + ev.statusColor + ';">' + ev.status.toUpperCase() + '</span>'
-      +   '</div>'
-      +   (ev.detail ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;line-height:1.45;">' + ev.detail + '</div>' : '')
-      + '</div>'
-      + '<div style="font-size:10px;color:var(--text3);flex-shrink:0;padding-top:2px;">' + dateStr + '</div>'
-      + '</div>';
-  }).join('');
-
-  return '<div class="card" style="margin-top:12px;">'
-    + '<div class="card-lbl">Propagation timeline</div>'
-    + rows
-    + '</div>';
-}
-// ═══════════════════════════════════════════════════════════════
-// END CHAIN EVENT TIMELINE
-// ═══════════════════════════════════════════════════════════════
-
 function renderTkChain(sym){
   const el = document.getElementById('tk-chain');
   const chain = CHAIN_GRAPH[sym];
@@ -5414,7 +5326,6 @@ function renderTkChain(sym){
     }, 50);
   }
 
-  html += renderChainTimeline(sym);
   return html;
 }
 
@@ -6044,7 +5955,7 @@ function gT(n,btn){
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=isMkt?'none':'flex';}catch(e){}
   if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();renderBriefWL();renderSignalTracker();}catch(e){}},50);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();}catch(e){}},50);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
@@ -6230,40 +6141,34 @@ function updateTickerScrollActive(sym) {
 }
 
 function enterApp(){
-  try { updateProBadge(); var _pu=S.gUser&&S.gUser.email; if(_pu)checkProStatus(_pu).then(updateProBadge); } catch(e) {}
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(function(reg){window._swReg=reg;updatePushBellState();}).catch(function(){});}
-  updateHeaderUser();
+  /* ── CORE TRANSITION — always runs first, cannot be interrupted ── */
+  try{
+    document.body.classList.remove('mkt-mode');
+    var _hdr=document.getElementById('app-hdr');
+    var _nav=document.getElementById('app-nav');
+    if(_hdr)_hdr.style.display='flex';
+    if(_nav)_nav.style.display='flex';
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active');s.style.display='none';});
+    var _morning=document.getElementById('tab-morning');
+    if(_morning){_morning.classList.add('active');_morning.style.display='block';}
+    document.querySelectorAll('.nt').forEach(function(t){t.classList.remove('active');});
+    var _firstNt=document.querySelector('#app-nav .nt');
+    if(_firstNt)_firstNt.classList.add('active');
+    var _fb=document.getElementById('stock-focus-bar');
+    if(_fb){
+      _fb.style.display='block';
+      var _hdrH=_hdr?_hdr.getBoundingClientRect().height:50;
+      var _navH=_nav?_nav.getBoundingClientRect().height:42;
+      _fb.style.top=(_hdrH+_navH)+'px';
+    }
+    window.scrollTo(0,0);
+  }catch(e){console.error('enterApp core transition failed',e);}
+  /* ── SECONDARY INIT — best-effort, errors here don't break transition ── */
+  try{updateHeaderUser();}catch(e){}
   setTimeout(function(){try{buildTickerScrollTrack();}catch(e){}},200);
   try{localStorage.setItem('ti72_visited','1');}catch(e){}
-  /* Direct DOM manipulation — show app chrome */
-  var hdr=document.getElementById('app-hdr');
-  var nav=document.getElementById('app-nav');
-  if(hdr)hdr.style.display='flex';
-  if(nav)nav.style.display='flex';
   /* Show Pro chip in header */
-  var proChip=document.getElementById('hdr-pro-chip');
-  if(proChip)proChip.style.display='inline-flex';
-  document.body.classList.remove('mkt-mode');
-  /* Hide ALL tabs explicitly */
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active');s.style.display='none';});
-  /* Show morning brief tab — first stop on dashboard */
-  var morning=document.getElementById('tab-morning');
-  if(morning){morning.classList.add('active');morning.style.display='block';}
-  /* Activate first nav button */
-  document.querySelectorAll('.nt').forEach(function(t){t.classList.remove('active');});
-  var firstNt=document.querySelector('#app-nav .nt');
-  if(firstNt)firstNt.classList.add('active');
-  /* Always show stock focus bar when entering app */
-  var fb=document.getElementById('stock-focus-bar');
-  if(fb){
-    fb.style.display='block';
-    // Dynamically set top = header height + nav height so it always sits flush below nav
-    var hdrEl=document.getElementById('app-hdr');
-    var navEl=document.getElementById('app-nav');
-    var hdrH=hdrEl?hdrEl.getBoundingClientRect().height:50;
-    var navH=navEl?navEl.getBoundingClientRect().height:42;
-    fb.style.top=(hdrH+navH)+'px';
-  }
+  try{var proChip=document.getElementById('hdr-pro-chip');if(proChip)proChip.style.display='inline-flex';}catch(e){}
   try{S.activeTab='morning';S.prevTab='morning';}catch(e){}
   window.scrollTo(0,0);
   /* Render hot bar immediately on enter */
@@ -6411,29 +6316,14 @@ function renderBriefWL(){
   if(!S.wl||!S.wl.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);">Add tickers in the Watchlist tab</div>';return;}
   el.innerHTML=S.wl.map(sym=>{
     const d=TICKER_DATA[sym]||{};
-    const score=SCORES[sym]||0;
+    const score=SCORES[sym]||'—';
     const sBg=score>=70?'var(--green-bg)':score>=40?'var(--amber-bg)':'var(--red-bg)';
     const sColor=score>=70?'var(--green)':score>=40?'var(--amber)':'var(--red)';
-    // Velocity arrow from KV score deltas
-    const delta = window._SCORE_DELTAS && window._SCORE_DELTAS[sym];
-    const velArr = delta > 4 ? '<span style="color:var(--green);font-size:11px;">▲</span>' :
-                   delta < -4 ? '<span style="color:var(--red);font-size:11px;">▼</span>' :
-                   delta != null ? '<span style="color:var(--text3);font-size:11px;">→</span>' : '';
-    // Top chain signal
-    const chainW = window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.windowMap && window._CHAIN_SIGNALS.windowMap[sym];
-    const chainNote = chainW && chainW.length ? chainW[0].anchor + ' lag window active' : '';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border);cursor:pointer;gap:8px;" onclick="openTicker('${sym}')">
-      <div style="min-width:0;flex:1;">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="font-size:13px;font-weight:700;">${sym}</span>
-          <span style="font-size:10px;color:var(--text3);">${NAMES[sym]||d.name||''}</span>
-        </div>
-        ${chainNote?`<div style="font-size:10px;color:#6366f1;margin-top:2px;">⚡ ${chainNote}</div>`:''}
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);">${d.price?'$'+d.price:''}</span>
-        <span style="padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;background:${sBg};color:${sColor};">${score||'—'}</span>
-        ${velArr}
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('${sym}')">
+      <div><div style="font-size:13px;font-weight:600;">${sym}</div><div style="font-size:11px;color:var(--text2);">${d.name||''}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="font-size:12px;font-family:'DM Mono',monospace;color:${d.up?'var(--green)':'var(--red)'}">${d.price?'$'+d.price:'—'} <span>${d.change||''}</span></div>
+        <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${sBg};color:${sColor};">${score}</span>
       </div>
     </div>`;
   }).join('');
@@ -9063,22 +8953,8 @@ const EDGAR_CIKS = {
   RKLB: '0001819994',
   PLTR: '0001321655',
   META: '0001326801',
-  TSM:{name:'Taiwan Semiconductor Manufacturing',price:'178.40',change:'+1.3%',up:true,mktcap:'$925B',vol:'18.4M',week52:'$127–$226',
-    signals:['CoWoS capacity +40% for 2026','N2 yield rates exceeding plan','ASML EUV deliveries accelerating','Advanced packaging fully booked 2027'],
-    verdict:"TSMC is the world's dominant contract chip foundry. CoWoS advanced packaging capacity is the single most important bottleneck for AI chip production globally. TSMC capex trajectory is the leading indicator for the entire semiconductor supply chain.",
-    tags:['Semis','Foundry'],
-    news:[{h:'TSMC Q1 2026 revenue NT$839.3B (+41.6% YoY) — advanced packaging fully booked through 2027',s:'TSMC earnings · Apr 17',t:'4w ago'},{h:'Morgan Stanley raises TSMC PT to $220 — CoWoS capacity revision up 40% for 2026',s:'Morgan Stanley · May 5',t:'1w ago'}],
-    insider:[{n:'CC Wei (CEO)',r:'CEO',a:'Buy',sh:'120,000',v:'$21.4M',d:'2026-03-01'},{n:'Mark Liu (Chairman)',r:'Chairman',a:'Buy',sh:'85,000',v:'$15.2M',d:'2026-02-01'}],
-    revenue:[{q:'Q1 2026',v:27.8},{q:'Q4 2025',v:26.9},{q:'Q3 2025',v:23.5},{q:'Q2 2025',v:20.8}]},
-  TSM_CIK:  '0001046179',
-  SMCI:{name:'Super Micro Computer',price:'41.80',change:'+3.1%',up:true,mktcap:'$24.4B',vol:'22.1M',week52:'$17–$122',
-    signals:['Compliance resolution complete','Blackwell rack demand accelerating','DLC now 30% of shipments','CEO $7.7M insider buy Apr 2026'],
-    verdict:'Super Micro Computer is the leading AI server integrator. After resolving accounting restatements in 2024, SMCI is positioned as a key AI datacenter infrastructure beneficiary. Direct-liquid-cooling (DLC) expertise is a structural moat as GPU power density exceeds 1kW per chip.',
-    tags:['AI Infra','Servers'],
-    news:[{h:'SMCI Q3 FY2026 preliminary revenue $4.6B (+45% YoY) — DLC now 30% of shipments',s:'SMCI filing · Apr 30',t:'2w ago'},{h:'Wedbush raises SMCI PT $35→$65 — compliance resolution + Blackwell rack demand',s:'Wedbush · May 7',t:'1w ago'}],
-    insider:[{n:'Charles Liang (CEO)',r:'CEO',a:'Buy',sh:'200,000',v:'$7.7M',d:'2026-04-25'},{n:'David Weigand (CFO)',r:'CFO',a:'Buy',sh:'50,000',v:'$1.9M',d:'2026-03-15'}],
-    revenue:[{q:'Q3 FY26',v:4.6},{q:'Q2 FY26',v:3.7},{q:'Q1 FY26',v:3.0},{q:'Q4 FY25',v:2.2}]},
-  SMCI_CIK: '0001375365',
+  TSM:  '0001046179',
+  SMCI: '0001375365',
   CCJ:  '0001009001',
   UEC:  '0001334933',
   LMT:  '0000936468',
@@ -10373,31 +10249,6 @@ const SIGNAL_EVENTS = {
   UEC: [
     { upstream:'CEG',  date:'2026-03-15', desc:'CEG nuclear expansion accelerating · domestic uranium sourcing priority increasing post-IRA · UEC ISR production positioned to fill US supply gap', lagMin:39, lagMax:78 },
   ]
-  AMZN: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell revenue +122% YoY · AMZN AWS ordered 200K GPU cluster · AI inference workloads surging on AWS', lagMin:1, lagMax:4 },
-    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure AI revenue signals enterprise cloud adoption · AWS follows same enterprise demand trends', lagMin:2, lagMax:6 },
-  ],
-  ARM: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA Blackwell uses Grace ARM CPU — every server sold pays ARM royalty · Blackwell shipments = ARM royalty revenue', lagMin:1, lagMax:3 },
-  ],
-  QCOM: [
-    { upstream:'ARM', date:'2026-02-14', desc:'ARM v9 architecture royalty rate increase · QCOM Snapdragon X Elite built on ARM · Higher ARM rates flow through to cost structure', lagMin:1, lagMax:4 },
-  ],
-  AAPL: [
-    { upstream:'TSM', date:'2026-03-20', desc:'TSM N3 process yield improvements · AAPL locked 60% of N3 capacity · Better yields = lower cost = better margins for iPhone', lagMin:2, lagMax:6 },
-  ],
-  PANW: [
-    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure security spend +40% YoY · PANW XSIAM deployed on Azure · Enterprise cloud migration drives PANW TAM', lagMin:2, lagMax:8 },
-    { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Cloud +28% · PANW preferred security partner for GCP · Cloud growth = PANW customer growth', lagMin:2, lagMax:6 },
-  ],
-  CRWD: [
-    { upstream:'MSFT', date:'2026-01-29', desc:'MSFT Azure growth drives enterprise adoption · CRWD Falcon deployed in Azure-native environments', lagMin:2, lagMax:8 },
-    { upstream:'AMZN', date:'2026-04-29', desc:'AWS marketplace: CRWD Falcon natively available · AWS customer growth = CRWD distribution expansion', lagMin:1, lagMax:4 },
-  ],
-  GEV: [
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · Each new datacenter needs 50-200MW of power · GEV makes the turbines that generate it', lagMin:6, lagMax:18 },
-    { upstream:'VST', date:'2026-02-20', desc:'VST capacity expansion requires GEV power equipment · Nuclear life extensions need GEV steam turbine upgrades', lagMin:4, lagMax:12 },
-  ],
 };
 
 const UPCOMING_CATALYSTS = {
@@ -11377,300 +11228,6 @@ async function initDeepEdge(force) {
 // ═══════════════════════════════════════════════════════════════
 // END DEEP EDGE LIVE ENGINE
 // ═══════════════════════════════════════════════════════════════
-
-
-// ═══════════════════════════════════════════════════════════════
-// SIGNAL RESOLUTION TRACKER — P2-C
-// ═══════════════════════════════════════════════════════════════
-var _ST_KEY = 'ti72_signal_track';
-var _ST_WINDOW_DAYS = 10; // days before auto-resolving a signal
-
-function _stLoad() {
-  try { return JSON.parse(localStorage.getItem(_ST_KEY) || '[]'); } catch(e) { return []; }
-}
-function _stSave(arr) {
-  try { localStorage.setItem(_ST_KEY, JSON.stringify(arr.slice(-50))); } catch(e) {}
-}
-function _stGetPrice(sym) {
-  // Try live cache first, then TICKER_DATA
-  if (window.TICKER_LIVE_CACHE && TICKER_LIVE_CACHE[sym] && TICKER_LIVE_CACHE[sym].price)
-    return TICKER_LIVE_CACHE[sym].price;
-  if (typeof TICKER_DATA !== 'undefined' && TICKER_DATA[sym] && TICKER_DATA[sym].price)
-    return parseFloat(String(TICKER_DATA[sym].price).replace(/[^0-9.]/g,'')) || 0;
-  return 0;
-}
-
-function trackSagePick(ticker, score, reasons) {
-  var today = new Date().toISOString().slice(0,10);
-  var arr = _stLoad();
-  // Only one entry per ticker per day
-  if (arr.some(function(e){ return e.ticker === ticker && e.date === today; })) return;
-  var price = _stGetPrice(ticker);
-  arr.push({
-    id: Date.now(),
-    ticker: ticker,
-    score: score,
-    price: price,
-    date: today,
-    reasons: (reasons || []).slice(0,1),
-    status: 'open',
-    resolvedPrice: null,
-    resolvedDate: null,
-    pct: null
-  });
-  _stSave(arr);
-}
-
-function resolveSignals() {
-  var arr = _stLoad();
-  var changed = false;
-  var now = Date.now();
-  arr.forEach(function(e) {
-    if (e.status !== 'open') return;
-    var ageMs = now - new Date(e.date).getTime();
-    var ageDays = ageMs / 864e5;
-    if (ageDays < _ST_WINDOW_DAYS) return;
-    var curPrice = _stGetPrice(e.ticker);
-    if (!curPrice || !e.price) return;
-    var pct = ((curPrice - e.price) / e.price) * 100;
-    e.resolvedPrice = curPrice;
-    e.resolvedDate = new Date().toISOString().slice(0,10);
-    e.pct = Math.round(pct * 10) / 10;
-    e.status = pct >= 5 ? 'win' : pct <= -5 ? 'loss' : 'neutral';
-    changed = true;
-  });
-  if (changed) _stSave(arr);
-  return arr;
-}
-
-function renderSignalTracker() {
-  var card = document.getElementById('signal-tracker-card');
-  var list = document.getElementById('signal-tracker-list');
-  var wr   = document.getElementById('signal-tracker-winrate');
-  if (!card || !list) return;
-
-  var arr = resolveSignals();
-  var resolved = arr.filter(function(e){ return e.status !== 'open'; })
-                    .sort(function(a,b){ return b.id - a.id; }).slice(0,10);
-  var open = arr.filter(function(e){ return e.status === 'open'; })
-                .sort(function(a,b){ return b.id - a.id; }).slice(0,5);
-
-  if (resolved.length === 0 && open.length === 0) return;
-
-  card.style.display = '';
-
-  // Win rate
-  if (resolved.length >= 2) {
-    var wins = resolved.filter(function(e){ return e.status === 'win'; }).length;
-    var pct = Math.round(wins / resolved.length * 100);
-    wr.textContent = wins + '/' + resolved.length + ' · ' + pct + '% win rate';
-    wr.style.background = pct >= 60 ? 'var(--green-bg)' : pct >= 40 ? 'var(--amber-bg)' : 'var(--red-bg)';
-    wr.style.color = pct >= 60 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--red)';
-  }
-
-  var rows = '';
-
-  // Resolved rows
-  resolved.forEach(function(e) {
-    var icon  = e.status === 'win' ? '✓' : e.status === 'loss' ? '✗' : '→';
-    var color = e.status === 'win' ? 'var(--green)' : e.status === 'loss' ? 'var(--red)' : 'var(--text3)';
-    var pctStr = e.pct != null ? (e.pct >= 0 ? '+' : '') + e.pct + '%' : '';
-    var dateStr = e.date ? e.date.slice(5) : '';
-    rows += '<div style="display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('' + e.ticker + '')">'
-          + '<span style="font-size:13px;font-weight:700;color:' + color + ';width:14px;text-align:center;">' + icon + '</span>'
-          + '<span style="font-size:12px;font-weight:700;min-width:40px;">' + e.ticker + '</span>'
-          + '<span style="font-size:10px;color:var(--text3);flex:1;">' + dateStr + ' · score ' + e.score + '</span>'
-          + '<span style="font-size:12px;font-weight:700;color:' + color + ';">' + pctStr + '</span>'
-          + '</div>';
-  });
-
-  // Open (pending) rows
-  open.forEach(function(e) {
-    var ageD = Math.floor((Date.now() - new Date(e.date).getTime()) / 864e5);
-    var remaining = Math.max(0, _ST_WINDOW_DAYS - ageD);
-    rows += '<div style="display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;opacity:0.7;" onclick="openTicker('' + e.ticker + '')">'
-          + '<span style="font-size:11px;color:var(--text3);width:14px;text-align:center;">◎</span>'
-          + '<span style="font-size:12px;font-weight:700;min-width:40px;">' + e.ticker + '</span>'
-          + '<span style="font-size:10px;color:var(--text3);flex:1;">' + e.date.slice(5) + ' · score ' + e.score + '</span>'
-          + '<span style="font-size:10px;color:var(--text3);">' + remaining + 'd left</span>'
-          + '</div>';
-  });
-
-  list.innerHTML = rows || '<div style="font-size:11px;color:var(--text3);">No resolved signals yet — check back in 10 days.</div>';
-}
-// ═══════════════════════════════════════════════════════════════
-// END SIGNAL RESOLUTION TRACKER
-// ═══════════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════════
-// PRO / STRIPE — P3-A
-// ═══════════════════════════════════════════════════════════════
-var _PRO_CACHE_KEY = 'ti72_pro_status';
-
-function isPro() {
-  try {
-    var c = JSON.parse(localStorage.getItem(_PRO_CACHE_KEY) || 'null');
-    if (c && c.pro && c.ts && Date.now() - c.ts < 3600000) return true; // 1h cache
-  } catch(e) {}
-  return false;
-}
-
-function _setProCache(active) {
-  try { localStorage.setItem(_PRO_CACHE_KEY, JSON.stringify({ pro: active, ts: Date.now() })); } catch(e) {}
-}
-
-async async function checkProStatus(email) {
-  if (!email) return false;
-  try {
-    var r = await fetch('/api/push?action=stripe-check&email=' + encodeURIComponent(email));
-    var d = await r.json();
-    _setProCache(!!(d && d.pro));
-    return !!(d && d.pro);
-  } catch(e) { return false; }
-}
-
-function updateProBadge() {
-  var chip = document.getElementById('hdr-pro-chip');
-  if (!chip) return;
-  if (isPro()) {
-    chip.style.display = 'inline-flex';
-  } else {
-    chip.style.display = 'none';
-  }
-}
-
-async function startProCheckout() {
-  var inp = document.getElementById('pro-waitlist-email');
-  var btn = document.getElementById('pro-checkout-btn');
-  var email = (inp && inp.value.trim()) || (S.gUser && S.gUser.email) || '';
-  if (!email || !email.includes('@')) {
-    if (inp) { inp.focus(); inp.style.borderColor = 'var(--red)'; setTimeout(function(){ inp.style.borderColor = ''; }, 2000); }
-    return;
-  }
-  if (btn) { btn.textContent = 'Loading…'; btn.disabled = true; }
-  try {
-    var r = await fetch('/api/push', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'stripe-checkout', email: email, returnUrl: window.location.origin })
-    });
-    var d = await r.json();
-    if (d.url) {
-      window.location.href = d.url;
-    } else {
-      showToast('Checkout unavailable — try again shortly');
-      if (btn) { btn.textContent = 'Subscribe — $19/month'; btn.disabled = false; }
-    }
-  } catch(e) {
-    showToast('Network error — please try again');
-    if (btn) { btn.textContent = 'Subscribe — $19/month'; btn.disabled = false; }
-  }
-}
-
-// Handle Stripe return URLs (?pro=success or ?pro=cancel)
-(function() {
-  var params = new URLSearchParams(window.location.search);
-  var proParam = params.get('pro');
-  var emailParam = params.get('email');
-  if (proParam === 'success') {
-    _setProCache(true);
-    if (emailParam) checkProStatus(emailParam);
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        showToast('🎉 Welcome to Pro! Enjoy your full access.', 6000);
-        updateProBadge();
-      }, 1000);
-    });
-    // Clean up URL
-    history.replaceState({}, '', window.location.pathname);
-  } else if (proParam === 'cancel') {
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() { showToast('Checkout cancelled — no charge made.', 4000); }, 500);
-    });
-    history.replaceState({}, '', window.location.pathname);
-  }
-})();
-// ═══════════════════════════════════════════════════════════════
-// END PRO / STRIPE
-// ═══════════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════════
-// PUSH NOTIFICATION — P2-A
-// ═══════════════════════════════════════════════════════════════
-var _VAPID_PUBLIC_KEY='BC5CsIpbzSaqwd9pe1nkaKG0df1jaGRaf2P9LyOp46ui3Dpm3wdiBFzMRc5_yP8Es-gpFfs8PVdhZOvGMIjXs7E';
-
-function _urlB64ToUint8(b){
-  var p=(4-b.length%4)%4;
-  var s=b.replace(/-/g,'+').replace(/_/g,'/')+('===='.slice(0,p));
-  var r=atob(s);
-  var u=new Uint8Array(r.length);
-  for(var i=0;i<r.length;i++)u[i]=r.charCodeAt(i);
-  return u;
-}
-
-function updatePushBellState(){
-  var btn=document.getElementById('push-bell-btn');
-  if(!btn)return;
-  if(!('PushManager' in window)){btn.style.display='none';return;}
-  navigator.serviceWorker.ready.then(function(reg){
-    reg.pushManager.getSubscription().then(function(sub){
-      btn.style.opacity=sub?'1':'0.45';
-      btn.title=sub?'Signal Alerts ON — click to disable':'Enable Signal Alerts';
-    });
-  }).catch(function(){});
-}
-
-function togglePushSubscription(){
-  if(!('PushManager' in window)){showToast('Push notifications not supported in this browser');return;}
-  navigator.serviceWorker.ready.then(function(reg){
-    reg.pushManager.getSubscription().then(function(sub){
-      if(sub){
-        sub.unsubscribe().then(function(){
-          updatePushBellState();
-          showToast('Signal alerts disabled');
-        });
-      } else {
-        Notification.requestPermission().then(function(perm){
-          if(perm!=='granted'){showToast('Notification permission denied');return;}
-          reg.pushManager.subscribe({
-            userVisibleOnly:true,
-            applicationServerKey:_urlB64ToUint8(_VAPID_PUBLIC_KEY)
-          }).then(function(newSub){
-            var email='';try{var u=getUser&&getUser();email=u&&u.email||'';}catch(e){}
-            fetch('/api/push',{method:'POST',headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({action:'subscribe',subscription:newSub.toJSON(),email:email})
-            }).then(function(){
-              updatePushBellState();
-              showToast('Signal alerts enabled!');
-            }).catch(function(){
-              updatePushBellState();
-              showToast('Subscribed (offline sync pending)');
-            });
-          }).catch(function(err){
-            showToast('Could not subscribe: '+err.message);
-          });
-        });
-      }
-    });
-  });
-}
-
-function showToast(msg,duration){
-  duration=duration||3000;
-  var t=document.getElementById('ti-toast');
-  if(!t){
-    t=document.createElement('div');
-    t.id='ti-toast';
-    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#e2e8f0;padding:10px 20px;border-radius:8px;font-size:13px;z-index:99999;pointer-events:none;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);';
-    document.body.appendChild(t);
-  }
-  t.textContent=msg;
-  t.style.opacity='1';
-  clearTimeout(t._tid);
-  t._tid=setTimeout(function(){t.style.opacity='0';},duration);
-}
-// ═══════════════════════════════════════════════════════════════
-// END PUSH NOTIFICATION
-// ═══════════════════════════════════════════════════════════════
 </script>
 
 <!-- PRO MODAL -->
@@ -11679,8 +11236,8 @@ function showToast(msg,duration){
     <div class="pro-sheet-handle"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
       <div>
-        <div style="font-size:18px;font-weight:800;color:var(--text)">✦ Pro — <span style="color:#f59e0b">$19/month</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px">Cancel any time · Instant access</div>
+        <div style="font-size:18px;font-weight:800;color:var(--text)">Everything is free. <span style="color:#f59e0b">Pro is coming.</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Join the waitlist — first access, no spam</div>
       </div>
       <button onclick="closeProModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px">&times;</button>
     </div>
@@ -11692,7 +11249,7 @@ function showToast(msg,duration){
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">My Intel watchlist (Google login)</div></div></div>
 
-    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">✦ Pro — $19/month</div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">Pro — coming soon</div>
     <div class="pro-row locked"><div class="pr-icon">🔔</div><div><div class="pr-label">Email alerts when score crosses threshold</div><div class="pr-sub">Get notified when NVDA hits 90+ or PLTR spikes</div></div></div>
     <div class="pro-row locked"><div class="pr-icon">⚡</div><div><div class="pr-label">Real-time signals <span class="pro-badge">PRO</span></div><div class="pr-sub">Live data vs 15-min delay on free tier</div></div></div>
     <div class="pro-row locked"><div class="pr-icon">📊</div><div><div class="pr-label">Portfolio P&amp;L tracking</div><div class="pr-sub">Enter positions, track against signals over time</div></div></div>
@@ -11700,8 +11257,8 @@ function showToast(msg,duration){
     <div class="pro-row locked"><div class="pr-icon">🔌</div><div><div class="pr-label">API access</div><div class="pr-sub">Pull scores and signals into your own tools</div></div></div>
 
     <div class="pro-waitlist-row">
-      <input type="email" id="pro-waitlist-email" placeholder="your@email.com">
-      <button id="pro-checkout-btn" onclick="startProCheckout()">Subscribe — $19/month</button>
+      <input type="email" id="pro-waitlist-email" placeholder="your@email.com — join the Pro waitlist">
+      <button onclick="joinProWaitlist()">Join waitlist — free, no spam</button>
     </div>
     <div class="pro-free-note" id="pro-waitlist-confirm" style="display:none;color:#34d399;font-weight:600">✓ You're on the list — we'll reach out when Pro launches</div>
     <div class="pro-free-note">No credit card. No paywall. Just signals.</div>
