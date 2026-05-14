@@ -492,7 +492,26 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: false, reason: 'No snapshot yet — cron runs at 2am UTC', scores: {} });
     }
     const index = await kvGet(KV_REST_API_URL, KV_REST_API_TOKEN, 'ti:scores:daily:index') || [];
-    return res.status(200).json({ ok: true, ...latest, dailyIndex: index });
+
+    // ── Include one historical snapshot (≥30 days old) for backtest seeding ─
+    // New users have no localStorage history — returning the oldest available
+    // 30-day-old snapshot lets them run the truth test on their first visit
+    // instead of waiting 30 days for history to accumulate.
+    let historicalSnapshot = null;
+    if (index.length > 0) {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+      const oldDate = [...index].sort().find(d => d <= thirtyDaysAgo);
+      if (oldDate) {
+        try {
+          const snap = await kvGet(KV_REST_API_URL, KV_REST_API_TOKEN, `ti:scores:daily:${oldDate}`);
+          if (snap && snap.scores) {
+            historicalSnapshot = { date: oldDate, scores: snap.scores };
+          }
+        } catch (e) { /* non-fatal — backtest falls back to localStorage */ }
+      }
+    }
+
+    return res.status(200).json({ ok: true, ...latest, dailyIndex: index, historicalSnapshot });
   }
 
   // ── POST/cron: protected — requires CRON_SECRET ───────────────────────────
