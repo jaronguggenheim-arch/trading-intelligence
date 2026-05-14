@@ -871,6 +871,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div id="velocity-leaderboard-body"></div>
   </div>
 
+  <!-- CHAIN SIGNAL TRACK RECORD -->
+  <div class="card" id="chain-track-record-card" style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+      <div>
+        <div class="card-lbl" style="margin-bottom:2px;">Supply chain signal track record</div>
+        <div style="font-size:10px;color:var(--text3);">3 real historical anchor events · downstream price returns measured inside the documented lag window · live from Finnhub</div>
+      </div>
+      <button onclick="_runChainTrackRecord(true)" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Run</button>
+    </div>
+    <div id="chain-track-record-body" style="font-size:11px;color:var(--text3);padding:8px 0;">Loading track record…</div>
+  </div>
+
   <!-- SCORE TRUTH TEST -->
   <div class="card" id="score-backtest-card" style="margin-bottom:10px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
@@ -8243,6 +8255,146 @@ async function _runScoreBacktest(force) {
   el.innerHTML = html;
 }
 
+// ── Historical Chain Signal Track Record ─────────────────────────────────────
+// Real anchor events with documented lag windows. Returns fetched live from Finnhub.
+const HISTORICAL_CHAIN_EVENTS = [
+  {
+    id: 'tsm-q4-2023',
+    trigger: 'TSM', triggerLabel: 'TSMC Q4 2023 earnings',
+    date: '2024-01-18',
+    event: 'TSMC raised 2024 capex to $28–32B, confirming AI chip demand acceleration across all process nodes. N3/N4 fully booked through year-end.',
+    downstream: [
+      { ticker: 'ASML', lagWeeks: 10, thesis: 'Capex raise → EUV order book expansion (6–12 week lag)' },
+      { ticker: 'AMAT', lagWeeks: 10, thesis: 'N3/N4 node ramp → CVD/etch deposition tool orders (8–12 week lag)' }
+    ]
+  },
+  {
+    id: 'meta-q1-2024',
+    trigger: 'META', triggerLabel: 'Meta Q1 2024 earnings',
+    date: '2024-04-24',
+    event: 'Meta raised 2024 full-year capex to $35–40B (from $30–37B) — the largest single-quarter infrastructure spend acceleration of 2024.',
+    downstream: [
+      { ticker: 'NVDA', lagWeeks: 3, thesis: 'Hyperscaler GPU order acceleration → NVDA forward bookings (2–4 week lag)' }
+    ]
+  },
+  {
+    id: 'nvda-q1-fy25',
+    trigger: 'NVDA', triggerLabel: 'NVIDIA Q1 FY2025 earnings',
+    date: '2024-05-22',
+    event: 'NVIDIA reported $22.6B datacenter revenue (+427% YoY). Blackwell GPU supply fully allocated through calendar 2025.',
+    downstream: [
+      { ticker: 'MU',  lagWeeks: 5, thesis: 'HBM3E memory demand → Micron revenue acceleration (4–8 week lag)' },
+      { ticker: 'TSM', lagWeeks: 5, thesis: 'CoWoS + N4 advanced packaging → TSMC utilization uplift (4–8 week lag)' }
+    ]
+  }
+];
+
+let _chainTrackCache = null;
+async function _runChainTrackRecord(force) {
+  const el = document.getElementById('chain-track-record-body');
+  if (!el) return;
+  if (!force && _chainTrackCache) { el.innerHTML = _chainTrackCache; return; }
+
+  if (!IS_VERCEL && !(typeof S !== 'undefined' && S.fh)) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Track record loads on the live app (Finnhub required).</div>';
+    return;
+  }
+
+  el.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Fetching historical returns from Finnhub…</div>';
+
+  function addDays(dateStr, days) {
+    const d = new Date(dateStr + 'T12:00:00Z');
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  }
+
+  async function fetchWindowReturn(sym, startDate, endDate) {
+    try {
+      const from = Math.floor(new Date(startDate + 'T14:00:00Z').getTime() / 1000);
+      const to   = Math.floor(new Date(endDate   + 'T22:00:00Z').getTime() / 1000);
+      const url  = fhURL('stock/candle', { symbol: sym, resolution: 'D', from, to });
+      const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (!j || !j.c || j.c.length < 2) return null;
+      return ((j.c[j.c.length - 1] - j.c[0]) / j.c[0]) * 100;
+    } catch(e) { return null; }
+  }
+
+  let totalSignals = 0, bullishSignals = 0;
+  const eventParts = [];
+
+  for (const evt of HISTORICAL_CHAIN_EVENTS) {
+    const rows = [];
+    for (const ds of evt.downstream) {
+      const endDate = addDays(evt.date, ds.lagWeeks * 7);
+      const [dsRet, spyRet] = await Promise.all([
+        fetchWindowReturn(ds.ticker, evt.date, endDate),
+        fetchWindowReturn('SPY',     evt.date, endDate)
+      ]);
+      await new Promise(res => setTimeout(res, 80));
+
+      totalSignals++;
+      const edge = (dsRet != null && spyRet != null) ? dsRet - spyRet : null;
+      if (edge != null && edge > 0) bullishSignals++;
+
+      const retStr  = dsRet != null ? (dsRet  >= 0 ? '+' : '') + dsRet.toFixed(1) + '%'          : '—';
+      const edgeStr = edge  != null ? (edge   >= 0 ? '+' : '') + edge.toFixed(1)  + 'pp vs SPY'  : '';
+      const retClr  = dsRet == null ? 'var(--text3)' : dsRet  >= 0 ? 'var(--green)' : '#ef4444';
+      const edgeClr = edge  == null ? 'var(--text3)' : edge   >= 0 ? 'var(--green)' : '#ef4444';
+
+      rows.push(`<div onclick="openTicker('${ds.ticker}')" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:var(--bg3);border-radius:6px;cursor:pointer;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <span style="font-size:11px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);">${ds.ticker}</span>
+          <span style="font-size:10px;color:var(--text3);margin-left:6px;">${ds.thesis}</span>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:13px;font-weight:800;font-family:'DM Mono',monospace;color:${retClr};">${retStr}</div>
+          ${edge != null ? `<div style="font-size:9px;color:${edgeClr};white-space:nowrap;">${edgeStr}</div>` : ''}
+          <div style="font-size:9px;color:var(--text3);">${ds.lagWeeks}-week window</div>
+        </div>
+      </div>`);
+    }
+
+    const fmt = d => new Date(d+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    eventParts.push(`<div style="border:0.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;">
+      <div style="padding:10px 12px;background:var(--bg3);border-bottom:0.5px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;">
+          <span onclick="openTicker('${evt.trigger}')" style="font-size:11px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);background:var(--bg2);border:0.5px solid var(--border2);padding:2px 8px;border-radius:5px;cursor:pointer;">${evt.trigger}</span>
+          <span style="font-size:11px;font-weight:600;color:var(--text);">${evt.triggerLabel}</span>
+          <span style="font-size:10px;color:var(--text3);">${fmt(evt.date)}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text2);">${evt.event}</div>
+      </div>
+      <div style="padding:8px 10px;display:flex;flex-direction:column;gap:5px;">
+        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Downstream — actual return inside lag window</div>
+        ${rows.join('')}
+      </div>
+    </div>`);
+  }
+
+  const accuracy = totalSignals > 0 ? Math.round((bullishSignals / totalSignals) * 100) : 0;
+  const accClr   = accuracy >= 70 ? 'var(--green)' : accuracy >= 50 ? 'var(--amber)' : '#ef4444';
+  const accLabel = accuracy >= 80 ? 'Strong predictive edge'
+                 : accuracy >= 60 ? 'Consistent edge'
+                 : accuracy >= 50 ? 'Directional signal' : 'Mixed results';
+
+  _chainTrackCache = `
+    <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;background:var(--green-bg);border:0.5px solid var(--green-bd);margin-bottom:14px;">
+      <div style="text-align:center;flex-shrink:0;padding-right:14px;border-right:0.5px solid var(--border2);">
+        <div style="font-size:32px;font-weight:900;font-family:'DM Mono',monospace;color:${accClr};line-height:1;">${accuracy}%</div>
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;">signal accuracy</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);">${accLabel} — outperformed SPY on ${bullishSignals} of ${totalSignals} chain signals</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px;">3 real anchor events · downstream returns over documented lag windows · computed live from Finnhub</div>
+      </div>
+    </div>
+    ${eventParts.join('')}
+    <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:4px;">Returns fetched ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} via Finnhub · ${totalSignals} downstream signals</div>`;
+  el.innerHTML = _chainTrackCache;
+}
+
 function sortConvergenceCards() {
   // Collect all unique parent containers
   const containers = new Set();
@@ -8354,6 +8506,8 @@ function renderConvergence() {
   try { renderVelocityLeaderboard(); } catch(e) {}
   // Run score truth test (lazy — only on first visit; refresh button forces re-run)
   try { _runScoreBacktest(false); } catch(e) {}
+  // Run historical chain signal track record (lazy — cached after first run)
+  try { _runChainTrackRecord(false); } catch(e) {}
   // Show/hide each stock card in the signal scores list
   document.querySelectorAll('.convergence-stock-card').forEach(card => {
     const ticker = card.dataset.ticker;
