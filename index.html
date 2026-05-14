@@ -5545,6 +5545,65 @@ async function fillTickerLive(sym) {
         + '</div>';
     }).join('');
   }
+
+  // Fetch free supplemental news (Google News RSS + SEC 8-K) — runs after Finnhub fills
+  if (IS_VERCEL) {
+    try {
+      const cik = (typeof EDGAR_CIKS !== 'undefined' && EDGAR_CIKS[sym]) ? EDGAR_CIKS[sym] : '';
+      const url = `/api/news?ticker=${sym}${cik ? '&cik=' + cik : ''}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (resp.ok && window._tkSym === sym) {
+        const freeData = await resp.json();
+        if (freeData.ok) _appendFreeNews(sym, freeData);
+      }
+    } catch(e) {}
+  }
+}
+
+// Append Google News + SEC 8-K results to the news tab in the stock modal
+function _appendFreeNews(sym, data) {
+  const newsList = document.getElementById('tk-news-list');
+  if (!newsList) return;
+
+  const newsItems = (data.news || []).slice(0, 8);
+  const filings   = (data.filings || []).slice(0, 5);
+  if (!newsItems.length && !filings.length) return;
+
+  // Divider
+  let html = '<div style="margin:12px 0 8px;display:flex;align-items:center;gap:8px;">'
+    + '<div style="flex:1;height:0.5px;background:var(--border2);"></div>'
+    + '<span style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;">More sources</span>'
+    + '<div style="flex:1;height:0.5px;background:var(--border2);"></div>'
+    + '</div>';
+
+  // Google News articles
+  newsItems.forEach(function(a) {
+    const ts = a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+    const onclick = a.url ? ` onclick="window.open('${a.url.replace(/'/g,"\\'")}','_blank')" style="cursor:pointer;"` : '';
+    html += '<div' + onclick + ' style="padding:9px 0;border-bottom:0.5px solid var(--border);">'
+      + '<div style="font-size:10px;color:var(--text3);margin-bottom:3px;font-family:\'DM Mono\',monospace;">'
+      + (a.source || 'Google News') + (ts ? ' · ' + ts : '')
+      + '</div>'
+      + '<div style="font-size:12px;font-weight:500;line-height:1.5;color:var(--text);">' + (a.title || '') + '</div>'
+      + '</div>';
+  });
+
+  // SEC 8-K filings
+  if (filings.length) {
+    html += '<div style="margin:10px 0 6px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">SEC Filings (8-K)</div>';
+    filings.forEach(function(f) {
+      const onclick = f.url ? ` onclick="window.open('${f.url.replace(/'/g,"\\'")}','_blank')" style="cursor:pointer;"` : '';
+      html += '<div' + onclick + ' style="padding:7px 0;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;">'
+        + '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--bg3);color:var(--text2);border:0.5px solid var(--border2);white-space:nowrap;">' + (f.form || '8-K') + '</span>'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:12px;color:var(--text);font-weight:500;">' + (f.label || 'Material event') + '</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:2px;">' + (f.filingDate || '') + (f.url ? ' · <span style="color:var(--blue);">View on SEC.gov ↗</span>' : '') + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+
+  newsList.insertAdjacentHTML('beforeend', html);
 }
 // ═══════════════════════════════════════════════════════════════
 // END DYNAMIC TICKER DATA
