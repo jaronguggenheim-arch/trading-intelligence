@@ -2208,7 +2208,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">📊 P&L tracking</span>
       <span style="font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px 9px;">🔌 API access</span>
     </div>
-    <button onclick="showProModal()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Join the Pro waitlist — free, no spam</button>
+    <button onclick="showProModal()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Get Pro — $19/month</button>
   </div>
 
 </div>
@@ -6294,6 +6294,7 @@ function updateTickerScrollActive(sym) {
 }
 
 function enterApp(){
+  try { updateProBadge(); var _pu=S.gUser&&S.gUser.email; if(_pu)checkProStatus(_pu).then(updateProBadge); } catch(e) {}
   if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(function(reg){window._swReg=reg;updatePushBellState();}).catch(function(){});}
   updateHeaderUser();
   updateHeaderUser();
@@ -11526,6 +11527,98 @@ function renderSignalTracker() {
 // ═══════════════════════════════════════════════════════════════
 // END SIGNAL RESOLUTION TRACKER
 // ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// PRO / STRIPE — P3-A
+// ═══════════════════════════════════════════════════════════════
+var _PRO_CACHE_KEY = 'ti72_pro_status';
+
+function isPro() {
+  try {
+    var c = JSON.parse(localStorage.getItem(_PRO_CACHE_KEY) || 'null');
+    if (c && c.pro && c.ts && Date.now() - c.ts < 3600000) return true; // 1h cache
+  } catch(e) {}
+  return false;
+}
+
+function _setProCache(active) {
+  try { localStorage.setItem(_PRO_CACHE_KEY, JSON.stringify({ pro: active, ts: Date.now() })); } catch(e) {}
+}
+
+async function checkProStatus(email) {
+  if (!email) return false;
+  try {
+    var r = await fetch('/api/push?action=stripe-check&email=' + encodeURIComponent(email));
+    var d = await r.json();
+    _setProCache(!!(d && d.pro));
+    return !!(d && d.pro);
+  } catch(e) { return false; }
+}
+
+function updateProBadge() {
+  var chip = document.getElementById('hdr-pro-chip');
+  if (!chip) return;
+  if (isPro()) {
+    chip.style.display = 'inline-flex';
+  } else {
+    chip.style.display = 'none';
+  }
+}
+
+async function startProCheckout() {
+  var inp = document.getElementById('pro-waitlist-email');
+  var btn = document.getElementById('pro-checkout-btn');
+  var email = (inp && inp.value.trim()) || (S.gUser && S.gUser.email) || '';
+  if (!email || !email.includes('@')) {
+    if (inp) { inp.focus(); inp.style.borderColor = 'var(--red)'; setTimeout(function(){ inp.style.borderColor = ''; }, 2000); }
+    return;
+  }
+  if (btn) { btn.textContent = 'Loading…'; btn.disabled = true; }
+  try {
+    var r = await fetch('/api/push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'stripe-checkout', email: email, returnUrl: window.location.origin })
+    });
+    var d = await r.json();
+    if (d.url) {
+      window.location.href = d.url;
+    } else {
+      showToast('Checkout unavailable — try again shortly');
+      if (btn) { btn.textContent = 'Subscribe — $19/month'; btn.disabled = false; }
+    }
+  } catch(e) {
+    showToast('Network error — please try again');
+    if (btn) { btn.textContent = 'Subscribe — $19/month'; btn.disabled = false; }
+  }
+}
+
+// Handle Stripe return URLs (?pro=success or ?pro=cancel)
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var proParam = params.get('pro');
+  var emailParam = params.get('email');
+  if (proParam === 'success') {
+    _setProCache(true);
+    if (emailParam) checkProStatus(emailParam);
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        showToast('🎉 Welcome to Pro! Enjoy your full access.', 6000);
+        updateProBadge();
+      }, 1000);
+    });
+    // Clean up URL
+    history.replaceState({}, '', window.location.pathname);
+  } else if (proParam === 'cancel') {
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() { showToast('Checkout cancelled — no charge made.', 4000); }, 500);
+    });
+    history.replaceState({}, '', window.location.pathname);
+  }
+})();
+// ═══════════════════════════════════════════════════════════════
+// END PRO / STRIPE
+// ═══════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
 // PUSH NOTIFICATION — P2-A
 // ═══════════════════════════════════════════════════════════════
@@ -11612,8 +11705,8 @@ function showToast(msg,duration){
     <div class="pro-sheet-handle"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
       <div>
-        <div style="font-size:18px;font-weight:800;color:var(--text)">Everything is free. <span style="color:#f59e0b">Pro is coming.</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px">Join the waitlist — first access, no spam</div>
+        <div style="font-size:18px;font-weight:800;color:var(--text)">✦ Pro — <span style="color:#f59e0b">$19/month</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Cancel any time · Instant access</div>
       </div>
       <button onclick="closeProModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px">&times;</button>
     </div>
@@ -11625,7 +11718,7 @@ function showToast(msg,duration){
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">My Intel watchlist (Google login)</div></div></div>
 
-    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">Pro — coming soon</div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#f59e0b;text-transform:uppercase;margin:18px 0 8px">✦ Pro — $19/month</div>
     <div class="pro-row locked"><div class="pr-icon">🔔</div><div><div class="pr-label">Email alerts when score crosses threshold</div><div class="pr-sub">Get notified when NVDA hits 90+ or PLTR spikes</div></div></div>
     <div class="pro-row locked"><div class="pr-icon">⚡</div><div><div class="pr-label">Real-time signals <span class="pro-badge">PRO</span></div><div class="pr-sub">Live data vs 15-min delay on free tier</div></div></div>
     <div class="pro-row locked"><div class="pr-icon">📊</div><div><div class="pr-label">Portfolio P&amp;L tracking</div><div class="pr-sub">Enter positions, track against signals over time</div></div></div>
@@ -11633,8 +11726,8 @@ function showToast(msg,duration){
     <div class="pro-row locked"><div class="pr-icon">🔌</div><div><div class="pr-label">API access</div><div class="pr-sub">Pull scores and signals into your own tools</div></div></div>
 
     <div class="pro-waitlist-row">
-      <input type="email" id="pro-waitlist-email" placeholder="your@email.com — join the Pro waitlist">
-      <button onclick="joinProWaitlist()">Join waitlist — free, no spam</button>
+      <input type="email" id="pro-waitlist-email" placeholder="your@email.com">
+      <button id="pro-checkout-btn" onclick="startProCheckout()">Subscribe — $19/month</button>
     </div>
     <div class="pro-free-note" id="pro-waitlist-confirm" style="display:none;color:#34d399;font-weight:600">✓ You're on the list — we'll reach out when Pro launches</div>
     <div class="pro-free-note">No credit card. No paywall. Just signals.</div>
