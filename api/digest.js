@@ -150,6 +150,18 @@ const CHAIN_LINKS = [
   ['ENTG',  'TSM',  '1–2q',   'Entegris materials supply confirms TSM advanced node ramp'],
 ];
 
+// ── Chain related stocks for a given ticker ───────────────────────────────────
+// Returns { upstream: [{ticker,lag,desc}], downstream: [{ticker,lag,desc}] }
+function getChainRelated(ticker) {
+  const upstream = CHAIN_LINKS
+    .filter(([src, tgt]) => tgt === ticker)
+    .map(([src, , lag, desc]) => ({ ticker: src, lag, desc }));
+  const downstream = CHAIN_LINKS
+    .filter(([src, tgt]) => src === ticker)
+    .map(([, tgt, lag, desc]) => ({ ticker: tgt, lag, desc }));
+  return { upstream, downstream };
+}
+
 // ── Chain context lookup ──────────────────────────────────────────────────────
 // Returns a plain-English reason string, or null if no relationship found
 function getChainContext(moverTicker, sageTicker) {
@@ -364,8 +376,38 @@ async function buildSignalNarrative(ticker, fhKey) {
 
 // ── Mover reason builder (Also watching section) ──────────────────────────────
 // Tries chain context first, falls back to analyst signal, then momentum
-async function buildMoverReason(moverTicker, sageTicker, dp, fhKey) {
-  // 1. Chain relationship (instant — no fetch)
+async function buildMoverReason(moverTicker, sageTicker, dp, fhKey, chainRole) {
+  // 1. Rich chain context with active window status (instant — no fetch)
+  if (chainRole === 'upstream') {
+    const link = CHAIN_LINKS.find(([src, tgt]) => src === moverTicker && tgt === sageTicker);
+    if (link) {
+      const windows = computeActiveWindows(sageTicker);
+      const activeFromThis = windows.active.filter(w => w.upstream === moverTicker);
+      if (activeFromThis.length) {
+        const w = activeFromThis[0];
+        return `Lag window ACTIVE — ${w.weeksLeft}w remaining. ${link[3]}.`;
+      }
+      const forming = windows.forming.filter(w => w.upstream === moverTicker);
+      if (forming.length) {
+        return `Lag window opens in ~${forming[0].weeksUntil}w. ${link[3]}.`;
+      }
+      return `Upstream trigger for ${sageTicker} — ${link[2]} lead time. ${link[3]}.`;
+    }
+  }
+  if (chainRole === 'downstream') {
+    const link = CHAIN_LINKS.find(([src, tgt]) => src === sageTicker && tgt === moverTicker);
+    if (link) {
+      const windows = computeActiveWindows(moverTicker);
+      const activeFromSage = windows.active.filter(w => w.upstream === sageTicker);
+      if (activeFromSage.length) {
+        const w = activeFromSage[0];
+        return `Downstream beneficiary — lag window active, ${w.weeksLeft}w remaining. ${link[3]}.`;
+      }
+      return `Downstream of ${sageTicker} — ${link[2]} lag. ${link[3]}.`;
+    }
+  }
+
+  // 2. Generic chain relationship (instant — no fetch)
   const chain = getChainContext(moverTicker, sageTicker);
   if (chain) return chain;
 
@@ -414,12 +456,18 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
       </tr></table>
     </td></tr>`).join('');
 
-  const moverRows = movers.length > 0 ? movers.map(m => `
+  const moverRows = movers.length > 0 ? movers.map(m => {
+    const roleBadge = m.chainRole === 'upstream'
+      ? `<span style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:4px;padding:1px 6px;margin-left:6px;">↑ UPSTREAM</span>`
+      : m.chainRole === 'downstream'
+      ? `<span style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;border-radius:4px;padding:1px 6px;margin-left:6px;">↓ DOWNSTREAM</span>`
+      : '';
+    return `
     <tr>
       <td style="padding:10px 0;border-bottom:1px solid #f4f4f5;">
         <table cellpadding="0" cellspacing="0" border="0" width="100%">
           <tr>
-            <td style="font-size:13px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;white-space:nowrap;vertical-align:middle;">${m.ticker}</td>
+            <td style="font-size:13px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;white-space:nowrap;vertical-align:middle;">${m.ticker}${roleBadge}</td>
             <td style="padding:0 8px;font-size:12px;color:#71717a;vertical-align:middle;">${m.name}</td>
             <td style="font-size:12px;font-weight:700;color:${scoreColor(m.score)};font-family:'Courier New',monospace;text-align:right;white-space:nowrap;vertical-align:middle;">${m.score}/100</td>
             <td style="padding-left:8px;font-size:12px;color:${m.chgColor};text-align:right;white-space:nowrap;vertical-align:middle;">${m.chg}</td>
@@ -429,7 +477,8 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
           </tr>
         </table>
       </td>
-    </tr>`).join('') : '';
+    </tr>`;
+  }).join('') : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -527,7 +576,8 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
   ${movers.length > 0 ? `
   <!-- Also watching -->
   <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:14px;">Also worth watching today</div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:4px;">Supply chain · also watching</div>
+    <div style="font-size:11px;color:#71717a;margin-bottom:14px;">Stocks upstream or downstream of today's Sage pick</div>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
       ${moverRows}
     </table>
@@ -567,7 +617,7 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
   <!-- Footer -->
   <div style="text-align:center;padding:16px 0;">
     <p style="font-size:11px;color:#a1a1aa;margin:0 0 6px;">You're receiving this because you subscribed to Morning Brief.</p>
-    <p style="margin:0;"><a style="font-size:11px;color:#a1a1aa;" href="${appUrl}/api/push?action=unsub&email=__EMAIL__&token=__TOKEN__">Unsubscribe</a></p>
+    <p style="margin:0;"><a style="font-size:11px;color:#a1a1aa;" href="${appUrl}/api/subscribe?action=unsub&email=__EMAIL__&token=__TOKEN__">Unsubscribe</a></p>
   </div>
 </div>
 </body>
@@ -637,12 +687,33 @@ export default async function handler(req, res) {
   // Compute active chain windows for the Sage pick
   const chainWindows = computeActiveWindows(best.ticker);
 
-  // ── Step 4: Build "also watching" movers with chain context ──────────────
-  const moverCandidates = actionable.slice(1, 4);
+  // ── Step 4: Build "also watching" — chain-aware mover selection ─────────
+  // Find upstream and downstream stocks for the Sage pick
+  const chainRelated = getChainRelated(best.ticker);
+  const upstreamSet = new Set(chainRelated.upstream.map(r => r.ticker));
+  const downstreamSet = new Set(chainRelated.downstream.map(r => r.ticker));
+
+  // Tag each candidate with their chain role
+  const taggedCandidates = actionable.slice(1).map(s => ({
+    ...s,
+    chainRole: upstreamSet.has(s.ticker) ? 'upstream'
+              : downstreamSet.has(s.ticker) ? 'downstream'
+              : null
+  }));
+
+  // Sort: upstream first, then downstream, then top scorers (score already sorted)
+  taggedCandidates.sort((a, b) => {
+    const rankA = a.chainRole === 'upstream' ? 0 : a.chainRole === 'downstream' ? 1 : 2;
+    const rankB = b.chainRole === 'upstream' ? 0 : b.chainRole === 'downstream' ? 1 : 2;
+    if (rankA !== rankB) return rankA - rankB;
+    return b.score - a.score;
+  });
+
+  const moverCandidates = taggedCandidates.slice(0, 3);
 
   // Fetch reasons in parallel (chain lookup is instant; news fetch only fires as fallback)
   const moverReasons = await Promise.all(
-    moverCandidates.map(s => buildMoverReason(s.ticker, best.ticker, s.dp, FH_KEY))
+    moverCandidates.map(s => buildMoverReason(s.ticker, best.ticker, s.dp, FH_KEY, s.chainRole))
   );
 
   const movers = moverCandidates.map((s, i) => ({
@@ -651,7 +722,8 @@ export default async function handler(req, res) {
     score: s.score,
     chg: s.changeStr,
     chgColor: s.changeColor,
-    reason: moverReasons[i]
+    reason: moverReasons[i],
+    chainRole: s.chainRole
   }));
 
   const now = new Date();
