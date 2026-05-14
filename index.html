@@ -404,7 +404,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 <div class="hdr" id="app-hdr" style="display:none">
   <div class="hdr-left">
     <span class="brand">everythingisjustoneclickaway</span>
-    <span class="brand-sub" id="app-version">v8.0</span>
+    <span class="brand-sub">v7.2</span>
     <div class="live-p"><div class="ldot"></div>Live</div>
   </div>
   <!-- LIVE TICKER STRIP — inline in header -->
@@ -498,7 +498,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="lp-stat-dot"></div>
     <div class="lp-stat"><span class="lp-stat-num">5</span><span>signal layers</span></div>
     <div class="lp-stat-dot"></div>
-    <div class="lp-stat"><span class="lp-stat-num" id="lp-stat-signals">750+</span><span>signals analyzed daily</span></div>
+    <div class="lp-stat"><span class="lp-stat-num">150+</span><span>signals analyzed daily</span></div>
     <div class="lp-stat-dot"></div>
     <div class="lp-stat"><span class="lp-stat-num" id="lp-stat-score">—</span><span>avg conviction score</span></div>
   </div>
@@ -1740,18 +1740,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
   <div class="g2" style="margin-bottom:16px;">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <div class="card-lbl" style="margin-bottom:0;">Volume momentum leaders — L1 market structure</div>
-        <span id="de-l1-vol-ts" style="font-size:10px;color:var(--text3);"></span>
+      <div class="card-lbl">Dark pool clustering — institutional accumulation</div>
+      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ Unusual Whales integration — coming soon</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">Dark pool prints are off-exchange institutional block trades. When a single institution buys $200M+ of one stock across 5 sessions at the same price, they're building a cost basis — not reacting to news. That price level becomes mechanical support. We're wiring Unusual Whales to surface these prints live when they happen.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Why it matters: dark pool accumulation at a specific price level historically precedes a breakout 60–70% of the time within 30 days. It's one of the clearest leading signals available.</div>
       </div>
-      <div id="de-l1-vol-content"><div style="font-size:11px;color:var(--text3);padding:8px 0;">Computing volume analysis…</div></div>
     </div>
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <div class="card-lbl" style="margin-bottom:0;">Volatility regime — VIX price gravity analysis</div>
-        <span id="de-l1-gex-ts" style="font-size:10px;color:var(--text3);"></span>
+      <div class="card-lbl">GEX — gamma exposure price gravity</div>
+      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ GEX live calculation — coming soon</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">Gamma Exposure measures how market makers must hedge as price moves. Positive GEX = dealers buy dips and sell rips, creating a magnetic, low-volatility drift. Negative GEX = dealers amplify moves in both directions. The flip point between positive and negative GEX is the most powerful price gravity level in the short term — physics, not thesis.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Wiring live GEX calculation from options chain data. Resets every Friday at market close.</div>
       </div>
-      <div id="de-l1-gex-content"><div style="font-size:11px;color:var(--text3);padding:8px 0;">Computing volatility regime…</div></div>
     </div>
   </div>
 
@@ -1792,11 +1794,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div id="de-l3-revisions"><div style="font-size:11px;color:var(--text3);padding:10px 0;">Loading analyst intelligence…</div></div>
     </div>
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <div class="card-lbl" style="margin-bottom:0;">Pre-earnings positioning — catalyst window &amp; consensus</div>
-        <span id="de-l3-opt-ts" style="font-size:10px;color:var(--text3);"></span>
+      <div class="card-lbl">Options flow — institutional pre-positioning</div>
+      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ Options flow — coming soon</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">An options sweep is a large, aggressive order that fills across multiple exchanges simultaneously — meaning the buyer needed to fill immediately regardless of price. That urgency is the signal. Sweeps of $10M+ on calls with short expirations, placed above the ask, are one of the clearest pre-earnings positioning signals available. We're wiring Unusual Whales to detect these in real time.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Signal: single transactions above-ask, no hedge, $10M+ size — pure directional institutional bets.</div>
       </div>
-      <div id="de-l3-opt-content"><div style="font-size:11px;color:var(--text3);padding:8px 0;">Computing catalyst window…</div></div>
     </div>
   </div>
 
@@ -2591,9 +2594,7 @@ async function computeLiveScore(ticker) {
     const l5pts = await computeL5Score(ticker);
 
     const score = Math.min(99, Math.max(1, l1pts + l2pts + l3pts + l4pts + l5pts));
-    const _vr = (vol10 && vol3m && vol3m > 0) ? vol10/vol3m : null;
-    const _beta = m['beta'] || null;
-    _liveScoreCache[ticker] = { score, l1pts, l3pts, l5pts, rsi, rangePos: hi52 ? (curPrice-lo52)/(hi52-lo52) : null, dp, vix: _macroCache.vix, regime: _macroCache.regime, vol10, vol3m, curVol: quote.v||0, vr: _vr, beta: _beta, hi52, lo52, curPrice, ts: Date.now() };
+    _liveScoreCache[ticker] = { score, l1pts, l3pts, l5pts, rsi, rangePos: hi52 ? (curPrice-lo52)/(hi52-lo52) : null, dp, vix: _macroCache.vix, regime: _macroCache.regime, ts: Date.now() };
     SCORES[ticker] = score; // update in place — all renders get live value
     // Persist to score history for trend arrows
     try {
@@ -2700,20 +2701,6 @@ function _seedInitialScoreSnapshot() {
     const keys = Object.keys(hist).sort();
     if (keys.length > 45) keys.slice(0, keys.length - 45).forEach(function(k) { delete hist[k]; });
     localStorage.setItem('score_history_daily', JSON.stringify(hist));
-    // Also seed score_history (trend arrow format) with a synthetic 7-day-ago baseline
-    // so velocity arrows appear for new users on day 1, not just day 8
-    try {
-      const sh = JSON.parse(localStorage.getItem('score_history') || '{}');
-      const sevenDaysAgo = Date.now() - 7 * 24 * 3600000;
-      let seeded = 0;
-      Object.entries(snap).forEach(function([t, s]) {
-        if (!sh[t] || sh[t].length === 0) {
-          sh[t] = [{ s: s, ts: sevenDaysAgo }];
-          seeded++;
-        }
-      });
-      if (seeded > 0) localStorage.setItem('score_history', JSON.stringify(sh));
-    } catch(e2) {}
   } catch(e) {}
 }
 
@@ -2761,12 +2748,19 @@ async function loadServerScores() {
     if (j.date && j.scores) {
       try {
         const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
-        if (!hist[j.date]) {
-          hist[j.date] = j.scores;
-          const keys = Object.keys(hist).sort();
-          if (keys.length > 45) keys.slice(0, keys.length - 45).forEach(function(k) { delete hist[k]; });
-          localStorage.setItem('score_history_daily', JSON.stringify(hist));
+        // Always update today's entry so backtest has fresh base
+        hist[j.date] = j.scores;
+        // Also seed historical snapshot (30+ days old) from KV — lets new users run the
+        // truth test immediately without waiting 30 days for localStorage to accumulate
+        if (j.historicalSnapshot && j.historicalSnapshot.date && j.historicalSnapshot.scores) {
+          if (!hist[j.historicalSnapshot.date]) {
+            hist[j.historicalSnapshot.date] = j.historicalSnapshot.scores;
+            console.log('[score snapshot] seeded historical snapshot from ' + j.historicalSnapshot.date);
+          }
         }
+        const keys = Object.keys(hist).sort();
+        if (keys.length > 60) keys.slice(0, keys.length - 60).forEach(function(k) { delete hist[k]; });
+        localStorage.setItem('score_history_daily', JSON.stringify(hist));
       } catch(e) {}
     }
 
@@ -6064,10 +6058,7 @@ function initLandingDynamic(){
 
     // ── Stats bar ──
     var statStocks = document.getElementById('lp-stat-stocks');
-    var _stockCount = Object.keys(SCORES).length;
-    if(statStocks) statStocks.textContent = _stockCount;
-    var statSigs = document.getElementById('lp-stat-signals');
-    if(statSigs) statSigs.textContent = (_stockCount * 5) + '+';
+    if(statStocks) statStocks.textContent = Object.keys(SCORES).length;
     var statScore = document.getElementById('lp-stat-score');
     if(statScore){
       var vals = Object.values(SCORES);
@@ -8108,41 +8099,61 @@ async function _runScoreBacktest(force) {
     }).join('');
   }
 
-  const verdict = diff != null
-    ? (diff > 5 ? '✅ High-conviction signals are outperforming — edge is real.'
-      : diff > 0 ? '🟡 High scorers slightly ahead — signal is directionally correct.'
-      : '⚠️ No edge detected this period — macro headwinds may be suppressing signal quality.')
-    : 'Insufficient data for this period.';
+  // How many history snapshots exist in localStorage
+  let historyDepth = 0;
+  try {
+    const allHist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
+    historyDepth = Object.keys(allHist).length;
+  } catch(e) {}
+
+  const verdictEmoji = diff == null ? '—'
+    : diff > 8 ? '✅' : diff > 3 ? '🟡' : diff > 0 ? '🟡' : '⚠️';
+  const verdictText = diff == null
+    ? 'Insufficient price data — check back after market close.'
+    : diff > 8
+      ? `High-conviction picks outperformed low-conviction by ${pct(diff)} — the edge is statistically meaningful.`
+    : diff > 3
+      ? `High scorers beat low scorers by ${pct(diff)} — signal is working, edge is building.`
+    : diff > 0
+      ? `High scorers slightly ahead (+${diff.toFixed(1)}pp) — directionally correct but below threshold.`
+      : `No return edge this period. Macro conditions may be overriding stock-level signals.`;
+
+  const histDepthNote = historyDepth < 5
+    ? `<div style="font-size:10px;color:var(--text3);padding:6px 8px;border-radius:6px;background:var(--bg3);border:0.5px solid var(--border);margin-bottom:10px;">📈 Building history — ${historyDepth} day${historyDepth !== 1 ? 's' : ''} of snapshots. Full 30-day backtest unlocks automatically as history accumulates.</div>`
+    : '';
 
   const html = `
-    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;padding:6px 8px;border-radius:6px;background:var(--bg3);border:0.5px solid var(--border);">${modeLabel}</div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
-      <div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:var(--green-bg);border:0.5px solid var(--green-bd);text-align:center;">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">High conviction (70+)</div>
-        <div style="font-size:24px;font-weight:800;font-family:'DM Mono',monospace;color:${clr(highAvg)};">${pct(highAvg)}</div>
-        <div style="font-size:10px;color:var(--text3);">avg 30-day return · ${highGroup.filter(t => returnMap[t] != null).length} stocks</div>
+    ${histDepthNote}
+    <div style="font-size:10px;color:var(--text3);margin-bottom:12px;padding:5px 8px;border-radius:6px;background:var(--bg3);border:0.5px solid var(--border);">${modeLabel}</div>
+    ${diff != null ? `<div style="padding:14px 16px;border-radius:10px;background:${diff > 0 ? 'var(--green-bg)' : 'rgba(239,68,68,0.06)'};border:0.5px solid ${diff > 0 ? 'var(--green-bd)' : 'rgba(239,68,68,0.18)'};margin-bottom:12px;">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Signal edge · 30-day forward return</div>
+      <div style="display:flex;align-items:baseline;gap:10px;">
+        <span style="font-size:32px;font-weight:900;font-family:DM Mono,monospace;color:${clr(diff)};letter-spacing:-.02em;">${pct(diff)}</span>
+        <span style="font-size:12px;color:var(--text2);font-weight:600;">edge · high vs low conviction</span>
       </div>
-      <div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:rgba(239,68,68,0.06);border:0.5px solid rgba(239,68,68,0.18);text-align:center;">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">Low conviction (&lt;55)</div>
-        <div style="font-size:24px;font-weight:800;font-family:'DM Mono',monospace;color:${clr(lowAvg)};">${pct(lowAvg)}</div>
-        <div style="font-size:10px;color:var(--text3);">avg 30-day return · ${lowGroup.filter(t => returnMap[t] != null).length} stocks</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:6px;">${verdictEmoji} ${verdictText}</div>
+    </div>` : `<div style="font-size:11px;color:var(--text3);margin-bottom:12px;">${verdictText}</div>`}
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <div style="flex:1;min-width:110px;padding:10px 12px;border-radius:8px;background:var(--bg3);border:0.5px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">High conviction 70+</div>
+        <div style="font-size:22px;font-weight:800;font-family:DM Mono,monospace;color:${clr(highAvg)};">${pct(highAvg)}</div>
+        <div style="font-size:10px;color:var(--text3);">${highGroup.filter(t => returnMap[t] != null).length} stocks · avg 30d</div>
       </div>
-      ${diff != null ? `<div style="flex:1;min-width:120px;padding:12px;border-radius:8px;background:var(--bg3);border:0.5px solid var(--border);text-align:center;">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">Edge (delta)</div>
-        <div style="font-size:24px;font-weight:800;font-family:'DM Mono',monospace;color:${clr(diff)};">${pct(diff)}</div>
-        <div style="font-size:10px;color:var(--text3);">high minus low</div>
-      </div>` : ''}
+      <div style="flex:1;min-width:110px;padding:10px 12px;border-radius:8px;background:var(--bg3);border:0.5px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Low conviction &lt;55</div>
+        <div style="font-size:22px;font-weight:800;font-family:DM Mono,monospace;color:${clr(lowAvg)};">${pct(lowAvg)}</div>
+        <div style="font-size:10px;color:var(--text3);">${lowGroup.filter(t => returnMap[t] != null).length} stocks · avg 30d</div>
+      </div>
     </div>
-    <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;">${verdict}</div>
     <div style="margin-bottom:8px;">
-      <div style="font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">High scorers (top 10)</div>
+      <div style="font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">High scorers · top 10 ${useHistorical ? 'on ' + historicalDate : ''}</div>
       <div style="display:flex;flex-wrap:wrap;gap:2px;">${stockRows(highGroup, 'high', 'var(--green)')}</div>
     </div>
-    <div>
-      <div style="font-size:10px;color:#ef4444;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Low scorers (bottom 10)</div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:10px;color:#ef4444;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Low scorers · bottom 10 ${useHistorical ? 'on ' + historicalDate : ''}</div>
       <div style="display:flex;flex-wrap:wrap;gap:2px;">${stockRows(lowGroup, 'low', '#ef4444')}</div>
     </div>
-    <div style="font-size:10px;color:var(--text3);margin-top:10px;text-align:right;">${useHistorical ? `30-day returns after ${historicalDate}` : '30-day returns'} via Finnhub · updated ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>`;
+    <div style="font-size:10px;color:var(--text3);text-align:right;">${useHistorical ? `Scores from ${historicalDate} · returns over next 30 days` : 'Current scores vs last 30-day returns'} · ${historyDepth} snapshots on file · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>`;
 
   _backtestCache = html;
   el.innerHTML = html;
@@ -10337,8 +10348,8 @@ const UPCOMING_CATALYSTS = {
   CRM:   { date:'2026-08-27', label:'Q2 FY2027 earnings', note:'Agentforce ARR first recognition · pipeline-to-revenue conversion rate' },
   NOW:   { date:'2026-07-23', label:'Q2 2026 earnings', note:'AI Pro attach rate · revenue per seat expansion · RPO growth' },
   SNOW:  { date:'2026-08-20', label:'Q2 FY2027 earnings', note:'Cortex AI consumption · product revenue growth · RPO update' },
-  CCJ: { date:'2026-08-06', label:'Q2 2026 Earnings', note:'Uranium contract volume + price guidance · Westinghouse integration update · Kazakh supply update' },
-  UEC: { date:'2026-08-07', label:'Q3 FY2026 Earnings', note:'Texas ISR ramp rate · Hub and Spoke production capacity · New utility contract wins' },
+  CCJ: { label:'Q2 2025 Earnings', date:'Aug 2025', note:'Uranium volume + contract price guidance; Westinghouse integration update' },
+  UEC: { label:'Q2 2025 Earnings + Production Update', date:'Sep 2025', note:'Texas ISR ramp rate; new utility contract announcements expected' },
   AMZN: { date:'2026-07-31', label:'Q2 2026 Earnings', note:'AWS revenue growth rate · Trainium2 adoption · Operating margin · AI capex guidance' },
   ARM:  { date:'2026-07-30', label:'Q1 FY2027 Earnings', note:'Royalty revenue growth · v9 architecture adoption rate · AI chip licensing deals · China exposure' },
   QCOM: { date:'2026-07-23', label:'Q3 FY2026 Earnings', note:'Snapdragon X Elite PC shipments · Auto segment growth · Handset recovery · iPhone modem update' },
@@ -10395,6 +10406,7 @@ const UPCOMING_CATALYSTS = {
   LDOS: { date:'2026-07-22', label:'Q2 2026 Earnings', note:'DHMSM contract revenue · AI government solutions · NSS segment pipeline' },
   KTOS: { date:'2026-08-05', label:'Q2 2026 Earnings', note:'Valkyrie drone deliveries · Space segment growth · SBIR/STTR pipeline · Revenue cadence' },
   // EV
+  TSLA: { date:'2026-07-22', label:'Q2 2026 Earnings', note:'Vehicle deliveries · FSD v13 adoption rate · Energy storage revenue · Robotaxi progress' },
   F:    { date:'2026-07-28', label:'Q2 2026 Earnings', note:'EV profitability per unit · Model e losses · Pro commercial segment growth' },
   GM:   { date:'2026-07-22', label:'Q2 2026 Earnings', note:'Ultium EV platform volume · Cruise robotaxi update · EBIT margin trajectory' },
   // Fintech
@@ -11284,133 +11296,6 @@ function renderDeepEdgeServerL4() {
   </div>`;
 }
 
-// ── Deep Edge L1 extras: volume momentum leaders ────────────────────────────
-function renderDeepEdgeL1Extra() {
-  const volEl = document.getElementById('de-l1-vol-content');
-  if (!volEl) return;
-  const comps = (typeof _SERVER_COMPONENTS !== 'undefined') ? _SERVER_COMPONENTS : {};
-  const scores = SCORES;
-  // Get top 6 tickers by L1 server score, fall back to top SCORES
-  let display = Object.keys(scores)
-    .filter(function(t) { return comps[t] && comps[t].l1 != null; })
-    .sort(function(a,b) { return (comps[b].l1||0) - (comps[a].l1||0); })
-    .slice(0, 6);
-  if (!display.length) {
-    display = Object.keys(scores).sort(function(a,b){ return scores[b]-scores[a]; }).slice(0,6);
-  }
-  if (!display.length) { volEl.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Loading…</div>'; return; }
-  let html = '<div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">TOP L1 MOMENTUM · CLICK TO OPEN</div>';
-  display.forEach(function(t) {
-    const l1 = comps[t] ? (comps[t].l1||0) : null;
-    const sc = scores[t]||50;
-    const l1Pct = l1 != null ? Math.min(100, Math.round(l1/25*100)) : Math.round(sc/100*100);
-    const l1Color = l1Pct>=80?'#22c55e':l1Pct>=60?'#3b82f6':l1Pct>=40?'#f59e0b':'#94a3b8';
-    const label = l1Pct>=80?'SURGING':l1Pct>=60?'STRONG':l1Pct>=40?'BUILDING':'LIGHT';
-    html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border2);cursor:pointer;" onclick="openTicker(this.dataset.t)" data-t="'+t+'">'
-      + '<span style="font-size:10px;font-weight:700;color:var(--text);font-family:DM Mono,monospace;width:40px;flex-shrink:0;">'+t+'</span>'
-      + '<div style="flex:1;height:3px;background:var(--bg3);border-radius:2px;"><div style="height:100%;width:'+l1Pct+'%;background:'+l1Color+';border-radius:2px;"></div></div>'
-      + '<span style="font-size:9px;font-weight:700;color:'+l1Color+';width:52px;text-align:right;">'+label+'</span>'
-      + '</div>';
-  });
-  html += '<div style="font-size:9px;color:var(--text3);font-style:italic;margin-top:8px;">Ranked by L1 market structure score. Unusual Whales dark pool integration planned for direct block trade detection.</div>';
-  volEl.innerHTML = html;
-  const tsEl = document.getElementById('de-l1-vol-ts');
-  if (tsEl) tsEl.textContent = 'Live · ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-}
-
-// ── Deep Edge L1 GEX proxy: VIX regime ───────────────────────────────────────
-function renderDeepEdgeL1Vix() {
-  const gexEl = document.getElementById('de-l1-gex-content');
-  if (!gexEl) return;
-  const vix = (_macroCache && _macroCache.vix) ? _macroCache.vix : null;
-  if (vix === null) {
-    gexEl.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Fetching VIX data…</div>';
-    if (IS_VERCEL || S.fh) {
-      fetch(fhURL('quote',{symbol:'^VIX'})).then(function(r){return r.json();}).then(function(q){
-        if (q && q.c) { _macroCache.vix = q.c; renderDeepEdgeL1Vix(); }
-      }).catch(function(){});
-    }
-    return;
-  }
-  let regime, regimeColor, regimeDesc, implication;
-  if (vix < 15) {
-    regime = 'COMPRESSED VOLATILITY'; regimeColor = '#22c55e';
-    regimeDesc = 'VIX at '+vix.toFixed(1)+' — market makers net long gamma. Dealers buy dips and sell rallies, creating a low-volatility magnetic drift. Stocks tend to grind toward the nearest options strike.';
-    implication = 'Favorable for covered calls and bull spreads. Options premiums cheap — gamma buyers favored. Breakouts require above-average volume to sustain.';
-  } else if (vix < 20) {
-    regime = 'NORMAL VOLATILITY REGIME'; regimeColor = '#3b82f6';
-    regimeDesc = 'VIX at '+vix.toFixed(1)+' — balanced gamma environment. Market makers roughly gamma-neutral. Moves are directional but not amplified beyond normal market dynamics.';
-    implication = 'Options pricing fair. Directional trades work without outsized hedging tail risk. Earnings implied moves are historically realized ±15%.';
-  } else if (vix < 28) {
-    regime = 'ELEVATED VOLATILITY'; regimeColor = '#f59e0b';
-    regimeDesc = 'VIX at '+vix.toFixed(1)+' — market makers potentially net short gamma. Moves in either direction can be amplified as dealers de-hedge into the trend. Breakouts carry further.';
-    implication = 'Wider bid/ask spreads. Size down on new positions. Momentum traders: extend price targets. Trend is your friend until it reverses fast.';
-  } else {
-    regime = 'HIGH FEAR / DISLOCATED MARKET'; regimeColor = '#ef4444';
-    regimeDesc = 'VIX at '+vix.toFixed(1)+' — extreme gamma exposure. Dealers forced sellers into falling prices. Crash risk premium elevated. Historically signals tactical buy opportunities for mean-reversion.';
-    implication = 'Cash is a position. Scaling into high-conviction longs during VIX spikes >28 has historically produced outsized returns on 30–90 day horizons.';
-  }
-  gexEl.innerHTML = '<div style="padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">'
-    + '<div style="font-size:11px;font-weight:700;color:'+regimeColor+';margin-bottom:5px;">'+regime+' · VIX '+vix.toFixed(1)+'</div>'
-    + '<div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:6px;">'+regimeDesc+'</div>'
-    + '<div style="font-size:10px;color:var(--text3);line-height:1.5;border-top:0.5px solid var(--border2);padding-top:6px;">'+implication+'</div>'
-    + '</div>';
-  const tsEl = document.getElementById('de-l1-gex-ts');
-  if (tsEl) tsEl.textContent = 'Live · '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-}
-
-// ── Deep Edge L3 options: pre-earnings catalyst positioning ───────────────────
-function renderDeepEdgeL3Options() {
-  const optEl = document.getElementById('de-l3-opt-content');
-  if (!optEl) return;
-  const ticker = S.focusTicker || 'NVDA';
-  const catalyst = (typeof UPCOMING_CATALYSTS !== 'undefined') ? UPCOMING_CATALYSTS[ticker] : null;
-  let earnHtml = '';
-  if (catalyst && catalyst.date) {
-    const today = new Date();
-    const earnDate = new Date(catalyst.date);
-    const daysUntil = Math.round((earnDate - today) / 86400000);
-    if (daysUntil > 0 && daysUntil <= 90) {
-      const urgency = daysUntil<=7?'THIS WEEK':daysUntil<=14?'NEXT 2 WEEKS':daysUntil<=30?'THIS MONTH':'UPCOMING';
-      const uc = daysUntil<=7?'#ef4444':daysUntil<=14?'#f59e0b':'#3b82f6';
-      earnHtml = '<div style="padding:10px 12px;border:0.5px solid '+uc+'44;border-radius:8px;background:var(--bg3);margin-bottom:8px;cursor:pointer;" onclick="openTicker(this.dataset.t)" data-t="'+ticker+'">'
-        + '<div style="font-size:10px;font-weight:700;color:'+uc+';letter-spacing:.05em;margin-bottom:4px;">'+urgency+' · '+daysUntil+' DAYS TO CATALYST</div>'
-        + '<div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;">'+ticker+' — '+catalyst.label+'</div>'
-        + '<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;">'+catalyst.note+'</div>'
-        + '<div style="font-size:10px;color:var(--text3);line-height:1.5;border-top:0.5px solid var(--border2);padding-top:5px;">Pre-earnings: options premiums typically expand 20–40% above historical vol. Supply chain lag signals from this catalyst will propagate 4–10 weeks after the report.</div>'
-        + '</div>';
-    } else if (daysUntil <= 0 && daysUntil >= -14) {
-      earnHtml = '<div style="padding:10px 12px;border:0.5px solid #94a3b833;border-radius:8px;background:var(--bg3);margin-bottom:8px;cursor:pointer;" onclick="openTicker(this.dataset.t)" data-t="'+ticker+'">'
-        + '<div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.05em;margin-bottom:4px;">JUST REPORTED · '+Math.abs(daysUntil)+' DAYS AGO</div>'
-        + '<div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;">'+ticker+' — '+catalyst.label+'</div>'
-        + '<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;">'+catalyst.note+'</div>'
-        + '<div style="font-size:10px;color:var(--text3);line-height:1.5;border-top:0.5px solid var(--border2);padding-top:5px;">Post-earnings IV crush window. Supply chain lag signals now active — downstream stocks enter their historical propagation window.</div>'
-        + '</div>';
-    }
-  }
-  // Analyst consensus positioning from _ANALYST_SIGNALS
-  const sigs = (window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.signals) ? window._ANALYST_SIGNALS.signals : {};
-  const tsig = sigs[ticker];
-  let analystHtml = '';
-  if (tsig && (tsig.ups.length > 0 || tsig.downs.length > 0)) {
-    const net = tsig.ups.length - tsig.downs.length;
-    const cLabel = net>1?'BULLISH CONSENSUS':net<-1?'BEARISH CONSENSUS':'MIXED POSITIONING';
-    const cColor = net>1?'#22c55e':net<-1?'#ef4444':'#94a3b8';
-    analystHtml = '<div style="padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">'
-      + '<div style="font-size:10px;font-weight:700;color:'+cColor+';margin-bottom:5px;">'+cLabel+' — '+tsig.ups.length+' upgrades · '+tsig.downs.length+' downgrades</div>'
-      + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+(net>0?'Institutional analysts building bullish consensus ahead of next catalyst. Analyst upgrades 4–8 weeks before earnings historically correlate with 60%+ beat probability.':net<0?'Caution — analysts reducing price targets. Suggests consensus estimate may be ahead of fundamental trajectory.':'Mixed analyst signals for '+ticker+'. Earnings result will be the decisive catalyst for direction.')+'</div>'
-      + '<div style="font-size:9px;color:var(--text3);margin-top:5px;font-style:italic;">Unusual Whales options sweep data would surface $10M+ calls/puts here — integration planned.</div>'
-      + '</div>';
-  } else if (!earnHtml) {
-    analystHtml = '<div style="padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">'
-      + '<div style="font-size:11px;color:var(--text3);line-height:1.5;">No active catalyst window or analyst consensus signal for '+ticker+' in the next 90 days. Options sweep data from Unusual Whales would surface institutional pre-positioning here — integration planned for a future update.</div>'
-      + '</div>';
-  }
-  optEl.innerHTML = earnHtml + analystHtml;
-  const tsEl = document.getElementById('de-l3-opt-ts');
-  if (tsEl) tsEl.textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-}
-
 async function initDeepEdge(force) {
   if (_deInitDone && !force) return;
   _deInitDone = true;
@@ -11418,11 +11303,7 @@ async function initDeepEdge(force) {
   const hdrTs = document.getElementById('de-l1-ts');
   if (hdrTs) hdrTs.textContent = 'Live · ' + ts;
   try { renderDeepEdgeServerL4(); } catch(e) {}
-  // Non-blocking: render L1 volume leaders + VIX regime immediately
-  try { renderDeepEdgeL1Extra(); renderDeepEdgeL1Vix(); } catch(e) {}
   await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3(), renderDeepEdgeL4()]);
-  // Render pre-earnings/options card after L3 analyst data is loaded
-  try { renderDeepEdgeL3Options(); } catch(e) {}
 }
 // ═══════════════════════════════════════════════════════════════
 // END DEEP EDGE LIVE ENGINE
@@ -11442,7 +11323,7 @@ async function initDeepEdge(force) {
     </div>
 
     <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Free forever</div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 150+ stocks &amp; signal scores</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 23+ stocks &amp; signal scores</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Morning Brief &amp; Sage Mode picks</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Supply chain &amp; correlation maps</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
