@@ -817,6 +817,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="card-lbl">Your watchlist — quick view</div>
         <div id="morning-wl"><div style="font-size:11px;color:var(--text3);">Add tickers in the Watchlist tab</div></div>
       </div>
+      <div class="card" id="signal-tracker-card" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div class="card-lbl" style="margin-bottom:0;">Signal track record</div>
+          <span id="signal-tracker-winrate" style="font-size:10px;padding:2px 7px;border-radius:3px;background:var(--bg3);color:var(--text2);font-weight:600;"></span>
+        </div>
+        <div id="signal-tracker-list"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -2707,6 +2714,7 @@ async function initLiveScores() {
   // Re-render morning brief with freshly computed scores
   try { renderMorningBriefDynamic(); } catch(e) {}
   try { renderSageCard(); markSagePick(); } catch(e) {}
+  try { renderBriefWL(); renderSignalTracker(); } catch(e) {}
   // Save daily score snapshot AFTER live scores are computed (truth test uses this)
   try { _saveDailyScoreSnapshot(); } catch(e) {}
   // Update picks card label to confirm live scores
@@ -3516,6 +3524,9 @@ function renderSageCard() {
         <span style="font-size:11px;font-weight:600;color:${runner.score >= 75 ? 'var(--green)' : '#e07b00'};margin-left:auto;">${runner.score}/100</span>
        </div>`
     : '';
+
+  // Track this pick for signal resolution
+  try { trackSagePick(ticker, score, reasons); } catch(e) {}
 
   el.innerHTML = `
     <div style="border:0.5px solid var(--border2);border-left:3px solid #6366f1;border-radius:10px;padding:14px 16px;background:var(--bg2);position:relative;">
@@ -5963,7 +5974,7 @@ function gT(n,btn){
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=isMkt?'none':'flex';}catch(e){}
   if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();}catch(e){}},50);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();renderBriefWL();renderSignalTracker();}catch(e){}},50);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
@@ -11258,6 +11269,129 @@ async function initDeepEdge(force) {
 // END DEEP EDGE LIVE ENGINE
 // ═══════════════════════════════════════════════════════════════
 
+
+// ═══════════════════════════════════════════════════════════════
+// SIGNAL RESOLUTION TRACKER — P2-C
+// ═══════════════════════════════════════════════════════════════
+var _ST_KEY = 'ti72_signal_track';
+var _ST_WINDOW_DAYS = 10; // days before auto-resolving a signal
+
+function _stLoad() {
+  try { return JSON.parse(localStorage.getItem(_ST_KEY) || '[]'); } catch(e) { return []; }
+}
+function _stSave(arr) {
+  try { localStorage.setItem(_ST_KEY, JSON.stringify(arr.slice(-50))); } catch(e) {}
+}
+function _stGetPrice(sym) {
+  // Try live cache first, then TICKER_DATA
+  if (window.TICKER_LIVE_CACHE && TICKER_LIVE_CACHE[sym] && TICKER_LIVE_CACHE[sym].price)
+    return TICKER_LIVE_CACHE[sym].price;
+  if (typeof TICKER_DATA !== 'undefined' && TICKER_DATA[sym] && TICKER_DATA[sym].price)
+    return parseFloat(String(TICKER_DATA[sym].price).replace(/[^0-9.]/g,'')) || 0;
+  return 0;
+}
+
+function trackSagePick(ticker, score, reasons) {
+  var today = new Date().toISOString().slice(0,10);
+  var arr = _stLoad();
+  // Only one entry per ticker per day
+  if (arr.some(function(e){ return e.ticker === ticker && e.date === today; })) return;
+  var price = _stGetPrice(ticker);
+  arr.push({
+    id: Date.now(),
+    ticker: ticker,
+    score: score,
+    price: price,
+    date: today,
+    reasons: (reasons || []).slice(0,1),
+    status: 'open',
+    resolvedPrice: null,
+    resolvedDate: null,
+    pct: null
+  });
+  _stSave(arr);
+}
+
+function resolveSignals() {
+  var arr = _stLoad();
+  var changed = false;
+  var now = Date.now();
+  arr.forEach(function(e) {
+    if (e.status !== 'open') return;
+    var ageMs = now - new Date(e.date).getTime();
+    var ageDays = ageMs / 864e5;
+    if (ageDays < _ST_WINDOW_DAYS) return;
+    var curPrice = _stGetPrice(e.ticker);
+    if (!curPrice || !e.price) return;
+    var pct = ((curPrice - e.price) / e.price) * 100;
+    e.resolvedPrice = curPrice;
+    e.resolvedDate = new Date().toISOString().slice(0,10);
+    e.pct = Math.round(pct * 10) / 10;
+    e.status = pct >= 5 ? 'win' : pct <= -5 ? 'loss' : 'neutral';
+    changed = true;
+  });
+  if (changed) _stSave(arr);
+  return arr;
+}
+
+function renderSignalTracker() {
+  var card = document.getElementById('signal-tracker-card');
+  var list = document.getElementById('signal-tracker-list');
+  var wr   = document.getElementById('signal-tracker-winrate');
+  if (!card || !list) return;
+
+  var arr = resolveSignals();
+  var resolved = arr.filter(function(e){ return e.status !== 'open'; })
+                    .sort(function(a,b){ return b.id - a.id; }).slice(0,10);
+  var open = arr.filter(function(e){ return e.status === 'open'; })
+                .sort(function(a,b){ return b.id - a.id; }).slice(0,5);
+
+  if (resolved.length === 0 && open.length === 0) return;
+
+  card.style.display = '';
+
+  // Win rate
+  if (resolved.length >= 2) {
+    var wins = resolved.filter(function(e){ return e.status === 'win'; }).length;
+    var pct = Math.round(wins / resolved.length * 100);
+    wr.textContent = wins + '/' + resolved.length + ' · ' + pct + '% win rate';
+    wr.style.background = pct >= 60 ? 'var(--green-bg)' : pct >= 40 ? 'var(--amber-bg)' : 'var(--red-bg)';
+    wr.style.color = pct >= 60 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--red)';
+  }
+
+  var rows = '';
+
+  // Resolved rows
+  resolved.forEach(function(e) {
+    var icon  = e.status === 'win' ? '✓' : e.status === 'loss' ? '✗' : '→';
+    var color = e.status === 'win' ? 'var(--green)' : e.status === 'loss' ? 'var(--red)' : 'var(--text3)';
+    var pctStr = e.pct != null ? (e.pct >= 0 ? '+' : '') + e.pct + '%' : '';
+    var dateStr = e.date ? e.date.slice(5) : '';
+    rows += '<div style="display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('' + e.ticker + '')">'
+          + '<span style="font-size:13px;font-weight:700;color:' + color + ';width:14px;text-align:center;">' + icon + '</span>'
+          + '<span style="font-size:12px;font-weight:700;min-width:40px;">' + e.ticker + '</span>'
+          + '<span style="font-size:10px;color:var(--text3);flex:1;">' + dateStr + ' · score ' + e.score + '</span>'
+          + '<span style="font-size:12px;font-weight:700;color:' + color + ';">' + pctStr + '</span>'
+          + '</div>';
+  });
+
+  // Open (pending) rows
+  open.forEach(function(e) {
+    var ageD = Math.floor((Date.now() - new Date(e.date).getTime()) / 864e5);
+    var remaining = Math.max(0, _ST_WINDOW_DAYS - ageD);
+    rows += '<div style="display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;opacity:0.7;" onclick="openTicker('' + e.ticker + '')">'
+          + '<span style="font-size:11px;color:var(--text3);width:14px;text-align:center;">◎</span>'
+          + '<span style="font-size:12px;font-weight:700;min-width:40px;">' + e.ticker + '</span>'
+          + '<span style="font-size:10px;color:var(--text3);flex:1;">' + e.date.slice(5) + ' · score ' + e.score + '</span>'
+          + '<span style="font-size:10px;color:var(--text3);">' + remaining + 'd left</span>'
+          + '</div>';
+  });
+
+  list.innerHTML = rows || '<div style="font-size:11px;color:var(--text3);">No resolved signals yet — check back in 10 days.</div>';
+}
+// ═══════════════════════════════════════════════════════════════
+// END SIGNAL RESOLUTION TRACKER
+// ═══════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
 // PUSH NOTIFICATION — P2-A
 // ═══════════════════════════════════════════════════════════════
