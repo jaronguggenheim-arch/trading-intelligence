@@ -353,6 +353,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .suh{font-size:12px;font-weight:500;line-height:1.4;color:var(--text);padding-right:20px;}.sc-meta{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
 .tf-tag{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;border:0.5px solid;background:var(--bg3);color:var(--text2);border-color:var(--border2);}.tf-short{}.tf-mid{}.tf-long{}.tf-mixed{}
 .act-tag{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:700;border:0.5px solid;}.at-buy{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);}.at-add{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);}.at-hold{background:var(--bg3);color:var(--text2);border-color:var(--border2);}.at-skip{background:var(--bg3);color:var(--text3);border-color:var(--border);}.at-watch{background:var(--bg3);color:var(--text2);border-color:var(--border2);}
+.edge-bdg{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.4px;border:0.5px solid;}
+.eb-l1{background:rgba(59,130,246,0.1);color:#60a5fa;border-color:rgba(59,130,246,0.25);}
+.eb-l2{background:rgba(34,197,94,0.1);color:#4ade80;border-color:rgba(34,197,94,0.25);}
+.eb-l3{background:rgba(245,158,11,0.1);color:#fbbf24;border-color:rgba(245,158,11,0.25);}
+.eb-l4{background:rgba(168,85,247,0.1);color:#c084fc;border-color:rgba(168,85,247,0.25);}
+.eb-l5{background:rgba(148,163,184,0.1);color:#94a3b8;border-color:rgba(148,163,184,0.25);}
 .score-pill{font-size:10px;padding:2px 6px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:600;background:var(--bg3);color:var(--text2);}
 .b{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;display:inline-block;white-space:nowrap;border:0.5px solid var(--border2);}.b-r{background:var(--bg3);color:var(--text2);}.b-a{background:var(--bg3);color:var(--text2);}.b-g{background:var(--bg3);color:var(--text2);}.b-b{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);}.b-p{background:var(--bg3);color:var(--text2);}.b-gray{background:var(--bg3);color:var(--text3);}
 .ring{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;border:3px solid;}.ring-r{background:var(--bg3);border-color:var(--border2);color:var(--text);}.ring-a{background:var(--bg3);border-color:var(--border2);color:var(--text);}.ring-g{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}.ring-b{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}.ring-gray{background:var(--bg3);border-color:var(--border2);color:var(--text2);}
@@ -3460,6 +3466,54 @@ function getSagePick() {
   return { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals };
 }
 
+function _logSagePick(ticker, score) {
+  try {
+    const log = JSON.parse(localStorage.getItem('sage_picks_log') || '[]');
+    const today = new Date().toISOString().slice(0, 10);
+    if (log.length && log[0].date === today) return; // already logged today
+    log.unshift({ date: today, ticker, score });
+    if (log.length > 21) log.length = 21; // keep 3 weeks
+    localStorage.setItem('sage_picks_log', JSON.stringify(log));
+  } catch(e) {}
+}
+
+function _renderSageTrackRecord() {
+  try {
+    const log = JSON.parse(localStorage.getItem('sage_picks_log') || '[]');
+    const past = log.filter(function(p){ return p.date < new Date().toISOString().slice(0,10); });
+    if (past.length < 1) return '';
+    const hist = JSON.parse(localStorage.getItem('score_history_daily') || '{}');
+    const rows = past.slice(0, 7).map(function(p) {
+      const scoreAtPick = (hist[p.date] && hist[p.date][p.ticker] != null) ? hist[p.date][p.ticker] : p.score;
+      const scoreCurrent = (SCORES && SCORES[p.ticker]) ? SCORES[p.ticker] : p.score;
+      const delta = scoreCurrent - scoreAtPick;
+      const sign = delta > 0 ? '+' : '';
+      const color = delta > 2 ? '#22c55e' : delta < -2 ? '#ef4444' : '#94a3b8';
+      const arrow = delta > 2 ? '↑' : delta < -2 ? '↓' : '→';
+      const dateStr = new Date(p.date + 'T12:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric'});
+      return '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:0.5px solid var(--border);">'
+        + '<span onclick="openTicker(\'' + p.ticker + '\')" style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;cursor:pointer;color:var(--text);width:40px;flex-shrink:0;">' + p.ticker + '</span>'
+        + '<span style="font-size:10px;color:var(--text3);width:44px;flex-shrink:0;">' + dateStr + '</span>'
+        + '<span style="font-size:10px;color:var(--text3);">' + scoreAtPick + '/100</span>'
+        + '<span style="font-size:10px;color:var(--text3);margin-left:auto;padding-right:4px;">now ' + scoreCurrent + '</span>'
+        + '<span style="font-size:10px;font-weight:700;color:' + color + ';width:30px;text-align:right;">' + arrow + (delta !== 0 ? sign + delta : '') + '</span>'
+        + '</div>';
+    }).join('');
+    const winCount = past.slice(0, 7).filter(function(p){
+      const scoreAtPick = (hist[p.date] && hist[p.date][p.ticker] != null) ? hist[p.date][p.ticker] : p.score;
+      const scoreCurrent = (SCORES && SCORES[p.ticker]) ? SCORES[p.ticker] : p.score;
+      return scoreCurrent > scoreAtPick;
+    }).length;
+    const shown = Math.min(past.length, 7);
+    const winLabel = shown > 0 ? '<span style="font-size:9px;color:var(--text3);margin-left:auto;">' + winCount + '/' + shown + ' gained conviction</span>' : '';
+    return '<div style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);">'
+      + '<div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;">'
+      + '<span style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Recent Sage picks</span>'
+      + winLabel + '</div>'
+      + rows + '</div>';
+  } catch(e) { return ''; }
+}
+
 function renderSageCard() {
   const el = document.getElementById('sage-mode-card');
   if (!el) return;
@@ -3471,6 +3525,7 @@ function renderSageCard() {
   if (!pick) { el.innerHTML = ''; return; }
 
   const { ticker, score, reasons, catalyst, runner, action, actionColor, hasLiveSignals } = pick;
+  _logSagePick(ticker, score);
   const name = NAMES[ticker] || ticker;
   const scoreColor = score >= 75 ? 'var(--green)' : score >= 60 ? '#e07b00' : 'var(--text3)';
 
@@ -3540,6 +3595,7 @@ function renderSageCard() {
         <button onclick="gT('deepedge',document.querySelector('.nt[onclick*=&quot;deepedge&quot;]'))" style="font-size:11px;padding:5px 13px;border-radius:6px;border:0.5px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Deep Edge</button>
       </div>
       ${runnerHtml}
+      ${_renderSageTrackRecord()}
     </div>`;
 }
 
@@ -4358,6 +4414,25 @@ function _renderMorningSummaryBanner() {
   </div>`;
 }
 
+function _getEdgeBadge(t) {
+  try {
+    const ld = (typeof LAYER_DATA !== 'undefined') ? LAYER_DATA : {};
+    const layers = (ld[t] || []).filter(function(l){ return (l.pts||0) > 0; }).sort(function(a,b){ return (b.pts||0)-(a.pts||0); });
+    const LABELS = {l1:'L1 · Momentum',l2:'L2 · Insider',l3:'L3 · Analyst',l4:'L4 · Chain',l5:'L5 · Macro'};
+    if (layers.length) {
+      const lid = (layers[0].id || 'L1').toLowerCase();
+      return '<span class="edge-bdg eb-' + lid + '">' + (LABELS[lid] || layers[0].id) + '</span>';
+    }
+    // Fallback to server components
+    const comp = (typeof _SERVER_COMPONENTS !== 'undefined') ? (_SERVER_COMPONENTS[t] || null) : null;
+    if (comp) {
+      const best = ['l2','l3','l4','l1','l5'].find(function(k){ return (comp[k]||0) > 0; });
+      if (best) return '<span class="edge-bdg eb-' + best + '">' + (LABELS[best] || best.toUpperCase()) + '</span>';
+    }
+  } catch(e) {}
+  return '';
+}
+
 function _renderMorningPicksCard() {
   const el = document.getElementById('morning-picks-card');
   if (!el) return;
@@ -4423,10 +4498,11 @@ function _renderMorningPicksCard() {
     const tr = getScoreTrend(p.t);
     const trendHtml = tr ? `<span style="font-size:9px;font-weight:700;color:${tr.color};margin-left:3px;">${tr.arrow}${Math.abs(tr.delta)}</span>` : '';
     const ageHtml = tr ? `<span style="font-size:9px;color:var(--text3);margin-left:4px;">${tr.ageStr}</span>` : '';
+    const edgeBadge = _getEdgeBadge(p.t);
     return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}','score')">
       <div class="sul">${p.t} — Score ${p.s} · ${titleDesc}</div>
       <div class="suh">${bodyText}</div>
-      <div class="sc-meta"><span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span>${trendHtml}${ageHtml}</div>
+      <div class="sc-meta">${edgeBadge}<span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span>${trendHtml}${ageHtml}</div>
     </div>`;
   }).join('');
 
