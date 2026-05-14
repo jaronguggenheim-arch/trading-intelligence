@@ -5252,6 +5252,139 @@ function renderTkScore(sym){
   return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="card-lbl" style="margin-bottom:0;">5-Layer Signal Score</div><div style="font-size:22px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);">'+total+'<span style="font-size:13px;color:var(--text3);">/100</span>'+_tBadge+'</div></div>'+_tAge+liveIntelBlock+bars+'</div>';
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// CHAIN EVENT TIMELINE — P2-D
+// ═══════════════════════════════════════════════════════════════
+function renderChainTimeline(sym) {
+  var events = [];
+
+  // ── Source 1: Active chain windows ─────────────────────────────────────
+  var wm = window._CHAIN_SIGNALS && window._CHAIN_SIGNALS.windowMap;
+  if (wm && wm[sym]) {
+    wm[sym].forEach(function(w) {
+      events.push({
+        type: 'chain',
+        icon: '⚡',
+        date: w.triggeredAt ? new Date(w.triggeredAt).toISOString().slice(0,10) : null,
+        label: (NAMES[w.anchor] || w.anchor) + ' event',
+        detail: (w.desc || w.metric || 'Supply chain signal') + ' · lag ' + (w.lag || '?'),
+        status: 'active',
+        statusColor: 'var(--green)'
+      });
+    });
+  }
+
+  // ── Source 2: Analyst upgrades ──────────────────────────────────────────
+  var as = window._ANALYST_SIGNALS && window._ANALYST_SIGNALS.signals && window._ANALYST_SIGNALS.signals[sym];
+  if (as && as.ups && as.ups.length) {
+    as.ups.slice(0, 3).forEach(function(u) {
+      events.push({
+        type: 'analyst',
+        icon: '🔬',
+        date: u.date || null,
+        label: 'Analyst upgrade',
+        detail: (u.headline || '').slice(0, 80) + (u.headline && u.headline.length > 80 ? '…' : ''),
+        status: 'signal',
+        statusColor: '#6366f1'
+      });
+    });
+  }
+
+  // ── Source 3: Recent insider buys ───────────────────────────────────────
+  var ic = typeof INSIDER_CACHE !== 'undefined' && INSIDER_CACHE[sym];
+  if (ic && ic.txns) {
+    var buys = ic.txns.filter(function(t){ return t.change > 0; }).slice(0, 3);
+    buys.forEach(function(t) {
+      var val = Math.abs(t.change * (t.transactionPrice || 0));
+      var valStr = val >= 1e6 ? '$' + (val/1e6).toFixed(1) + 'M' : val >= 1e3 ? '$' + Math.round(val/1e3) + 'K' : '';
+      events.push({
+        type: 'insider',
+        icon: '👁',
+        date: t.transactionDate || null,
+        label: (t.name || 'Insider') + ' buy' + (valStr ? ' ' + valStr : ''),
+        detail: t.name || '',
+        status: 'insider',
+        statusColor: '#f59e0b'
+      });
+    });
+  }
+
+  // ── Source 4: Score spikes from history ─────────────────────────────────
+  try {
+    var hist = JSON.parse(localStorage.getItem('score_history') || '[]');
+    var prev = null;
+    hist.slice(-14).forEach(function(snap) {
+      if (!snap || !snap.scores || !snap.scores[sym]) return;
+      var cur = snap.scores[sym];
+      if (prev !== null && cur - prev >= 5) {
+        events.push({
+          type: 'score',
+          icon: '📈',
+          date: snap.date || null,
+          label: 'Score spike +' + (cur - prev) + 'pts',
+          detail: 'Score moved ' + prev + ' → ' + cur,
+          status: 'score',
+          statusColor: 'var(--green)'
+        });
+      }
+      prev = cur;
+    });
+  } catch(e) {}
+
+  // ── Source 5: Past Sage picks for this stock ─────────────────────────────
+  try {
+    var tracked = JSON.parse(localStorage.getItem('ti72_signal_track') || '[]');
+    tracked.filter(function(e){ return e.ticker === sym; }).slice(0, 3).forEach(function(e) {
+      var outcomeStr = e.status === 'win' ? ' · +' + e.pct + '%' :
+                       e.status === 'loss' ? ' · ' + e.pct + '%' :
+                       e.status === 'neutral' ? ' · flat' : ' · pending';
+      var outcomeColor = e.status === 'win' ? 'var(--green)' : e.status === 'loss' ? 'var(--red)' : 'var(--text3)';
+      events.push({
+        type: 'sage',
+        icon: '🌿',
+        date: e.date || null,
+        label: 'Sage pick · score ' + e.score + outcomeStr,
+        detail: (e.reasons && e.reasons[0]) || '',
+        status: e.status === 'open' ? 'tracking' : e.status,
+        statusColor: outcomeColor
+      });
+    });
+  } catch(e) {}
+
+  // ── Sort by date descending ─────────────────────────────────────────────
+  events.sort(function(a, b) {
+    var da = a.date ? new Date(a.date).getTime() : 0;
+    var db = b.date ? new Date(b.date).getTime() : 0;
+    return db - da;
+  });
+
+  if (!events.length) return '';
+
+  var rows = events.map(function(ev) {
+    var dateStr = ev.date ? ev.date.slice(5) : '—';
+    return '<div style="display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);">'
+      + '<div style="font-size:15px;width:22px;flex-shrink:0;padding-top:1px;">' + ev.icon + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+      +   '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+      +     '<span style="font-size:12px;font-weight:600;">' + ev.label + '</span>'
+      +     '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--bg3);color:' + ev.statusColor + ';">' + ev.status.toUpperCase() + '</span>'
+      +   '</div>'
+      +   (ev.detail ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;line-height:1.45;">' + ev.detail + '</div>' : '')
+      + '</div>'
+      + '<div style="font-size:10px;color:var(--text3);flex-shrink:0;padding-top:2px;">' + dateStr + '</div>'
+      + '</div>';
+  }).join('');
+
+  return '<div class="card" style="margin-top:12px;">'
+    + '<div class="card-lbl">Propagation timeline</div>'
+    + rows
+    + '</div>';
+}
+// ═══════════════════════════════════════════════════════════════
+// END CHAIN EVENT TIMELINE
+// ═══════════════════════════════════════════════════════════════
+
 function renderTkChain(sym){
   const el = document.getElementById('tk-chain');
   const chain = CHAIN_GRAPH[sym];
@@ -5345,6 +5478,7 @@ function renderTkChain(sym){
     }, 50);
   }
 
+  html += renderChainTimeline(sym);
   return html;
 }
 
