@@ -2535,16 +2535,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 // ── API HELPERS — proxy when on Vercel, direct when user has own key ──
 const IS_VERCEL = window.location.protocol !== 'file:';
 function fhURL(path, params={}) {
-  if (S.fh) return `https://finnhub.io/api/v1/${path}?${new URLSearchParams({...params, token:S.fh})}`;
+  // On Vercel, always route through /api/fh proxy — never expose key in browser
+  if (!IS_VERCEL && S.fh) return `https://finnhub.io/api/v1/${path}?${new URLSearchParams({...params, token:S.fh})}`;
   return `/api/fh?${new URLSearchParams({path, ...params})}`;
 }
 function tdURL(endpoint, params={}) {
-  if (S.td) return `https://api.twelvedata.com/${endpoint}?${new URLSearchParams({...params, apikey:S.td})}`;
+  // On Vercel, always route through /api/td proxy — never expose key in browser
+  if (!IS_VERCEL && S.td) return `https://api.twelvedata.com/${endpoint}?${new URLSearchParams({...params, apikey:S.td})}`;
   return `/api/td?${new URLSearchParams({endpoint, ...params})}`;
 }
 
 const S=(function(){
-  const def={pin:null,av:null,fh:null,td:null,focusTicker:null,unlocked:false,pTab:null,pBtn:null,pos:[],hist:[],
+  const def={pin:null,av:null,fh:null,td:null,focusTicker:'NVDA',unlocked:false,pTab:null,pBtn:null,pos:[],hist:[],
     wl:['NVDA','ASML','AMD','RKLB','PLTR','META','TSM','SMCI'],paperPos:[],paperMode:false,
     sellTarget:null,sellWhy:'',realised:0,budget:parseInt(localStorage.getItem('ti72_budget'))||1200,prevTab:'morning',activeSector:null,activeTab:'landing'};
   try{
@@ -2553,7 +2555,7 @@ const S=(function(){
       av:localStorage.getItem('ti72_av'),
       fh:localStorage.getItem('ti72_fh'),
       td:localStorage.getItem('ti72_td'),
-      focusTicker:null,
+      focusTicker:localStorage.getItem('ti72_focusTicker')||'NVDA',
       unlocked:false,pTab:null,pBtn:null,
       pos:JSON.parse(localStorage.getItem('ti72_pos')||'[]'),
       hist:JSON.parse(localStorage.getItem('ti72_hist')||'[]'),
@@ -6230,7 +6232,7 @@ const tv=S.pos.reduce((a,p)=>a+p.s*p.cur,0),tc=S.pos.reduce((a,p)=>a+p.s*p.p,0),
 
 function renderHist(){const el=document.getElementById('trade-hist');if(!S.hist.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);padding:8px 0;">No trades yet</div>';return;}el.innerHTML=S.hist.slice(0,10).map(h=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:11px;"><span style="width:46px;font-weight:700;font-size:10px;color:${h.type==='SELL'?'var(--red)':h.type==='PAPER'?'var(--blue)':'var(--green)'};">${h.type}</span><span style="font-family:'DM Mono',monospace;font-weight:600;width:44px;">${h.t}</span><span style="flex:1;color:var(--text2);">${h.shares}sh @ $${h.price} · ${h.date}</span>${h.type==='SELL'?`<span style="font-weight:600;color:${parseFloat(h.pnl)>=0?'var(--green)':'var(--red)'};">${parseFloat(h.pnl)>=0?'+':''}$${h.pnl}</span>`:''}<span style="font-size:10px;color:var(--text3);font-style:italic;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.why}</span></div>`).join('');}
 
-function updateBudget(){S.budget=parseInt(document.getElementById('budget-slider').value);document.getElementById('budget-display').textContent='$'+S.budget.toLocaleString();document.getElementById('core-amt').textContent='$'+Math.round(S.budget*0.4);document.getElementById('trend-amt').textContent='$'+Math.round(S.budget*0.4);document.getElementById('risk-amt').textContent='$'+Math.round(S.budget*0.2);const weights=[{id:'alloc-asml',w:.29},{id:'alloc-nvda',w:.21},{id:'alloc-rklb',w:.17},{id:'alloc-pltr',w:.17},{id:'alloc-cash',w:.16}];weights.forEach(w=>{const el=document.getElementById(w.id);if(el)el.textContent='$'+Math.round(S.budget*w.w);});}
+function updateBudget(){const _bs=document.getElementById('budget-slider');if(!_bs)return;S.budget=parseInt(_bs.value);document.getElementById('budget-display').textContent='$'+S.budget.toLocaleString();document.getElementById('core-amt').textContent='$'+Math.round(S.budget*0.4);document.getElementById('trend-amt').textContent='$'+Math.round(S.budget*0.4);document.getElementById('risk-amt').textContent='$'+Math.round(S.budget*0.2);const weights=[{id:'alloc-asml',w:.29},{id:'alloc-nvda',w:.21},{id:'alloc-rklb',w:.17},{id:'alloc-pltr',w:.17},{id:'alloc-cash',w:.16}];weights.forEach(w=>{const el=document.getElementById(w.id);if(el)el.textContent='$'+Math.round(S.budget*w.w);});}
 
 function gT(n,btn){
   const mktTabs=['landing','about'];
@@ -6732,7 +6734,8 @@ function updateFocusBar() {
 }
 
 function setFocusTicker(ticker) {
-  S.focusTicker = ticker || null;
+  S.focusTicker = ticker || 'NVDA';
+  try { localStorage.setItem('ti72_focusTicker', S.focusTicker); } catch(e) {}
   updateFocusBar();
   // Re-render whatever tab is active
   const t = S.activeTab;

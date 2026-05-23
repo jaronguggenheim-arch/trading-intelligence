@@ -323,6 +323,10 @@ Return ONLY: ["observation1", "observation2", "observation3"]`;
 // ── Main computation ──────────────────────────────────────────────────────────
 async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
   const today = new Date().toISOString().slice(0, 10);
+  const startMs = Date.now();
+  // Hard deadline: write whatever we have at 50s so Vercel doesn't kill the function
+  // before KV write completes (Hobby plan: 60s max per invocation).
+  const DEADLINE_MS = 50_000;
 
   // ── Phase 1: Fetch all data in batches ─────────────────────────────────────
   const quoteMap = {};
@@ -333,10 +337,11 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
   const spyQuote = await fhFetch('quote', { symbol: 'SPY' }, fhKey);
   const spyDp = spyQuote?.dp || 0;
 
-  // BATCH = 3: fires 3 tickers × 3 endpoints = 9 concurrent Finnhub calls per batch.
-  // Finnhub free tier bursts at ~30/s but sustained concurrency >10 triggers 429s.
-  // 150 tickers / 3 = 50 batches × 2s delay = ~100s total — well within 300s limit.
-  const BATCH = 3;
+  // BATCH = 6: fires 6 tickers × 3 endpoints = 18 concurrent Finnhub calls per batch.
+  // 150 tickers / 6 = 25 batches × 1s delay = ~25s for Phase 1.
+  // Keeps total cron execution under Vercel Hobby's 60s serverless function limit.
+  // Server-side key (FH_KEY env var) has a higher sustained rate than browser free keys.
+  const BATCH = 6;
   for (let i = 0; i < ALL_TICKERS.length; i += BATCH) {
     const batch = ALL_TICKERS.slice(i, i + BATCH);
 
@@ -355,9 +360,11 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
       if (insiders[idx]?.status === 'fulfilled') insiderMap[t] = insiders[idx].value;
     });
 
-    // 2s between batches — 9 calls settled before next 9 start, no burst spikes
+    // 1s between batches — keeps total Phase 1 time ~25s, well within 60s limit
     if (i + BATCH < ALL_TICKERS.length) {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 1000));
+      // Deadline guard: if we're past 45s, stop fetching and work with what we have
+      if (Date.now() - startMs > 45_000) break;
     }
   }
 
@@ -393,10 +400,9 @@ async function computeAndStore(fhKey, kvUrl, kvToken, anthropicKey) {
   }
 
   // ── Phase 3: Generate Claude narratives — top 35 stocks only ─────────────
-  // Limiting to top scorers keeps cron well under the 60s Vercel function limit.
-  // Lower-scoring stocks get narratives on their next score climb.
+  // Skip if we're already past 35s — prioritise getting scores into KV over narratives.
   const signals = {};
-  if (anthropicKey) {
+  if (anthropicKey && (Date.now() - startMs) < 35_000) {
     const NARRATIVE_LIMIT = 35;
     const topTickers = Object.entries(scores)
       .sort((a, b) => b[1] - a[1])
