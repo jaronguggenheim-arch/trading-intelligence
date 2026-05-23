@@ -5665,7 +5665,7 @@ async function fillTickerLive(sym) {
   if (IS_VERCEL) {
     try {
       const cik = (typeof EDGAR_CIKS !== 'undefined' && EDGAR_CIKS[sym]) ? EDGAR_CIKS[sym] : '';
-      const url = `/api/news?ticker=${sym}${cik ? '&cik=' + cik : ''}`;
+      const url = `/api/edgar?type=news&ticker=${sym}${cik ? '&cik=' + cik : ''}`;
       const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
       if (resp.ok && window._tkSym === sym) {
         const freeData = await resp.json();
@@ -11117,7 +11117,7 @@ async function _initCapexDashboard(force) {
 
   const results = await Promise.allSettled(
     _CAPEX_STOCKS.map(s =>
-      fetch(`/api/fundamentals?ticker=${s.ticker}&cik=${s.cik}`, { signal: AbortSignal.timeout(12000) })
+      fetch(`/api/edgar?type=fundamentals&ticker=${s.ticker}&cik=${s.cik}`, { signal: AbortSignal.timeout(12000) })
         .then(r => r.ok ? r.json() : null)
         .catch(() => null)
     )
@@ -11189,7 +11189,7 @@ async function _fillModalFundamentals(sym, el) {
   }
   el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Fetching SEC filings…</div>';
   try {
-    const resp = await fetch('/api/fundamentals?ticker=' + sym + '&cik=' + cik, { signal: AbortSignal.timeout(12000) });
+    const resp = await fetch('/api/edgar?type=fundamentals&ticker=' + sym + '&cik=' + cik, { signal: AbortSignal.timeout(12000) });
     if (!resp.ok || window._tkSym !== sym) return;
     const data = await resp.json();
     if (!data.ok) { el.innerHTML = '<div style="font-size:11px;color:var(--text3);">SEC XBRL data unavailable for ' + sym + '.</div>'; return; }
