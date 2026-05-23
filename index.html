@@ -5216,9 +5216,8 @@ function _chartXLabel(dt, tf) {
     const parts = dt.split('-');
     const yr = parseInt(parts[0]), mo = parseInt(parts[1])-1, day = parseInt(parts[2]);
     if (tf === '1M' || tf === '3M') return months[mo] + ' ' + day;
-    if (tf === '6M' || tf === '1Y') return months[mo];
-    // 5Y
-    return "'" + String(yr).slice(2);
+    // 6M, 1Y, 5Y — always show month + short year so cross-year boundaries are clear
+    return months[mo] + " '" + String(yr).slice(2);
   }
 }
 
