@@ -1765,18 +1765,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="g2" style="margin-bottom:16px;">
     <div class="card">
       <div class="card-lbl">Dark pool clustering — institutional accumulation</div>
-      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
-        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ Unusual Whales integration — coming soon</div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">Dark pool prints are off-exchange institutional block trades. When a single institution buys $200M+ of one stock across 5 sessions at the same price, they're building a cost basis — not reacting to news. That price level becomes mechanical support. We're wiring Unusual Whales to surface these prints live when they happen.</div>
-        <div style="font-size:10px;color:var(--text3);font-style:italic;">Why it matters: dark pool accumulation at a specific price level historically precedes a breakout 60–70% of the time within 30 days. It's one of the clearest leading signals available.</div>
+      <div style="padding:12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">
+        <div id="de-dp-body" style="margin-bottom:6px;"><div style="font-size:10px;color:var(--text3);">Scanning volume anomalies…</div></div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Silent accumulation = elevated volume + price flat = institutions building a cost basis. Breakout typically follows within 30 days, 60–70% of the time.</div>
       </div>
     </div>
     <div class="card">
       <div class="card-lbl">GEX — gamma exposure price gravity</div>
-      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
-        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ GEX live calculation — coming soon</div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">Gamma Exposure measures how market makers must hedge as price moves. Positive GEX = dealers buy dips and sell rips, creating a magnetic, low-volatility drift. Negative GEX = dealers amplify moves in both directions. The flip point between positive and negative GEX is the most powerful price gravity level in the short term — physics, not thesis.</div>
-        <div style="font-size:10px;color:var(--text3);font-style:italic;">Wiring live GEX calculation from options chain data. Resets every Friday at market close.</div>
+      <div style="padding:12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">
+        <div id="de-gex-body" style="margin-bottom:6px;"><div style="font-size:10px;color:var(--text3);">Computing price structure…</div></div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Positive GEX = dealers long gamma = buy dips, sell rips = low-vol drift higher. RSI + MA position is the free proxy: above MA20 with RSI 45–65 = positive GEX regime.</div>
       </div>
     </div>
   </div>
@@ -1819,10 +1817,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
     <div class="card">
       <div class="card-lbl">Options flow — institutional pre-positioning</div>
-      <div style="padding:12px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);">
-        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;">⚡ Options flow — coming soon</div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px;">An options sweep is a large, aggressive order that fills across multiple exchanges simultaneously — meaning the buyer needed to fill immediately regardless of price. That urgency is the signal. Sweeps of $10M+ on calls with short expirations, placed above the ask, are one of the clearest pre-earnings positioning signals available. We're wiring Unusual Whales to detect these in real time.</div>
-        <div style="font-size:10px;color:var(--text3);font-style:italic;">Signal: single transactions above-ask, no hedge, $10M+ size — pure directional institutional bets.</div>
+      <div style="padding:12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">
+        <div id="de-opts-body" style="margin-bottom:6px;"><div style="font-size:10px;color:var(--text3);">Loading pre-earnings windows…</div></div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">High convergence score + earnings within 21 days = classic pre-positioning window. Institutional options sweeps concentrate here — rising score momentum is the free proxy.</div>
       </div>
     </div>
   </div>
@@ -11762,6 +11759,104 @@ function renderDeepEdgeServerL4() {
   </div>`;
 }
 
+// ── Deep Edge: Volume cluster (dark pool proxy) ───────────────────
+async function _initVolumeCluster() {
+  const el = document.getElementById('de-dp-body');
+  if (!el || el._r) return;
+  el._r = true;
+  try {
+    const tickers = Object.entries(SCORES||{}).sort((a,b)=>b[1]-a[1]).slice(0,8).map(e=>e[0]);
+    if (!tickers.length) { el.innerHTML=''; return; }
+    const now=Math.floor(Date.now()/1000), from=now-40*86400;
+    const results=[];
+    await Promise.all(tickers.map(async sym => {
+      try {
+        const d=await fetch(fhURL('stock/candle',{symbol:sym,resolution:'D',from,to:now})).then(r=>r.json());
+        if (!d.v||d.v.length<15) return;
+        const vols=d.v, prices=d.c, n=vols.length;
+        const r5=vols.slice(-5).reduce((a,b)=>a+b,0)/5;
+        const rBase=vols.slice(0,Math.max(n-5,1)).reduce((a,b)=>a+b,0)/Math.max(n-5,1);
+        const ratio=rBase>0?r5/rBase:1;
+        const pct=prices[n-6]>0?(prices[n-1]-prices[n-6])/prices[n-6]*100:0;
+        results.push({sym,ratio,pct});
+      } catch(e){}
+    }));
+    results.sort((a,b)=>b.ratio-a.ratio);
+    const anomalies=results.filter(r=>r.ratio>1.4);
+    if (!anomalies.length) {
+      el.innerHTML='<div style="font-size:11px;color:var(--text3);font-style:italic;">No volume anomalies in top stocks — patterns within normal range.</div>';
+      return;
+    }
+    let h='';
+    for (const r of anomalies.slice(0,5)) {
+      const silent=r.ratio>1.4&&Math.abs(r.pct)<2.5;
+      const dist=r.ratio>1.4&&r.pct<-3;
+      const clr=silent?'var(--green)':dist?'var(--red)':'var(--amber)';
+      const lbl=silent?'Silent accumulation':dist?'Distribution':'Elevated volume';
+      h+=`<div onclick="openTicker('${r.sym}')" style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border);cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;font-weight:700;font-family:'DM Mono',monospace;color:var(--blue);">${r.sym}</span><span style="font-size:10px;font-weight:600;color:${clr};">${lbl}</span></div><div style="font-size:10px;color:var(--text3);">${r.ratio.toFixed(1)}x vol · ${r.pct>=0?'+':''}${r.pct.toFixed(1)}% (5d)</div></div>`;
+    }
+    el.innerHTML=h;
+  } catch(e){el.innerHTML='<div style="font-size:10px;color:var(--text3);">Volume scan unavailable.</div>';}
+}
+
+// ── Deep Edge: Price structure (GEX proxy) ────────────────────────
+async function _initPriceStructure() {
+  const el = document.getElementById('de-gex-body');
+  if (!el || el._r) return;
+  el._r = true;
+  const sym = S.focusTicker||'NVDA';
+  try {
+    const now=Math.floor(Date.now()/1000);
+    const d=await fetch(fhURL('stock/candle',{symbol:sym,resolution:'D',from:now-70*86400,to:now})).then(r=>r.json());
+    if (!d.c||d.c.length<20){el.innerHTML='';return;}
+    const c=d.c,n=c.length;
+    let g=0,l=0;
+    for(let i=n-14;i<n;i++){const df=c[i]-c[i-1];df>0?g+=df:l-=df;}
+    const rsi=Math.round(l===0?100:100-100/(1+(g/l)));
+    const ma20=c.slice(-20).reduce((a,b)=>a+b,0)/20;
+    const ma50=c.slice(-Math.min(50,n)).reduce((a,b)=>a+b,0)/Math.min(50,n);
+    const price=c[n-1],dist20=((price-ma20)/ma20*100).toFixed(1);
+    const abv20=price>ma20,abv50=price>ma50;
+    let regime,rclr,rdesc;
+    if (rsi>70){regime='Negative GEX zone — momentum extended';rclr='var(--red)';rdesc='RSI >70: dealers short gamma → moves amplified. Watch for exhaustion.';}
+    else if (rsi<30){regime='Negative GEX zone — oversold momentum';rclr='var(--red)';rdesc='RSI <30: downside self-reinforcing. Watch for reversal exhaustion signal.';}
+    else if (abv20&&abv50&&rsi>=45&&rsi<=65){regime='Positive GEX zone — controlled drift';rclr='var(--green)';rdesc='Above both MAs, RSI neutral: dealers long gamma → buy dips, sell rips. Low-vol grind typical.';}
+    else{regime='Transitional — watch for clarity';rclr='var(--amber)';rdesc='Mixed structure. Monitor MA20 reclaim or RSI direction for next regime.';}
+    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:700;font-family:'DM Mono',monospace;color:var(--blue);cursor:pointer;" onclick="openTicker('${sym}')">${sym}</span><span style="font-size:10px;font-weight:600;color:${rclr};">${regime}</span></div><div style="display:flex;gap:12px;margin-bottom:5px;"><span style="font-size:10px;color:var(--text3);">RSI(14): <b style="color:var(--text);">${rsi}</b></span><span style="font-size:10px;color:var(--text3);">vs MA20: <b style="color:${abv20?'var(--green)':'var(--red)'};">${dist20>0?'+':''}${dist20}%</b></span><span style="font-size:10px;color:var(--text3);">MA50: <b style="color:${abv50?'var(--green)':'var(--red)'};">${abv50?'Above':'Below'}</b></span></div><div style="font-size:10px;color:var(--text3);font-style:italic;">${rdesc}</div>`;
+  } catch(e){el.innerHTML=`<div style="font-size:10px;color:var(--text3);">Price structure unavailable for ${sym}.</div>`;}
+}
+
+// ── Deep Edge: Pre-earnings positioning (options flow proxy) ──────
+function _initPreEarningsFlow() {
+  const el = document.getElementById('de-opts-body');
+  if (!el || el._r) return;
+  el._r = true;
+  try {
+    const today=new Date().toISOString().slice(0,10);
+    const in21=new Date(Date.now()+21*86400*1000).toISOString().slice(0,10);
+    const hist=JSON.parse(localStorage.getItem('score_history_daily')||'{}');
+    const dates=Object.keys(hist).sort();
+    const oldDate=dates[0];
+    const cats=UPCOMING_CATALYSTS||{};
+    const upcoming=Object.entries(cats).filter(([,v])=>{const d=v.date||'';return d>=today&&d<=in21;});
+    if (!upcoming.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);font-style:italic;">No major earnings in next 21 days for tracked stocks.</div>';return;}
+    const scored=upcoming.map(([sym,v])=>{
+      const score=(SCORES||{})[sym]||50;
+      const oldScore=oldDate&&hist[oldDate]?hist[oldDate][sym]:score;
+      const delta=score-(oldScore||score);
+      const daysOut=Math.round((new Date(v.date)-new Date())/86400000);
+      return{sym,score,delta,daysOut,note:v.note||v.label};
+    }).sort((a,b)=>b.score-a.score);
+    let h='';
+    for (const e of scored.slice(0,5)) {
+      const sclr=e.score>=75?'var(--green)':e.score>=60?'var(--amber)':'var(--text3)';
+      const rising=e.delta>5;
+      h+=`<div onclick="openTicker('${e.sym}')" style="padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;"><div style="display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:7px;"><span style="font-size:11px;font-weight:700;font-family:'DM Mono',monospace;color:var(--blue);">${e.sym}</span><span style="font-size:10px;color:var(--text3);">earnings in ${e.daysOut}d</span>${rising?`<span style="font-size:9px;font-weight:700;color:var(--green);">⬆ +${e.delta.toFixed(0)}pt</span>`:''}</div><span style="font-size:11px;font-weight:700;color:${sclr};">${e.score}</span></div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${e.note}</div></div>`;
+    }
+    el.innerHTML=h;
+  } catch(err){el.innerHTML='<div style="font-size:10px;color:var(--text3);">Loading earnings windows…</div>';}
+}
+
 async function initDeepEdge(force) {
   if (_deInitDone && !force) return;
   _deInitDone = true;
@@ -11769,6 +11864,9 @@ async function initDeepEdge(force) {
   const hdrTs = document.getElementById('de-l1-ts');
   if (hdrTs) hdrTs.textContent = 'Live · ' + ts;
   try { renderDeepEdgeServerL4(); } catch(e) {}
+  try { _initPreEarningsFlow(); } catch(e) {}
+  _initVolumeCluster();
+  _initPriceStructure();
   await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3(), renderDeepEdgeL4()]);
 }
 // ═══════════════════════════════════════════════════════════════
