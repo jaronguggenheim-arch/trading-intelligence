@@ -498,7 +498,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="lp-stat-dot"></div>
     <div class="lp-stat"><span class="lp-stat-num">5</span><span>signal layers</span></div>
     <div class="lp-stat-dot"></div>
-    <div class="lp-stat"><span class="lp-stat-num">150+</span><span>signals analyzed daily</span></div>
+    <div class="lp-stat"><span class="lp-stat-num" id="lp-stat-signals">875+</span><span>signals analyzed daily</span></div>
     <div class="lp-stat-dot"></div>
     <div class="lp-stat"><span class="lp-stat-num" id="lp-stat-score">—</span><span>avg conviction score</span></div>
   </div>
@@ -6227,6 +6227,8 @@ function initLandingDynamic(){
       var avg = Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
       statScore.textContent = avg;
     }
+    var statSignals = document.getElementById('lp-stat-signals');
+    if(statSignals) statSignals.textContent = (Object.keys(SCORES).length * 5) + '+';
 
     // ── Score cards ──
     var cardsEl = document.getElementById('lp-score-cards-dyn');
@@ -11968,7 +11970,7 @@ async function initDeepEdge(force) {
     </div>
 
     <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Free forever</div>
-    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 23+ stocks &amp; signal scores</div></div></div>
+    <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">All 175+ stocks &amp; signal scores</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Morning Brief &amp; Sage Mode picks</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Supply chain &amp; correlation maps</div></div></div>
     <div class="pro-row"><div class="pr-icon">✅</div><div><div class="pr-label">Sector heatmap &amp; deep signals</div></div></div>
