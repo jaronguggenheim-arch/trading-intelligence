@@ -5471,7 +5471,7 @@ async function fetchTickerLive(sym) {
       ? profile.description.slice(0, 400) + (profile.description.length > 400 ? '…' : '')
       : 'No company description available from Finnhub.';
 
-    const result = { price, change, up, mktcap, vol, week52, name, desc, news: Array.isArray(news) ? news.slice(0, 20) : [], ts: Date.now() };
+    const result = { price, change, up, dp: quote.dp || 0, mktcap, vol, week52, name, desc, news: Array.isArray(news) ? news.slice(0, 20) : [], ts: Date.now() };
     TICKER_LIVE_CACHE[sym] = result;
     return result;
   } catch(e) { console.warn('fetchTickerLive error', e); return null; }
@@ -5728,6 +5728,56 @@ function getSectorMacroAdjust(ticker) {
   if (defense.has(ticker)) return 1;
   if (techAI.has(ticker))  return -1;
   return 0;
+}
+
+// ── Sector heat: live daily % from cached quotes ─────────────────
+const _SECTOR_PROXIES = {
+  AI:['NVDA','META','PLTR'],Semis:['NVDA','ASML','AMD'],Energy:['VST','XOM','CEG'],
+  Defense:['LMT','RTX','NOC'],Fintech:['V','MA','COIN'],Cloud:['MSFT','GOOGL','AMZN'],
+  Biotech:['LLY','ABBV','MRK'],Auto:['TSLA','F','GM'],Space:['RKLB','LMT'],Luxury:['AAPL','WMT','COST']
+};
+
+async function _updateSectorHeat() {
+  if (!IS_VERCEL && !((typeof S !== 'undefined') && S.fh)) return;
+  try {
+    // Collect all unique proxy tickers
+    const allSyms=[...new Set(Object.values(_SECTOR_PROXIES).flat())];
+    // Fetch any not yet cached (fire all in parallel, lightweight quote only)
+    await Promise.all(allSyms.map(async sym => {
+      if (TICKER_LIVE_CACHE[sym]&&Date.now()-TICKER_LIVE_CACHE[sym].ts<300000) return;
+      try {
+        const q=await fetch(fhURL('quote',{symbol:sym})).then(r=>r.json());
+        if (!TICKER_LIVE_CACHE[sym]) TICKER_LIVE_CACHE[sym]={};
+        TICKER_LIVE_CACHE[sym].dp=q.dp||0;
+        TICKER_LIVE_CACHE[sym].ts=Date.now();
+      } catch(e){}
+    }));
+    // Compute sector averages
+    const sectorDp={};
+    for (const [sector, syms] of Object.entries(_SECTOR_PROXIES)) {
+      const dps=syms.map(s=>TICKER_LIVE_CACHE[s]?.dp).filter(v=>v!=null);
+      if (dps.length) sectorDp[sector]=dps.reduce((a,b)=>a+b,0)/dps.length;
+    }
+    // Map sector name → dp (handles name variants in HTML)
+    const nameMap={AI:'AI',Semis:'Semis',Energy:'Energy',Defense:'Defense',Fintech:'Fintech',Cloud:'Cloud',Biotech:'Biotech',Auto:'Auto',Space:'Space',Luxury:'Luxury','Auto/EV':'Auto','Auto EV':'Auto'};
+    // Update all hcell elements
+    document.querySelectorAll('.hcell').forEach(cell => {
+      const nameEl=cell.querySelector('.hcn');
+      const valEl=cell.querySelector('.hcv');
+      if (!nameEl||!valEl) return;
+      const sector=nameMap[nameEl.textContent.trim()]||nameEl.textContent.trim();
+      const dp=sectorDp[sector];
+      if (dp==null) return;
+      const pct=dp.toFixed(1);
+      valEl.textContent=(dp>=0?'+':'')+pct+'%';
+      cell.className=cell.className.replace(/\bhc-[hkwcb]\b/g,'');
+      if (dp>2) cell.classList.add('hc-h');
+      else if (dp>0.5) cell.classList.add('hc-w');
+      else if (dp>-0.5) cell.classList.add('hc-w');
+      else if (dp>-2) cell.classList.add('hc-c');
+      else cell.classList.add('hc-k');
+    });
+  } catch(e){}
 }
 
 // ── Market Pulse: live VIX + Fear/Greed proxy ─────────────────────
@@ -6126,8 +6176,8 @@ function gT(n,btn){
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=isMkt?'none':'flex';}catch(e){}
   if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();_updateMarketPulse();}catch(e){}},50);}
-  if(n==='markets'){setTimeout(function(){try{_updateMarketPulse();}catch(e){}},80);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();_updateMarketPulse();_updateSectorHeat();}catch(e){}},50);}
+  if(n==='markets'){setTimeout(function(){try{_updateMarketPulse();_updateSectorHeat();}catch(e){}},80);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
