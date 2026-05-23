@@ -744,8 +744,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div>
       <div class="card" style="margin-bottom:12px;">
         <div class="card-lbl">Market pulse</div>
-        <div class="mw"><div class="mt2"><span class="ml">Fear & Greed</span><span class="mv up">62 — Greed</span></div><div class="mb"><div class="mf" style="width:62%;background:var(--green);"></div></div></div>
-        <div class="mw"><div class="mt2"><span class="ml">VIX</span><span class="mv up">16.4 — Low</span></div><div class="mb"><div class="mf" style="width:22%;background:var(--blue);"></div></div></div>
+        <div class="mw"><div class="mt2"><span class="ml">Fear & Greed</span><span class="mv up" data-pulse="fg-val">62 — Greed</span></div><div class="mb"><div class="mf" data-pulse="fg-bar" style="width:62%;background:var(--green);"></div></div></div>
+        <div class="mw"><div class="mt2"><span class="ml">VIX</span><span class="mv up" data-pulse="vix-val">16.4 — Low</span></div><div class="mb"><div class="mf" data-pulse="vix-bar" style="width:22%;background:var(--blue);"></div></div></div>
         <div class="mw"><div class="mt2"><span class="ml">Put/Call Ratio</span><span class="mv up">0.82 — Bullish</span></div><div class="mb"><div class="mf" style="width:41%;background:var(--green);"></div></div></div>
         <div class="div"></div>
         <div class="card-lbl" style="margin-bottom:7px;">Sector heat — click any cell</div>
@@ -2224,8 +2224,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div>
         <div class="card" style="margin-bottom:12px;">
           <div class="card-lbl">Market pulse</div>
-          <div class="mw"><div class="mt2"><span class="ml">Fear & Greed</span><span class="mv up">62 — Greed</span></div><div class="mb"><div class="mf" style="width:62%;background:var(--green);"></div></div></div>
-          <div class="mw"><div class="mt2"><span class="ml">VIX</span><span class="mv up">16.4 — Low</span></div><div class="mb"><div class="mf" style="width:22%;background:var(--blue);"></div></div></div>
+          <div class="mw"><div class="mt2"><span class="ml">Fear & Greed</span><span class="mv up" data-pulse="fg-val">62 — Greed</span></div><div class="mb"><div class="mf" data-pulse="fg-bar" style="width:62%;background:var(--green);"></div></div></div>
+          <div class="mw"><div class="mt2"><span class="ml">VIX</span><span class="mv up" data-pulse="vix-val">16.4 — Low</span></div><div class="mb"><div class="mf" data-pulse="vix-bar" style="width:22%;background:var(--blue);"></div></div></div>
           <div class="mw"><div class="mt2"><span class="ml">Put/Call Ratio</span><span class="mv up">0.82 — Bullish</span></div><div class="mb"><div class="mf" style="width:41%;background:var(--green);"></div></div></div>
         </div>
         <div class="card">
@@ -5730,6 +5730,36 @@ function getSectorMacroAdjust(ticker) {
   return 0;
 }
 
+// ── Market Pulse: live VIX + Fear/Greed proxy ─────────────────────
+async function _updateMarketPulse() {
+  if (!IS_VERCEL && !((typeof S !== 'undefined') && S.fh)) return;
+  try {
+    const macro = await fetchMacroRegime();
+    const vix = macro.vix;
+    if (vix == null) return;
+    // VIX widget
+    const vixLabel = vix < 15 ? 'Low' : vix < 20 ? 'Normal' : vix < 25 ? 'Elevated' : vix < 30 ? 'High' : 'Extreme';
+    const vixBarPct = Math.min(100, Math.round(vix / 45 * 100));
+    const vixClr = vix < 15 ? 'var(--blue)' : vix < 20 ? 'var(--green)' : vix < 25 ? 'var(--amber)' : 'var(--red)';
+    // Fear/Greed proxy
+    let fg = Math.round(100 - (vix / 45 * 100));
+    if (macro.spyDp) fg = Math.min(100, Math.max(0, fg + Math.round(macro.spyDp * 3)));
+    const fgLabel = fg >= 80 ? 'Extreme Greed' : fg >= 65 ? 'Greed' : fg >= 45 ? 'Neutral' : fg >= 25 ? 'Fear' : 'Extreme Fear';
+    const fgClr = fg >= 65 ? 'var(--green)' : fg >= 45 ? 'var(--amber)' : 'var(--red)';
+    // Update all instances (Morning Brief + Markets tab share same data-pulse attrs)
+    document.querySelectorAll('[data-pulse="fg-val"]').forEach(el => {
+      el.textContent = fg + ' — ' + fgLabel;
+      el.className = el.className.replace(/\b(up|dn)\b/g, '').trim() + (fg >= 50 ? ' up' : ' dn');
+    });
+    document.querySelectorAll('[data-pulse="fg-bar"]').forEach(el => { el.style.width = fg + '%'; el.style.background = fgClr; });
+    document.querySelectorAll('[data-pulse="vix-val"]').forEach(el => {
+      el.textContent = vix.toFixed(1) + ' — ' + vixLabel;
+      el.className = el.className.replace(/\b(up|dn)\b/g, '').trim() + (vix < 20 ? ' up' : ' dn');
+    });
+    document.querySelectorAll('[data-pulse="vix-bar"]').forEach(el => { el.style.width = vixBarPct + '%'; el.style.background = vixClr; });
+  } catch(e) {}
+}
+
 async function computeL5Score(ticker) {
   const ld = typeof LAYER_DATA !== 'undefined' ? LAYER_DATA[ticker] : null;
   const fallback = ld ? (ld.find(l => l.id === 'L5')?.pts || 3) : 3;
@@ -6096,7 +6126,8 @@ function gT(n,btn){
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=isMkt?'none':'flex';}catch(e){}
   if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();}catch(e){}},50);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();_updateMarketPulse();}catch(e){}},50);}
+  if(n==='markets'){setTimeout(function(){try{_updateMarketPulse();}catch(e){}},80);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
