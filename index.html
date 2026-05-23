@@ -1206,6 +1206,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div id="hyperscaler-capex-body" style="font-size:11px;color:var(--text3);padding:4px 0;">Loading SEC filings…</div>
   </div>
 
+<!-- CHAIN INDUSTRY FILTER -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+  <div style="font-size:12px;font-weight:600;color:var(--text);">Chain intelligence</div>
+  <div id="chain-industry-filter" style="display:flex;gap:5px;flex-wrap:wrap;">
+    <button onclick="filterCorrChainsBySector(null,this)" data-csec="" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--blue-bd);background:var(--blue-bg);color:var(--blue);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;">All chains</button>
+    <button onclick="filterCorrChainsBySector('Semis',this)" data-csec="Semis" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Semiconductors</button>
+    <button onclick="filterCorrChainsBySector('Hyperscalers',this)" data-csec="Hyperscalers" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">AI Infrastructure</button>
+    <button onclick="filterCorrChainsBySector('Defense',this)" data-csec="Defense" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Defense / Space</button>
+    <button onclick="filterCorrChainsBySector('Energy',this)" data-csec="Energy" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Energy / Nuclear</button>
+    <button onclick="filterCorrChainsBySector('Enterprise',this)" data-csec="Enterprise" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Enterprise</button>
+  </div>
+</div>
+
 <!-- CHAIN: URANIUM -->
   <div class="chain-card" data-chain-ticker="CCJ">
     <div class="chain-header">
@@ -10382,6 +10395,8 @@ function openSectorCell(sectorKey, lid) {
   el.innerHTML = _renderSectorBriefHTML(sectorKey, lid);
   el.style.display = "";
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Sync the chain industry filter bar with the clicked sector
+  try { filterCorrChainsBySector(sectorKey, null); } catch(e) {}
 }
 
 function openSectorBrief(sectorKey) {
@@ -10390,6 +10405,8 @@ function openSectorBrief(sectorKey) {
   el.innerHTML = _renderSectorBriefHTML(sectorKey, null);
   el.style.display = "";
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Sync the chain industry filter bar with the clicked sector
+  try { filterCorrChainsBySector(sectorKey, null); } catch(e) {}
 }
 // ─── END SECTOR HEATMAP ──────────────────────────────────────────
 
@@ -11240,6 +11257,23 @@ async function _fillModalFundamentals(sym, el) {
   }
 }
 
+function filterCorrChainsBySector(secKey, btn) {
+  window._corrActiveSector = secKey || null;
+  // Update button active states
+  const bar = document.getElementById('chain-industry-filter');
+  if (bar) {
+    bar.querySelectorAll('button').forEach(b => {
+      const active = (b.dataset.csec || '') === (secKey || '');
+      b.style.background = active ? 'var(--blue-bg)' : 'var(--bg3)';
+      b.style.color      = active ? 'var(--blue)'    : 'var(--text2)';
+      b.style.borderColor= active ? 'var(--blue-bd)' : 'var(--border2)';
+      b.style.fontWeight = active ? '600'            : '500';
+    });
+  }
+  // Re-run chain card visibility (initCorrTab reads _corrActiveSector)
+  try { initCorrTab(); } catch(e) {}
+}
+
 function initCorrTab() {
   // Make chain-card headers clickable — wire chain-title + chain-action to open the stock modal
   document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(function(card) {
@@ -11304,10 +11338,16 @@ function initCorrTab() {
     });
   }
 
+  // Sector filter bar state (set by filterCorrChainsBySector, independent of focus ticker)
+  const activeSec = window._corrActiveSector || null;
+  const secFilterTickers = (activeSec && typeof SECTORS !== 'undefined' && SECTORS[activeSec])
+    ? (SECTORS[activeSec].tickers || []) : null;
+
   cards.forEach(card => {
     const ct = card.dataset.chainTicker;
     if (!ft) {
-      card.style.display = '';
+      // No focus ticker — apply sector filter bar
+      card.style.display = (secFilterTickers ? secFilterTickers.includes(ct) : true) ? '' : 'none';
     } else if (ct === ft) {
       card.style.display = '';
     } else if (hasDirectChain) {
