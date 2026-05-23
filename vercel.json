@@ -5,7 +5,7 @@
     "api/sync.js":       { "memory": 128, "maxDuration": 10 },
     "api/markets.js":    { "memory": 128, "maxDuration": 20 },
     "api/digest.js":     { "memory": 256, "maxDuration": 30 },
-    "api/scores.js":     { "memory": 256, "maxDuration": 300 },
+    "api/scores.js":     { "memory": 256, "maxDuration": 60 },
     "api/funds.js":      { "memory": 128, "maxDuration": 15 },
     "api/edgar.js":      { "memory": 128, "maxDuration": 15 },
     "api/congress.js":   { "memory": 128, "maxDuration": 20 },
