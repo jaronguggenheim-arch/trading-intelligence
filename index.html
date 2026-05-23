@@ -1103,6 +1103,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
   </div>
 
+  <!-- HYPERSCALER CAPEX DASHBOARD -->
+  <div class="card" id="hyperscaler-capex-card" style="margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+      <div>
+        <div class="card-lbl" style="margin-bottom:2px;">Hyperscaler capex tracker — live from SEC filings</div>
+        <div style="font-size:10px;color:var(--text3);">Quarterly capital expenditure for META · MSFT · GOOGL · AMZN · NVDA revenue — the primary upstream signals for the AI hardware chain</div>
+      </div>
+      <button onclick="_initCapexDashboard(true)" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
+    </div>
+    <div id="hyperscaler-capex-body" style="font-size:11px;color:var(--text3);padding:4px 0;">Loading SEC filings…</div>
+  </div>
+
 <!-- CHAIN: URANIUM -->
   <div class="chain-card" data-chain-ticker="CCJ">
     <div class="chain-header">
@@ -5181,7 +5193,7 @@ function buildTickerFallback(sym) {
 
 function openTicker(sym, startTab){const d=TICKER_DATA[sym]||buildTickerFallback(sym);const inWL=S.wl.includes(sym);const score=SCORES[sym]||0;const sColor=score>=80?'var(--blue)':score>=60?'var(--text2)':'var(--text3)';const sBg=score>=80?'var(--blue-bg)':'var(--bg3)';const sBd=score>=80?'var(--blue-bd)':'var(--border)';const _isVercel = typeof IS_VERCEL !== 'undefined' ? IS_VERCEL : (window.location.protocol !== 'file:');
 const newsH=d.news.map(n=>`<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:3px;">${n.src}</div><div style="font-size:12px;font-weight:500;line-height:1.5;margin-bottom:5px;">${n.hl}</div><span class="b ${n.tag||'b-b'}">${n.label||'Signal'}</span></div>`).join('')||(_isVercel?'<div style="font-size:11px;color:var(--text3);padding:10px 0;text-align:center;">Fetching live news from Finnhub…</div>':'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No recent news tracked</div>');const insH=d.insider.map(i=>`<div class="sc ${i.type==='BUY'?'sc-g':'sc-gray'} sc-na" style="cursor:default;margin-bottom:6px;"><div class="sul">${i.name} · ${i.type} ${i.amount}</div><div class="suh">${i.date} · ${i.note}</div></div>`).join('')||(_isVercel?'<div class="chart-loading" style="padding:22px 0;text-align:center;">Loading insider activity…</div>':'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No recent insider filings tracked</div>');const revH=d.revenue.map(r=>`<div class="rev-bar-wrap"><div class="rev-bar-label"><span style="font-weight:500;">${r.seg}</span><span>${r.pct}%</span></div><div class="rev-bar-outer"><div class="rev-bar-inner" style="width:${r.pct}%;background:${r.pct>50?'var(--green)':r.pct>25?'var(--blue)':'var(--amber)'};"></div></div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${r.vs}</div></div>`).join('')||'<div style="font-size:11px;color:var(--text3);">No revenue breakdown data</div>';
-document.getElementById('ticker-content').innerHTML=`<div class="ticker-hdr"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div class="ticker-back" onclick="goBack()">← Back</div><button class="share-btn" onclick="shareStock('${sym}',event)"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg> Share</button></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.5px;">${sym}</div><div id="tk-hdr-name" style="font-size:13px;color:var(--text2);margin-top:2px;">${d.name}</div></div><div style="text-align:right;"><div id="tk-hdr-price" style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;">${d.price==='—'?'—':'$'+d.price}</div><div id="tk-hdr-change" class="${d.up?'up':'dn'}" style="font-size:13px;font-weight:500;margin-top:2px;">${d.change}</div></div></div><div class="ticker-stats"><div class="ts-cell"><div id="tk-hdr-mktcap" class="ts-val">${d.mktcap}</div><div class="ts-lbl">Market cap</div></div><div class="ts-cell"><div id="tk-hdr-vol" class="ts-val">${d.vol}</div><div class="ts-lbl">Volume</div></div><div class="ts-cell"><div id="tk-hdr-w52" class="ts-val">${d.week52}</div><div class="ts-lbl">52-week range</div></div><div class="ts-cell" style="background:${sBg};border-color:${sBd};"><div class="ts-val" style="color:${sColor};">${score||'—'}/100</div><div class="ts-lbl">Signal score</div></div></div>${_scoreSparklineSVG(sym)}<div class="ticker-action-bar"><button class="tab-watch-btn ${inWL?'watching':''}" onclick="toggleWL('${sym}',this)">${inWL?'Watching ✓':'+ Add to watchlist'}</button><button class="mirror-btn" onclick="mirrorTrade('${sym}','${d.price}','Score ${score}')">Mirror trade</button><button class="supply-btn" onclick="gT('correlations',document.querySelector('.nt[onclick*="correlations"]'))">Supplier chain →</button></div></div><div class="ticker-tabs"><button class="ticker-tab active" onclick="showTkT('ov',this)">Overview</button><button class="ticker-tab" onclick="showTkT('news',this)">News & Signals</button><button class="ticker-tab" onclick="showTkT('flow',this)">Options Flow</button><button class="ticker-tab" onclick="showTkT('ins',this)">Insider + Congress</button><button class="ticker-tab" onclick="showTkT('rev',this)">Revenue</button><button class="ticker-tab" onclick="showTkT('score',this)">Signal Score</button><button class="ticker-tab" onclick="showTkT('chain',this)">Supply Chain</button><button class="ticker-tab" onclick="showTkT('dedge',this)">Deep Edge</button></div><div class="card"><div class="card-lbl">Price chart — click a timeframe</div><div class="tf-bar" id="tf-bar-ticker">${['1D','5D','1M','3M','6M','1Y','5Y'].map(t=>`<button class="tf-btn ${t==='3M'?'active':''}" onclick="setTF('ticker','${sym}','${t}',this)">${t}</button>`).join('')}</div><div class="chart-wrap" id="chart-ticker"><div class="chart-loading">Loading chart…</div></div></div><div id="tk-ov"><div class="card"><div class="card-lbl">Synopsis</div><p id="tk-ov-synopsis" style="font-size:13px;line-height:1.75;">${d.synopsis}</p></div></div><div id="tk-news" style="display:none;"><div class="card"><div class="card-lbl">News + signal events — last 14 days</div><div id="tk-news-list">${newsH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://finance.yahoo.com/quote/${sym}/news/" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Yahoo Finance ↗</a><a href="https://unusualwhales.com/stocks/${sym}" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Unusual Whales ↗</a></div></div></div><div id="tk-flow" style="display:none;"><div id="tk-options-flow"><div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;"><div style="font-size:18px;margin-bottom:6px;">📊</div><div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Click to load options flow</div><div style="font-size:10px;">Volume analysis · Options positioning · Dark pool news</div></div></div></div><div id="tk-ins" style="display:none;"><div class="card"><div class="card-lbl">Insider + congress activity</div><div id="tk-ins-content">${insH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${sym}&type=4" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">SEC Form 4 ↗</a><a href="http://openinsider.com/search?q=${sym}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;padding:5px 10px;border:0.5px solid var(--green-bd);border-radius:5px;">OpenInsider ↗</a><a href="https://www.quiverquant.com/congresstrading/" target="_blank" style="font-size:11px;color:var(--amber);text-decoration:none;padding:5px 10px;border:0.5px solid var(--amber-bd);border-radius:5px;">Quiver Congress ↗</a></div></div></div><div id="tk-rev" style="display:none;"><div class="card"><div class="card-lbl">Revenue breakdown by segment</div>${revH}</div></div><div id="tk-score" style="display:none;"></div><div id="tk-chain" style="display:none;"></div><div id="tk-dedge" style="display:none;"></div>`;
+document.getElementById('ticker-content').innerHTML=`<div class="ticker-hdr"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div class="ticker-back" onclick="goBack()">← Back</div><button class="share-btn" onclick="shareStock('${sym}',event)"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg> Share</button></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.5px;">${sym}</div><div id="tk-hdr-name" style="font-size:13px;color:var(--text2);margin-top:2px;">${d.name}</div></div><div style="text-align:right;"><div id="tk-hdr-price" style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;">${d.price==='—'?'—':'$'+d.price}</div><div id="tk-hdr-change" class="${d.up?'up':'dn'}" style="font-size:13px;font-weight:500;margin-top:2px;">${d.change}</div></div></div><div class="ticker-stats"><div class="ts-cell"><div id="tk-hdr-mktcap" class="ts-val">${d.mktcap}</div><div class="ts-lbl">Market cap</div></div><div class="ts-cell"><div id="tk-hdr-vol" class="ts-val">${d.vol}</div><div class="ts-lbl">Volume</div></div><div class="ts-cell"><div id="tk-hdr-w52" class="ts-val">${d.week52}</div><div class="ts-lbl">52-week range</div></div><div class="ts-cell" style="background:${sBg};border-color:${sBd};"><div class="ts-val" style="color:${sColor};">${score||'—'}/100</div><div class="ts-lbl">Signal score</div></div></div>${_scoreSparklineSVG(sym)}<div class="ticker-action-bar"><button class="tab-watch-btn ${inWL?'watching':''}" onclick="toggleWL('${sym}',this)">${inWL?'Watching ✓':'+ Add to watchlist'}</button><button class="mirror-btn" onclick="mirrorTrade('${sym}','${d.price}','Score ${score}')">Mirror trade</button><button class="supply-btn" onclick="gT('correlations',document.querySelector('.nt[onclick*="correlations"]'))">Supplier chain →</button></div></div><div class="ticker-tabs"><button class="ticker-tab active" onclick="showTkT('ov',this)">Overview</button><button class="ticker-tab" onclick="showTkT('news',this)">News & Signals</button><button class="ticker-tab" onclick="showTkT('flow',this)">Options Flow</button><button class="ticker-tab" onclick="showTkT('ins',this)">Insider + Congress</button><button class="ticker-tab" onclick="showTkT('rev',this)">Revenue</button><button class="ticker-tab" onclick="showTkT('score',this)">Signal Score</button><button class="ticker-tab" onclick="showTkT('chain',this)">Supply Chain</button><button class="ticker-tab" onclick="showTkT('dedge',this)">Deep Edge</button></div><div class="card"><div class="card-lbl">Price chart — click a timeframe</div><div class="tf-bar" id="tf-bar-ticker">${['1D','5D','1M','3M','6M','1Y','5Y'].map(t=>`<button class="tf-btn ${t==='3M'?'active':''}" onclick="setTF('ticker','${sym}','${t}',this)">${t}</button>`).join('')}</div><div class="chart-wrap" id="chart-ticker"><div class="chart-loading">Loading chart…</div></div></div><div id="tk-ov"><div class="card"><div class="card-lbl">Synopsis</div><p id="tk-ov-synopsis" style="font-size:13px;line-height:1.75;">${d.synopsis}</p></div></div><div id="tk-news" style="display:none;"><div class="card"><div class="card-lbl">News + signal events — last 14 days</div><div id="tk-news-list">${newsH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://finance.yahoo.com/quote/${sym}/news/" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Yahoo Finance ↗</a><a href="https://unusualwhales.com/stocks/${sym}" target="_blank" style="font-size:11px;color:var(--purple);text-decoration:none;padding:5px 10px;border:0.5px solid var(--purple-bd);border-radius:5px;">Unusual Whales ↗</a></div></div></div><div id="tk-flow" style="display:none;"><div id="tk-options-flow"><div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;"><div style="font-size:18px;margin-bottom:6px;">📊</div><div style="font-weight:600;color:var(--text2);margin-bottom:3px;">Click to load options flow</div><div style="font-size:10px;">Volume analysis · Options positioning · Dark pool news</div></div></div></div><div id="tk-ins" style="display:none;"><div class="card"><div class="card-lbl">Insider + congress activity</div><div id="tk-ins-content">${insH}</div><div class="div"></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${sym}&type=4" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">SEC Form 4 ↗</a><a href="http://openinsider.com/search?q=${sym}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;padding:5px 10px;border:0.5px solid var(--green-bd);border-radius:5px;">OpenInsider ↗</a><a href="https://www.quiverquant.com/congresstrading/" target="_blank" style="font-size:11px;color:var(--amber);text-decoration:none;padding:5px 10px;border:0.5px solid var(--amber-bd);border-radius:5px;">Quiver Congress ↗</a></div></div></div><div id="tk-rev" style="display:none;"><div class="card" style="margin-bottom:10px;"><div class="card-lbl" style="margin-bottom:6px;">Quarterly fundamentals — SEC EDGAR</div><div id="tk-rev-xbrl" style="font-size:11px;color:var(--text3);padding:4px 0;">Loading…</div></div><div class="card"><div class="card-lbl">Revenue by segment</div>${revH}</div></div><div id="tk-score" style="display:none;"></div><div id="tk-chain" style="display:none;"></div><div id="tk-dedge" style="display:none;"></div>`;
 window._tkSym=sym;if(S.activeTab&&S.activeTab!=='ticker'&&S.activeTab!=='instrument')S.prevTab=S.activeTab;else S.prevTab=S.prevTab||'morning';gT('ticker',null);setTimeout(()=>loadChart('ticker',sym,'3M'),40);if(S.fh||IS_VERCEL){setTimeout(()=>fillTickerLive(sym),80);}
   // Jump to a specific tab if requested (e.g. 'score' from morning picks)
   if(startTab){setTimeout(function(){const btn=document.querySelector('.ticker-tab[onclick*="\''+startTab+'\'"]');showTkT(startTab,btn||null);},60);}}
@@ -5199,6 +5211,7 @@ function showTkT(n,btn){
   if(n==='chain'){const el=document.getElementById('tk-chain');if(!el._r){el.innerHTML=renderTkChain(sym);el._r=true;}}
   if(n==='dedge'){const el=document.getElementById('tk-dedge');el.innerHTML=renderTkDeep(sym);if(IS_VERCEL||(typeof S!=='undefined'&&S.fh)){fetchInsiderData(sym).then(function(){const e2=document.getElementById('tk-dedge');if(e2&&window._tkSym===sym)e2.innerHTML=renderTkDeep(sym);});}}
   if(n==='ins'){const el=document.getElementById('tk-ins-content');if(el&&!el._r){if(IS_VERCEL||(typeof S!=='undefined'&&S.fh)){fillInsiderLive(sym);el._r=true;}}}
+  if(n==='rev'){const el=document.getElementById('tk-rev-xbrl');if(el&&!el._r&&IS_VERCEL){el._r=true;_fillModalFundamentals(sym,el);}}
 }
 
 /* ── TICKER MODAL DEEP-DIVE RENDERERS ──────────────── */
@@ -10778,6 +10791,154 @@ function refreshChainStatuses() {
 }
 // ── END LAG WINDOW ENGINE ──────────────────────────────────────────
 
+// ── Hyperscaler Capex Dashboard ───────────────────────────────────────────────
+// Fetches quarterly capex (META/MSFT/GOOGL/AMZN) and revenue (NVDA) from EDGAR XBRL.
+// No API key — free SEC public data, 6hr Vercel cache.
+const _CAPEX_STOCKS = [
+  { ticker:'META',  cik:'0001326801', label:'Meta',   metric:'capex',   desc:'AI infrastructure spend' },
+  { ticker:'MSFT',  cik:'0000789019', label:'Microsoft', metric:'capex', desc:'Azure + AI capex' },
+  { ticker:'GOOGL', cik:'0001652044', label:'Alphabet', metric:'capex',  desc:'Google Cloud capex' },
+  { ticker:'AMZN',  cik:'0001018724', label:'Amazon',  metric:'capex',   desc:'AWS infrastructure' },
+  { ticker:'NVDA',  cik:'0001045810', label:'NVIDIA',  metric:'revenue', desc:'Datacenter revenue (chain signal)' }
+];
+
+let _capexCache = null;
+async function _initCapexDashboard(force) {
+  const el = document.getElementById('hyperscaler-capex-body');
+  if (!el) return;
+  if (!force && _capexCache) { el.innerHTML = _capexCache; return; }
+  if (!IS_VERCEL) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Loads on the live site — SEC EDGAR XBRL.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Fetching SEC filings…</div>';
+
+  const fmt = v => {
+    if (v == null) return '—';
+    const b = v / 1e9;
+    return b >= 1 ? '$' + b.toFixed(1) + 'B' : '$' + (v / 1e6).toFixed(0) + 'M';
+  };
+  const pctStr = v => v == null ? '' : (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+  const pctClr = v => v == null ? 'var(--text3)' : v >= 0 ? 'var(--green)' : '#ef4444';
+
+  const results = await Promise.allSettled(
+    _CAPEX_STOCKS.map(s =>
+      fetch(`/api/fundamentals?ticker=${s.ticker}&cik=${s.cik}`, { signal: AbortSignal.timeout(12000) })
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+    )
+  );
+
+  const rows = _CAPEX_STOCKS.map((s, i) => {
+    const data = results[i].status === 'fulfilled' ? results[i].value : null;
+    const series = data?.ok ? (s.metric === 'capex' ? data.capex : data.revenue) : null;
+    const latest  = series?.[0] ?? null;
+    const prev    = series?.[1] ?? null;
+
+    const val     = latest?.value ?? null;
+    const yoy     = latest?.yoy ?? null;
+    const qoq     = latest?.qoq ?? null;
+    const period  = latest?.period ? new Date(latest.period + 'T12:00:00Z')
+      .toLocaleDateString('en-US', { month:'short', year:'2-digit' }) : '—';
+
+    const arrow = yoy == null ? '' : yoy >= 15 ? ' ▲▲' : yoy >= 5 ? ' ▲' : yoy >= 0 ? ' ↗' : ' ▼';
+    const signalBg = yoy != null && yoy >= 10 ? 'background:var(--green-bg);border-color:var(--green-bd);' : '';
+
+    return `<div onclick="openTicker('${s.ticker}')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;border:0.5px solid var(--border);cursor:pointer;gap:8px;${signalBg}">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:12px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);">${s.ticker}</span>
+          <span style="font-size:10px;color:var(--text3);">${s.desc}</span>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">${period} · ${s.metric === 'capex' ? 'Capex' : 'Revenue'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:14px;font-weight:800;font-family:'DM Mono',monospace;color:var(--text);">${fmt(val)}</div>
+        <div style="font-size:10px;font-weight:600;color:${pctClr(yoy)};">${yoy != null ? pctStr(yoy) + ' YoY' + arrow : '—'}</div>
+        ${qoq != null ? `<div style="font-size:9px;color:var(--text3);">${pctStr(qoq)} QoQ</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Aggregate capex signal
+  const capexStocks = results.slice(0, 4).map((r,i) => {
+    const d = r.status === 'fulfilled' ? r.value : null;
+    return d?.ok ? d.capex?.[0]?.yoy : null;
+  }).filter(v => v != null);
+  const avgYoY = capexStocks.length ? capexStocks.reduce((s,v) => s+v, 0) / capexStocks.length : null;
+  const signalStr = avgYoY == null ? '—'
+    : avgYoY >= 20 ? 'Strong acceleration — chain windows active'
+    : avgYoY >= 10 ? 'Moderate growth — downstream windows opening'
+    : avgYoY >= 0  ? 'Stable — no near-term window expansion'
+    : 'Capex contraction — chain windows at risk';
+  const signalClr = avgYoY == null ? 'var(--text3)' : avgYoY >= 10 ? 'var(--green)' : avgYoY >= 0 ? 'var(--amber)' : '#ef4444';
+
+  _capexCache = `
+    <div style="padding:8px 10px;border-radius:8px;background:var(--bg3);border:0.5px solid var(--border);margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;color:${signalClr};">${signalStr}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">Avg hyperscaler capex growth YoY · ${avgYoY != null ? (avgYoY>=0?'+':'')+avgYoY.toFixed(1)+'%' : '—'} · from SEC 10-Q filings</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;">${rows}</div>
+    <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:8px;">Source: SEC EDGAR XBRL · 6hr cache · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>`;
+  el.innerHTML = _capexCache;
+}
+
+// Fills the XBRL fundamentals section in the stock modal Revenue tab
+async function _fillModalFundamentals(sym, el) {
+  if (!el) return;
+  const cik = (typeof EDGAR_CIKS !== 'undefined' && EDGAR_CIKS[sym]) ? EDGAR_CIKS[sym] : null;
+  if (!cik) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text3);">No EDGAR CIK on file for ' + sym + '.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Fetching SEC filings…</div>';
+  try {
+    const resp = await fetch('/api/fundamentals?ticker=' + sym + '&cik=' + cik, { signal: AbortSignal.timeout(12000) });
+    if (!resp.ok || window._tkSym !== sym) return;
+    const data = await resp.json();
+    if (!data.ok) { el.innerHTML = '<div style="font-size:11px;color:var(--text3);">SEC XBRL data unavailable for ' + sym + '.</div>'; return; }
+
+    const fmt = v => { if (v == null) return '—'; const b = v/1e9; return b >= 1 ? '$'+b.toFixed(2)+'B' : '$'+(v/1e6).toFixed(0)+'M'; };
+    const pStr = v => v == null ? '' : (v>=0?'+':'')+v.toFixed(1)+'%';
+    const pClr = v => v == null ? 'var(--text3)' : v >= 0 ? 'var(--green)' : '#ef4444';
+    const fmtPer = s => s ? new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',year:'2-digit'}) : '—';
+
+    function seriesTable(series, label) {
+      if (!series || !series.length) return '';
+      const rows = series.slice(0, 8).map(function(d) {
+        return '<tr><td style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text);padding:4px 6px;white-space:nowrap;">'
+          + fmtPer(d.period) + '</td>'
+          + '<td style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:700;color:var(--text);padding:4px 6px;text-align:right;">' + fmt(d.value) + '</td>'
+          + '<td style="font-size:10px;font-weight:600;color:' + pClr(d.qoq) + ';padding:4px 6px;text-align:right;">' + (d.qoq != null ? pStr(d.qoq)+' QoQ' : '') + '</td>'
+          + '<td style="font-size:10px;font-weight:600;color:' + pClr(d.yoy) + ';padding:4px 6px;text-align:right;">' + (d.yoy != null ? pStr(d.yoy)+' YoY' : '') + '</td>'
+          + '</tr>';
+      }).join('');
+      return '<div style="margin-bottom:14px;">'
+        + '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">' + label + '</div>'
+        + '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
+        + '<thead><tr>'
+        + '<th style="font-size:9px;color:var(--text3);text-align:left;padding:3px 6px;font-weight:600;">Period</th>'
+        + '<th style="font-size:9px;color:var(--text3);text-align:right;padding:3px 6px;font-weight:600;">Value</th>'
+        + '<th style="font-size:9px;color:var(--text3);text-align:right;padding:3px 6px;font-weight:600;">QoQ</th>'
+        + '<th style="font-size:9px;color:var(--text3);text-align:right;padding:3px 6px;font-weight:600;">YoY</th>'
+        + '</tr></thead>'
+        + '<tbody>' + rows + '</tbody>'
+        + '</table></div></div>';
+    }
+
+    let html = seriesTable(data.revenue, 'Quarterly revenue');
+    if (data.capex && data.capex.length) html += seriesTable(data.capex, 'Capital expenditure (capex)');
+    if (data.operatingIncome && data.operatingIncome.length) html += seriesTable(data.operatingIncome, 'Operating income');
+    html += '<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:4px;">Source: SEC EDGAR XBRL · ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + '</div>';
+
+    if (window._tkSym === sym) el.innerHTML = html;
+  } catch(e) {
+    if (window._tkSym === sym) el.innerHTML = '<div style="font-size:11px;color:var(--text3);">Failed to load: ' + e.message + '</div>';
+  }
+}
+
 function initCorrTab() {
   // Make chain-card headers clickable — wire chain-title + chain-action to open the stock modal
   document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(function(card) {
@@ -10807,6 +10968,8 @@ function initCorrTab() {
   // Compute and render dynamic lag window statuses for all chain cards
   try { refreshChainStatuses(); } catch(e) { console.warn('refreshChainStatuses:', e); }
   try { renderSectorHeatmap(); } catch(e) { console.warn('renderSectorHeatmap:', e); }
+  // Load hyperscaler capex dashboard from EDGAR XBRL (lazy — cached after first run)
+  try { _initCapexDashboard(false); } catch(e) {}
 
   const ft = S.focusTicker;
   const cards = document.querySelectorAll('.chain-card[data-chain-ticker]');
