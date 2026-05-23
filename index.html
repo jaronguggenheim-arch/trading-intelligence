@@ -193,10 +193,14 @@ body.mkt-mode .main{padding:0;max-width:none;}
   .nav{padding:0 10px;}
 
   /* ── Focus/stock bar ────────────────────── */
-  #stock-focus-bar{padding:6px 10px;}
+  #stock-focus-bar{padding:5px 10px;}
   #stock-focus-bar *::-webkit-scrollbar{display:none;}
   #stock-focus-bar > div{scrollbar-width:none;-ms-overflow-style:none;}
   #focus-search-input{font-size:11px;}
+  /* Search box: flex-grow to fill row 1 */
+  #stock-focus-bar > div > div:nth-child(2){width:auto;flex:1;min-width:0;}
+  /* Ticker chips: smaller on mobile */
+  .ftick{font-size:10px;padding:3px 8px;}
 
   /* ── Ticker modal / score pill ──────────── */
   .score-pill{font-size:10px;padding:2px 7px;}
@@ -231,8 +235,14 @@ body.mkt-mode .main{padding:0;max-width:none;}
   /* ── Sage card: don't let it overflow ───────── */
   #sage-card-el{overflow:hidden;}
 
-  /* ── Focus bar layer buttons: hide on very small ─ */
-  #layer-ticker-btns{display:none !important;}
+  /* ── Focus bar: wrap to 2 rows on mobile ─────── */
+  #stock-focus-bar > div{flex-wrap:wrap !important;}
+  /* Layer ticker buttons: full-width second row, no left separator */
+  #layer-ticker-btns{width:100%;flex:none !important;min-width:0;padding-left:0 !important;border-left:none !important;margin-top:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  /* Remove mask gradient — clips on narrow screens */
+  #ticker-scroll-wrap{mask-image:none !important;-webkit-mask-image:none !important;overflow-x:auto;}
+  /* Stop infinite animation on mobile — let user scroll manually */
+  #ticker-scroll-track{animation:none !important;transform:none !important;width:max-content;}
 }
 
 
@@ -248,7 +258,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
 .ftick-score.hi{color:var(--green);opacity:1;}
 .ftick-score.mid{color:var(--amber);opacity:1;}
 .ftick-score.lo{color:var(--red);opacity:1;}
-@media(max-width:600px){#ticker-scroll-wrap{display:none;}}
+@media(max-width:600px){#ticker-scroll-wrap{display:block;}}
 
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;overflow-x:hidden;}
 .hdr{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:50px;position:sticky;top:0;z-index:100;gap:16px;}
