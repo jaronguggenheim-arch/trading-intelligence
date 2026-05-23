@@ -8522,6 +8522,67 @@ async function _runChainTrackRecord(force) {
   el.innerHTML = _chainTrackCache;
 }
 
+// ── Evidence pill date stamps ────────────────────────────────────────────────
+// Appends a subtle "· date" label to evidence pills in the convergence overview
+// cards. Date map keys are prefix-matched against pill text (first 18 chars).
+const _PILL_DATE_MAP = {
+  'Insider cluster':  'May 14',
+  'CEO $2.8M buy':    'May 5',
+  'CFO buy':          'May 6',
+  'CEO buy':          'May 14',
+  'Board cluster':    'May 7',
+  'MS upgrade':       'May 9',
+  'Goldman PT raise': 'May 8',
+  'Goldman PT $220':  'Apr 18',
+  'Dark pool $340M':  'May 20',
+  'TSMC lag window':  'active',
+  '$47M call sweep':  'May 21',
+  'Druckenmiller cor':'Q1 13F',
+  'Earnings risk':    'May 22',
+  'First bank init':  'May 16',
+  'Soros position':   'Q1 13F',
+  'Soros new positi': 'Q1 13F',
+  'ARK adding':       'May 12',
+  'Mixed options flo':'May 22',
+  'Solo Citi downgrad':'May 19',
+  'Capex raised':     'Apr 17',
+  'Capex +15%':       'Apr 17',
+  'Revenue +33%':     'Apr 17',
+  'CoWoS yield':      'Apr 17',
+  'CEO $2.8M':        'May 5',
+  'Accounting resolv':'Mar 2026',
+  '$65B capex':       'Apr 30',
+  '~350K Blackwell':  'Apr 30',
+  'Meta AI:':         'Apr 30',
+  '$80B capex':       'Apr 30',
+  'Azure +33%':       'Apr 30',
+  '$75B capex FY20':  'Apr 29',
+  'TPU Trillium':     'Apr 29',
+  'Cloud +28%':       'Apr 29',
+};
+
+function _stampEvidencePills() {
+  document.querySelectorAll('.convergence-stock-card .b').forEach(function(pill) {
+    // Skip if already stamped
+    if (pill.querySelector('.pill-date')) return;
+    // Skip if pill already contains '·'
+    const txt = pill.textContent || '';
+    if (txt.includes('·')) return;
+    // Find best match in date map (prefix of first 18 chars)
+    const prefix = txt.slice(0, 18);
+    let date = null;
+    for (const [key, val] of Object.entries(_PILL_DATE_MAP)) {
+      if (prefix.startsWith(key) || txt.startsWith(key)) { date = val; break; }
+    }
+    if (!date) return;
+    const span = document.createElement('span');
+    span.className = 'pill-date';
+    span.style.cssText = 'font-size:9px;color:var(--text3);font-weight:400;margin-left:3px;opacity:.8;';
+    span.textContent = '· ' + date;
+    pill.appendChild(span);
+  });
+}
+
 function sortConvergenceCards() {
   // Collect all unique parent containers
   const containers = new Set();
@@ -8642,6 +8703,8 @@ function renderConvergence() {
   });
   // Sort cards by score (highest first)
   sortConvergenceCards();
+  // Stamp evidence pills with signal dates
+  try { _stampEvidencePills(); } catch(e) {}
   // Inject L1–L5 component breakdown bars if server data is available
   try { syncSignalScoreCards(); } catch(e) {}
   // Auto-select matching layer analysis button — or call directly if ticker not in preset list
