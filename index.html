@@ -7383,7 +7383,7 @@ async function renderTechTitans() {
       const col = isBuy ? 'var(--green)' : 'var(--text3)';
       const bd = isBuy ? 'var(--green-bd)' : 'var(--border)';
       const typeLabel = isBuy ? 'BUY' : 'SELL';
-      return '<div style="padding:5px 8px;border-radius:6px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:4px;">'
+      return '<div onclick="openTicker(\'' + titan.ticker + '\')" style="padding:5px 8px;border-radius:6px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:4px;cursor:pointer;">'
         + '<div style="display:flex;align-items:center;gap:6px;">'
         + '<span style="font-size:10px;font-weight:700;color:' + col + ';">' + typeLabel + '</span>'
         + '<span style="font-size:10px;color:var(--text2);">' + (valStr || shares + ' shares') + '</span>'
@@ -8284,13 +8284,34 @@ function wireScoreBadges() {
 
 // Call wireScoreBadges after any render that creates score-pill elements
 
-// Global delegate: clicking any .de-ticker-tag opens that ticker modal
+// openChainFor — used by Supply Chain tab clicks.
+// If on the correlations tab and that stock has its own chain card, scroll to it.
+// Otherwise fall back to the full stock modal.
+function openChainFor(sym) {
+  if (typeof S !== 'undefined' && S.activeTab === 'correlations') {
+    const card = document.querySelector('.chain-card[data-chain-ticker="' + sym + '"]');
+    if (card) {
+      setFocusTicker(sym);
+      setTimeout(function() { card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+      return;
+    }
+  }
+  openTicker(sym);
+}
+
+// Global delegate: clicking any .de-ticker-tag filters Deep Edge (if on that tab) or opens stock modal
 document.addEventListener('click', function(e) {
   const tag = e.target.closest('.de-ticker-tag');
   if (tag) {
     e.stopPropagation();
     const ticker = tag.textContent.trim();
-    if (ticker) openTicker(ticker);
+    if (!ticker) return;
+    if (typeof S !== 'undefined' && S.activeTab === 'deepedge') {
+      // Filter Deep Edge in-place to this ticker
+      try { filterDeepEdge(ticker, null); } catch(err) { openTicker(ticker); }
+    } else {
+      openTicker(ticker);
+    }
   }
 });
 // Make all .de-ticker-tag elements show pointer cursor
@@ -9386,7 +9407,7 @@ function renderNewsFilter(ticker) {
       .filter(t=>watchlist.includes(t.ticker)&&parseFloat(t.relevance_score||0)>0.1)
       .sort((x,y)=>parseFloat(y.relevance_score||0)-parseFloat(x.relevance_score||0))
       .slice(0,4)
-      .map(t=>{const tsl=t.ticker_sentiment_label||'Neutral';return `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${_sBg(tsl)};color:${_sColor(tsl)};border:0.5px solid ${_sBd(tsl)};font-family:'DM Mono',monospace;font-weight:600;">${t.ticker}</span>`;}).join('');
+      .map(t=>{const tsl=t.ticker_sentiment_label||'Neutral';return `<span onclick="event.stopPropagation();openTicker('${t.ticker}')" style="font-size:10px;padding:2px 6px;border-radius:4px;background:${_sBg(tsl)};color:${_sColor(tsl)};border:0.5px solid ${_sBd(tsl)};font-family:'DM Mono',monospace;font-weight:600;cursor:pointer;">${t.ticker}</span>`;}).join('');
     const hasSummary = !!(a.summary && a.summary.length > 10);
     const isDemo = !!a._isDemo;
     // First article auto-expands; others start collapsed
@@ -9927,12 +9948,12 @@ function renderEdgarFeed(ticker, hits) {
     // Determine rough transaction type from date recency
     const daysAgo = Math.round((Date.now() - new Date(date).getTime()) / 86400000);
     const recency = daysAgo <= 7 ? '🔴 ' + daysAgo + 'd ago' : daysAgo <= 30 ? '🟡 ' + daysAgo + 'd ago' : daysAgo + 'd ago';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);">
+    return `<div onclick="openTicker('${ticker}')" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">
       <div>
-        <div style="font-size:12px;font-weight:500;color:var(--text);">Form ${formType} filing</div>
+        <div style="font-size:12px;font-weight:500;color:var(--text);">Form ${formType} filing · ${ticker}</div>
         <div style="font-size:10px;color:var(--text3);">${date} · ${recency}</div>
       </div>
-      <a href="${accUrl}" target="_blank" style="font-size:10px;padding:3px 8px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:4px;border:0.5px solid rgba(34,197,94,0.2);white-space:nowrap;text-decoration:none;">View ↗</a>
+      <a href="${accUrl}" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;padding:3px 8px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:4px;border:0.5px solid rgba(34,197,94,0.2);white-space:nowrap;text-decoration:none;">View ↗</a>
     </div>`;
   }).join('');
   feed.innerHTML = header + rows;
@@ -11353,7 +11374,7 @@ function initCorrTab() {
       header.addEventListener('click', function(e) {
         // Don't re-fire if user clicked a cnode (already has its own onclick)
         if (e.target.closest('.cnode')) return;
-        openTicker(ticker);
+        openChainFor(ticker);
       });
     }
     // Also wire the chain-title text specifically
@@ -11370,8 +11391,8 @@ function initCorrTab() {
       if (!node._cnodeWired) {
         node._cnodeWired = true;
         if (!node.getAttribute('onclick')) {
-          node.title = 'Open ' + ticker;
-          node.addEventListener('click', function() { openTicker(ticker); });
+          node.title = 'Open ' + ticker + ' supply chain';
+          node.addEventListener('click', function() { openChainFor(ticker); });
         }
       }
     });
