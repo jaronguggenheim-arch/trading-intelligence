@@ -11258,8 +11258,9 @@ async function _fillModalFundamentals(sym, el) {
 }
 
 function filterCorrChainsBySector(secKey, btn) {
+  // null / falsy = "All chains"; a sector key string = that industry
   window._corrActiveSector = secKey || null;
-  // Update button active states
+  // Update button active states in the filter bar
   const bar = document.getElementById('chain-industry-filter');
   if (bar) {
     bar.querySelectorAll('button').forEach(b => {
@@ -11270,7 +11271,7 @@ function filterCorrChainsBySector(secKey, btn) {
       b.style.fontWeight = active ? '600'            : '500';
     });
   }
-  // Re-run chain card visibility (initCorrTab reads _corrActiveSector)
+  // Apply chain card visibility
   try { initCorrTab(); } catch(e) {}
 }
 
@@ -11306,75 +11307,33 @@ function initCorrTab() {
   // Load hyperscaler capex dashboard from EDGAR XBRL (lazy — cached after first run)
   try { _initCapexDashboard(false); } catch(e) {}
 
-  const ft = S.focusTicker;
   const cards = document.querySelectorAll('.chain-card[data-chain-ticker]');
-  // Check whether a direct chain card exists for the focused ticker
-  let hasDirectChain = false;
-  if (ft) cards.forEach(c => { if (c.dataset.chainTicker === ft) hasDirectChain = true; });
 
-  // Sector → relevant chain tickers (for non-anchor stocks — show industry-relevant chains)
-  const SECTOR_CHAINS = {
-    AI:        ['NVDA','META','MSFT','GOOGL','PLTR','CRM'],
-    Semis:     ['NVDA','ASML','TSM','AMD','SMCI','AMAT','MU'],
-    Cloud:     ['META','MSFT','GOOGL','CRM'],
-    Energy:    ['VST','CEG','CCJ'],
-    Defense:   ['LMT','RKLB'],
-    Cyber:     ['META','MSFT','GOOGL'],
-    Consumer:  ['META','MSFT','GOOGL'],
-    Fintech:   ['META','MSFT','GOOGL'],
-    Biotech:   ['MSFT','META'],
-    GrowthTech:['NVDA','META','MSFT','GOOGL'],
-    Luxury:    ['META','MSFT','GOOGL'],
-  };
-  // Find sector for focused ticker
-  let sectorChains = null;
-  let tickerSector = null;
-  if (ft && !hasDirectChain && typeof SECTOR_DATA !== 'undefined') {
-    Object.keys(SECTOR_DATA).forEach(sec => {
-      if (!tickerSector && (SECTOR_DATA[sec].stocks || []).some(s => s.t === ft)) {
-        tickerSector = sec;
-        sectorChains = SECTOR_CHAINS[sec] || null;
-      }
+  // ── Industry filter bar is the PRIMARY control for chain cards ──────────────
+  // _corrActiveSector is set by the filter bar buttons (null = "All chains")
+  // It is initialized to undefined (not null) so we can tell "never set" from "set to All"
+  const activeSec = (typeof window._corrActiveSector !== 'undefined') ? window._corrActiveSector : null;
+
+  if (activeSec) {
+    // A specific industry is selected — show only that sector's chain cards
+    const secTickers = (typeof SECTORS !== 'undefined' && SECTORS[activeSec])
+      ? (SECTORS[activeSec].tickers || []) : [];
+    cards.forEach(card => {
+      card.style.display = secTickers.includes(card.dataset.chainTicker) ? '' : 'none';
     });
+    // Hide the focus-ticker note when sector filter is active
+    const note = document.getElementById('corr-no-chain-note');
+    if (note) note.style.display = 'none';
+    return;
   }
 
-  // Sector filter bar state (set by filterCorrChainsBySector, independent of focus ticker)
-  const activeSec = window._corrActiveSector || null;
-  const secFilterTickers = (activeSec && typeof SECTORS !== 'undefined' && SECTORS[activeSec])
-    ? (SECTORS[activeSec].tickers || []) : null;
-
-  cards.forEach(card => {
-    const ct = card.dataset.chainTicker;
-    if (!ft) {
-      // No focus ticker — apply sector filter bar
-      card.style.display = (secFilterTickers ? secFilterTickers.includes(ct) : true) ? '' : 'none';
-    } else if (ct === ft) {
-      card.style.display = '';
-    } else if (hasDirectChain) {
-      card.style.display = 'none';
-    } else if (sectorChains) {
-      card.style.display = sectorChains.includes(ct) ? '' : 'none';
-    } else {
-      card.style.display = '';
-    }
-  });
-
-  // Show/hide the "no direct chain" note
-  let note = document.getElementById('corr-no-chain-note');
-  if (ft && !hasDirectChain) {
-    if (!note) {
-      note = document.createElement('div');
-      note.id = 'corr-no-chain-note';
-      note.style.cssText = 'font-size:11px;color:var(--text3);padding:8px 12px;background:var(--bg3);border-radius:6px;border:0.5px solid var(--border2);margin-bottom:12px;';
-      const tab = document.getElementById('tab-correlations');
-      if (tab) tab.insertBefore(note, tab.firstElementChild.nextElementSibling);
-    }
-    const sectorLabel = tickerSector ? ' — showing ' + tickerSector + ' sector chains relevant to ' + ft : ' — showing all supply chain relationships';
-    note.textContent = ft + ' doesn\'t have a dedicated chain yet' + sectorLabel + '. Select a different stock from the focus bar to see all chains.';
-    note.style.display = '';
-  } else if (note) {
-    note.style.display = 'none';
-  }
+  // ── No industry filter set — default to show ALL chain cards ────────────────
+  // (Focus ticker from the focus bar does not restrict chain cards on this tab;
+  //  the "Supplier chain →" button in stock modals uses setFocusTicker but then
+  //  the modal-specific chain view is in tk-chain, not here)
+  cards.forEach(card => { card.style.display = ''; });
+  const note = document.getElementById('corr-no-chain-note');
+  if (note) note.style.display = 'none';
 }
 // ─── END CORRELATION MAP ──────────────────────────────────────────
 
