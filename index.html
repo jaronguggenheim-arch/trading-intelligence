@@ -1520,7 +1520,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div>
           <div class="supplier-col-lbl">AMD competes with</div>
           <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Competes directly for hyperscaler AI accelerator budget. MI300X vs H100/Blackwell. NVDA dominates training; AMD gaining in inference.</div><div class="si-signal watch">Watch: NVDA data center beat → hyperscalers diversify → AMD MI300X orders follow 1Q lag</div></div></div>
-          <div class="supplier-item public"><div class="si-ticker" style="color:var(--text2);">INTC</div><div class="si-info"><div class="si-name">Intel Corporation</div><div class="si-role">x86 server CPU competition (Granite Rapids vs EPYC Genoa/Bergamo). AMD gaining share — Intel competitive pressure declining.</div><div class="si-signal up">Signal: Intel data center CPU share loss confirmed → AMD EPYC server share growing</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('INTC')"><div class="si-ticker" style="color:var(--text2);">INTC</div><div class="si-info"><div class="si-name">Intel Corporation</div><div class="si-role">x86 server CPU competition (Granite Rapids vs EPYC Genoa/Bergamo). AMD gaining share — Intel competitive pressure declining.</div><div class="si-signal up">Signal: Intel data center CPU share loss confirmed → AMD EPYC server share growing</div></div></div>
         </div>
       </div>
       <div class="supplier-legend"><div class="leg-item"><div class="leg-dot" style="background:var(--green);"></div>Public ticker</div><div class="leg-item"><div class="leg-dot" style="background:var(--amber);"></div>Foreign listed</div><div class="leg-item"><div class="leg-dot" style="background:var(--border2);"></div>Private</div></div>
@@ -11338,6 +11338,24 @@ function initCorrTab() {
       title.style.cursor = 'pointer';
       title.style.textDecoration = 'underline dotted';
       title.style.textUnderlineOffset = '2px';
+    }
+    // Wire all cnodes that have no onclick to open the parent chain's primary stock
+    // (Descriptive cnodes like "Hyperscaler capex" have cursor:pointer via CSS but no action)
+    card.querySelectorAll('.cnode').forEach(function(node) {
+      if (!node._cnodeWired) {
+        node._cnodeWired = true;
+        if (!node.getAttribute('onclick')) {
+          node.title = 'Open ' + ticker;
+          node.addEventListener('click', function() { openTicker(ticker); });
+        }
+      }
+    });
+    // Wire chain-action badge (the colored badge in header, e.g. "Act now", "Buy window open")
+    const action = card.querySelector('.chain-action');
+    if (action && !action._actionWired) {
+      action._actionWired = true;
+      action.style.cursor = 'pointer';
+      action.addEventListener('click', function(e) { e.stopPropagation(); openTicker(ticker); });
     }
   });
 
