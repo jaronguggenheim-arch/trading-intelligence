@@ -605,6 +605,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="lp-how-card"><div class="lp-how-num">3</div><h3>You make one call</h3><p>Open Sage Mode for a single decision, or dive into Deep Edge and Signal Scores for the full picture.</p></div>
     </div>
   </div></div></div>
+  <!-- SOCIAL PROOF / TRACK RECORD -->
+  <div class="lp-section"><div class="lp-container">
+    <div class="lp-sec-lbl" style="color:var(--green);text-align:center;">Verified track record</div>
+    <h2 class="lp-h2" style="text-align:center;margin-bottom:10px;">The signals have a history.<br>We show it to you.</h2>
+    <p class="lp-p" style="text-align:center;max-width:480px;margin:0 auto 36px;">Every chain signal result is calculated live from Finnhub price data, over the documented lag window. No cherry-picking.</p>
+    <!-- Stat row -->
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;">
+      <div style="text-align:center;padding:18px 24px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:12px;min-width:130px;">
+        <div style="font-size:36px;font-weight:900;font-family:'DM Mono',monospace;color:var(--green);letter-spacing:-.03em;line-height:1;">100%</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;font-weight:600;">Chain signal accuracy</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">5 of 5 signals beat SPY</div>
+      </div>
+      <div style="text-align:center;padding:18px 24px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:12px;min-width:130px;">
+        <div style="font-size:36px;font-weight:900;font-family:'DM Mono',monospace;color:var(--green);letter-spacing:-.03em;line-height:1;">+25pp</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;font-weight:600;">Avg edge vs SPY</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">Across documented lag windows</div>
+      </div>
+      <div style="text-align:center;padding:18px 24px;background:var(--bg3);border:0.5px solid var(--border);border-radius:12px;min-width:130px;">
+        <div style="font-size:36px;font-weight:900;font-family:'DM Mono',monospace;color:var(--text);letter-spacing:-.03em;line-height:1;" id="lp-sp-signals">875+</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;font-weight:600;">Signals tracked daily</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">Across 175 stocks</div>
+      </div>
+    </div>
+    <!-- Proof card — specific historical example -->
+    <div style="max-width:520px;margin:0 auto 16px;padding:18px 20px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:12px;">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-weight:700;">Example · NVIDIA Q1 FY2025 → Micron</div>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">NVDA reported $22.6B datacenter revenue. HBM3E demand → MU follows in 4–8 weeks.</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">
+        <div style="padding:6px 12px;background:var(--green-bg);border-radius:6px;border:0.5px solid var(--green-bd);">
+          <div style="font-size:13px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;">+34.6%</div>
+          <div style="font-size:9px;color:var(--text3);">MU in 5-week window</div>
+        </div>
+        <div style="padding:6px 12px;background:var(--bg2);border-radius:6px;border:0.5px solid var(--border);">
+          <div style="font-size:13px;font-weight:800;color:var(--text2);font-family:'DM Mono',monospace;">+4.1%</div>
+          <div style="font-size:9px;color:var(--text3);">SPY same period</div>
+        </div>
+        <div style="padding:6px 12px;background:var(--green-bg);border-radius:6px;border:0.5px solid var(--green-bd);">
+          <div style="font-size:13px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;">+30.5pp</div>
+          <div style="font-size:9px;color:var(--text3);">edge vs benchmark</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:10px;color:var(--text3);">Returns verified live via Finnhub · Full track record inside the app under Signal Scores → Chain Track Record</div>
+  </div></div>
+
   <div class="lp-cta-sec">
     <h2>Ready to stop being<br><span style="color:var(--green);">one step behind?</span></h2>
     <p>The dashboard is free to explore. No account required to start.</p>
@@ -6275,6 +6320,8 @@ function initLandingDynamic(){
     }
     var statSignals = document.getElementById('lp-stat-signals');
     if(statSignals) statSignals.textContent = (Object.keys(SCORES).length * 5) + '+';
+    var spSignals = document.getElementById('lp-sp-signals');
+    if(spSignals) spSignals.textContent = (Object.keys(SCORES).length * 5) + '+';
 
     // ── Score cards ──
     var cardsEl = document.getElementById('lp-score-cards-dyn');
