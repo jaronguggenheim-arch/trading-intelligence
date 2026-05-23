@@ -482,6 +482,42 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div id="score-bd-content"></div>
 </div>
 
+<!-- FIRST-TIME ONBOARDING OVERLAY -->
+<div id="onboard-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:420px;width:100%;background:var(--bg2);border-radius:16px;padding:28px 24px 22px;border:0.5px solid var(--border2);box-shadow:0 8px 40px rgba(0,0,0,.6);">
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--green);background:var(--green-bg);border:0.5px solid var(--green-bd);padding:3px 12px;border-radius:20px;font-weight:700;margin-bottom:14px;letter-spacing:.06em;">SIGNAL INTELLIGENCE</div>
+      <div style="font-size:21px;font-weight:800;color:var(--text);line-height:1.2;letter-spacing:-.03em;">The supply chain moves<br>before prices do.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:9px;">Here's how this works — 30 seconds.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:22px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:30px;height:30px;border-radius:8px;background:var(--green-bg);border:0.5px solid var(--green-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;">🔗</div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;">Upstream events are leading indicators</div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5;">TSMC raises capex → ASML gets orders 8 weeks later. Meta orders GPUs → NVDA revenues follow next quarter. These lags are structural and repeatable.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:30px;height:30px;border-radius:8px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;">🎯</div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;">5 signal layers → one 0–100 score</div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5;">Insider activity, options flow, analyst moves, supply chain position, and macro regime — compressed into one conviction score per stock, updated daily.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:30px;height:30px;border-radius:8px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;">🌅</div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;">One pick every morning</div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5;">Sage Mode surfaces the highest-conviction opportunity each day in two sentences. You decide in or out. Then go to work.</div>
+        </div>
+      </div>
+    </div>
+    <button onclick="_dismissOnboarding()" style="width:100%;padding:14px;border-radius:10px;background:var(--green);border:none;color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:-.01em;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Show me today's signals →</button>
+    <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--text3);">175 stocks · Free · No account required</div>
+  </div>
+</div>
+
 <div class="main">
 
 <!-- LANDING PAGE -->
@@ -6374,6 +6410,25 @@ function updateTickerScrollActive(sym) {
   });
 }
 
+// ── First-time onboarding ─────────────────────────────────────────────────────
+function _showOnboarding() {
+  try { if (localStorage.getItem('ti72_onboarded')) return; } catch(e) { return; }
+  const el = document.getElementById('onboard-overlay');
+  if (!el) return;
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function _dismissOnboarding() {
+  try { localStorage.setItem('ti72_onboarded', '1'); } catch(e) {}
+  const el = document.getElementById('onboard-overlay');
+  if (el) {
+    el.style.transition = 'opacity .25s';
+    el.style.opacity = '0';
+    setTimeout(function() { el.style.display = 'none'; el.style.opacity = ''; }, 260);
+  }
+  document.body.style.overflow = '';
+}
+
 function enterApp(){
   /* ── CORE TRANSITION — always runs first, cannot be interrupted ── */
   try{
@@ -6401,6 +6456,8 @@ function enterApp(){
   try{updateHeaderUser();}catch(e){}
   setTimeout(function(){try{buildTickerScrollTrack();}catch(e){}},200);
   try{localStorage.setItem('ti72_visited','1');}catch(e){}
+  /* First-time onboarding — fires once, fades out on dismiss */
+  setTimeout(function(){try{_showOnboarding();}catch(e){}},500);
   /* Show Pro chip in header */
   try{var proChip=document.getElementById('hdr-pro-chip');if(proChip)proChip.style.display='inline-flex';}catch(e){}
   try{S.activeTab='morning';S.prevTab='morning';}catch(e){}
