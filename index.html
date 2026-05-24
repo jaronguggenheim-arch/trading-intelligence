@@ -451,7 +451,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         placeholder="🔍 Search any stock…"
         oninput="focusSearchInput(this.value)"
         onkeydown="focusSearchKey(event)"
-        onfocus="focusSearchInput(this.value)"
+        onfocus="if(this.value.trim())focusSearchInput(this.value)"
         style="width:100%;font-size:11px;padding:5px 11px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;box-sizing:border-box;"
       />
       <!-- dropdown -->
@@ -801,9 +801,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="sc sc-g convergence-stock-card" data-ticker="TSM" onclick="openTicker('TSM')"><div class="sul">TSM — Score 70 · Capex raise activates lag window</div><div class="suh">Q1 2026 capex raised to $38–42B. ASML + NVDA downstream signals active. Foundry backbone of AI supercycle.</div><div class="sc-meta"><span class="act-tag at-watch">WATCH</span><span class="tf-tag tf-long">Long · structural</span><span class="score-pill">70/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="SMCI" onclick="openTicker('SMCI')"><div class="sul">SMCI — Score 52 · CEO + CFO cluster buy · Recovery</div><div class="suh">Accounting resolved Mar 2026. CEO $2.8M + CFO $380K open market. Highest-beta NVDA play. Speculative tranche.</div><div class="sc-meta"><span class="act-tag at-watch">SPECULATIVE</span><span class="tf-tag tf-short">Recovery</span><span class="score-pill">52/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="META" onclick="openTicker('META')"><div class="sul">META — Score 55 · $65B capex raise · AI monetisation ahead</div><div class="suh">Primary upstream signal node for NVDA and ASML. Capex raised FY2026. Meta AI at 1B users — revenue ramp beginning.</div><div class="sc-meta"><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-mid">Capex signal</span><span class="score-pill">55/100</span></div></div>
-        <div class="sc sc-a convergence-stock-card" data-ticker="MSFT" onclick="openTicker('MSFT')"><div class="sul">MSFT — Score 52 · $80B capex · Azure capacity constrained</div><div class="suh">Largest hyperscaler GPU buyer globally. Azure +33% YoY. OpenAI exclusivity through 2030. Every capacity raise = NVDA orders.</div><div class="sc-meta"><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">52/100</span></div></div>
-        <div class="sc sc-gray convergence-stock-card" data-ticker="GOOGL" onclick="openTicker('GOOGL')"><div class="sul">GOOGL — Score 48 · $75B capex · TPU risk to monitor</div><div class="suh">Third-largest hyperscaler. TPU self-build reduces NVDA dependence for internal workloads — but TSMC benefits regardless.</div><div class="sc-meta"><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mid">TPU vs GPU</span><span class="score-pill">48/100</span></div></div>
-        <div class="sc sc-a convergence-stock-card" data-ticker="VST" onclick="openTicker('VST')"><div class="sul">VST — Score 58 · AI power demand · CEO + CFO buying</div><div class="suh">Largest US competitive power generator. Druckenmiller rotated in. Every $1B hyperscaler capex = +2.5GW demand — VST is the primary Texas beneficiary.</div><div class="sc-meta"><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI tailwind</span><span class="score-pill">58/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="MSFT" onclick="openTicker('MSFT')"><div class="sul">MSFT — Score 52 · $80B capex · Azure capacity constrained</div><div class="suh">Largest single AI GPU buyer globally. Azure +33% YoY. OpenAI exclusivity through 2030. Every capacity raise = NVDA orders.</div><div class="sc-meta"><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">52/100</span></div></div>
+        <div class="sc sc-gray convergence-stock-card" data-ticker="GOOGL" onclick="openTicker('GOOGL')"><div class="sul">GOOGL — Score 48 · $75B capex · TPU risk to monitor</div><div class="suh">Third-largest cloud AI spender. TPU self-build reduces NVDA dependence for internal workloads — but TSMC benefits regardless.</div><div class="sc-meta"><span class="act-tag at-watch">MONITOR</span><span class="tf-tag tf-mid">TPU vs GPU</span><span class="score-pill">48/100</span></div></div>
+        <div class="sc sc-a convergence-stock-card" data-ticker="VST" onclick="openTicker('VST')"><div class="sul">VST — Score 58 · AI power demand · CEO + CFO buying</div><div class="suh">Largest US competitive power generator. Druckenmiller rotated in. Every $1B of AI datacenter capex = +2.5GW demand — VST is the primary Texas beneficiary.</div><div class="sc-meta"><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI tailwind</span><span class="score-pill">58/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="CEG" onclick="openTicker('CEG')"><div class="sul">CEG — Score 55 · TMI restart · Microsoft 20yr PPA</div><div class="suh">Largest US nuclear operator. Three Mile Island restarted for Microsoft AI data centers. Nuclear PPAs at $160/MWh — demand far exceeds supply.</div><div class="sc-meta"><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">Structural</span><span class="score-pill">55/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="AMAT" onclick="openTicker('AMAT')"><div class="sul">AMAT — Score 65 · WFE cycle · TSMC capex lag window</div><div class="suh">Applied Materials benefits from every TSMC fab build. TSMC capex raise to $38–42B opened the AMAT order lag window. CEO+CFO cluster buy in March.</div><div class="sc-meta"><span class="act-tag at-watch">WFE CYCLE</span><span class="tf-tag tf-mid">2–3Q lag active</span><span class="score-pill">65/100</span></div></div>
         <div class="sc sc-a convergence-stock-card" data-ticker="LRCX" onclick="openTicker('LRCX')"><div class="sul">LRCX — Score 62 · HBM etch · memory WFE leading</div><div class="suh">Lam Research dominates etch for HBM3E — every Blackwell GPU needs 8 HBM stacks, every stack needs Lam tools. Memory WFE leads non-memory for first time since 2021.</div><div class="sc-meta"><span class="act-tag at-watch">HBM CYCLE</span><span class="tf-tag tf-mid">Supply locked 2027</span><span class="score-pill">62/100</span></div></div>
@@ -1029,7 +1029,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">SMCI</span><button class="alert-btn" id="alert-btn-SMCI" onclick="event.stopPropagation();setStockAlert('SMCI',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('SMCI',event)" title="Share SMCI signal" style="flex-shrink:0"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' width='11' height='11'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg></button><span class="act-tag at-watch">SPECULATIVE</span><span class="tf-tag tf-short">Recovery play</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-r">CEO $2.8M buy</span><span class="b b-r">CFO buy</span><span class="b b-g">Accounting resolved</span><span class="b b-a">+124% from 52W low</span></div><div style="font-size:11px;color:var(--text2);">Highest-beta NVDA play. 40% revenue from GPU ecosystem. Accounting crisis resolved — insiders buying recovery.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
-      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:8px 2px 4px;">Hyperscaler signal nodes — capex drives downstream</div>
       <div class="convergence-stock-card" data-ticker="META" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('META')">
         <div class="ring ring-a">55</div>
         <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">META</span><button class="alert-btn" id="alert-btn-META" onclick="event.stopPropagation();setStockAlert('META',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('META',event)" title="Share META signal" style="flex-shrink:0"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' width='11' height='11'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg></button><span class="act-tag at-watch">SIGNAL NODE</span><span class="tf-tag tf-mid">Capex signal</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">$65B capex raised</span><span class="b b-b">~350K Blackwell ordered</span><span class="b b-g">Meta AI: 1B users</span></div><div style="font-size:11px;color:var(--text2);">Second-largest NVDA buyer. Every Meta capex raise = NVDA revenue beat 1–2Q later. Watch quarterly guidance as leading indicator.</div></div>
@@ -1048,12 +1047,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:8px 2px 4px;">Energy infrastructure — AI power demand signal</div>
       <div class="convergence-stock-card" data-ticker="VST" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('VST')">
         <div class="ring ring-a">58</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">VST</span><button class="alert-btn" id="alert-btn-VST" onclick="event.stopPropagation();setStockAlert('VST',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('VST',event)" title="Share VST signal" style="flex-shrink:0"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' width='11' height='11'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg></button><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI demand tailwind</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">Druckenmiller position</span><span class="b b-r">CEO + CFO buying</span><span class="b b-g">Q1 beat · guidance raised</span><span class="b b-g">Goldman PT $170</span></div><div style="font-size:11px;color:var(--text2);">Every $1B of hyperscaler capex = +2.5GW power demand. Vistra is the largest Texas generator — primary beneficiary of data center buildout in the primary US data center corridor.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">VST</span><button class="alert-btn" id="alert-btn-VST" onclick="event.stopPropagation();setStockAlert('VST',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('VST',event)" title="Share VST signal" style="flex-shrink:0"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' width='11' height='11'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg></button><span class="act-tag at-watch">POWER SIGNAL</span><span class="tf-tag tf-mid">AI demand tailwind</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b">Druckenmiller position</span><span class="b b-r">CEO + CFO buying</span><span class="b b-g">Q1 beat · guidance raised</span><span class="b b-g">Goldman PT $170</span></div><div style="font-size:11px;color:var(--text2);">Every $1B of AI datacenter capex = +2.5GW power demand. Vistra is the largest Texas generator — primary beneficiary of data center buildout in the primary US data center corridor.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
       <div class="convergence-stock-card" data-ticker="CEG" style="display:flex;gap:12px;padding:12px;background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('CEG')">
         <div class="ring ring-a">55</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CEG</span><button class="alert-btn" id="alert-btn-CEG" onclick="event.stopPropagation();setStockAlert('CEG',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('CEG',event)" title="Share CEG signal" style="flex-shrink:0"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' width='11' height='11'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg></button><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">20yr contracts</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT 20yr PPA</span><span class="b b-r">CEO $2.1M buy</span><span class="b b-g">TMI restart complete</span><span class="b b-g">Goldman PT $240</span></div><div style="font-size:11px;color:var(--text2);">Only viable 24/7 carbon-free baseload for AI data centers. Nuclear PPA demand exceeds supply — pricing power is now with Constellation. Two additional hyperscaler PPA negotiations active.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">CEG</span><button class="alert-btn" id="alert-btn-CEG" onclick="event.stopPropagation();setStockAlert('CEG',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('CEG',event)" title="Share CEG signal" style="flex-shrink:0"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' width='11' height='11'><circle cx='18' cy='5' r='3'/><circle cx='6' cy='12' r='3'/><circle cx='18' cy='19' r='3'/><line x1='8.59' y1='13.51' x2='15.42' y2='17.49'/><line x1='15.41' y1='6.51' x2='8.59' y2='10.49'/></svg></button><span class="act-tag at-watch">NUCLEAR PPA</span><span class="tf-tag tf-long">20yr contracts</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT 20yr PPA</span><span class="b b-r">CEO $2.1M buy</span><span class="b b-g">TMI restart complete</span><span class="b b-g">Goldman PT $240</span></div><div style="font-size:11px;color:var(--text2);">Only viable 24/7 carbon-free baseload for AI data centers. Nuclear PPA demand exceeds supply — pricing power is now with Constellation. Two additional cloud provider PPA negotiations active.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
     </div>
@@ -1163,7 +1162,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <!-- GEV -->
       <div class="convergence-stock-card" data-ticker="GEV" style="display:flex;gap:12px;padding:12px;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:10px;cursor:pointer;" onclick="openTicker('GEV')">
         <div class="ring ring-g">77</div>
-        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">GEV</span><button class="alert-btn" id="alert-btn-GEV" onclick="event.stopPropagation();setStockAlert('GEV',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('GEV',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-long">Long-term · 1–3 years</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Turbine backlog +85% YoY</span><span class="b b-b" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">AI power demand</span><span class="b b-b" onclick="openTicker('VST')" style="cursor:pointer;" title="Open VST">VST nuclear expansion</span><span class="b b-g">$51B backlog</span></div><div style="font-size:11px;color:var(--text2);">GE Vernova is the pick-and-shovel play for AI power demand. Every hyperscaler datacenter needs gas turbines and grid equipment — GEV makes both. $51B backlog gives 3+ years of revenue visibility. Grid modernization is a second structural tailwind.</div></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;"><span style="font-size:14px;font-weight:600;font-family:'DM Mono',monospace;">GEV</span><button class="alert-btn" id="alert-btn-GEV" onclick="event.stopPropagation();setStockAlert('GEV',this)" style="margin-left:auto;flex-shrink:0">🔔 Alert</button><button class="share-btn" onclick="shareStock('GEV',event)" style="flex-shrink:0">&#x1F517;</button><span class="act-tag at-buy">BUY</span><span class="tf-tag tf-long">Long-term · 1–3 years</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;"><span class="b b-g">Turbine backlog +85% YoY</span><span class="b b-b" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">AI power demand</span><span class="b b-b" onclick="openTicker('VST')" style="cursor:pointer;" title="Open VST">VST nuclear expansion</span><span class="b b-g">$51B backlog</span></div><div style="font-size:11px;color:var(--text2);">GE Vernova is the pick-and-shovel play for AI power demand. Every AI datacenter needs gas turbines and grid equipment — GEV makes both. $51B backlog gives 3+ years of revenue visibility. Grid modernization is a second structural tailwind.</div></div>
         <span style="color:var(--text3);font-size:18px;align-self:center;">›</span>
       </div>
 </div>
@@ -1216,7 +1215,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="chain-status"><div class="status-dot status-active"></div><span style="font-size:11px;font-weight:500;color:var(--green);">NVDA data center revenue is the first domino. Each $1B in AI compute requires ~2.5GW of power — nuclear is the only source that can deliver reliable baseload at scale.</span></div>
     <div class="node-flow">
       <div class="cnode cn-b" onclick="openTicker('NVDA')">NVDA Revenue +</div><span class="carr">→</span>
-      <div class="cnode cn-b">Hyperscaler capex</div><span class="carr">→</span>
+      <div class="cnode cn-b">Cloud AI capex</div><span class="carr">→</span>
       <div class="cnode cn-a">Nuclear PPAs signed</div><span class="carr">→</span>
       <div class="cnode cn-g" onclick="openTicker('CEG')">CEG</div>
       <div class="cnode cn-g" onclick="openTicker('VST')">VST</div><span class="carr">→</span>
@@ -1263,7 +1262,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="chain-status"><div class="status-dot status-active"></div><span style="font-size:11px;font-weight:500;color:var(--green);">You are inside the lag window. NVDA raised guidance Q1 2026 → power stocks re-rate H2 2026.</span></div>
     <div class="node-flow">
       <div class="cnode cn-b" onclick="openTicker('NVDA')">NVDA Revenue +</div><span class="carr">→</span>
-      <div class="cnode cn-b">Hyperscaler builds</div><span class="carr">→</span>
+      <div class="cnode cn-b">Cloud datacenter builds</div><span class="carr">→</span>
       <div class="cnode cn-a">+2.5GW per $1B</div><span class="carr">→</span>
       <div class="cnode cn-g" onclick="openTicker('VST')">VST</div>
       <div class="cnode cn-g" onclick="openTicker('CEG')">CEG</div>
@@ -1286,7 +1285,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div class="supplier-item public" onclick="openTicker('SMCI')"><div class="si-ticker">SMCI</div><div class="si-info"><div class="si-name">Super Micro Computer</div><div class="si-role">40%+ revenue tied to NVDA ecosystem. Highest beta to NVDA data center beat.</div><div class="si-signal up">Signal: NVDA data center beat → SMCI order book expands same quarter</div></div></div>
           <div class="supplier-item public" onclick="openTicker('DELL')"><div class="si-ticker">DELL</div><div class="si-info"><div class="si-name">Dell Technologies</div><div class="si-role">PowerEdge AI servers use NVDA GPUs. Enterprise AI deployment channel.</div><div class="si-signal up">Signal: AI infrastructure buildout = DELL PowerEdge supercycle</div></div></div>
           <div class="supplier-item public" onclick="openTicker('CRWD')"><div class="si-ticker">CRWD</div><div class="si-info"><div class="si-name">CrowdStrike</div><div class="si-role">Security for AI datacenters. Every NVDA GPU cluster is an attack surface.</div><div class="si-signal up">Signal: More AI compute deployed = larger CRWD TAM</div></div></div>
-          <div class="supplier-item public" onclick="openTicker('ANET')"><div class="si-ticker">ANET</div><div class="si-info"><div class="si-name">Arista Networks</div><div class="si-role">Networking for AI clusters. GPU-to-GPU bandwidth 10–100x traditional compute.</div><div class="si-signal up">Signal: Hyperscaler AI builds = Arista switch revenue accelerates</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('ANET')"><div class="si-ticker">ANET</div><div class="si-info"><div class="si-name">Arista Networks</div><div class="si-role">Networking for AI clusters. GPU-to-GPU bandwidth 10–100x traditional compute.</div><div class="si-signal up">Signal: Cloud AI builds = Arista switch revenue accelerates</div></div></div>
         </div>
       </div>
       <div class="supplier-legend"><div class="leg-item"><div class="leg-dot" style="background:var(--green);"></div>Public ticker</div><div class="leg-item"><div class="leg-dot" style="background:var(--amber);"></div>Foreign listed</div><div class="leg-item"><div class="leg-dot" style="background:var(--border2);"></div>Private</div></div>
@@ -1415,7 +1414,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="chain-status"><div class="status-dot status-watch"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">Recovery play. Accounting investigation resolved March 2026. CEO bought $2.8M open market — first since crisis. Highest-beta NVDA proxy.</span></div>
     <div class="node-flow">
       <div class="cnode cn-b" onclick="openTicker('NVDA')">NVDA Blackwell GPUs</div><span class="carr">→</span>
-      <div class="cnode cn-b">Hyperscaler rack orders</div><span class="carr">→</span>
+      <div class="cnode cn-b">Cloud AI rack orders</div><span class="carr">→</span>
       <div class="cnode cn-a" onclick="openTicker('SMCI')">SMCI integrates racks</div><span class="carr">→</span>
       <div class="cnode cn-a">Revenue same quarter</div>
     </div>
@@ -1481,7 +1480,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="chain-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="chain-num" style="background:var(--bg4);color:var(--text3);">7</div>
-        <div><div class="chain-title">TSMC N4 → AMD MI300X → hyperscaler AI inference</div><div class="chain-lag">Lag: 1–2 quarters · Low conviction this week · Score 31</div></div>
+        <div><div class="chain-title">TSMC N4 → AMD MI300X → cloud AI inference</div><div class="chain-lag">Lag: 1–2 quarters · Low conviction this week · Score 31</div></div>
       </div>
       <div class="chain-action" style="background:var(--bg4);color:var(--text3);border:0.5px solid var(--border);">Watch</div>
     </div>
@@ -1489,11 +1488,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="node-flow">
       <div class="cnode cn-g" onclick="openTicker('TSM')">TSMC N4 capacity</div><span class="carr">→</span>
       <div class="cnode cn-gray" onclick="openTicker('AMD')">AMD MI300X production</div><span class="carr">→</span>
-      <div class="cnode cn-b">Hyperscaler AI inference</div><span class="carr">→</span>
+      <div class="cnode cn-b">Cloud AI inference</div><span class="carr">→</span>
       <div class="cnode cn-b" onclick="openTicker('MSFT')" style="cursor:pointer;">MSFT · META · GOOGL</div>
     </div>
     <div class="evidence-row"><span class="b b-g" onclick="openTicker('TSM')" style="cursor:pointer;" title="Open TSM">TSMC N4 allocation locked through Q3 2026</span><span class="b b-b" onclick="openTicker('AMD')" style="cursor:pointer;" title="Open AMD">Azure MI300X deployment confirmed</span><span class="b b-a" onclick="openTicker('NVDA')" style="cursor:pointer;" title="NVDA is AMD's key competitor here">MI300X gains vs NVDA in inference workloads</span><span class="b b-gray">Solo Citi downgrade — not a trend</span></div>
-    <div class="chain-insight"><strong>What to do:</strong> AMD's supply chain is structurally sound — TSMC N4 allocation confirmed, and MI300X is the primary NVDA alternative for AI inference. But no insider conviction signal, mixed options flow, and a solo analyst cut mean this is a wait-and-watch. The catalyst gate is NVDA earnings: if NVDA data center beats big, AMD MI300X orders accelerate in the same quarter as hyperscalers diversify GPU vendors. Do not add until that signal fires.</div>
+    <div class="chain-insight"><strong>What to do:</strong> AMD's supply chain is structurally sound — TSMC N4 allocation confirmed, and MI300X is the primary NVDA alternative for AI inference. But no insider conviction signal, mixed options flow, and a solo analyst cut mean this is a wait-and-watch. The catalyst gate is NVDA earnings: if NVDA data center beats big, AMD MI300X orders accelerate in the same quarter as cloud providers diversify GPU vendors. Do not add until that signal fires.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--bg4);color:var(--text2);padding:2px 8px;border-radius:3px;font-size:10px;">AMD Supplier Chain</span></div>
       <div class="supplier-grid">
@@ -1504,7 +1503,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         </div>
         <div>
           <div class="supplier-col-lbl">AMD competes with</div>
-          <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Competes directly for hyperscaler AI accelerator budget. MI300X vs H100/Blackwell. NVDA dominates training; AMD gaining in inference.</div><div class="si-signal watch">Watch: NVDA data center beat → hyperscalers diversify → AMD MI300X orders follow 1Q lag</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('NVDA')"><div class="si-ticker">NVDA</div><div class="si-info"><div class="si-name">NVIDIA Corporation</div><div class="si-role">Competes directly for cloud AI accelerator budget. MI300X vs H100/Blackwell. NVDA dominates training; AMD gaining in inference.</div><div class="si-signal watch">Watch: NVDA data center beat → cloud providers diversify → AMD MI300X orders follow 1Q lag</div></div></div>
           <div class="supplier-item public" onclick="openTicker('INTC')"><div class="si-ticker" style="color:var(--text2);">INTC</div><div class="si-info"><div class="si-name">Intel Corporation</div><div class="si-role">x86 server CPU competition (Granite Rapids vs EPYC Genoa/Bergamo). AMD gaining share — Intel competitive pressure declining.</div><div class="si-signal up">Signal: Intel data center CPU share loss confirmed → AMD EPYC server share growing</div></div></div>
         </div>
       </div>
@@ -1514,14 +1513,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
   <!-- HYPERSCALER CAPEX CLUSTER -->
   <div style="display:flex;align-items:center;gap:8px;margin:20px 0 10px;">
-    <div style="font-size:12px;font-weight:600;color:var(--text);">Hyperscaler capex cluster</div>
+    <div style="font-size:12px;font-weight:600;color:var(--text);">Cloud AI capex cluster</div>
     <div style="font-size:11px;color:var(--text3);">— the demand engine behind NVDA, ASML, and TSM signals</div>
   </div>
   <div class="chain-card" data-chain-ticker="META">
     <div class="chain-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="chain-num" style="background:var(--blue-bg);color:var(--blue);">8</div>
-        <div><div class="chain-title">META $65B capex → NVDA GPU demand → TSMC CoWoS</div><div class="chain-lag">Lag: 1–2 quarters · Second-largest hyperscaler spender · Primary NVDA demand node</div></div>
+        <div><div class="chain-title">META $65B capex → NVDA GPU demand → TSMC CoWoS</div><div class="chain-lag">Lag: 1–2 quarters · Second-largest cloud AI spender · Primary NVDA demand node</div></div>
       </div>
       <div class="chain-action" style="background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);">Signal node</div>
     </div>
@@ -1555,7 +1554,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="chain-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="chain-num" style="background:var(--blue-bg);color:var(--blue);">9</div>
-        <div><div class="chain-title">MSFT $80B capex → Azure AI → NVDA GPU demand (largest single buyer)</div><div class="chain-lag">Lag: 1–2 quarters · Largest hyperscaler globally · OpenAI exclusivity amplifies demand</div></div>
+        <div><div class="chain-title">MSFT $80B capex → Azure AI → NVDA GPU demand (largest single buyer)</div><div class="chain-lag">Lag: 1–2 quarters · Largest cloud AI spender globally · OpenAI exclusivity amplifies demand</div></div>
       </div>
       <div class="chain-action" style="background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);">Signal node</div>
     </div>
@@ -1566,7 +1565,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-g" onclick="openTicker('NVDA')">NVDA largest order</div><span class="carr">→</span>
       <div class="cnode cn-g" onclick="openTicker('TSM')">TSMC CoWoS</div>
     </div>
-    <div class="evidence-row"><span class="b b-g" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">$80B FY2025 capex — largest hyperscaler</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">OpenAI exclusive compute to 2030</span><span class="b b-b">Azure +33% YoY — capacity constrained</span><span class="b b-g">Copilot: 14M enterprise seats</span></div>
+    <div class="evidence-row"><span class="b b-g" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">$80B FY2025 capex — largest cloud AI spender</span><span class="b b-g" onclick="openTicker('NVDA')" style="cursor:pointer;" title="Open NVDA">OpenAI exclusive compute to 2030</span><span class="b b-b">Azure +33% YoY — capacity constrained</span><span class="b b-g">Copilot: 14M enterprise seats</span></div>
     <div class="chain-insight"><strong>What to watch:</strong> MSFT Azure growth rate is the most reliable forward indicator for NVDA data center demand. "Capacity constrained" in the earnings call = more GPU orders imminent. OpenAI exclusivity means every ChatGPT user is indirectly a NVDA GPU consumer. A MSFT capex cut would be a significant negative signal for NVDA — it hasn't happened and shows no sign of happening.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:3px;font-size:10px;">MSFT Capex Flows To</span></div>
@@ -1626,11 +1625,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="chain-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="chain-num" style="background:var(--amber-bg);color:var(--amber);">11</div>
-        <div><div class="chain-title">Hyperscaler capex → +2.5GW per $1B → VST Texas power fleet</div><div class="chain-lag">Lag: 6–18 months · Druckenmiller position · Active window</div></div>
+        <div><div class="chain-title">Cloud AI capex → +2.5GW per $1B → VST Texas power fleet</div><div class="chain-lag">Lag: 6–18 months · Druckenmiller position · Active window</div></div>
       </div>
       <div class="chain-action" style="background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-bd);">Watch</div>
     </div>
-    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">AI data centers consume power at a ratio of ~2.5GW per $1B of hyperscaler capex. Meta, Microsoft, and Google have collectively committed $220B+ in FY2026 capex — that's a structural demand curve the grid wasn't built for. Vistra's Texas ERCOT fleet (nuclear + natural gas) is geographically positioned in the primary US data center build corridor. CEO and CFO bought open market in March 2026. Druckenmiller disclosed 2.1M share position in Q1 2026 13F.</span></div>
+    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">AI data centers consume power at a ratio of ~2.5GW per $1B of cloud AI capex. Meta, Microsoft, and Google have collectively committed $220B+ in FY2026 capex — that's a structural demand curve the grid wasn't built for. Vistra's Texas ERCOT fleet (nuclear + natural gas) is geographically positioned in the primary US data center build corridor. CEO and CFO bought open market in March 2026. Druckenmiller disclosed 2.1M share position in Q1 2026 13F.</span></div>
     <div class="node-flow">
       <div class="cnode cn-b" onclick="openTicker('META')">META $65B capex</div>
       <div class="cnode cn-b" onclick="openTicker('MSFT')">MSFT $80B capex</div>
@@ -1641,17 +1640,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="cnode cn-g" onclick="openTicker('VST')">VST Texas grid</div>
     </div>
     <div class="evidence-row"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT $80B capex FY2026 — #1 globally</span><span class="b b-b" onclick="openTicker('META')" style="cursor:pointer;" title="Open META">META $65B capex raised from $40B</span><span class="b b-g">AI data center = 2.5GW per $1B capex spend</span><span class="b b-a" onclick="openTicker('VST')" style="cursor:pointer;" title="Open VST">Druckenmiller: 2.1M VST shares (Q1 2026)</span></div>
-    <div class="chain-insight"><strong>What to watch:</strong> Track hyperscaler quarterly capex guidance. Every raise is a direct leading indicator for power demand. <em>The signal lag is 6–18 months</em> — data centers announced today come online next year. Vistra Q1 2026 already beat estimates and raised guidance. Two undisclosed data center PPAs reportedly in negotiation. Texas ERCOT summer peak pricing will be the short-term catalyst.</div>
+    <div class="chain-insight"><strong>What to watch:</strong> Track cloud giant quarterly capex guidance. Every raise is a direct leading indicator for power demand. <em>The signal lag is 6–18 months</em> — data centers announced today come online next year. Vistra Q1 2026 already beat estimates and raised guidance. Two undisclosed data center PPAs reportedly in negotiation. Texas ERCOT summer peak pricing will be the short-term catalyst.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">AI Power Demand Beneficiaries</span></div>
       <div class="supplier-grid">
         <div>
           <div class="supplier-col-lbl">Primary Texas beneficiary</div>
-          <div class="supplier-item public" onclick="openTicker('VST')"><div class="si-ticker">VST</div><div class="si-info"><div class="si-name">Vistra Energy</div><div class="si-role">Largest competitive power generator in Texas ERCOT. Nuclear + gas fleet positioned at data center build-out epicenter. CEO + CFO buying.</div><div class="si-signal up">Signal: Hyperscaler capex raise → VST power demand → ERCOT pricing</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('VST')"><div class="si-ticker">VST</div><div class="si-info"><div class="si-name">Vistra Energy</div><div class="si-role">Largest competitive power generator in Texas ERCOT. Nuclear + gas fleet positioned at data center build-out epicenter. CEO + CFO buying.</div><div class="si-signal up">Signal: Cloud AI capex raise → VST power demand → ERCOT pricing</div></div></div>
         </div>
         <div>
           <div class="supplier-col-lbl">Nuclear clean power PPAs</div>
-          <div class="supplier-item public" onclick="openTicker('CEG')"><div class="si-ticker">CEG</div><div class="si-info"><div class="si-name">Constellation Energy</div><div class="si-role">Largest US nuclear operator. Three Mile Island restarted for Microsoft. Two additional hyperscaler PPAs in active negotiation. 24/7 carbon-free baseload = premium pricing.</div><div class="si-signal up">Signal: AI carbon-free demand → nuclear PPA scarcity → CEG pricing power</div></div></div>
+          <div class="supplier-item public" onclick="openTicker('CEG')"><div class="si-ticker">CEG</div><div class="si-info"><div class="si-name">Constellation Energy</div><div class="si-role">Largest US nuclear operator. Three Mile Island restarted for Microsoft. Two additional cloud provider PPAs in active negotiation. 24/7 carbon-free baseload = premium pricing.</div><div class="si-signal up">Signal: AI carbon-free demand → nuclear PPA scarcity → CEG pricing power</div></div></div>
         </div>
       </div>
     </div>
@@ -1665,7 +1664,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
       <div class="chain-action" style="background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-bd);">Watch</div>
     </div>
-    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">Major tech companies have committed to 24/7 carbon-free energy for their data centers. The problem: the only available 24/7 carbon-free baseload is nuclear power. Solar and wind are intermittent. Constellation holds the largest US nuclear fleet (21 reactors, 21GW) and just restarted Three Mile Island Unit 1 specifically for a 20-year Microsoft PPA at $160/MWh — a significant premium to spot prices. CEO Joe Dominguez disclosed two additional hyperscaler PPA negotiations on the Q1 2026 call. Nuclear PPA demand materially exceeds available supply.</span></div>
+    <div class="chain-status"><div class="status-dot status-forming"></div><span style="font-size:11px;font-weight:500;color:var(--amber);">Major tech companies have committed to 24/7 carbon-free energy for their data centers. The problem: the only available 24/7 carbon-free baseload is nuclear power. Solar and wind are intermittent. Constellation holds the largest US nuclear fleet (21 reactors, 21GW) and just restarted Three Mile Island Unit 1 specifically for a 20-year Microsoft PPA at $160/MWh — a significant premium to spot prices. CEO Joe Dominguez disclosed two additional cloud provider PPA negotiations on the Q1 2026 call. Nuclear PPA demand materially exceeds available supply.</span></div>
     <div class="node-flow">
       <div class="cnode cn-b" onclick="openTicker('MSFT')">MSFT net-zero mandate</div>
       <span class="carr">→</span>
@@ -1675,7 +1674,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <span class="carr">→</span>
       <div class="cnode cn-g">20yr PPA $160/MWh</div>
     </div>
-    <div class="evidence-row"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT TMI PPA: 835MW · 20 years · $160/MWh</span><span class="b b-g">Nuclear = only viable 24/7 carbon-free baseload</span><span class="b b-r">CEO Dominguez: $2.1M open market buy</span><span class="b b-g">2 additional hyperscaler PPAs in negotiation</span></div>
+    <div class="evidence-row"><span class="b b-b" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT TMI PPA: 835MW · 20 years · $160/MWh</span><span class="b b-g">Nuclear = only viable 24/7 carbon-free baseload</span><span class="b b-r">CEO Dominguez: $2.1M open market buy</span><span class="b b-g">2 additional cloud provider PPAs in negotiation</span></div>
     <div class="chain-insight"><strong>What to watch:</strong> Each new nuclear PPA announcement is a re-rating catalyst for CEG. Goldman PT is $240 vs current ~$191 — the upside case is more PPAs signed at premium prices. <em>The key risk:</em> new nuclear capacity (SMRs, new builds) is 10+ years away — CEG is supply-constrained in the best possible way. Monitor Google, Amazon, and Meta carbon-free energy commitments for additional PPA pipeline signal.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:3px;font-size:10px;">Nuclear PPA Demand Chain</span></div>
@@ -1794,9 +1793,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="cu-lag">2–6 month lag</div>
       </div>
     </div>
-    <div><div class="chain-title">Hyperscaler AI capex → enterprise compute availability → CRM/NOW/SNOW AI adoption</div><div class="chain-lag">Lag: 2–6 months · Active now · MSFT + GOOGL both expanding</div></div>
+    <div><div class="chain-title">Cloud AI capex → enterprise compute availability → CRM/NOW/SNOW AI adoption</div><div class="chain-lag">Lag: 2–6 months · Active now · MSFT + GOOGL both expanding</div></div>
     <div class="evidence-row"><span class="b b-g" onclick="openTicker('MSFT')" style="cursor:pointer;" title="Open MSFT">MSFT Azure +33% · $80B capex FY2026</span><span class="b b-g" onclick="openTicker('GOOGL')" style="cursor:pointer;" title="Open GOOGL">GOOGL Cloud +28% · $75B capex</span><span class="b b-r" onclick="openTicker('NOW')" style="cursor:pointer;" title="Open NOW">NOW CEO+CFO $5M cluster buy</span><span class="b b-g" onclick="openTicker('CRM')" style="cursor:pointer;" title="Open CRM">CRM Agentforce 3,000 customers in 90 days</span></div>
-    <div class="chain-insight"><strong>What to watch:</strong> Enterprise AI adoption is 2–3 years behind consumer AI. Hyperscaler cloud capacity (MSFT Azure, GOOGL Cloud) expanding creates the compute infrastructure that enterprise software runs on. ServiceNow AI Pro, Salesforce Agentforce, and Snowflake Cortex all require cloud AI compute — when MSFT/GOOGL expand capacity, enterprise AI adoption accelerates 2–6 months later. <em>The key risk:</em> Enterprise AI ROI scepticism — if enterprises delay AI Pro upgrades, the pipeline-to-ARR conversion slows.</div>
+    <div class="chain-insight"><strong>What to watch:</strong> Enterprise AI adoption is 2–3 years behind consumer AI. Cloud capacity (MSFT Azure, GOOGL Cloud) expanding creates the compute infrastructure that enterprise software runs on. ServiceNow AI Pro, Salesforce Agentforce, and Snowflake Cortex all require cloud AI compute — when MSFT/GOOGL expand capacity, enterprise AI adoption accelerates 2–6 months later. <em>The key risk:</em> Enterprise AI ROI scepticism — if enterprises delay AI Pro upgrades, the pipeline-to-ARR conversion slows.</div>
     <div class="supplier-section">
       <div class="supplier-title"><span style="background:rgba(168,85,247,0.1);color:var(--purple,#a855f7);padding:2px 8px;border-radius:3px;font-size:10px;">Enterprise AI Software Chain</span></div>
       <div class="supplier-grid">
@@ -1837,7 +1836,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 <div class="card" id="hyperscaler-capex-card" style="margin-top:16px;display:none;">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
     <div>
-      <div class="card-lbl" style="margin-bottom:2px;">Hyperscaler capex tracker — live from SEC filings</div>
+      <div class="card-lbl" style="margin-bottom:2px;">Cloud AI capex tracker — live from SEC filings</div>
       <div style="font-size:10px;color:var(--text3);">Quarterly capex for META · MSFT · GOOGL · AMZN · NVDA revenue — the primary upstream signals driving the AI hardware chain</div>
     </div>
     <button onclick="_initCapexDashboard(true)" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
@@ -1957,7 +1956,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div style="color:var(--text3);padding:0 4px;">→</div>
         <div style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);">NVDA Blackwell</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Hyperscalers</div>
+        <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Cloud Giants</div>
       </div>
       <div class="sc sc-g sc-na" style="margin-bottom:6px;cursor:default;"><div class="sul">TSMC CoWoS capacity constraint easing (Q3 signal)</div><div class="suh">CoWoS advanced packaging was the Blackwell bottleneck. TSMC adding 30% CoWoS capacity in Q3. Directly unlocks NVDA delivery timelines — 6–9 month revenue pull-forward.</div></div>
       <div class="sc sc-r sc-na" style="cursor:default;"><div class="sul">TSMC Q1 capex +15% → ASML orders in 6–9 months</div><div class="suh">Historical lag: TSMC capex raise precedes ASML EUV orders by 6–9 months. Q1 raise = orders arriving now. ASML order book confirmation expected Q3 earnings.</div></div>
@@ -2022,8 +2021,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="g2">
     <div class="card">
       <div class="card-lbl">Structural tailwinds — multi-year duration</div>
-      <div class="sc sc-r sc-na de-card" data-tickers="NVDA ASML AMD" style="margin-bottom:7px;"><div class="sul">AI capex supercycle — $300B+ FY25 guided</div><div class="suh">MSFT $80B + GOOGL $75B + META $65B + AMZN $75B. Each dollar flows through NVDA → TSMC → ASML. Duration: 3–5 years minimum. Every hyperscaler capex raise is an ASML and NVDA order.</div><div class="sc-meta"><span class="act-tag at-buy">STRUCTURAL</span><span class="tf-tag tf-long">Multi-year</span></div></div>
-      <div class="sc sc-g sc-na de-card" data-tickers="NVDA PLTR" style="margin-bottom:7px;"><div class="sul">Sovereign AI wave — $100B+ national AI budgets</div><div class="suh">UAE, Saudi Arabia, Japan, India each announced $100B+ AI infrastructure. New demand vector independent of US hyperscalers — NVDA hardware + PLTR software are the two infrastructure layers every sovereign program needs.</div><div class="sc-meta"><span class="act-tag at-buy">NEW VECTOR</span><span class="tf-tag tf-long">1–3 years</span></div></div>
+      <div class="sc sc-r sc-na de-card" data-tickers="NVDA ASML AMD" style="margin-bottom:7px;"><div class="sul">AI capex supercycle — $300B+ FY25 guided</div><div class="suh">MSFT $80B + GOOGL $75B + META $65B + AMZN $75B. Each dollar flows through NVDA → TSMC → ASML. Duration: 3–5 years minimum. Every cloud giant capex raise is an ASML and NVDA order.</div><div class="sc-meta"><span class="act-tag at-buy">STRUCTURAL</span><span class="tf-tag tf-long">Multi-year</span></div></div>
+      <div class="sc sc-g sc-na de-card" data-tickers="NVDA PLTR" style="margin-bottom:7px;"><div class="sul">Sovereign AI wave — $100B+ national AI budgets</div><div class="suh">UAE, Saudi Arabia, Japan, India each announced $100B+ AI infrastructure. New demand vector independent of US cloud giants — NVDA hardware + PLTR software are the two infrastructure layers every sovereign program needs.</div><div class="sc-meta"><span class="act-tag at-buy">NEW VECTOR</span><span class="tf-tag tf-long">1–3 years</span></div></div>
       <div class="sc sc-b sc-na de-card" data-tickers="RKLB PLTR"><div class="sul">Space + defense spending acceleration (SDA, NRO)</div><div class="suh">Space Development Agency Tranche 2 awards Q3. NRO constellation expansion. RKLB and PLTR are the two small-cap pure-plays. Both structurally positioned before institutional coverage broadens.</div><div class="sc-meta"><span class="act-tag at-buy">STRUCTURAL</span><span class="tf-tag tf-long">2–4 years</span></div></div>
     </div>
     <div class="card">
@@ -5150,7 +5149,7 @@ async function fetchChartData(id,tf){
   const inst=getInstrument(id);
   // Twelvedata: if TD key set and no AV key, fetch real data
   if(!S.av&&(S.td||IS_VERCEL)){return fetchTDChartData(id,tf,n,inst,key);}
-  if(!S.av){return genDemoSeries(n,id+tf,tf);}
+  if(!S.av){return genDemoSeries(n,id+tf,tf,id);}
   let url='';
   const sym=inst?.proxy||id;
   if(inst&&inst.category==='fx'&&inst.from&&inst.to){
@@ -5200,7 +5199,7 @@ function limitSeriesByTF(series,tf){
   return series.slice(-n);
 }
 
-function genDemoSeries(n,seed,tf){
+function genDemoSeries(n,seed,tf,sym){
   let h=0;if(seed)for(let i=0;i<seed.length;i++)h=(h*31+seed.charCodeAt(i))|0;
   const rng=()=>{h=(h*1664525+1013904223)|0;return((h>>>0)/4294967296);};
   // TF-specific step size: 1D tight intraday noise, 5Y larger swings
@@ -5219,7 +5218,17 @@ function genDemoSeries(n,seed,tf){
     }
     return d.toISOString().slice(0,10);
   }
-  let v=80+rng()*100;const out=[];
+  // Anchor to known stock price so demo chart is in the right ballpark
+  let startPrice = 80 + rng()*100;
+  if(sym && typeof TICKER_DATA !== 'undefined' && TICKER_DATA[sym] && TICKER_DATA[sym].price && TICKER_DATA[sym].price !== '—') {
+    const p = parseFloat(String(TICKER_DATA[sym].price).replace(/,/g,''));
+    if(p > 0) {
+      // Simulate how price looked at the start of this timeframe (slightly lower for upward drift)
+      const driftBack = {'1D':0.005,'5D':0.015,'1M':0.04,'3M':0.08,'6M':0.12,'1Y':0.20,'5Y':0.40}[tf]||0.08;
+      startPrice = p * (1 - driftBack * (0.5 + rng()*0.5));
+    }
+  }
+  let v=startPrice;const out=[];
   for(let i=0;i<n;i++){
     v+=(rng()-0.5+bias)*v*step;
     v=Math.max(v,1);
@@ -6948,7 +6957,7 @@ function focusDDHover(idx) {
 function selectFocusTicker(ticker) {
   closeFocusDropdown();
   const input = document.getElementById('focus-search-input');
-  if (input) input.value = '';
+  if (input) { input.value = ''; input.blur(); }
   const t = (typeof S !== 'undefined') ? S.activeTab : '';
   if (t === 'correlations') {
     // Supply chain tab: filter chains to this stock in-place
@@ -7054,11 +7063,11 @@ const TECH_TITANS = [
   },
   {
     name: 'Hock Tan', role: 'CEO · Broadcom', ticker: 'AVGO', emoji: '🔷',
-    note: 'Known for significant open market purchases. Serial acquirer with deep knowledge of hyperscaler custom ASIC demand (Google TPU, Meta MTIA).',
+    note: 'Known for significant open market purchases. Serial acquirer with deep knowledge of cloud giant custom ASIC demand (Google TPU, Meta MTIA).',
     signal: 'Tan has consistently bought AVGO ahead of major contract wins. His purchases are among the most reliable insider signals in semiconductors.',
     trades: [
       { date:'2023-Q4', type:'BUY', label:'Open market buy · $4.8M · Ahead of VMware close + AI ASIC ramp', signal:'bull' },
-      { date:'2024-Q2', type:'BUY', label:'Open market buy · $6.2M · Hyperscaler ASIC backlog confirmed', signal:'bull' }
+      { date:'2024-Q2', type:'BUY', label:'Open market buy · $6.2M · Cloud AI ASIC backlog confirmed', signal:'bull' }
     ],
     edgar: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001730168&type=4&dateb=&owner=include&count=10',
     twitter: null
@@ -7206,7 +7215,7 @@ const NOTABLE_MANAGERS = {
     tickers: ['META','MSFT','NVDA','AMZN','GOOGL','CRM'],
     cik: '0001167483',
     twitter: null,
-    thesis: 'Global technology investor. 13F shows concentrated bets on hyperscaler and enterprise AI plays.'
+    thesis: 'Global technology investor. 13F shows concentrated bets on cloud AI and enterprise tech plays.'
   },
   'Scion Asset Mgmt (Burry)': {
     style: 'Deep value contrarian · "The Big Short" · 13F closely watched',
@@ -7354,7 +7363,9 @@ async function renderTechTitans() {
       + '<div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">' + t.emoji + '</div>'
       + '<div style="flex:1;min-width:0;">'
       + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">'
-      + '<span style="font-size:13px;font-weight:700;color:var(--text);">' + t.name + '</span>'
+      + (t.twitter
+          ? '<a href="https://twitter.com/' + t.twitter + '" target="_blank" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">' + t.name + ' ↗</a>'
+          : '<a href="' + t.edgar + '" target="_blank" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">' + t.name + '</a>')
       + '<span style="font-size:10px;color:var(--text3);">' + t.role + '</span>'
       + '<span onclick="openTicker(\'' + t.ticker + '\')" style="padding:2px 8px;border-radius:10px;background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-bd);font-size:10px;font-weight:700;cursor:pointer;">' + t.ticker + '</span>'
       + twitterLink
@@ -7625,7 +7636,7 @@ function renderThoughtLeaders() {
       <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
         <div style="font-size:28px;line-height:1;flex-shrink:0;">${v.emoji}</div>
         <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">${v.name}</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">${v.twitter ? `<a href="https://twitter.com/${v.twitter}" target="_blank" style="color:var(--text);text-decoration:none;">${v.name} ↗</a>` : v.link ? `<a href="${v.link}" target="_blank" style="color:var(--text);text-decoration:none;">${v.name} ↗</a>` : v.name}</div>
           <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">${v.role}</div>
           <div style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;border-left:3px solid var(--blue-bd);padding-left:10px;margin-bottom:10px;">"${v.thesis}"</div>
         </div>
@@ -8697,7 +8708,7 @@ const HISTORICAL_CHAIN_EVENTS = [
     date: '2024-04-24',
     event: 'Meta raised 2024 full-year capex to $35–40B (from $30–37B) — the largest single-quarter infrastructure spend acceleration of 2024.',
     downstream: [
-      { ticker: 'NVDA', lagWeeks: 3, thesis: 'Hyperscaler GPU order acceleration → NVDA forward bookings (2–4 week lag)' }
+      { ticker: 'NVDA', lagWeeks: 3, thesis: 'Cloud AI GPU order acceleration → NVDA forward bookings (2–4 week lag)' }
     ]
   },
   {
@@ -9607,12 +9618,12 @@ const EDGAR_COMPANY_NAMES = {
   AAPL:{name:'Apple',price:'213.50',change:'+0.8%',up:true,mktcap:'$3.27T',pe:'33',week52:'$169–$237',signals:['Apple Intelligence upgrade cycle','M4 Mac cycle strong','iPhone 17 AI features','Services margin 74%'],verdict:'Apple Intelligence is the catalyst for the biggest iPhone upgrade cycle since 5G. The installed base of 2.2B devices is the moat. Services at 74% gross margin offset hardware cyclicality.',tags:['Consumer Tech','AI'],news:[{h:'Apple Intelligence features drive iPhone upgrade intent to highest since 2021',s:'Morgan Stanley',t:'3h ago'},{h:'Apple M4 MacBook Pro sales exceed internal targets',s:'Bloomberg',t:'1d ago'}],insider:[{n:'Tim Cook',r:'CEO',a:'Buy',sh:'500,000',v:'$106.8M',d:'2026-02-28'}],revenue:[{q:'Q4 2025',v:94.9},{q:'Q1 2026',v:124.3},{q:'Q2 2026E',v:95.8},{q:'Q3 2026E',v:89.5}]},
   PANW:{name:'Palo Alto Networks',price:'388.70',change:'+2.1%',up:true,mktcap:'$131B',pe:'55',week52:'$295–$425',signals:['Platformization ARR +35% YoY','XSIAM AI-SOC adoption','RPO surge +34%','Federal AI security wins'],verdict:'PANW is executing the best in enterprise security. Platformization is driving RPO growth and NRR. XSIAM AI-native SOC platform has no equal. Federal AI security mandates are a structural tailwind.',tags:['Cybersecurity','AI Security'],news:[{h:'Palo Alto Networks XSIAM wins 3 Fortune 100 accounts displacing legacy SIEM vendors',s:'Reuters',t:'5h ago'},{h:'Palo Alto Networks RPO grows 34% YoY as platformization strategy gains traction',s:'Bloomberg',t:'1d ago'}],insider:[{n:'Nikesh Arora',r:'CEO',a:'Buy',sh:'150,000',v:'$58.3M',d:'2026-03-05'}],revenue:[{q:'Q4 2025',v:2.14},{q:'Q1 2026',v:2.26},{q:'Q2 2026E',v:2.35},{q:'Q3 2026E',v:2.47}]},
   CRWD:{name:'CrowdStrike',price:'394.20',change:'+1.9%',up:true,mktcap:'$96B',pe:'80',week52:'$266–$455',signals:['Falcon ARR $4.5B recovering','Charlotte AI: 80% alert automation','Net retention 122%','Federal AI security wins'],verdict:'CrowdStrike has recovered from the 2024 outage — net retention back to 122%+. Charlotte AI is the most capable autonomous SOC agent. Falcon single-agent architecture is structurally superior for AI integration.',tags:['Cybersecurity','AI Security'],news:[{h:'CrowdStrike ARR surpasses $4.5B as Falcon Flex deals accelerate post-incident recovery',s:'Reuters',t:'3h ago'},{h:'CrowdStrike Charlotte AI handles 80% of SOC alerts autonomously in deployments',s:'TechCrunch',t:'2d ago'}],insider:[{n:'George Kurtz',r:'CEO',a:'Buy',sh:'100,000',v:'$39.4M',d:'2026-02-10'}],revenue:[{q:'Q4 2025',v:1.06},{q:'Q1 2026',v:1.22},{q:'Q2 2026E',v:1.32},{q:'Q3 2026E',v:1.43}]},
-  GEV:{name:'GE Vernova',price:'448.30',change:'+2.8%',up:true,mktcap:'$122B',pe:'72',week52:'$162–$490',signals:['Gas turbine backlog +85% YoY','AI datacenter power demand','Backlog $51B — 3yr visibility','Grid modernization capex cycle'],verdict:'GE Vernova is the pick-and-shovel play for AI power demand. Every hyperscaler needs power infrastructure — GEV makes the turbines, grid equipment, and power electronics. Backlog of $51B provides 3+ years of revenue visibility.',tags:['Energy','Power Infra'],news:[{h:'GE Vernova gas turbine orders surge 85% YoY driven by AI datacenter power demand',s:'Bloomberg',t:'2h ago'},{h:'GE Vernova wins $4.2B grid modernization contract with US utilities',s:'WSJ',t:'1d ago'}],insider:[{n:'Scott Strazik',r:'CEO',a:'Buy',sh:'75,000',v:'$33.6M',d:'2026-03-15'}],revenue:[{q:'Q4 2025',v:10.6},{q:'Q1 2026',v:8.8},{q:'Q2 2026E',v:9.5},{q:'Q3 2026E',v:10.1}]},
+  GEV:{name:'GE Vernova',price:'448.30',change:'+2.8%',up:true,mktcap:'$122B',pe:'72',week52:'$162–$490',signals:['Gas turbine backlog +85% YoY','AI datacenter power demand','Backlog $51B — 3yr visibility','Grid modernization capex cycle'],verdict:'GE Vernova is the pick-and-shovel play for AI power demand. Every AI datacenter needs power infrastructure — GEV makes the turbines, grid equipment, and power electronics. Backlog of $51B provides 3+ years of revenue visibility.',tags:['Energy','Power Infra'],news:[{h:'GE Vernova gas turbine orders surge 85% YoY driven by AI datacenter power demand',s:'Bloomberg',t:'2h ago'},{h:'GE Vernova wins $4.2B grid modernization contract with US utilities',s:'WSJ',t:'1d ago'}],insider:[{n:'Scott Strazik',r:'CEO',a:'Buy',sh:'75,000',v:'$33.6M',d:'2026-03-15'}],revenue:[{q:'Q4 2025',v:10.6},{q:'Q1 2026',v:8.8},{q:'Q2 2026E',v:9.5},{q:'Q3 2026E',v:10.1}]},
   AVGO:{name:'Broadcom',price:'1724.50',change:'+2.3%',up:true,mktcap:'$810B',pe:'38',week52:'$1050-$1920',
     signals:['Custom AI ASIC revenue $12B run rate','Google TPU v5 sole source supplier','VMware ARR beating plan at $6B','Ethernet AI networking dominant'],
-    verdict:'AVGO is the purest custom AI silicon play after NVDA. Every hyperscaler that does not want to pay NVIDIA margins will eventually come to Broadcom for a custom ASIC. The VMware acquisition transforms the gross margin profile permanently.',
+    verdict:'AVGO is the purest custom AI silicon play after NVDA. Every cloud provider that does not want to pay NVIDIA margins will eventually come to Broadcom for a custom ASIC. The VMware acquisition transforms the gross margin profile permanently.',
     tags:['Semiconductors','AI Silicon'],
-    news:[{h:'Broadcom custom AI ASIC revenue crosses $12B annual run rate as Google TPU v5 ramps',s:'Bloomberg',t:'4h ago'},{h:'Broadcom Ethernet switching chips win 3 hyperscaler AI cluster contracts from InfiniBand',s:'Reuters',t:'1d ago'}],
+    news:[{h:'Broadcom custom AI ASIC revenue crosses $12B annual run rate as Google TPU v5 ramps',s:'Bloomberg',t:'4h ago'},{h:'Broadcom Ethernet switching chips win 3 cloud AI cluster contracts from InfiniBand',s:'Reuters',t:'1d ago'}],
     insider:[{n:'Hock Tan',r:'CEO',a:'Buy',sh:'500,000',v:'$862M',d:'2026-03-01'}],
     revenue:[{q:'Q4 2025',v:14.9},{q:'Q1 2026',v:15.8},{q:'Q2 2026E',v:16.9},{q:'Q3 2026E',v:18.1}]},
   MRVL:{name:'Marvell Technology',price:'96.40',change:'+3.1%',up:true,mktcap:'$83B',pe:'62',week52:'$52-$105',
@@ -9633,7 +9644,7 @@ const EDGAR_COMPANY_NAMES = {
     signals:['AI server backlog $14B growing','NVIDIA GB200 NVL72 primary partner','ISG revenue +80% YoY','PC AI refresh cycle beginning'],
     verdict:'DELL is the picks-and-shovels play on enterprise AI. The AI server backlog gives 12-month revenue visibility. The PC refresh cycle is a bonus growth vector on top of the AI infrastructure story.',
     tags:['AI Servers','Enterprise Hardware'],
-    news:[{h:'Dell AI server backlog reaches $14B — NVIDIA GB200 NVL72 racks are selling faster than they can build',s:'Bloomberg',t:'3h ago'},{h:'Dell Infrastructure Solutions Group revenue grows 80% YoY as hyperscaler AI orders surge',s:'CNBC',t:'1d ago'}],
+    news:[{h:'Dell AI server backlog reaches $14B — NVIDIA GB200 NVL72 racks are selling faster than they can build',s:'Bloomberg',t:'3h ago'},{h:'Dell Infrastructure Solutions Group revenue grows 80% YoY as cloud AI orders surge',s:'CNBC',t:'1d ago'}],
     insider:[{n:'Michael Dell',r:'Founder/Chairman',a:'Buy',sh:'3,000,000',v:'$426M',d:'2026-02-20'}],
     revenue:[{q:'Q4 2025',v:24.1},{q:'Q1 2026',v:26.8},{q:'Q2 2026E',v:29.4},{q:'Q3 2026E',v:32.1}]},
   ORCL:{name:'Oracle Corporation',price:'174.20',change:'+2.8%',up:true,mktcap:'$478B',pe:'32',week52:'$104-$188',
@@ -9651,31 +9662,31 @@ const EDGAR_COMPANY_NAMES = {
     insider:[{n:'Matthew Prince',r:'CEO',a:'Buy',sh:'600,000',v:'$71.2M',d:'2026-02-28'}],
     revenue:[{q:'Q4 2025',v:0.459},{q:'Q1 2026',v:0.494},{q:'Q2 2026E',v:0.538},{q:'Q3 2026E',v:0.585}]},
   NEE:{name:'NextEra Energy',price:'74.80',change:'+0.9%',up:true,mktcap:'$153B',pe:'22',week52:'$56-$83',
-    signals:['20yr hyperscaler PPAs $42B contracted','Nuclear license extensions through 2053','Wind/solar backlog $24B','3.4% dividend yield 5yr high'],
-    verdict:'NEE is the safest way to own AI power demand. $42B in 20-year hyperscaler PPAs means the revenue is contracted. The dividend yield at a 5-year high plus rate cut tailwind creates a compelling total return setup.',
+    signals:['20yr cloud PPAs $42B contracted','Nuclear license extensions through 2053','Wind/solar backlog $24B','3.4% dividend yield 5yr high'],
+    verdict:'NEE is the safest way to own AI power demand. $42B in 20-year cloud provider PPAs means the revenue is contracted. The dividend yield at a 5-year high plus rate cut tailwind creates a compelling total return setup.',
     tags:['Utilities','AI Power'],
     news:[{h:'NextEra signs 20-year datacenter power agreements worth $42B as AI demand transforms utility growth',s:'Reuters',t:'3h ago'},{h:'NextEra nuclear license extensions approved through 2053 — baseload power secured for AI demand wave',s:'Bloomberg',t:'1d ago'}],
     insider:[{n:'John Ketchum',r:'CEO',a:'Buy',sh:'400,000',v:'$29.9M',d:'2026-01-20'}],
     revenue:[{q:'Q4 2025',v:6.1},{q:'Q1 2026',v:6.8},{q:'Q2 2026E',v:5.9},{q:'Q3 2026E',v:6.4}]},
   ETN:{name:'Eaton Corporation',price:'358.20',change:'+1.6%',up:true,mktcap:'$143B',pe:'34',week52:'$218-$387',
-    signals:['Data center backlog +120% YoY','Hyperscaler PDU wins sole-source','EV charging +85% growth','14yr consecutive dividend increase'],
+    signals:['Data center backlog +120% YoY','Cloud datacenter PDU wins sole-source','EV charging +85% growth','14yr consecutive dividend increase'],
     verdict:'ETN is the most underappreciated AI infrastructure company. Every data center needs power distribution. ETN has 30% market share and a 4-5 year customer lead time. The backlog growth of 120% signals the next 3 years of revenue.',
     tags:['Power Equipment','AI Infrastructure'],
-    news:[{h:'Eaton data center electrical equipment orders surge 120% YoY as AI datacenter buildout accelerates',s:'Bloomberg',t:'2h ago'},{h:'Eaton wins sole-source power distribution contracts for 3 hyperscaler campuses totaling $2.4B',s:'Reuters',t:'3d ago'}],
+    news:[{h:'Eaton data center electrical equipment orders surge 120% YoY as AI datacenter buildout accelerates',s:'Bloomberg',t:'2h ago'},{h:'Eaton wins sole-source power distribution contracts for 3 cloud datacenter campuses totaling $2.4B',s:'Reuters',t:'3d ago'}],
     insider:[{n:'Craig Arnold',r:'CEO',a:'Buy',sh:'200,000',v:'$71.6M',d:'2026-03-05'}],
     revenue:[{q:'Q4 2025',v:6.1},{q:'Q1 2026',v:6.4},{q:'Q2 2026E',v:6.8},{q:'Q3 2026E',v:7.2}]},
   PWR:{name:'Quanta Services',price:'356.40',change:'+1.2%',up:true,mktcap:'$49B',pe:'41',week52:'$220-$388',
-    signals:['Backlog $28B — 2yr revenue visibility','Hyperscaler grid work 18% of revenue','50K skilled electrician workforce moat','IRA grid investment tailwind'],
+    signals:['Backlog $28B — 2yr revenue visibility','Cloud datacenter grid work 18% of revenue','50K skilled electrician workforce moat','IRA grid investment tailwind'],
     verdict:'PWR builds the transmission lines that carry AI power demand to data centers. $28B backlog, 2 years of visibility, and a workforce that takes 5 years to train. This is not a business a competitor can spin up quickly.',
     tags:['Grid Infrastructure','Construction'],
-    news:[{h:'Quanta Services wins $8B in hyperscaler grid connection contracts as AI power buildout accelerates',s:'Wall Street Journal',t:'4h ago'},{h:'Quanta backlog reaches $28B record as IRA infrastructure spending unlocks transmission projects',s:'Reuters',t:'2d ago'}],
+    news:[{h:'Quanta Services wins $8B in cloud grid connection contracts as AI power buildout accelerates',s:'Wall Street Journal',t:'4h ago'},{h:'Quanta backlog reaches $28B record as IRA infrastructure spending unlocks transmission projects',s:'Reuters',t:'2d ago'}],
     insider:[{n:'Duke Austin',r:'CEO',a:'Buy',sh:'150,000',v:'$53.5M',d:'2026-01-25'}],
     revenue:[{q:'Q4 2025',v:5.9},{q:'Q1 2026',v:6.4},{q:'Q2 2026E',v:6.8},{q:'Q3 2026E',v:7.1}]},
   OKLO:{name:'Oklo Inc.',price:'42.60',change:'+4.2%',up:true,mktcap:'$7B',pe:'N/A',week52:'$8-$49',
-    signals:['NRC construction permit accepted','Sam Altman chairman + buyer','Hyperscaler LOIs in negotiation','Aurora uses recycled spent fuel'],
+    signals:['NRC construction permit accepted','Sam Altman chairman + buyer','Cloud datacenter LOIs in negotiation','Aurora uses recycled spent fuel'],
     verdict:'OKLO is speculative but it is the right speculative bet. Nuclear SMR is the only 24/7 carbon-free power source that can co-locate with a data center. Sam Altman as chairman is not just a name — he bought $4.2M of stock personally.',
     tags:['Nuclear','Speculative'],
-    news:[{h:'Oklo Aurora microreactor NRC construction permit accepted for review — first advanced fission to reach milestone',s:'Reuters',t:'6h ago'},{h:'Oklo in advanced negotiations with two hyperscalers for 24/7 nuclear power at datacenter sites',s:'Bloomberg',t:'3d ago'}],
+    news:[{h:'Oklo Aurora microreactor NRC construction permit accepted for review — first advanced fission to reach milestone',s:'Reuters',t:'6h ago'},{h:'Oklo in advanced negotiations with two cloud providers for 24/7 nuclear power at datacenter sites',s:'Bloomberg',t:'3d ago'}],
     insider:[{n:'Sam Altman',r:'Chairman',a:'Buy',sh:'1,000,000',v:'$42.6M',d:'2026-02-01'}],
     revenue:[{q:'Q4 2025',v:0.0},{q:'Q1 2026',v:0.0},{q:'Q2 2026E',v:0.0},{q:'Q3 2026E',v:0.0}]},
   GD:{name:'General Dynamics',price:'296.50',change:'+0.7%',up:true,mktcap:'$80B',pe:'18',week52:'$248-$318',
@@ -9731,7 +9742,7 @@ const EDGAR_COMPANY_NAMES = {
     signals:['GreenLake ARR $1.5B growing 30%','ProLiant AI servers +80% YoY','Juniper integration complete — full stack','9x earnings — deeply discounted'],
     verdict:'HPE is the value play in AI infrastructure. GreenLake hybrid cloud ARR growing 30% plus AI server revenue growing 80% — and the stock trades at 9x earnings. The Juniper acquisition makes it a full-stack enterprise AI vendor.',
     tags:['Hybrid Cloud','AI Servers'],
-    news:[{h:'HPE GreenLake hybrid cloud ARR crosses $1.5B growing 30% as enterprises choose on-premise AI over public cloud',s:'CNBC',t:'4h ago'},{h:'HPE ProLiant Gen12 AI servers win enterprise deals as regulated industries avoid hyperscaler cloud for AI workloads',s:'Reuters',t:'2d ago'}],
+    news:[{h:'HPE GreenLake hybrid cloud ARR crosses $1.5B growing 30% as enterprises choose on-premise AI over public cloud',s:'CNBC',t:'4h ago'},{h:'HPE ProLiant Gen12 AI servers win enterprise deals as regulated industries avoid public cloud for AI workloads',s:'Reuters',t:'2d ago'}],
     insider:[{n:'Antonio Neri',r:'CEO',a:'Buy',sh:'800,000',v:'$17.1M',d:'2026-01-18'}],
     revenue:[{q:'Q4 2025',v:8.5},{q:'Q1 2026',v:8.1},{q:'Q2 2026E',v:8.4},{q:'Q3 2026E',v:8.8}]},
   WDAY:{name:'Workday Inc.',price:'264.80',change:'+1.4%',up:true,mktcap:'$55B',pe:'46',week52:'$195-$305',
@@ -9780,10 +9791,10 @@ ESTC:{name:'Elastic NV',price:'82.60',change:'+1.2%',up:true,mktcap:'$8.8B',pe:'
   ENPH:{name:'Enphase Energy',price:'58.20',change:'-0.8%',up:false,mktcap:'$8B',pe:'22',week52:'$40-$88',signals:['Microinverter + battery bundle recovery','European energy independence tailwind','IQ9 next-gen system launch','Installer base: 40K US contractors'],verdict:'Enphase microinverters + batteries are the standard system for US residential solar installers. The 2024 downturn from interest rate pressure is inflecting — Q1 2026 US sell-through improved 22%. European energy independence spending is an accelerant.',tags:['Clean Energy','Solar'],news:[{h:'Enphase US residential solar sell-through improves 22% in Q1 2026 as rate pressure eases',s:'Reuters',t:'5h ago'},{h:'Enphase IQ Battery 10 wins 68% of US residential battery storage installations',s:'Bloomberg',t:'3d ago'}],insider:[{n:'Badri Kothandaraman',r:'CEO',a:'Buy',sh:'60000',v:'$3.5M',d:'2026-02-28'}],revenue:[{q:'Q4 2025',v:0.384},{q:'Q1 2026',v:0.356},{q:'Q2 2026E',v:0.412},{q:'Q3 2026E',v:0.471}]},
   WOLF:{name:'Wolfspeed',price:'5.60',change:'-0.6%',up:false,mktcap:'$0.7B',pe:'N/A',week52:'$3-$22',signals:['SiC chips required for EVs > 400V','200mm Mohawk Valley fab ramping','EV recovery = WOLF recovery','EV powertrain SiC content: $500/vehicle'],verdict:'Wolfspeed makes silicon carbide power chips — the only technology that can efficiently manage the high voltages in modern EVs. Every 400V+ EV requires SiC MOSFETs. The 200mm fab gives WOLF a 30% cost advantage vs competitors still on 150mm. High risk, high reward.',tags:['Semiconductors','SiC','EV'],news:[{h:'Wolfspeed 200mm SiC fab reaches 50% utilization — break-even margin visible within 3 quarters',s:'Bloomberg',t:'3h ago'},{h:'Wolfspeed wins SiC MOSFET supply agreement with 3 European EV OEMs for 2027 platforms',s:'Reuters',t:'2d ago'}],insider:[{n:'Gregg Lowe',r:'CEO',a:'Buy',sh:'500000',v:'$2.8M',d:'2026-02-10'}],revenue:[{q:'Q4 2025',v:0.194},{q:'Q1 2026',v:0.185},{q:'Q2 2026E',v:0.204},{q:'Q3 2026E',v:0.231}]},
   RIVN:{name:'Rivian Automotive',price:'12.80',change:'-1.2%',up:false,mktcap:'$12B',pe:'N/A',week52:'$8-$22',signals:['R2 mass-market launch 2026 key catalyst','VW $5.8B partnership validates technology','Amazon EDV fleet 100K units locked in','Cost-per-vehicle on steep decline curve'],verdict:'Rivian is a binary bet on EV mass market execution. The R2 platform (target $45K, gross positive at launch) is the defining moment. VW investment validates the Rivian technology stack and provides capital certainty. Amazon fleet is sticky, profitable recurring revenue.',tags:['EV','Consumer'],news:[{h:'Rivian R2 production line tooling complete at Normal facility — launch on track for Q3 2026',s:'Bloomberg',t:'4h ago'},{h:'Rivian-VW Joint Venture technology platform licensed to 3 additional OEMs globally',s:'Reuters',t:'2d ago'}],insider:[{n:'RJ Scaringe',r:'CEO',a:'Buy',sh:'2000000',v:'$25.6M',d:'2026-03-01'}],revenue:[{q:'Q4 2025',v:1.73},{q:'Q1 2026',v:1.45},{q:'Q2 2026E',v:1.68},{q:'Q3 2026E',v:2.01}]},
-  ANET:{name:'Arista Networks',price:'378.50',change:'+1.8%',up:true,mktcap:'$120B',pe:'48',week52:'$268-$414',signals:['AI cluster backbone — 400G/800G Ethernet','Hyperscaler wins: Meta spine + MSFT','CloudVision EOS-based AI ops','400G/800G replacing InfiniBand in large clusters'],verdict:'Arista is the networking backbone of AI hyperscale clusters. Every major hyperscaler deploying AI at scale — Meta, Microsoft, Google — is standardizing on Arista 400G/800G Ethernet. CloudVision software provides lock-in beyond the hardware.',tags:['Networking','AI Infrastructure'],news:[{h:'Arista 400G AI spine network deployed across Meta hyperscale cluster — 100K+ switch ports',s:'Bloomberg',t:'3h ago'},{h:'Arista 800G Ethernet wins Microsoft AI cluster contract displacing InfiniBand on cost and manageability',s:'Reuters',t:'1d ago'}],insider:[{n:'Jayshree Ullal',r:'CEO',a:'Buy',sh:'100000',v:'$37.9M',d:'2026-03-05'}],revenue:[{q:'Q4 2025',v:1.93},{q:'Q1 2026',v:2.00},{q:'Q2 2026E',v:2.21},{q:'Q3 2026E',v:2.44}]},
+  ANET:{name:'Arista Networks',price:'378.50',change:'+1.8%',up:true,mktcap:'$120B',pe:'48',week52:'$268-$414',signals:['AI cluster backbone — 400G/800G Ethernet','Cloud giant wins: Meta spine + MSFT','CloudVision EOS-based AI ops','400G/800G replacing InfiniBand in large clusters'],verdict:'Arista is the networking backbone of AI cloud clusters. Every major cloud provider deploying AI at scale — Meta, Microsoft, Google — is standardizing on Arista 400G/800G Ethernet. CloudVision software provides lock-in beyond the hardware.',tags:['Networking','AI Infrastructure'],news:[{h:'Arista 400G AI spine network deployed across Meta hyperscale cluster — 100K+ switch ports',s:'Bloomberg',t:'3h ago'},{h:'Arista 800G Ethernet wins Microsoft AI cluster contract displacing InfiniBand on cost and manageability',s:'Reuters',t:'1d ago'}],insider:[{n:'Jayshree Ullal',r:'CEO',a:'Buy',sh:'100000',v:'$37.9M',d:'2026-03-05'}],revenue:[{q:'Q4 2025',v:1.93},{q:'Q1 2026',v:2.00},{q:'Q2 2026E',v:2.21},{q:'Q3 2026E',v:2.44}]},
   PSTG:{name:'Pure Storage',price:'68.40',change:'+1.4%',up:true,mktcap:'$22B',pe:'55',week52:'$48-$76',signals:['AI training data storage platform','FlashBlade NFS for GPU clusters','NVIDIA DGX-certified storage','Subscription ARR +26% YoY'],verdict:'Pure Storage is the storage layer for AI training. FlashBlade delivers the NFS performance GPU clusters need for distributed training. DGX certification means every NVIDIA reference design recommends Pure. Subscription ARR converts one-time hardware sales to recurring revenue.',tags:['Storage','AI Infrastructure'],news:[{h:'Pure Storage FlashBlade wins NVIDIA DGX reference architecture — sole-source storage for AI clusters',s:'Bloomberg',t:'5h ago'},{h:'Pure Storage subscription ARR grows 26% YoY as AI storage demand converts hardware buyers to SaaS model',s:'Reuters',t:'2d ago'}],insider:[{n:'Charles Giancarlo',r:'CEO',a:'Buy',sh:'150000',v:'$10.3M',d:'2026-02-18'}],revenue:[{q:'Q4 2025',v:0.867},{q:'Q1 2026',v:0.728},{q:'Q2 2026E',v:0.804},{q:'Q3 2026E',v:0.891}]},
   NTAP:{name:'NetApp',price:'112.60',change:'+0.9%',up:true,mktcap:'$24B',pe:'18',week52:'$88-$128',signals:['Hybrid cloud storage dominant','AI data pipeline integration','Consistent FCF yield 4.2%','AWS/Azure/GCP native partnerships'],verdict:'NetApp is the enterprise storage platform that lives natively in all three major clouds. ONTAP is the storage operating system for hybrid environments — on-prem data connected to cloud analytics. Consistent free cash flow and buybacks make it a capital return story with AI upside.',tags:['Storage','Hybrid Cloud'],news:[{h:'NetApp ONTAP AI integration with NVIDIA Base Command adopted by 80 enterprise AI deployments',s:'Reuters',t:'4h ago'},{h:'NetApp cloud storage revenue grows 21% as hybrid enterprise AI workloads require unified data platform',s:'Bloomberg',t:'3d ago'}],insider:[{n:'George Kurian',r:'CEO',a:'Buy',sh:'80000',v:'$9.0M',d:'2026-03-12'}],revenue:[{q:'Q4 2025',v:1.68},{q:'Q1 2026',v:1.53},{q:'Q2 2026E',v:1.62},{q:'Q3 2026E',v:1.72}]},
-  WDC:{name:'Western Digital',price:'44.80',change:'+1.3%',up:true,mktcap:'$15B',pe:'12',week52:'$34-$68',signals:['AI datacenter HDD demand surge','NAND BiCS8 node recovery','HDD content/server growing with AI','Flash spin-off creates clarity'],verdict:'Western Digital is the primary supplier of hard drives to AI hyperscalers. Every AI cluster needs massive storage — a single GPT-4 training run requires 10+ petabytes. AI datacenter HDD revenue is growing 40%+ YoY. The NAND flash spin-off removes the cyclical overhang.',tags:['Storage','Semiconductors'],news:[{h:'Western Digital AI datacenter HDD revenue grows 42% YoY as hyperscaler storage demand accelerates',s:'Bloomberg',t:'4h ago'},{h:'Western Digital NAND BiCS8 yield reaches 82% — memory cost reduction accelerates in H2',s:'Reuters',t:'2d ago'}],insider:[{n:'David Goeckeler',r:'CEO',a:'Buy',sh:'200000',v:'$8.96M',d:'2026-02-25'}],revenue:[{q:'Q4 2025',v:4.29},{q:'Q1 2026',v:3.98},{q:'Q2 2026E',v:4.41},{q:'Q3 2026E',v:4.88}]},
+  WDC:{name:'Western Digital',price:'44.80',change:'+1.3%',up:true,mktcap:'$15B',pe:'12',week52:'$34-$68',signals:['AI datacenter HDD demand surge','NAND BiCS8 node recovery','HDD content/server growing with AI','Flash spin-off creates clarity'],verdict:'Western Digital is the primary supplier of hard drives to AI cloud providers. Every AI cluster needs massive storage — a single GPT-4 training run requires 10+ petabytes. AI datacenter HDD revenue is growing 40%+ YoY. The NAND flash spin-off removes the cyclical overhang.',tags:['Storage','Semiconductors'],news:[{h:'Western Digital AI datacenter HDD revenue grows 42% YoY as cloud storage demand accelerates',s:'Bloomberg',t:'4h ago'},{h:'Western Digital NAND BiCS8 yield reaches 82% — memory cost reduction accelerates in H2',s:'Reuters',t:'2d ago'}],insider:[{n:'David Goeckeler',r:'CEO',a:'Buy',sh:'200000',v:'$8.96M',d:'2026-02-25'}],revenue:[{q:'Q4 2025',v:4.29},{q:'Q1 2026',v:3.98},{q:'Q2 2026E',v:4.41},{q:'Q3 2026E',v:4.88}]},
   ISRG:{name:'Intuitive Surgical',price:'596.40',change:'+1.4%',up:true,mktcap:'$211B',pe:'68',week52:'$442-$624',signals:['Da Vinci 5 procedure volume record','Installed base 9,800 systems','82% gross margins on instruments','Healthcare AI integration next layer'],verdict:'Intuitive Surgical is the closest thing to a monopoly in medical devices. Da Vinci is in 82% of US robotic surgery centers. The razor/razorblade model (instruments + accessories) generates 82% gross margins on recurring revenue. Da Vinci 5 AI-assisted capabilities are still in early adoption.',tags:['HealthTech','Robotics'],news:[{h:'Intuitive Surgical Da Vinci 5 procedure volume grows 18% YoY as AI-assisted surgery adoption accelerates',s:'Reuters',t:'5h ago'},{h:'Intuitive Surgical instruments and accessories revenue crosses $4B quarterly for first time',s:'Bloomberg',t:'1d ago'}],insider:[{n:'Gary Guthart',r:'CEO',a:'Buy',sh:'50000',v:'$29.8M',d:'2026-03-08'}],revenue:[{q:'Q4 2025',v:2.41},{q:'Q1 2026',v:2.25},{q:'Q2 2026E',v:2.44},{q:'Q3 2026E',v:2.64}]},
   VEEV:{name:'Veeva Systems',price:'212.80',change:'+0.9%',up:true,mktcap:'$34B',pe:'42',week52:'$164-$238',signals:['Life sciences platform consolidation','Vault CRM Salesforce replacement','AI drug trial design tools','Clinical data management AI layer'],verdict:'Veeva is Salesforce for pharma — every major drug company runs on Veeva Vault. The Salesforce contract expiration in 2025 was resolved with a new Vault CRM replacing it. AI-assisted clinical trial design tools are being adopted across 1,200+ pharmaceutical customers.',tags:['HealthTech','SaaS'],news:[{h:'Veeva Vault CRM customer migrations reach 200 pharma companies — Salesforce replacement on track',s:'Reuters',t:'4h ago'},{h:'Veeva AI clinical data management reduces trial timeline by 8 weeks on average across 40 deployments',s:'Bloomberg',t:'2d ago'}],insider:[{n:'Peter Gassner',r:'CEO',a:'Hold',sh:'50000',v:'$10.6M',d:'2026-01-15'}],revenue:[{q:'Q4 2025',v:0.724},{q:'Q1 2026',v:0.693},{q:'Q2 2026E',v:0.734},{q:'Q3 2026E',v:0.778}]},
   RXRX:{name:'Recursion Pharma',price:'5.80',change:'+2.1%',up:true,mktcap:'$1.2B',pe:'N/A',week52:'$3-$12',signals:['NVIDIA partnership + $50M investment','AI drug discovery first mover','Operating expense reduction on track','Pipeline: 6 clinical-stage programs'],verdict:'Recursion is the most credible attempt to use AI for systematic drug discovery. The NVIDIA partnership means the largest AI computing platform is being applied to biology at scale. Six clinical programs represent optionality that the current market cap does not reflect.',tags:['HealthTech','AI Drug Discovery'],news:[{h:'Recursion NVIDIA partnership expands — $50M equity investment adds compute for biological foundation model',s:'TechCrunch',t:'3h ago'},{h:'Recursion Phase 2 trial data for REC-994 shows tumor response rate above 40% — advancing to Phase 3',s:'Reuters',t:'4d ago'}],insider:[{n:'Chris Gibson',r:'CEO',a:'Buy',sh:'2000000',v:'$11.6M',d:'2026-02-20'}],revenue:[{q:'Q4 2025',v:0.034},{q:'Q1 2026',v:0.038},{q:'Q2 2026E',v:0.042},{q:'Q3 2026E',v:0.046}]},
@@ -11072,7 +11083,7 @@ const SIGNAL_EVENTS = {
   VST: [
     { upstream:'MSFT',  date:'2026-01-23', desc:'MSFT $80B capex — Texas data center power demand $3.2B+ incremental by 2028', lagMin:20, lagMax:64 },
     { upstream:'META',  date:'2026-01-22', desc:'META $65B capex — AI data center corridor power demand surge',  lagMin:20, lagMax:64 },
-    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL $75B capex — hyperscaler power demand accelerating',      lagMin:20, lagMax:64 },
+    { upstream:'GOOGL', date:'2026-01-29', desc:'GOOGL $75B capex — cloud AI power demand accelerating',      lagMin:20, lagMax:64 },
   ],
   CEG: [
     { upstream:'MSFT',  date:'2026-01-13', desc:'Three Mile Island PPA signed — 835MW · 20yr · $160/MWh. Template for 2 more in pipeline', lagMin:0, lagMax:104 },
@@ -11131,9 +11142,9 @@ const SIGNAL_EVENTS = {
     { upstream:'GOOGL', date:'2026-04-29', desc:'GOOGL Cloud +28% · BigQuery + Snowflake partnership deepened · GOOGL-native enterprises adopting Cortex AI via existing Snowflake connection', lagMin:1, lagMax:5 },
   ],
   CCJ: [
-    { upstream:'CEG',  date:'2026-03-15', desc:'CEG signed 3 new nuclear PPAs with hyperscalers · capacity expansion to 40GW by 2035 announced · uranium offtake agreements with CCJ expanded', lagMin:26, lagMax:78 },
+    { upstream:'CEG',  date:'2026-03-15', desc:'CEG signed 3 new nuclear PPAs with cloud providers · capacity expansion to 40GW by 2035 announced · uranium offtake agreements with CCJ expanded', lagMin:26, lagMax:78 },
     { upstream:'VST',  date:'2026-02-20', desc:'VST Comanche Peak life-extension approved · fleet uranium demand locked in through 2045 · CCJ long-term contract negotiations underway', lagMin:13, lagMax:39 },
-    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · hyperscaler nuclear PPA signings accelerating · structural uranium demand thesis strengthening', lagMin:52, lagMax:104 },
+    { upstream:'NVDA', date:'2026-04-23', desc:'NVDA datacenter revenue +122% YoY · cloud nuclear PPA signings accelerating · structural uranium demand thesis strengthening', lagMin:52, lagMax:104 },
   ],
   UEC: [
     { upstream:'CEG',  date:'2026-03-15', desc:'CEG nuclear expansion accelerating · domestic uranium sourcing priority increasing post-IRA · UEC ISR production positioned to fill US supply gap', lagMin:39, lagMax:78 },
@@ -11168,7 +11179,7 @@ const UPCOMING_CATALYSTS = {
   GEV:  { date:'2026-07-23', label:'Q2 2026 Earnings', note:'Gas turbine orders · Backlog growth · Electrification margin · Free cash flow guidance' },
   SMCI: { date:'2026-08-05', label:'Q1 FY2027 Earnings', note:'AI server shipment rate · Blackwell rack integration · DLC attach rate · Cash flow recovery' },
   // ── New 100 stocks: catalysts ───────────────────────────────────────────────
-  AVGO: { date:'2026-09-03', label:'Q3 FY2026 Earnings', note:'AI XPU custom chip revenue · VMware integration pace · Hyperscaler ASIC pipeline' },
+  AVGO: { date:'2026-09-03', label:'Q3 FY2026 Earnings', note:'AI XPU custom chip revenue · VMware integration pace · Cloud ASIC pipeline' },
   MRVL: { date:'2026-09-02', label:'Q2 FY2027 Earnings', note:'Custom AI silicon revenue · CoCoNet shipments · Data center connectivity growth' },
   INTC: { date:'2026-07-24', label:'Q2 2026 Earnings', note:'18A yield progress · TSMC outsourcing scale · foundry business unit losses' },
   DELL: { date:'2026-08-28', label:'Q2 FY2027 Earnings', note:'AI server backlog · PowerEdge XE9680 demand · Infrastructure margin recovery' },
@@ -11176,7 +11187,7 @@ const UPCOMING_CATALYSTS = {
   NET:  { date:'2026-07-31', label:'Q2 2026 Earnings', note:'Workers AI revenue · Zero Trust seat expansion · SASE platform attach' },
   NEE:  { date:'2026-07-24', label:'Q2 2026 Earnings', note:'NextEra Energy Resources backlog · PPA pricing · Data center contract pipeline' },
   ETN:  { date:'2026-07-31', label:'Q2 2026 Earnings', note:'Data center power infrastructure orders · Aerospace segment growth · Backlog update' },
-  PWR:  { date:'2026-07-31', label:'Q2 2026 Earnings', note:'Grid modernisation backlog · Hyperscaler campus projects · Renewable connection awards' },
+  PWR:  { date:'2026-07-31', label:'Q2 2026 Earnings', note:'Grid modernisation backlog · Cloud campus projects · Renewable connection awards' },
   OKLO: { date:'2026-08-12', label:'Q2 2026 Update', note:'Aurora commercial license progress · Microsoft PPA milestones · NRC timeline' },
   GD:   { date:'2026-07-23', label:'Q2 2026 Earnings', note:'Gulfstream delivery ramp · Combat Systems international orders · IT services backlog' },
   LHX:  { date:'2026-07-22', label:'Q2 2026 Earnings', note:'SAS segment margins · IBCS milestones · Tactical communications NATO demand' },
@@ -11395,7 +11406,7 @@ async function _initCapexDashboard(force) {
     <div style="padding:8px 10px;border-radius:8px;background:var(--bg3);border:0.5px solid var(--border);margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <div style="flex:1;">
         <div style="font-size:11px;font-weight:700;color:${signalClr};">${signalStr}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;">Avg hyperscaler capex growth YoY · ${avgYoY != null ? (avgYoY>=0?'+':'')+avgYoY.toFixed(1)+'%' : '—'} · from SEC 10-Q filings</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">Avg cloud AI capex growth YoY · ${avgYoY != null ? (avgYoY>=0?'+':'')+avgYoY.toFixed(1)+'%' : '—'} · from SEC 10-Q filings</div>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;">${rows}</div>
