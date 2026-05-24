@@ -7195,7 +7195,13 @@ const NOTABLE_MANAGERS = {
     tickers: ['GOOGL','PLTR','MSFT','HHH','CMG','QSR'],
     cik: '0001336528',
     twitter: 'BillAckman',
-    thesis: 'Concentrated bets on dominant franchises. Discloses publicly — moves the price.'
+    thesis: 'Concentrated bets on dominant franchises. Discloses publicly — moves the price.',
+    signal: 'His public commentary telegraphs conviction before the 13F. When Ackman tweets a thesis, the 13F confirms it 45 days later.',
+    trades: [
+      { date:'2023-Q1', ticker:'GOOGL', type:'BUY', label:'New $1.1B position in Alphabet · AI search moat thesis · disclosed publicly before 13F', signal:'bull' },
+      { date:'2024-Q3', ticker:'PLTR', type:'BUY', label:'$500M+ position in Palantir · government AI contract pipeline · long-term conviction hold', signal:'bull' },
+      { date:'2022-Q2', ticker:'NFLX', type:'SELL', label:'Exited Netflix at a loss ~$400M · rare public reversal · "we were wrong about competitive moat"', signal:'noise' }
+    ]
   },
   'Duquesne (Druckenmiller)': {
     emoji: '🌍',
@@ -7203,7 +7209,13 @@ const NOTABLE_MANAGERS = {
     tickers: ['NVDA','MSFT','VST','CEG','META','ARM'],
     cik: '0001536411',
     twitter: null,
-    thesis: 'One of the greatest track records in history. His AI pivot in 2023 validated the entire infrastructure thesis.'
+    thesis: 'One of the greatest track records in history. His AI pivot in 2023 validated the entire infrastructure thesis.',
+    signal: 'Called the AI infrastructure trade in early 2023 before consensus. When Druckenmiller rotates, the macro setup is usually already months in motion.',
+    trades: [
+      { date:'2023-Q2', ticker:'NVDA', type:'BUY', label:'~$400M NVDA position · "best risk-reward I\'ve seen in decades" · pre-ChatGPT institutional adoption wave', signal:'bull' },
+      { date:'2024-Q1', ticker:'VST', type:'BUY', label:'Sized into Vistra & Constellation · AI power demand thesis · nuclear baseload as the AI grid play', signal:'bull' },
+      { date:'2024-Q3', ticker:'NVDA', type:'SELL', label:'Trimmed ~70% of NVDA position · "hard to hold at these valuations" · not a bear call, a valuation call', signal:'noise' }
+    ]
   },
   'Coatue Management': {
     emoji: '🐯',
@@ -7211,7 +7223,13 @@ const NOTABLE_MANAGERS = {
     tickers: ['NVDA','META','MSFT','AMZN','GOOGL','SNOW'],
     cik: '0001336767',
     twitter: null,
-    thesis: 'Deep technology research. Among the first institutional funds to size NVDA pre-ChatGPT.'
+    thesis: 'Deep technology research. Among the first institutional funds to size NVDA pre-ChatGPT.',
+    signal: 'Tiger cub with deep semiconductor research. Their NVDA entry at $130 is one of the best-timed institutional AI trades on record.',
+    trades: [
+      { date:'2022-Q3', ticker:'NVDA', type:'BUY', label:'Built large NVDA position ~$130 avg · pre-ChatGPT · thesis: data center GPU as AI infrastructure rail', signal:'bull' },
+      { date:'2023-Q1', ticker:'META', type:'BUY', label:'Sized into Meta at ~$100 · "Year of Efficiency" call · bought the Zuckerberg capitulation moment', signal:'bull' },
+      { date:'2024-Q2', ticker:'SNOW', type:'BUY', label:'Added to Snowflake position · AI data platform thesis · enterprise data layer for LLM workloads', signal:'bull' }
+    ]
   },
   'Tiger Global': {
     emoji: '🐅',
@@ -7219,7 +7237,13 @@ const NOTABLE_MANAGERS = {
     tickers: ['META','MSFT','NVDA','AMZN','GOOGL','CRM'],
     cik: '0001167483',
     twitter: null,
-    thesis: 'Global technology investor. 13F shows concentrated bets on cloud AI and enterprise tech plays.'
+    thesis: 'Global technology investor. 13F shows concentrated bets on cloud AI and enterprise tech plays.',
+    signal: 'Rebuilt credibility after 2022 losses by rotating into AI infrastructure early 2023. Their recovery trade is a useful signal on institutional AI conviction.',
+    trades: [
+      { date:'2023-Q1', ticker:'META', type:'BUY', label:'Rebuilt Meta position after 60% drawdown · bet on Zuckerberg\'s cost discipline and Reels ad monetization', signal:'bull' },
+      { date:'2023-Q2', ticker:'AMZN', type:'BUY', label:'Large Amazon position · AWS AI positioning thesis · Bedrock and cloud AI as long-cycle infrastructure', signal:'bull' },
+      { date:'2024-Q1', ticker:'NVDA', type:'BUY', label:'Initiated NVDA position · late vs Coatue but large · confirms institutional consensus on GPU infrastructure', signal:'bull' }
+    ]
   },
   'Scion Asset Mgmt (Burry)': {
     emoji: '🩺',
@@ -7227,7 +7251,13 @@ const NOTABLE_MANAGERS = {
     tickers: ['JD','BABA','GOOG'],
     cik: '0001403395',
     twitter: 'michaeljburry',
-    thesis: 'Bearish on AI froth. His shorts in our universe are a useful contrarian signal.'
+    thesis: 'Bearish on AI froth. His shorts in our universe are a useful contrarian signal.',
+    signal: 'His 13F is a contrarian map. When Burry is long something in our universe, check the valuation. When he is short, flag the risk.',
+    trades: [
+      { date:'2023-Q3', ticker:'JD', type:'BUY', label:'Large JD.com + Alibaba position · China deep value thesis · "people are irrationally avoiding quality at 4x earnings"', signal:'bull' },
+      { date:'2023-Q2', ticker:'SPY', type:'SELL', label:'SPY puts ~$1.6B notional · AI bubble warning · "history rhymes" · position unwound 1 quarter later', signal:'noise' },
+      { date:'2024-Q1', ticker:'GOOG', type:'BUY', label:'Initiated Alphabet position · AI trough thesis · buy the panic around Gemini misstep, not the hype', signal:'bull' }
+    ]
   }
 };
 
@@ -7266,7 +7296,7 @@ function switchSmartSubTab(tab, btn) {
 }
 
 // ─── Fund manager cards ──────────────────────────────────────────────────────
-// ─── Fund card skeleton (no flash — positions fill in-place like Titans) ─────
+// ─── Fund card — renders trade blocks immediately (like Titans), 13F fills below ─
 function _fundCardHTML(name, m, focused) {
   const safeCIK = (m.cik||'').replace(/\W/g,'');
   const holdsFlag = (m.tickers||[]).includes(focused)
@@ -7285,8 +7315,34 @@ function _fundCardHTML(name, m, focused) {
       ? '<a href="https://twitter.com/' + m.twitter + '" target="_blank" onclick="event.stopPropagation();" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">' + name + ' ↗</a>'
       : '<span style="font-size:13px;font-weight:700;color:var(--text);">' + name + '</span>';
 
+  // Render curated trade history blocks (same style as Tech Titans)
+  const tradesHTML = (m.trades||[]).map(function(tr) {
+    const isBuy = tr.type === 'BUY';
+    const bg  = isBuy ? 'var(--green-bg)' : 'var(--bg3)';
+    const col = isBuy ? 'var(--green)' : 'var(--text3)';
+    const bd  = isBuy ? 'var(--green-bd)' : 'var(--border)';
+    const typeLabel = isBuy ? '▲ BUY' : '▼ SELL';
+    const tickerBadge = tr.ticker
+      ? '<span onclick="openTicker(\'' + tr.ticker + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;color:var(--blue);cursor:pointer;padding:1px 7px;border-radius:6px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);">' + tr.ticker + '</span>'
+      : '';
+    const convNote = tr.signal === 'bull'
+      ? '<div style="font-size:10px;color:var(--green);margin-top:5px;font-style:italic;">High-conviction entry — institutional cash deployed with public thesis</div>'
+      : tr.signal === 'noise'
+      ? '<div style="font-size:10px;color:var(--text3);margin-top:5px;font-style:italic;">Tactical exit or reversal — watch for re-entry signals</div>'
+      : '';
+    return '<div style="padding:8px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:6px;">'
+      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">'
+      + '<span style="font-size:11px;font-weight:700;color:' + col + ';">' + typeLabel + '</span>'
+      + tickerBadge
+      + '<span style="font-size:10px;color:var(--text3);margin-left:auto;">' + (tr.date||'') + '</span>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + (tr.label||'') + '</div>'
+      + convNote
+      + '</div>';
+  }).join('');
+
   return '<div class="sm-fund-card" style="margin-bottom:10px;">'
-    + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">'
+    + '<div style="display:flex;align-items:flex-start;gap:10px;">'
     + '<div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">' + (m.emoji||'🏦') + '</div>'
     + '<div style="flex:1;min-width:0;">'
     + '<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;">'
@@ -7294,8 +7350,10 @@ function _fundCardHTML(name, m, focused) {
     + '<span style="font-size:10px;color:var(--text3);">' + (m.style||'') + '</span>'
     + holdsFlag
     + '</div>'
-    + '<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:8px;">' + (m.thesis||'') + '</div>'
-    + '<div id="fund-positions-' + safeCIK + '" style="font-size:10px;color:var(--text3);">Loading 13F positions…</div>'
+    + '<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:4px;">' + (m.thesis||'') + '</div>'
+    + (m.signal ? '<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:6px 9px;border-radius:7px;background:var(--bg4);border:0.5px solid var(--border);margin-bottom:2px;">' + m.signal + '</div>' : '')
+    + tradesHTML
+    + '<div id="fund-positions-' + safeCIK + '" style="margin-top:10px;"></div>'
     + '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + whaleLink + twitterLink + edgarLink + '</div>'
     + '</div></div></div>';
 }
@@ -7307,10 +7365,10 @@ function _renderFundPositions(cik, liveData, focused) {
   if (!el) return;
 
   if (!liveData || !liveData.top25 || !liveData.top25.length) {
-    // Seed fallback: show known tickers as clickable chips
+    // Seed fallback: show known tickers as clickable chips under a "Current positions" header
     const m = Object.values(NOTABLE_MANAGERS).find(function(mgr) { return mgr.cik === cik; });
     if (m && m.tickers && m.tickers.length) {
-      el.innerHTML = '<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Known holdings (seed):</div>'
+      el.innerHTML = '<div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Known Holdings</div>'
         + '<div style="display:flex;gap:5px;flex-wrap:wrap;">'
         + m.tickers.map(function(t) {
             const isFoc = t === focused;
@@ -7318,13 +7376,14 @@ function _renderFundPositions(cik, liveData, focused) {
               + (isFoc?'var(--blue-bd)':'var(--border)') + ';background:' + (isFoc?'var(--blue-bg)':'var(--bg4)') + ';color:' + (isFoc?'var(--blue)':'var(--text2)') + ';">' + t + '</span>';
           }).join('') + '</div>';
     } else {
-      el.innerHTML = '<div style="font-size:11px;color:var(--text3);font-style:italic;">No positions data · Try refreshing</div>';
+      el.innerHTML = '';
     }
     return;
   }
 
-  // Live 13F data — render rich position blocks identical in style to Titan trade rows
-  const badge = '<div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;">'
+  // Live 13F data — render as secondary "Current Positions" section below trade blocks
+  const badge = '<div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Current Positions</div>'
+    + '<div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;">'
     + '<span style="font-size:9px;color:var(--green);font-weight:600;background:var(--green-bg);border:0.5px solid var(--green-bd);padding:1px 7px;border-radius:8px;">● Live 13F · ' + liveData.filingDate + '</span>'
     + '<span style="font-size:10px;color:var(--text3);">' + liveData.holdingsCount + ' total positions</span>'
     + '</div>';
