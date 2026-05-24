@@ -446,27 +446,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 <!-- STOCK FOCUS BAR -->
 <div id="stock-focus-bar" style="display:none;background:var(--bg2);border-bottom:0.5px solid var(--border);padding:7px 16px;position:sticky;top:90px;z-index:97;">
   <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;">
-    <button id="focus-all-btn" onclick="setFocusTicker(null)"
-      style="font-size:11px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s;">
-      All stocks
-    </button>
-    <div style="position:relative;width:min(220px,45vw);flex-shrink:0;">
+    <div style="position:relative;flex-shrink:0;min-width:min(200px,45vw);">
       <input id="focus-search-input" type="text" autocomplete="off" spellcheck="false"
-        placeholder="Search ticker or company…"
+        placeholder="🔍 Search any stock…"
         oninput="focusSearchInput(this.value)"
         onkeydown="focusSearchKey(event)"
         onfocus="focusSearchInput(this.value)"
-        style="width:100%;font-size:11px;padding:5px 30px 5px 11px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;"
+        style="width:100%;font-size:11px;padding:5px 11px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;box-sizing:border-box;"
       />
-      <span id="focus-clear-btn" onclick="setFocusTicker(null)"
-        style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);cursor:pointer;line-height:1;">×</span>
       <!-- dropdown -->
       <div id="focus-dropdown"
         style="display:none;position:fixed;top:0;left:0;width:280px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:9999;overflow:hidden;">
       </div>
     </div>
-    <div id="focus-active-chip" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);color:var(--blue);font-weight:600;letter-spacing:.02em;flex-shrink:0;"></div>
-    <div id="layer-ticker-btns" style="display:none;flex:1;min-width:0;padding-left:12px;border-left:0.5px solid var(--border2);">
+    <div id="layer-ticker-btns" style="flex:1;min-width:0;padding-left:12px;border-left:0.5px solid var(--border2);">
       <div id="ticker-scroll-wrap">
         <div id="ticker-scroll-track"></div>
       </div>
@@ -1178,7 +1171,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;">
     <div>
       <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Supply chain intelligence</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.6;">Upstream companies as leading indicators. When TSMC raises capex, ASML order book follows 6–9 months later. Select a stock above to focus — or browse all chains below.</div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.6;">Upstream companies are leading indicators. When TSMC raises capex, ASML order book follows 6–9 months later. Use the <strong>Viewing</strong> picker below to focus on one stock's chain.</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <span id="correlations-updated-ts" style="font-size:10px;color:var(--text3);"></span>
@@ -1216,6 +1209,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button onclick="filterCorrChainsBySector('Defense',this)" data-csec="Defense" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Defense / Space</button>
     <button onclick="filterCorrChainsBySector('Energy',this)" data-csec="Energy" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Energy / Nuclear</button>
     <button onclick="filterCorrChainsBySector('Enterprise',this)" data-csec="Enterprise" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Enterprise</button>
+  </div>
+</div>
+
+<!-- CHAIN STOCK SELECTOR -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+  <div style="font-size:11px;color:var(--text3);">Viewing:</div>
+  <div id="chain-stock-selector" style="position:relative;">
+    <button id="chain-viewing-btn" onclick="toggleChainStockPicker(event)" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;transition:all .15s;" onmouseover="this.style.borderColor='var(--blue-bd)';this.style.color='var(--blue)'" onmouseout="if(!window._chainPickerOpen){this.style.borderColor='var(--border2)';this.style.color='var(--text2)'}">
+      <span id="chain-viewing-sym">All chains</span> <span style="font-size:9px;opacity:.6;">▾</span>
+    </button>
+    <div id="chain-stock-picker" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.22);z-index:300;overflow:hidden;min-width:260px;">
+      <input type="text" id="chain-picker-input" placeholder="Search stock…" oninput="buildChainPickerList(this.value)"
+        style="width:100%;box-sizing:border-box;padding:9px 14px;border:none;border-bottom:0.5px solid var(--border);background:var(--bg3);color:var(--text);font-size:11px;font-family:'DM Sans',sans-serif;outline:none;">
+      <div id="chain-picker-list" style="max-height:260px;overflow-y:auto;"></div>
+    </div>
   </div>
 </div>
 
@@ -6468,19 +6476,8 @@ function initLandingDynamic(){
 
 /* ── FOCUS BAR TICKER BUTTON CLICK ── */
 function focusBarTick(sym, btn) {
-  setFocusTicker(sym);
-  // On Signal Scores tab, also render layer analysis
-  if (S.activeTab === 'convergence') {
-    try { renderLayerAnalysis(sym, null); } catch(e) {}
-  }
-  // Highlight active pill in scroll track
-  updateTickerScrollActive(sym);
-  // Briefly pause scroll to show selection
-  const track = document.getElementById('ticker-scroll-track');
-  if (track) {
-    track.style.animationPlayState = 'paused';
-    setTimeout(() => { track.style.animationPlayState = ''; }, 1200);
-  }
+  // Ticker tape is read-only navigation — always opens stock page
+  openTicker(sym);
 }
 
 
@@ -6778,33 +6775,9 @@ let _focusDropdownIdx = -1; // keyboard nav
 function updateFocusBar() {
   const bar   = document.getElementById('stock-focus-bar');
   const input = document.getElementById('focus-search-input');
-  const chip  = document.getElementById('focus-active-chip');
-  const clearBtn = document.getElementById('focus-clear-btn');
-  const allBtn   = document.getElementById('focus-all-btn');
-  if (!bar) return;
-
-  const ft = S.focusTicker;
-  if (ft) {
-    const name = (NAMES[ft] || ft);
-    input.value = ft + ' — ' + name;
-    chip.textContent = ft;
-    chip.style.display = 'inline-block';
-    clearBtn.style.display = 'block';
-    allBtn.style.background = 'none';
-    allBtn.style.color = 'var(--text3)';
-    allBtn.style.borderColor = 'var(--border)';
-    input.style.borderColor = 'var(--blue-bd)';
-    input.style.background = 'var(--blue-bg)';
-  } else {
-    input.value = '';
-    chip.style.display = 'none';
-    clearBtn.style.display = 'none';
-    allBtn.style.background = 'var(--bg3)';
-    allBtn.style.color = 'var(--text2)';
-    allBtn.style.borderColor = 'var(--border2)';
-    input.style.borderColor = 'var(--border2)';
-    input.style.background = 'var(--bg3)';
-  }
+  if (!bar || !input) return;
+  // Clear search input after focus ticker is set — search serves only for navigation now
+  if (document.activeElement !== input) input.value = '';
   closeFocusDropdown();
 }
 
@@ -6853,10 +6826,9 @@ function focusSearchInput(q) {
   if (!dd) return;
   _focusDropdownIdx = -1;
 
-  // If empty and no current focus: close
+  // If empty: just close the dropdown
   if (!q.trim()) {
-    if (!S.focusTicker) closeFocusDropdown();
-    else { input && (document.getElementById('focus-search-input').value = ''); setFocusTicker(null); }
+    closeFocusDropdown();
     return;
   }
 
@@ -6919,7 +6891,20 @@ function focusDDHover(idx) {
 }
 
 function selectFocusTicker(ticker) {
-  setFocusTicker(ticker);
+  closeFocusDropdown();
+  const input = document.getElementById('focus-search-input');
+  if (input) input.value = '';
+  const t = (typeof S !== 'undefined') ? S.activeTab : '';
+  if (t === 'correlations') {
+    // Supply chain tab: filter chains to this stock in-place
+    selectChainStock(ticker);
+  } else if (t === 'deepedge') {
+    // Deep Edge tab: filter signals to this stock in-place
+    try { filterDeepEdge(ticker, null); } catch(e) { openTicker(ticker); }
+  } else {
+    // All other tabs: open the stock page
+    openTicker(ticker);
+  }
 }
 
 function closeFocusDropdown() {
@@ -11360,6 +11345,96 @@ function filterCorrChainsBySector(secKey, btn) {
     cards.forEach(card => { card.style.display = ''; });
   }
 }
+
+/* ── CHAIN STOCK PICKER ── */
+window._chainPickerOpen = false;
+function toggleChainStockPicker(e) {
+  if (e) e.stopPropagation();
+  const picker = document.getElementById('chain-stock-picker');
+  const btn = document.getElementById('chain-viewing-btn');
+  if (!picker) return;
+  const isOpen = picker.style.display !== 'none';
+  if (isOpen) {
+    picker.style.display = 'none';
+    window._chainPickerOpen = false;
+    if (btn) { btn.style.borderColor = 'var(--border2)'; btn.style.color = 'var(--text2)'; }
+  } else {
+    buildChainPickerList('');
+    picker.style.display = 'block';
+    window._chainPickerOpen = true;
+    if (btn) { btn.style.borderColor = 'var(--blue-bd)'; btn.style.color = 'var(--blue)'; }
+    const inp = document.getElementById('chain-picker-input');
+    if (inp) setTimeout(function() { inp.focus(); inp.value = ''; }, 30);
+  }
+}
+
+function buildChainPickerList(q) {
+  const list = document.getElementById('chain-picker-list');
+  if (!list) return;
+  const query = (q || '').toLowerCase();
+  const chainTickers = Array.from(document.querySelectorAll('.chain-card[data-chain-ticker]')).map(function(c) { return c.getAttribute('data-chain-ticker'); });
+  const unique = chainTickers.filter(function(t, i) { return chainTickers.indexOf(t) === i; });
+  const filtered = query ? unique.filter(function(t) { return t.toLowerCase().includes(query) || ((typeof NAMES !== 'undefined' && NAMES[t]) || '').toLowerCase().includes(query); }) : unique;
+  const allItem = '<div onclick="selectChainStock(null)" style="padding:9px 14px;cursor:pointer;border-bottom:0.5px solid var(--border);font-size:11px;font-family:\'DM Sans\',sans-serif;color:var(--text2);" onmouseenter="this.style.background=\'var(--bg3)\'" onmouseleave="this.style.background=\'\'">All chains</div>';
+  list.innerHTML = allItem + filtered.map(function(t) {
+    const score = (typeof SCORES !== 'undefined') ? SCORES[t] : null;
+    const scColor = score >= 70 ? 'var(--green)' : score >= 40 ? '#e07b00' : 'var(--red)';
+    const name = (typeof NAMES !== 'undefined' && NAMES[t]) ? NAMES[t] : '';
+    return '<div onclick="selectChainStock(\'' + t + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;cursor:pointer;border-bottom:0.5px solid var(--border);font-family:\'DM Sans\',sans-serif;transition:background .1s;" onmouseenter="this.style.background=\'var(--bg3)\'" onmouseleave="this.style.background=\'\'">'
+      + '<div><span style="font-size:12px;font-weight:600;color:var(--text);font-family:\'DM Mono\',monospace;">' + t + '</span>'
+      + (name ? '<span style="font-size:11px;color:var(--text2);margin-left:8px;">' + name + '</span>' : '') + '</div>'
+      + (score ? '<span style="font-size:10px;color:' + scColor + ';font-weight:600;">' + score + '</span>' : '')
+      + '</div>';
+  }).join('');
+}
+
+function selectChainStock(sym) {
+  const picker = document.getElementById('chain-stock-picker');
+  const btn = document.getElementById('chain-viewing-btn');
+  if (picker) picker.style.display = 'none';
+  window._chainPickerOpen = false;
+  if (btn) { btn.style.borderColor = sym ? 'var(--blue-bd)' : 'var(--border2)'; btn.style.color = sym ? 'var(--blue)' : 'var(--text2)'; }
+  const label = document.getElementById('chain-viewing-sym');
+  if (label) label.textContent = sym || 'All chains';
+  window._corrViewingStock = sym || null;
+  // Filter chain cards
+  document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(function(card) {
+    if (!sym) {
+      card.style.display = '';
+    } else {
+      card.style.display = card.getAttribute('data-chain-ticker') === sym ? '' : 'none';
+    }
+  });
+  // Also reset sector filter when picking a specific stock
+  if (sym) {
+    window._corrActiveSector = null;
+    document.querySelectorAll('#chain-industry-filter button').forEach(function(b) {
+      const isAll = !b.getAttribute('data-csec');
+      b.style.borderColor = isAll ? 'var(--blue-bd)' : 'var(--border2)';
+      b.style.background = isAll ? 'var(--blue-bg)' : 'var(--bg3)';
+      b.style.color = isAll ? 'var(--blue)' : 'var(--text2)';
+    });
+    // Scroll to the visible card
+    setTimeout(function() {
+      const card = document.querySelector('.chain-card[data-chain-ticker="' + sym + '"]');
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+}
+
+// Close chain picker when clicking outside
+document.addEventListener('click', function(e) {
+  const sel = document.getElementById('chain-stock-selector');
+  if (sel && !sel.contains(e.target)) {
+    const picker = document.getElementById('chain-stock-picker');
+    const btn = document.getElementById('chain-viewing-btn');
+    if (picker && picker.style.display !== 'none') {
+      picker.style.display = 'none';
+      window._chainPickerOpen = false;
+      if (btn && !window._corrViewingStock) { btn.style.borderColor = 'var(--border2)'; btn.style.color = 'var(--text2)'; }
+    }
+  }
+});
 
 function initCorrTab() {
   // Make chain-card headers clickable — wire chain-title + chain-action to open the stock modal
