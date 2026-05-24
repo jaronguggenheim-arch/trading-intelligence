@@ -1187,18 +1187,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
   </div>
 
-  <!-- HYPERSCALER CAPEX DASHBOARD -->
-  <div class="card" id="hyperscaler-capex-card" style="margin-bottom:12px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
-      <div>
-        <div class="card-lbl" style="margin-bottom:2px;">Hyperscaler capex tracker — live from SEC filings</div>
-        <div style="font-size:10px;color:var(--text3);">Quarterly capital expenditure for META · MSFT · GOOGL · AMZN · NVDA revenue — the primary upstream signals for the AI hardware chain</div>
-      </div>
-      <button onclick="_initCapexDashboard(true)" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
-    </div>
-    <div id="hyperscaler-capex-body" style="font-size:11px;color:var(--text3);padding:4px 0;">Loading SEC filings…</div>
-  </div>
-
 <!-- CHAIN INDUSTRY FILTER -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
   <div style="font-size:12px;font-weight:600;color:var(--text);">Chain intelligence</div>
@@ -1841,6 +1829,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="derived-card" onclick="openTicker('VST')"><div class="derived-from">From: NVDA power infrastructure chain</div><div class="derived-ticker">VST — Vistra Energy</div><div style="font-size:11px;color:var(--text2);">Druckenmiller's largest energy position. Active lag window — research entry now.</div><div style="margin-top:6px;"><span class="act-tag at-watch">RESEARCH</span> <span class="tf-tag tf-long">6–9mo entry</span></div></div>
     </div>
   </div>
+</div>
+
+<!-- HYPERSCALER CAPEX DASHBOARD — shown only for AI-relevant sector filters -->
+<div class="card" id="hyperscaler-capex-card" style="margin-top:16px;display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+    <div>
+      <div class="card-lbl" style="margin-bottom:2px;">Hyperscaler capex tracker — live from SEC filings</div>
+      <div style="font-size:10px;color:var(--text3);">Quarterly capex for META · MSFT · GOOGL · AMZN · NVDA revenue — the primary upstream signals driving the AI hardware chain</div>
+    </div>
+    <button onclick="_initCapexDashboard(true)" style="font-size:10px;padding:3px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Refresh</button>
+  </div>
+  <div id="hyperscaler-capex-body" style="font-size:11px;color:var(--text3);padding:4px 0;">Loading SEC filings…</div>
 </div>
 
 <!-- DEEP EDGE -->
@@ -11365,6 +11365,14 @@ function filterCorrChainsBySector(secKey, btn) {
   } else {
     cards.forEach(card => { card.style.display = ''; });
   }
+  // Show hyperscaler capex card only for AI-relevant sectors
+  const capexCard = document.getElementById('hyperscaler-capex-card');
+  if (capexCard) {
+    const showCapex = !secKey || secKey === 'Semis' || secKey === 'Hyperscalers';
+    capexCard.style.display = showCapex ? '' : 'none';
+    // Lazy-load data the first time it becomes visible
+    if (showCapex) { try { _initCapexDashboard(false); } catch(e) {} }
+  }
 }
 
 /* ── CHAIN STOCK PICKER ── */
@@ -11504,8 +11512,14 @@ function initCorrTab() {
   // Compute and render dynamic lag window statuses for all chain cards
   try { refreshChainStatuses(); } catch(e) { console.warn('refreshChainStatuses:', e); }
   try { renderSectorHeatmap(); } catch(e) { console.warn('renderSectorHeatmap:', e); }
-  // Load hyperscaler capex dashboard from EDGAR XBRL (lazy — cached after first run)
-  try { _initCapexDashboard(false); } catch(e) {}
+  // Load hyperscaler capex dashboard only when relevant sector is active (or all chains)
+  const _activeSec = (typeof window._corrActiveSector !== 'undefined') ? window._corrActiveSector : null;
+  const _capexCard = document.getElementById('hyperscaler-capex-card');
+  if (_capexCard) {
+    const _showCapex = !_activeSec || _activeSec === 'Semis' || _activeSec === 'Hyperscalers';
+    _capexCard.style.display = _showCapex ? '' : 'none';
+    if (_showCapex) { try { _initCapexDashboard(false); } catch(e) {} }
+  }
 
   const cards = document.querySelectorAll('.chain-card[data-chain-ticker]');
 
