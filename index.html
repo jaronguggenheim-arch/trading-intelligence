@@ -7300,7 +7300,7 @@ function _fundCardHTML(name, m, focused, liveData) {
   return '<div class="sm-fund-card" style="margin-bottom:10px;">'
     + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">'
     + '<div style="flex:1;min-width:0;">'
-    + '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">' + name + '</div>'
+    + '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">' + (m.cik ? '<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + m.cik + '&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="color:var(--text);text-decoration:none;">' + name + ' ↗</a>' : m.twitter ? '<a href="https://twitter.com/' + m.twitter + '" target="_blank" onclick="event.stopPropagation();" style="color:var(--text);text-decoration:none;">' + name + ' ↗</a>' : name) + '</div>'
     + '<div style="font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:4px;">' + (m.style||'') + '</div>'
     + '<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;">' + (m.thesis||'') + '</div>'
     + '</div>' + holdsFlag + '</div>'
@@ -7565,7 +7565,7 @@ function renderCongressTrades(trades) {
           <span style="font-size:10px;font-weight:600;color:var(--text);">${amount}</span>
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <span style="font-size:11px;color:var(--text2);font-weight:500;">${rep}</span>
+          <a href="https://www.capitoltrades.com/politicians?search=${encodeURIComponent(rep)}" target="_blank" onclick="event.stopPropagation();" style="font-size:11px;color:var(--text2);font-weight:500;text-decoration:none;">${rep} ↗</a>
           ${party ? `<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:${partyColor}22;color:${partyColor};border:0.5px solid ${partyColor}44;font-weight:700;">${party}</span>` : ''}
           ${chamber ? `<span style="font-size:10px;color:var(--text3);">${chamber}</span>` : ''}
           <span style="font-size:10px;color:var(--text3);">${t.transaction_date||''}</span>
@@ -7597,7 +7597,7 @@ function renderCongressWatchList() {
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
         <div>
           <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
-            <span style="font-size:13px;font-weight:700;color:var(--text);">${m.name}</span>
+            <a href="${m.link}" target="_blank" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">${m.name} ↗</a>
             <span style="padding:1px 7px;border-radius:10px;background:${partyColor}22;color:${partyColor};border:0.5px solid ${partyColor}44;font-size:10px;font-weight:700;">${m.party}</span>
             <span style="font-size:10px;color:var(--text3);">${m.state} · ${m.chamber}</span>
           </div>
