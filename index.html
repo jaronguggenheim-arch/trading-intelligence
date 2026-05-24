@@ -839,6 +839,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div class="hcell hc-w" onclick="toggleSector('Luxury',this,'sector-drill')"><div class="hcn">Luxury</div><div class="hcv">+0.9%</div></div>
           <div class="hcell hc-c" onclick="toggleSector('Energy',this,'sector-drill')"><div class="hcn">Energy</div><div class="hcv">-0.4%</div></div>
           <div class="hcell hc-k" onclick="toggleSector('Biotech',this,'sector-drill')"><div class="hcn">Biotech</div><div class="hcv">-1.8%</div></div>
+          <div class="hcell hc-w" onclick="toggleSector('Commodities',this,'sector-drill')" id="mc-comm-mini"><div class="hcn">Commodities</div><div class="hcv" id="mc-comm-mini-chg">+0.4%</div></div>
         </div>
         <div id="sector-drill"></div>
       </div>
@@ -903,6 +904,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="hcell hc-h" onclick="toggleSector('Cloud',this,'full-sector-drill')"><div class="hcn">Cloud</div><div class="hcv">+1.8%</div></div>
       <div class="hcell hc-c" onclick="toggleSector('Auto',this,'full-sector-drill')"><div class="hcn">Auto/EV</div><div class="hcv">-0.8%</div></div>
       <div class="hcell hc-w" onclick="toggleSector('Space',this,'full-sector-drill')"><div class="hcn">Space</div><div class="hcv">+2.1%</div></div>
+      <div class="hcell hc-w" onclick="toggleSector('Commodities',this,'full-sector-drill')" id="mc-comm-tile"><div class="hcn">Commodities</div><div class="hcv" id="mc-comm-chg">+0.4%</div></div>
     </div>
     <div id="full-sector-drill"></div>
   </div>
@@ -4912,7 +4914,33 @@ function drawSparkline(canvas,data,up){if(!canvas||!data||data.length<2)return;c
 function genSparkData(up,n=20){let v=100;return Array.from({length:n},()=>{v+=((Math.random()-0.47)*(up?1.3:0.7))*2;return v;});}
 
 function toggleSector(name,el,panelId){const panel=document.getElementById(panelId);const grid=el.parentElement;if(S.activeSector===name){panel.innerHTML='';S.activeSector=null;grid.querySelectorAll('.hcell').forEach(c=>c.classList.remove('active-sector'));return;}S.activeSector=name;grid.querySelectorAll('.hcell').forEach(c=>c.classList.remove('active-sector'));el.classList.add('active-sector');renderSectorPanel(name,panel);}
-function renderSectorPanel(name,container){const d=SECTOR_DATA[name];if(!d){container.innerHTML='<div style="padding:10px;font-size:11px;color:var(--text3);">No data yet</div>';return;}container.innerHTML=`<div class="sector-panel"><div class="sector-panel-header"><div class="sector-panel-title">${name} — constituent stocks</div><button class="sector-close" onclick="this.closest('.sector-panel').remove();S.activeSector=null;document.querySelectorAll('.hcell').forEach(c=>c.classList.remove('active-sector'))">×</button></div><div class="sector-stocks">${d.stocks.map(s=>`<div class="sector-stock" onclick="openTicker('${s.t}')"><div class="ss-ticker">${s.t}</div><div class="ss-name">${s.n}</div><div class="ss-chg ${s.up?'up':'dn'}">${s.chg}</div></div>`).join('')}</div><div style="font-size:10px;color:var(--text3);margin-top:9px;">Click any stock to open the full intelligence page</div></div>`;}
+function renderSectorPanel(name,container){
+  const closeBtn = `<button class="sector-close" onclick="this.closest('.sector-panel').remove();S.activeSector=null;document.querySelectorAll('.hcell').forEach(c=>c.classList.remove('active-sector'))">×</button>`;
+  if(name==='Commodities'){
+    const items=(typeof MARKETS!=='undefined'&&MARKETS.commodities)||[];
+    const COMM_SIGNAL={GOLD:'Safe haven demand ↑ when real yields fall or risk-off sentiment spikes.',SLV:'Industrial + monetary metal. Leveraged proxy to gold with ~3× volatility.',WTI:'US oil benchmark. Tracks global demand, OPEC policy, and USD strength.',BRENT:'Global oil benchmark. Slightly premium to WTI — watches geopolitical risk.',NGAS:'Nat gas spot. Driven by weather, LNG exports, and power-gen demand.',COPPER:'Leading economic indicator. China demand drives ~50% of global consumption.',PLAT:'Auto catalyst demand. Substituting away from palladium in catalytic converters.',PALL:'Heavily Russia-supply-concentrated. Geopolitical risk premium is structural.',WHEAT:'Weather + Ukraine war sensitivity. Most geopolitically reactive ag commodity.',CORN:'US ethanol demand + crop yield data. China import appetite is the swing factor.',URA:'Uranium ETF. AI datacenter power demand = nuclear renaissance = structural bull.'};
+    const rows=items.map(m=>{
+      const sig=COMM_SIGNAL[m.id]||m.desc||'';
+      const col=m.up?'var(--green)':'var(--red)';
+      return `<div onclick="window.open('https://finance.yahoo.com/quote/${m.proxy}','_blank')" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+        <div style="min-width:52px;flex-shrink:0;">
+          <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text);">${m.id}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:1px;">${m.name}</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;color:var(--text2);line-height:1.5;">${sig}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:var(--text);">${m.val}</div>
+          <div style="font-size:11px;font-weight:600;color:${col};">${m.chg}</div>
+        </div>
+      </div>`;
+    }).join('');
+    container.innerHTML=`<div class="sector-panel"><div class="sector-panel-header"><div class="sector-panel-title">Commodities — macro signal instruments</div>${closeBtn}</div>${rows}<div style="font-size:10px;color:var(--text3);margin-top:9px;">Uranium (URA) = AI power demand proxy · Copper = China economic barometer · Gold = real-yield inverse · Click any row to view on Yahoo Finance.</div></div>`;
+    return;
+  }
+  const d=SECTOR_DATA[name];if(!d){container.innerHTML='<div style="padding:10px;font-size:11px;color:var(--text3);">No data yet</div>';return;}container.innerHTML=`<div class="sector-panel"><div class="sector-panel-header"><div class="sector-panel-title">${name} — constituent stocks</div>${closeBtn}</div><div class="sector-stocks">${d.stocks.map(s=>`<div class="sector-stock" onclick="openTicker('${s.t}')"><div class="ss-ticker">${s.t}</div><div class="ss-name">${s.n}</div><div class="ss-chg ${s.up?'up':'dn'}">${s.chg}</div></div>`).join('')}</div><div style="font-size:10px;color:var(--text3);margin-top:9px;">Click any stock to open the full intelligence page</div></div>`;
+}
 
 
 // ── TWELVEDATA CHART + INDICES ────────────────────────────────────────────────
@@ -5073,6 +5101,12 @@ function renderMarkets(){
   fill('yields-row',MARKETS.yields);
   fill('commodities-row',MARKETS.commodities);
   fill('crypto-row',MARKETS.crypto);
+  // Update Commodities sector tile % from gold's live change
+  const goldM = MARKETS.commodities.find(m=>m.id==='GOLD');
+  if(goldM){
+    ['mc-comm-chg','mc-comm-mini-chg'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=goldM.chg;el.className='hcv '+(goldM.up?'up':'dn');}});
+    ['mc-comm-tile','mc-comm-mini'].forEach(id=>{const el=document.getElementById(id);if(el){el.className=el.className.replace(/\bhc-[hkwcb]\b/g,'');el.classList.add(goldM.up?'hc-h':'hc-c');}});
+  }
 }
 
 function trackInput(){const el=document.getElementById('track-input');if(!el)return;const v=el.value.trim().toUpperCase();if(!v)return;el.value='';if(getInstrument(v))openInstrument(v);else openTicker(v);}
@@ -7252,15 +7286,19 @@ function _fundCardHTML(name, m, focused, liveData) {
     ? '<span style="font-size:10px;color:var(--text3);">' + liveData.holdingsCount + ' total positions</span>'
     : '';
 
-  return '<div class="sm-fund-card" onclick="void(0)" style="margin-bottom:10px;">'
+  const whaleLink = '<a href="https://whalewisdom.com/filer/' + name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--purple,#a78bfa);text-decoration:none;padding:3px 9px;border:0.5px solid rgba(167,139,250,.3);border-radius:5px;">All positions ↗</a>';
+
+  return '<div class="sm-fund-card" style="margin-bottom:10px;">'
     + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">'
     + '<div style="flex:1;min-width:0;">'
     + '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">' + name + '</div>'
     + '<div style="font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:4px;">' + (m.style||'') + '</div>'
     + '<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;">' + (m.thesis||'') + '</div>'
     + '</div>' + holdsFlag + '</div>'
+    + '<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Click any ticker to open its intelligence page:</div>'
     + '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">' + chips + '</div>'
-    + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' + filingBadge + holdingsCount + twitterLink + edgarLink + '</div>'
+    + '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + filingBadge + holdingsCount + '</div>'
+    + '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;">' + whaleLink + twitterLink + edgarLink + '</div>'
     + '</div>';
 }
 
@@ -7384,19 +7422,34 @@ async function renderTechTitans() {
       const shares = Math.abs(t.change).toLocaleString();
       const daysAgo = Math.round((Date.now() - new Date(t.transactionDate)) / 864e5);
       const daysStr = daysAgo <= 0 ? 'today' : daysAgo === 1 ? 'yesterday' : daysAgo + 'd ago';
-      const lastName = (t.name || titan.name).split(/\s+/).pop();
-      const bg = isBuy ? 'var(--green-bg)' : 'var(--bg4)';
+      const insiderName = t.name || titan.name;
+      const cik = EDGAR_CIKS[titan.ticker] || '';
+      const edgarUrl = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=4&dateb=&owner=include&count=10`;
+      const openInsiderUrl = `https://openinsider.com/search?q=${encodeURIComponent(titan.ticker)}`;
+      // Conviction context for open-market buys
+      const convictionNote = isBuy
+        ? '<div style="font-size:10px;color:var(--green);margin-top:3px;line-height:1.5;">Open market buy — personal cash deployed, not a scheduled plan. Highest conviction signal an insider can send.</div>'
+        : '<div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.5;">Scheduled plan sale — ignore for signal purposes. Insiders sell for taxes, diversification, mortgages. Means nothing.</div>';
+      const bg = isBuy ? 'var(--green-bg)' : 'var(--bg3)';
       const col = isBuy ? 'var(--green)' : 'var(--text3)';
       const bd = isBuy ? 'var(--green-bd)' : 'var(--border)';
-      const typeLabel = isBuy ? 'BUY' : 'SELL';
-      return '<div onclick="openTicker(\'' + titan.ticker + '\')" style="padding:5px 8px;border-radius:6px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:4px;cursor:pointer;">'
-        + '<div style="display:flex;align-items:center;gap:6px;">'
-        + '<span style="font-size:10px;font-weight:700;color:' + col + ';">' + typeLabel + '</span>'
-        + '<span style="font-size:10px;color:var(--text2);">' + (valStr || shares + ' shares') + '</span>'
+      const typeLabel = isBuy ? '▲ BUY' : '▼ SELL';
+      const urgencyBadge = daysAgo <= 7
+        ? '<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(34,197,94,.15);color:var(--green);border:0.5px solid rgba(34,197,94,.3);font-weight:700;">RECENT</span>'
+        : '';
+      return '<div style="padding:8px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:6px;">'
+        + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">'
+        + '<span style="font-size:11px;font-weight:700;color:' + col + ';">' + typeLabel + '</span>'
+        + '<span style="font-size:12px;font-weight:600;color:var(--text);">' + (valStr || shares + ' shares') + '</span>'
+        + (t.transactionPrice ? '<span style="font-size:10px;color:var(--text3);">@ $' + t.transactionPrice.toFixed(2) + '/sh</span>' : '')
+        + urgencyBadge
         + '<span style="font-size:10px;color:var(--text3);margin-left:auto;">' + daysStr + '</span>'
         + '</div>'
-        + '<div style="font-size:10px;color:var(--text3);margin-top:1px;">'
-        + lastName + (t.transactionPrice ? ' · $' + t.transactionPrice.toFixed(2) + '/sh' : '') + ' · ' + (t.transactionDate || '')
+        + '<div style="font-size:11px;color:var(--text2);">' + insiderName + ' · ' + shares + ' shares · ' + (t.transactionDate || '') + '</div>'
+        + convictionNote
+        + '<div style="display:flex;gap:8px;margin-top:6px;">'
+        + '<a href="' + openInsiderUrl + '" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">OpenInsider ↗</a>'
+        + '<a href="' + edgarUrl + '" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">SEC Form 4 ↗</a>'
         + '</div>'
         + '</div>';
     }).join('');
@@ -7478,23 +7531,40 @@ function renderCongressTrades(trades) {
     const ticker = (t.ticker||'').toUpperCase().replace('$','').trim();
     const isBuy = t.type === 'purchase';
     const col = isBuy ? 'var(--green)' : 'var(--red)';
-    const bg = isBuy ? 'var(--green-bg)' : 'rgba(220,60,60,.1)';
-    const typeLabel = isBuy ? 'BUY' : 'SELL';
+    const bg = isBuy ? 'var(--green-bg)' : 'rgba(220,60,60,.08)';
+    const bd = isBuy ? 'var(--green-bd)' : 'rgba(220,60,60,.25)';
+    const typeLabel = isBuy ? '▲ BUY' : '▼ SELL';
     const amount = t.amount || '—';
-    const name = (typeof NAMES !== 'undefined' && NAMES[ticker]) || ticker;
+    const stockName = (typeof NAMES !== 'undefined' && NAMES[ticker]) || ticker;
     const rep = (t.representative||'').split(' ').slice(0,3).join(' ');
+    const party = t.party || '';
+    const chamber = t.chamber || '';
+    const partyColor = party === 'D' ? '#60a5fa' : party === 'R' ? '#f87171' : 'var(--text3)';
+    // Why this matters context
+    const whyNote = isBuy
+      ? `<div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.5;">Members on relevant committees often trade ahead of regulatory decisions. STOCK Act requires disclosure within 45 days.</div>`
+      : '';
 
-    return `<div class="sm-congress-row" onclick="openTicker('${ticker}')">
+    return `<div class="sm-congress-row" onclick="openTicker('${ticker}')" style="border-left:3px solid ${bd};">
       <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;">
-          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text);">${ticker}</span>
-          <span style="font-size:10px;color:var(--text3);">${name}</span>
-          <span style="padding:2px 7px;border-radius:10px;background:${bg};color:${col};font-size:10px;font-weight:700;">${typeLabel}</span>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap;">
+          <span onclick="openTicker('${ticker}');event.stopPropagation();" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer;">${ticker}</span>
+          <span style="font-size:10px;color:var(--text3);">${stockName}</span>
+          <span style="padding:2px 8px;border-radius:10px;background:${bg};color:${col};font-size:10px;font-weight:700;border:0.5px solid ${bd};">${typeLabel}</span>
+          <span style="font-size:10px;font-weight:600;color:var(--text);">${amount}</span>
         </div>
-        <div style="font-size:11px;color:var(--text2);">${rep} · ${amount}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;">${t.transaction_date}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text2);font-weight:500;">${rep}</span>
+          ${party ? `<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:${partyColor}22;color:${partyColor};border:0.5px solid ${partyColor}44;font-weight:700;">${party}</span>` : ''}
+          ${chamber ? `<span style="font-size:10px;color:var(--text3);">${chamber}</span>` : ''}
+          <span style="font-size:10px;color:var(--text3);">${t.transaction_date||''}</span>
+        </div>
+        ${whyNote}
       </div>
-      ${t.link ? `<a href="${t.link}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;flex-shrink:0;">PDF ↗</a>` : ''}
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;">
+        ${t.link ? `<a href="${t.link}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;padding:3px 8px;border:0.5px solid var(--blue-bd);border-radius:4px;">PDF ↗</a>` : ''}
+        <a href="https://www.capitoltrades.com/trades?asset=${encodeURIComponent(ticker)}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--text3);text-decoration:none;">All ${ticker} ↗</a>
+      </div>
     </div>`;
   }).join('');
 
@@ -7834,36 +7904,54 @@ function renderSmartMoneyData(symbol, data) {
     const shares = h.currentShares || h.share || 0;
     const change = h.change || h.changeInShares || 0;
     const sharesStr = shares >= 1e6 ? (shares/1e6).toFixed(2) + 'M' : shares >= 1e3 ? (shares/1e3).toFixed(0) + 'K' : shares.toString();
+    const pctChange = shares > 0 && change !== 0 ? Math.abs(change / (shares - change) * 100) : 0;
 
-    let changeEl = '';
-    if (change !== 0 && change !== undefined) {
-      const up = change > 0;
-      const absChg = Math.abs(change);
-      const chgStr = absChg >= 1e6 ? (absChg/1e6).toFixed(1) + 'M' : absChg >= 1e3 ? (absChg/1e3).toFixed(0) + 'K' : absChg.toString();
-      changeEl = `<span style="font-size:10px;color:${up?'var(--green)':'var(--red)'};">${up?'+':'-'}${chgStr}</span>`;
+    // Conviction badge logic
+    let badge = '';
+    if (change > 0 && pctChange > 50) {
+      badge = `<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:rgba(34,197,94,.12);color:var(--green);border:0.5px solid rgba(34,197,94,.3);font-weight:700;white-space:nowrap;">NEW / STRONG ADD +${Math.round(pctChange)}%</span>`;
+    } else if (change > 0 && pctChange > 10) {
+      badge = `<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:rgba(34,197,94,.07);color:var(--green);border:0.5px solid rgba(34,197,94,.2);font-weight:600;white-space:nowrap;">Added +${Math.round(pctChange)}%</span>`;
+    } else if (change < 0 && pctChange > 25) {
+      badge = `<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:rgba(220,60,60,.08);color:var(--red);border:0.5px solid rgba(220,60,60,.2);font-weight:600;white-space:nowrap;">Reduced −${Math.round(pctChange)}%</span>`;
+    } else if (change === 0) {
+      badge = `<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:var(--bg4);color:var(--text3);border:0.5px solid var(--border);white-space:nowrap;">Held</span>`;
     }
 
     const date = h.reportDate || h.date || '';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);">
+    // Build WhaleWisdom search link for the holder
+    const holderQuery = encodeURIComponent(name.split(' ').slice(0,3).join(' '));
+    const whaleUrl = `https://whalewisdom.com/filer/${name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'')}`;
+
+    return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);">
       <div style="flex:1;min-width:0;">
-        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
-        ${date ? `<div style="font-size:10px;color:var(--text3);">Filed: ${date}</div>` : ''}
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap;">
+          <a href="${whaleUrl}" target="_blank" style="font-size:12px;font-weight:600;color:var(--text);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;" title="View on WhaleWisdom">${name}</a>
+          ${badge}
+        </div>
+        ${date ? `<div style="font-size:10px;color:var(--text3);">13F filed · ${date}${change !== 0 ? ` · ${change > 0 ? '+' : ''}${(change >= 1e6 ? (change/1e6).toFixed(1)+'M' : change >= 1e3 ? Math.round(change/1e3)+'K' : change) + ' shares'}` : ''}</div>` : ''}
       </div>
-      <div style="text-align:right;flex-shrink:0;">
-        <div style="font-size:11px;font-weight:600;font-family:'DM Mono',monospace;">${sharesStr}</div>
-        ${changeEl}
+      <div style="text-align:right;flex-shrink:0;min-width:60px;">
+        <div style="font-size:12px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);">${sharesStr}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:1px;">shares held</div>
       </div>
     </div>`;
   }).join('');
 
   const updated = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
   container.innerHTML = `
-    <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">Top institutional holders · ${updated}</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+      <span>Top institutional holders · ${updated}</span>
+      <span style="font-size:9px;color:var(--text3);">Click name → WhaleWisdom profile</span>
+    </div>
+    <div style="padding:7px 10px;background:rgba(34,197,94,.06);border-radius:6px;border:0.5px solid rgba(34,197,94,.2);margin-bottom:8px;font-size:10px;color:var(--text2);line-height:1.5;">
+      <strong style="color:var(--green);">NEW / STRONG ADD</strong> = institution meaningfully increased position this quarter — high conviction signal. <strong style="color:var(--text3);">Held</strong> = no change, conviction maintained.
+    </div>
     ${rows}
     <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
-      <a href="https://finviz.com/quote.ashx?t=${symbol}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;padding:3px 9px;border:0.5px solid var(--blue-bd);border-radius:4px;">Finviz ↗</a>
-      <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${symbol}&type=13F&dateb=&owner=include&count=20" target="_blank" style="font-size:10px;color:var(--text2);text-decoration:none;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;">SEC 13F filings ↗</a>
-      <a href="https://whalewisdom.com/stock/${symbol.toLowerCase()}" target="_blank" style="font-size:10px;color:var(--text2);text-decoration:none;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;">WhaleWisdom ↗</a>
+      <a href="https://finviz.com/quote.ashx?t=${symbol}#ownership" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;padding:4px 10px;border:0.5px solid var(--blue-bd);border-radius:5px;">Finviz ownership ↗</a>
+      <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${symbol}&type=13F&dateb=&owner=include&count=20" target="_blank" style="font-size:10px;color:var(--text2);text-decoration:none;padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;">SEC 13F filings ↗</a>
+      <a href="https://whalewisdom.com/stock/${symbol.toLowerCase()}" target="_blank" style="font-size:10px;color:var(--text2);text-decoration:none;padding:4px 10px;border:0.5px solid var(--border2);border-radius:5px;">WhaleWisdom ↗</a>
     </div>`;
 }
 
@@ -9939,30 +10027,59 @@ function renderEdgarFeed(ticker, hits) {
     feed.innerHTML = `<div style="font-size:11px;color:var(--text3);padding:10px 0;text-align:center;">No Form 4 filings found for ${ticker} in the last 6 months.</div>`;
     return;
   }
-  const header = `<div style="font-size:10px;color:var(--text3);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-    <span>${hits.length} filing${hits.length>1?'s':''} found — last 6 months</span>
-    <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${EDGAR_CIKS[ticker]||''}&type=4&dateb=&owner=include&count=40" target="_blank" style="color:var(--blue);text-decoration:none;">View all on SEC.gov ↗</a>
+  const cik = EDGAR_CIKS[ticker] || '';
+  const allFilingsUrl = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=4&dateb=&owner=include&count=40`;
+  const openInsiderUrl = `http://openinsider.com/search?q=${ticker}`;
+
+  const header = `<div style="font-size:10px;color:var(--text3);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+    <span style="color:var(--text2);font-weight:600;">${hits.length} Form 4 filing${hits.length>1?'s':''} · ${ticker} · last 6 months</span>
+    <div style="display:flex;gap:8px;">
+      <a href="${openInsiderUrl}" target="_blank" style="color:var(--green);text-decoration:none;font-size:10px;">OpenInsider ↗</a>
+      <a href="${allFilingsUrl}" target="_blank" style="color:var(--blue);text-decoration:none;font-size:10px;">SEC.gov ↗</a>
+    </div>
+  </div>
+  <div style="padding:8px 10px;background:rgba(99,102,241,.07);border-radius:7px;border:0.5px solid rgba(99,102,241,.2);margin-bottom:10px;">
+    <div style="font-size:10px;color:var(--text2);font-weight:600;margin-bottom:3px;">What to look for</div>
+    <div style="font-size:10px;color:var(--text3);line-height:1.6;">Open market buys (transaction code <strong style="color:var(--green);">P</strong>) = personal money deployed. Strongest signal. Auto-plan sells (code <strong style="color:var(--text3);">S</strong>) = ignore. Awards / grants (code <strong style="color:var(--text3);">A</strong>) = noise.</div>
   </div>`;
-  const rows = hits.slice(0, 10).map(h => {
+
+  const rows = hits.slice(0, 12).map(h => {
     const src = h._source || {};
-    const date = src.file_date || '—';
+    const date = src.file_date || src.period_of_report || '—';
     const formType = src.form_type || '4';
-    const acc = src.accessionNumber || '';
-    const accUrl = acc
-      ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${EDGAR_CIKS[ticker]||''}&type=4&dateb=&owner=include&count=40`
-      : (src.secLink || '#');
-    // Determine rough transaction type from date recency
-    const daysAgo = Math.round((Date.now() - new Date(date).getTime()) / 86400000);
-    const recency = daysAgo <= 7 ? '🔴 ' + daysAgo + 'd ago' : daysAgo <= 30 ? '🟡 ' + daysAgo + 'd ago' : daysAgo + 'd ago';
-    return `<div onclick="openTicker('${ticker}')" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">
-      <div>
-        <div style="font-size:12px;font-weight:500;color:var(--text);">Form ${formType} filing · ${ticker}</div>
-        <div style="font-size:10px;color:var(--text3);">${date} · ${recency}</div>
+    const acc = (src.accessionNumber || '').replace(/-/g,'');
+    const cikNum = cik.replace(/^0+/,'');
+    // Build direct link to the actual filing document
+    const filingUrl = (acc && cikNum)
+      ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=4&dateb=&owner=include&count=40`
+      : (src.secLink || allFilingsUrl);
+    const filerName = src.entity_name || src.display_names || src.filer_name || '';
+    const daysAgo = date && date !== '—' ? Math.round((Date.now() - new Date(date).getTime()) / 86400000) : null;
+    const urgency = daysAgo !== null && daysAgo <= 7
+      ? `<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(34,197,94,.1);color:var(--green);border:0.5px solid rgba(34,197,94,.3);font-weight:700;">NEW · ${daysAgo}d ago</span>`
+      : daysAgo !== null && daysAgo <= 30
+        ? `<span style="font-size:9px;color:var(--amber);">${daysAgo}d ago</span>`
+        : `<span style="font-size:9px;color:var(--text3);">${date}</span>`;
+
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);">
+      <div style="width:32px;height:32px;border-radius:8px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue);flex-shrink:0;">F4</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">
+          <span onclick="openTicker('${ticker}')" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;">${ticker}</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${filerName && filerName !== ticker ? filerName : (typeof NAMES!=='undefined'&&NAMES[ticker])||ticker}</span>
+          ${urgency}
+        </div>
+        <div style="font-size:10px;color:var(--text3);">Form ${formType} · Filed ${date}</div>
       </div>
-      <a href="${accUrl}" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;padding:3px 8px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:4px;border:0.5px solid rgba(34,197,94,0.2);white-space:nowrap;text-decoration:none;">View ↗</a>
+      <a href="${filingUrl}" target="_blank" style="font-size:10px;padding:4px 10px;background:var(--bg3);color:var(--text2);border-radius:5px;border:0.5px solid var(--border2);white-space:nowrap;text-decoration:none;flex-shrink:0;">View filing ↗</a>
     </div>`;
   }).join('');
-  feed.innerHTML = header + rows;
+
+  const guideRow = `<div style="margin-top:10px;padding:8px 10px;border-radius:7px;background:var(--bg3);border:0.5px solid var(--border2);">
+    <div style="font-size:10px;color:var(--text3);line-height:1.6;">For full trade detail (who bought, how many shares, at what price) → click <strong style="color:var(--blue);">OpenInsider ↗</strong> above — free, real-time, shows transaction codes and insider titles.</div>
+  </div>`;
+
+  feed.innerHTML = header + rows + guideRow;
 }
 
 async function refreshAllEdgar() {
