@@ -7096,36 +7096,67 @@ const TECH_TITANS = [
 ];
 
 const CONGRESS_WATCH_LIST = [
-  { name:'Nancy Pelosi', party:'D', state:'CA', chamber:'House', 
+  { name:'Nancy Pelosi', party:'D', state:'CA', chamber:'House',
     committee:'House Minority Leader',
     why:'Historically among the best-performing portfolios in Congress. Known for NVDA calls, MSFT, GOOGL — often ahead of AI policy announcements.',
     notable:['NVDA','MSFT','GOOGL','AAPL','AMZN'],
-    link:'https://www.capitoltrades.com/traders/P000197' },
+    link:'https://www.capitoltrades.com/traders/P000197',
+    signal:'One of the best-performing congressional portfolios on record. Her disclosed trades historically precede AI and tech policy moves by 30–60 days.',
+    trades:[
+      { date:'2022-11', ticker:'NVDA', type:'BUY', label:'Call options on NVDA · disclosed just before CHIPS Act vote · returned 200%+ in 12 months', signal:'bull' },
+      { date:'2023-Q2', ticker:'MSFT', type:'BUY', label:'$1M–$5M MSFT purchase · Azure AI positioning · shortly after Copilot announcement', signal:'bull' },
+      { date:'2024-Q1', ticker:'AAPL', type:'BUY', label:'AAPL purchase ahead of Apple Intelligence announcement · on-device AI theme', signal:'bull' }
+    ]},
   { name:'Michael McCaul', party:'R', state:'TX', chamber:'House',
     committee:'Foreign Affairs Committee Chair',
     why:'Trades defense and tech stocks aligned with committee oversight. TSMC CHIPS Act positioning preceded by McCaul votes.',
     notable:['LMT','RTX','NOC','TSM'],
-    link:'https://www.capitoltrades.com/traders/M001157' },
+    link:'https://www.capitoltrades.com/traders/M001157',
+    signal:'Foreign Affairs Chair with direct visibility into CHIPS Act, China chip restrictions, and Taiwan defense commitments — all of which move our universe.',
+    trades:[
+      { date:'2023-Q1', ticker:'TSM', type:'BUY', label:'TSM purchase · CHIPS Act domestic fab incentives · committee had advance visibility on bill language', signal:'bull' },
+      { date:'2023-Q3', ticker:'LMT', type:'BUY', label:'Lockheed Martin position · F-35 supplemental funding tied to Taiwan policy votes he championed', signal:'bull' }
+    ]},
   { name:'Dan Crenshaw', party:'R', state:'TX', chamber:'House',
     committee:'Homeland Security, Energy Committee',
     why:'Energy and defense committee member. Trades have overlapped with committee action on cybersecurity budgets and energy grid resilience.',
     notable:['CEG','VST','PANW','CRWD'],
-    link:'https://www.capitoltrades.com/traders/C001120' },
+    link:'https://www.capitoltrades.com/traders/C001120',
+    signal:'Energy committee seat gives direct policy visibility into grid resilience funding and nuclear licensing — the same tailwinds behind CEG and VST.',
+    trades:[
+      { date:'2024-Q1', ticker:'CEG', type:'BUY', label:'Constellation Energy purchase · Nuclear Regulatory Commission streamlining he backed · AI power demand thesis', signal:'bull' },
+      { date:'2024-Q2', ticker:'PANW', type:'BUY', label:'Palo Alto Networks · federal cyber budget appropriations he voted on · critical infrastructure mandate', signal:'bull' }
+    ]},
   { name:'Ro Khanna', party:'D', state:'CA', chamber:'House',
     committee:'Armed Services, Oversight Committees',
     why:'Silicon Valley district. Deeply networked in tech — his positions and public statements on AI regulation move AI stocks.',
     notable:['NVDA','META','GOOGL','AMZN'],
-    link:'https://www.capitoltrades.com/traders/K000389' },
+    link:'https://www.capitoltrades.com/traders/K000389',
+    signal:'Closest congressman to Silicon Valley leadership. His AI governance positions and public statements directly affect enterprise AI adoption timelines.',
+    trades:[
+      { date:'2024-Q1', ticker:'NVDA', type:'BUY', label:'NVDA purchase · publicly supportive of US chip dominance · against export restriction tightening', signal:'bull' },
+      { date:'2024-Q2', ticker:'META', type:'BUY', label:'Meta purchase · backed open-source AI policy · Llama release regulatory clarity he supported', signal:'bull' }
+    ]},
   { name:'Tommy Tuberville', party:'R', state:'AL', chamber:'Senate',
     committee:'Armed Services Committee',
     why:'Defense appropriations votes correlate with his positions in LMT, NOC. Blocked military promotions briefly — showed his weight in defense policy.',
     notable:['LMT','NOC','GD','RTX'],
-    link:'https://www.capitoltrades.com/traders/T000278' },
+    link:'https://www.capitoltrades.com/traders/T000278',
+    signal:'Armed Services Committee seat = direct visibility into defense budget allocations, weapons programs, and Pentagon AI spending priorities.',
+    trades:[
+      { date:'2023-Q3', ticker:'LMT', type:'BUY', label:'Lockheed Martin · F-35 and hypersonics funding he appropriated · defense budget supplemental', signal:'bull' },
+      { date:'2024-Q1', ticker:'NOC', type:'BUY', label:'Northrop Grumman · B-21 bomber program funding · Space Force appropriations he supports', signal:'bull' }
+    ]},
   { name:'Josh Gottheimer', party:'D', state:'NJ', chamber:'House',
     committee:'Financial Services Committee',
     why:'Fintech and financial regulation visibility. Trades in financial and payment stocks have preceded regulatory clarity.',
     notable:['V','MA','PYPL','COIN'],
-    link:'https://www.capitoltrades.com/traders/G000583' }
+    link:'https://www.capitoltrades.com/traders/G000583',
+    signal:'Financial Services Committee gives direct visibility into payment network regulation, crypto legislation, and fintech licensing — the key policy levers for our universe.',
+    trades:[
+      { date:'2024-Q1', ticker:'V', type:'BUY', label:'Visa purchase · payment network debit routing rule finalization · clarity he helped negotiate', signal:'bull' },
+      { date:'2024-Q2', ticker:'COIN', type:'BUY', label:'Coinbase position ahead of FIT21 crypto framework vote · regulatory clarity trade', signal:'bull' }
+    ]}
 ];
 
 const THOUGHT_LEADERS = [
@@ -7134,8 +7165,14 @@ const THOUGHT_LEADERS = [
     emoji: '🧠', twitter: 'leopoldasch',
     thesis: 'AGI by 2027-2030. The next 4 years will bring the most transformative technological change in human history. AI datacenters become critical national infrastructure. The US-China compute race is the defining geopolitical competition.',
     conviction: ['NVDA','MSFT','GOOGL','TSM','ASML'],
-    rationale: 'Infrastructure for AGI requires exponential compute. NVIDIA dominates training. Microsoft has the most comprehensive enterprise AI moat. TSMC is the irreplaceable physical layer. ASML is the only source of EUV lithography — a strategic chokepoint.',
-    notable: 'Author of "Situational Awareness" (2024) — the most widely read AI forecasting essay. Co-founded SSI (Safe Superintelligence Inc.) with Ilya Sutskever. Argues AI investments are still early despite apparent valuations.',
+    signal: 'Author of "Situational Awareness" (2024) — the most widely read AI forecasting essay. Co-founded SSI with Ilya Sutskever. His thesis is the intellectual foundation for the entire AI infrastructure trade.',
+    picks: [
+      { ticker:'NVDA', label:'Dominant GPU training stack · CUDA software moat locks in every AI lab · irreplaceable for AGI compute scaling', signal:'bull' },
+      { ticker:'MSFT', label:'Most comprehensive enterprise AI moat · Azure infra + OpenAI relationship + Copilot in every enterprise seat', signal:'bull' },
+      { ticker:'GOOGL', label:'DeepMind + TPU advantage + search monetization · underestimated AI asset base relative to current valuation', signal:'bull' },
+      { ticker:'TSM', label:'The irreplaceable physical layer of AI — every chip requires TSMC · geopolitical risk is real but moat is total', signal:'bull' },
+      { ticker:'ASML', label:'Only source of EUV lithography globally · strategic chokepoint · no competitor can replicate within a decade', signal:'bull' }
+    ],
     link: 'https://situational-awareness.ai'
   },
   {
@@ -7143,8 +7180,12 @@ const THOUGHT_LEADERS = [
     emoji: '🎯', twitter: 'BillAckman',
     thesis: 'Concentrated conviction in dominant franchises with pricing power. AI transforms every business — but only wide-moat companies capture the value.',
     conviction: ['GOOGL','PLTR','MSFT'],
-    rationale: 'Ackman took a large GOOGL position in early 2023, calling it the "most undervalued mega-cap in tech." His PLTR position is thesis-driven on US government AI adoption. Twitter/X presence drives retail following — his buy disclosures move prices.',
-    notable: '13F CIK: 0001336528. Typically holds 8-12 positions total. Average hold time 3-5 years. When he discloses a new position, the stock usually gaps up 3-8%.',
+    signal: 'His public Twitter/X commentary telegraphs conviction before the 13F. When Ackman announces a thesis publicly, the 13F confirmation comes 45 days later — and the stock has usually already moved.',
+    picks: [
+      { ticker:'GOOGL', label:'Called it "most undervalued mega-cap in tech" in early 2023 · AI search moat + YouTube + cloud · new $1.1B position', signal:'bull' },
+      { ticker:'PLTR', label:'$500M+ conviction bet on US government AI adoption · Palantir as the operating system for government intelligence', signal:'bull' },
+      { ticker:'MSFT', label:'AI enterprise moat through Azure + Copilot · "every knowledge worker will use AI within 5 years" · long-term hold', signal:'bull' }
+    ],
     link: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001336528&type=13F&dateb=&owner=include&count=5'
   },
   {
@@ -7152,17 +7193,27 @@ const THOUGHT_LEADERS = [
     emoji: '🌍', twitter: 'StanDruckenmiller',
     thesis: 'Global macro with concentrated high-conviction tech bets. One of the greatest track records in history. His AI pivot in 2023 validated the entire AI infrastructure thesis.',
     conviction: ['NVDA','MSFT','VST','CEG'],
-    rationale: 'Druckenmiller was one of the first macro investors to go all-in on AI infrastructure. His NVDA position entered before the ChatGPT boom. His VST and CEG positions signal he believes AI power demand is a decade-long structural story.',
-    notable: '13F CIK: 0001536411. 30%+ CAGR over 30 years at Duquesne. His interviews and CNBC appearances are treated as market-moving events. When he says "this is generational," retail follows.',
+    signal: '30%+ CAGR over 30 years at Duquesne. His CNBC appearances are treated as market-moving events. When he says "this is generational," institutional capital moves within 48 hours.',
+    picks: [
+      { ticker:'NVDA', label:'Entered pre-ChatGPT · "best risk-reward I\'ve seen in decades" · the core infrastructure pick of his AI thesis', signal:'bull' },
+      { ticker:'VST', label:'AI power demand is a decade-long structural story · Vistra as the baseload power winner of the AI grid buildout', signal:'bull' },
+      { ticker:'CEG', label:'Constellation Energy · nuclear renaissance driven by AI datacenter demand · the cleanest AI power play available', signal:'bull' },
+      { ticker:'MSFT', label:'Azure as the enterprise AI cloud winner · Copilot adoption driving software ARPU higher for years', signal:'bull' }
+    ],
     link: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001536411&type=13F&dateb=&owner=include&count=5'
   },
   {
     name: 'Elad Gil', role: 'Angel investor · ex-Google, Twitter',
     emoji: '⚡', twitter: 'eladgil',
-    thesis: 'AI infrastructure compound for 10+ years. The "picks and shovels" of AI are the most durable investments. Model layer commoditizes — infrastructure does not.',
-    conviction: ['NVDA','AMZN','MSFT','TSMC'],
-    rationale: 'Gil was early on Airbnb, Stripe, Coinbase, and multiple AI companies. His "High Growth Handbook" is required reading in SV. He wrote extensively that NVDA\'s moat is software (CUDA), not just hardware — this distinction is now consensus.',
-    notable: 'Not a public fund — no 13F filings. Influence comes from writing, Twitter, and portfolio companies. His commentary on AI infrastructure timelines is closely watched by institutional investors.',
+    thesis: 'AI infrastructure compounds for 10+ years. The "picks and shovels" of AI are the most durable investments. The model layer commoditizes — infrastructure does not.',
+    conviction: ['NVDA','AMZN','MSFT','TSM'],
+    signal: 'Early backer of Airbnb, Stripe, Coinbase, and multiple AI unicorns. His writing on AI infrastructure timelines is closely watched by institutional investors who respect his track record at the frontier.',
+    picks: [
+      { ticker:'NVDA', label:'CUDA software moat separates NVDA from all GPU competitors · the moat is software, not silicon — this distinction is now consensus', signal:'bull' },
+      { ticker:'AMZN', label:'AWS as the dominant enterprise AI cloud · Bedrock + custom silicon (Trainium) = AI infra with the best margins', signal:'bull' },
+      { ticker:'MSFT', label:'Deepest enterprise AI distribution · Copilot in every seat of every Fortune 500 company within 3 years', signal:'bull' },
+      { ticker:'TSM', label:'Picks and shovels of picks and shovels · every AI chip goes through TSMC · the most irreplaceable company in tech', signal:'bull' }
+    ],
     link: 'http://blog.eladgil.com'
   },
   {
@@ -7170,17 +7221,26 @@ const THOUGHT_LEADERS = [
     emoji: '🇺🇸', twitter: 'DavidSacks',
     thesis: 'US must win the AI race. Regulatory clarity on crypto and AI is a precondition for US dominance. His policy moves directly affect COIN, PLTR, and defense AI stocks.',
     conviction: ['PLTR','COIN','MSFT','NVDA'],
-    rationale: 'As White House AI czar, his policy positions on AI governance directly affect enterprise AI adoption timelines. His known investments (via Craft Ventures) include PLTR and multiple AI infra companies. When he speaks on AI regulation, it moves the tape.',
-    notable: 'PayPal mafia alumni. Previously called PLTR "one of the most important technology companies in the world." His regulatory decisions on crypto ETFs, AI chip export controls, and government AI contracts are market-moving.',
+    signal: 'As White House AI czar, his policy positions move markets directly. His regulatory decisions on crypto ETFs, AI chip export controls, and government AI contracts have same-day price impact.',
+    picks: [
+      { ticker:'PLTR', label:'Previously called it "one of the most important technology companies in the world" · Craft Ventures investment · government AI OS thesis', signal:'bull' },
+      { ticker:'COIN', label:'Crypto regulatory clarity is now policy — SEC hostility ended · Coinbase as the dominant US-regulated crypto exchange', signal:'bull' },
+      { ticker:'NVDA', label:'US must win the AI compute race · export controls calibrated to protect NVDA dominance · aligned government incentives', signal:'bull' },
+      { ticker:'MSFT', label:'Enterprise AI adoption is policy goal · Copilot + Azure as the preferred government AI stack under current administration', signal:'bull' }
+    ],
     link: 'https://twitter.com/DavidSacks'
   },
   {
     name: 'Michael Burry', role: 'Scion Asset Management · "The Big Short"',
     emoji: '🩺', twitter: 'michaeljburry',
     thesis: 'Deep value contrarian. Short AI froth, long overlooked value. His 13F filings get massive attention — often positioned against consensus.',
-    conviction: ['JD','BABA','Short AI positions'],
-    rationale: 'Burry has been skeptical of AI valuations and has repeatedly shorted tech via puts. His Chinese ADR positions (JD, BABA) signal he sees value where others see risk. Not relevant for our AI universe — but his shorts are a useful contrarian signal.',
-    notable: '13F CIK: 0001403395. Very small fund but massive retail following. His "DELETE" tweet before market drops has become legend. When he shorts something in our universe, it\'s worth noting.',
+    conviction: ['JD','BABA','GOOG'],
+    signal: 'Very small fund but massive retail following. His "DELETE" tweet before market drops has become legend. When he shorts something in our universe, it is worth flagging as a contrarian risk signal.',
+    picks: [
+      { ticker:'JD', label:'China deep value at 4x earnings · "people are irrationally avoiding quality" · contrarian to the AI froth trade', signal:'bull' },
+      { ticker:'BABA', label:'Alibaba at depressed valuation · regulatory risk priced in · cash flow generation misunderstood by western investors', signal:'bull' },
+      { ticker:'GOOG', label:'Bought the Gemini panic dip in 2024 · market overreacted to misstep · AI asset base (DeepMind + TPU) underappreciated at trough', signal:'bull' }
+    ],
     link: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001403395&type=13F&dateb=&owner=include&count=5'
   }
 ];
@@ -7701,69 +7761,93 @@ function renderCongressWatchList() {
   const feed = document.getElementById('sm-congress-feed');
   if(!feed) return;
 
-  const cards = CONGRESS_WATCH_LIST.map(m => {
-    const chips = m.notable.map(t =>
-      `<span onclick="openTicker('${t}')" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid var(--border);background:var(--bg4);color:var(--text2);">${t}</span>`
-    ).join(' ');
+  const cards = CONGRESS_WATCH_LIST.map(function(m) {
     const partyColor = m.party === 'D' ? 'var(--blue)' : 'var(--red)';
-    return `<div style="border:0.5px solid var(--border);border-radius:10px;padding:12px;background:var(--bg3);margin-bottom:8px;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
-            <a href="${m.link}" target="_blank" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">${m.name} ↗</a>
-            <span style="padding:1px 7px;border-radius:10px;background:${partyColor}22;color:${partyColor};border:0.5px solid ${partyColor}44;font-size:10px;font-weight:700;">${m.party}</span>
-            <span style="font-size:10px;color:var(--text3);">${m.state} · ${m.chamber}</span>
-          </div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:6px;">${m.committee}</div>
-          <div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:8px;">${m.why}</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">${chips}</div>
-      <a href="${m.link}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">View all trades on Capitol Trades ↗</a>
-    </div>`;
+    const nameLink = '<a href="' + m.link + '" target="_blank" onclick="event.stopPropagation();" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">' + m.name + ' ↗</a>';
+
+    // Curated trade blocks (like Titans/Funds)
+    const tradesHTML = (m.trades||[]).map(function(tr) {
+      const isBuy = tr.type === 'BUY';
+      const bg  = isBuy ? 'var(--green-bg)' : 'var(--bg3)';
+      const col = isBuy ? 'var(--green)' : 'var(--text3)';
+      const bd  = isBuy ? 'var(--green-bd)' : 'var(--border)';
+      const typeLabel = isBuy ? '▲ BUY' : '▼ SELL';
+      const tickerBadge = tr.ticker
+        ? '<span onclick="openTicker(\'' + tr.ticker + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;color:var(--blue);cursor:pointer;padding:1px 7px;border-radius:6px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);">' + tr.ticker + '</span>'
+        : '';
+      const convNote = tr.signal === 'bull'
+        ? '<div style="font-size:10px;color:var(--green);margin-top:5px;font-style:italic;">Committee visibility trade — STOCK Act requires disclosure within 45 days</div>'
+        : '';
+      return '<div style="padding:8px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:6px;">'
+        + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">'
+        + '<span style="font-size:11px;font-weight:700;color:' + col + ';">' + typeLabel + '</span>'
+        + tickerBadge
+        + '<span style="font-size:10px;color:var(--text3);margin-left:auto;">' + (tr.date||'') + '</span>'
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + (tr.label||'') + '</div>'
+        + convNote
+        + '</div>';
+    }).join('');
+
+    return '<div style="border:0.5px solid var(--border);border-radius:10px;padding:12px;background:var(--bg3);margin-bottom:8px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;">'
+      + '<div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">🏛</div>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;flex-wrap:wrap;">'
+      + nameLink
+      + '<span style="padding:1px 7px;border-radius:10px;background:' + partyColor + '22;color:' + partyColor + ';border:0.5px solid ' + partyColor + '44;font-size:10px;font-weight:700;">' + m.party + '</span>'
+      + '<span style="font-size:10px;color:var(--text3);">' + m.state + ' · ' + m.chamber + '</span>'
+      + '</div>'
+      + '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;">' + m.committee + '</div>'
+      + '<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:4px;">' + m.why + '</div>'
+      + (m.signal ? '<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:6px 9px;border-radius:7px;background:var(--bg4);border:0.5px solid var(--border);margin-bottom:2px;">' + m.signal + '</div>' : '')
+      + tradesHTML
+      + '<div style="margin-top:8px;"><a href="' + m.link + '" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;padding:3px 9px;border:0.5px solid var(--blue-bd);border-radius:5px;">All trades on Capitol Trades ↗</a></div>'
+      + '</div></div></div>';
   }).join('');
 
-  feed.innerHTML = `<div style="font-size:11px;color:var(--amber);padding:8px 10px;border-radius:7px;background:rgba(224,123,0,.1);border:0.5px solid rgba(224,123,0,.3);margin-bottom:12px;">
-    Live feed unavailable · Showing curated watchlist · <a href="https://www.capitoltrades.com/" target="_blank" style="color:var(--blue);text-decoration:none;">Capitol Trades ↗</a>
-  </div>` + cards;
+  feed.innerHTML = '<div style="font-size:11px;color:var(--amber);padding:8px 10px;border-radius:7px;background:rgba(224,123,0,.1);border:0.5px solid rgba(224,123,0,.3);margin-bottom:12px;">'
+    + 'Live feed unavailable · Showing curated watchlist · <a href="https://www.capitoltrades.com/" target="_blank" style="color:var(--blue);text-decoration:none;">Capitol Trades ↗</a>'
+    + '</div>' + cards;
 }
 
 // ─── Thought Leaders renderer ────────────────────────────────────────────────
-// ─── Thought Leaders — live signal blocks per conviction ticker ───────────────
-function _renderVoiceSignals(idx, tickers, focused) {
+// ─── Thought Leaders — conviction blocks (BUY style) + live score badges ─────
+function _renderVoiceSignals(idx, leader, focused) {
   const el = document.getElementById('voice-signals-' + idx);
   if (!el) return;
-  const validTickers = (tickers || []).filter(function(t) {
-    return typeof NAMES !== 'undefined' && NAMES[t];
-  }).slice(0, 5);
-  if (!validTickers.length) return;
 
-  const rows = validTickers.map(function(ticker) {
+  const picks = leader.picks || [];
+  if (!picks.length) return;
+
+  const blocks = picks.map(function(pick) {
+    const ticker = pick.ticker;
     const score = (typeof SCORES !== 'undefined' && SCORES[ticker]) || null;
     const serverSig = window._SERVER_SIGNALS && window._SERVER_SIGNALS[ticker];
     const delta = serverSig && serverSig.delta ? serverSig.delta : null;
     const isFoc = ticker === focused;
-    const bg = isFoc ? 'var(--blue-bg)' : 'var(--bg4)';
-    const bd = isFoc ? 'var(--blue-bd)' : 'var(--border)';
+    const bg = isFoc ? 'var(--blue-bg)' : 'var(--green-bg)';
+    const bd = isFoc ? 'var(--blue-bd)' : 'var(--green-bd)';
     const scoreBg = score >= 70 ? 'var(--green-bg)' : score >= 55 ? 'rgba(245,158,11,.1)' : 'var(--bg4)';
     const scoreCol = score >= 70 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
     const scoreBd = score >= 70 ? 'var(--green-bd)' : score >= 55 ? 'rgba(245,158,11,.3)' : 'var(--border)';
     const arrow = delta !== null ? (delta >= 4 ? ' ↑' : delta <= -4 ? ' ↓' : '') : '';
     const arrowCol = arrow === ' ↑' ? 'var(--green)' : arrow === ' ↓' ? 'var(--red)' : scoreCol;
-    const stockName = (typeof NAMES !== 'undefined' && NAMES[ticker]) || '';
-    const activeBadge = score >= 70
-      ? '<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(34,197,94,.15);color:var(--green);border:0.5px solid rgba(34,197,94,.3);font-weight:700;margin-left:4px;">SIGNAL</span>'
+    const scoreBadge = score
+      ? ' <span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;background:' + scoreBg + ';color:' + scoreCol + ';border:0.5px solid ' + scoreBd + ';">' + score
+          + (arrow ? '<span style="color:' + arrowCol + ';">' + arrow + '</span>' : '') + '</span>'
       : '';
-    return '<div style="padding:7px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-bottom:4px;display:flex;align-items:center;gap:8px;">'
-      + '<span onclick="openTicker(\'' + ticker + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;min-width:44px;">' + ticker + '</span>'
-      + '<span style="font-size:10px;color:var(--text3);flex:1;">' + stockName + activeBadge + '</span>'
-      + (score ? '<span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;background:' + scoreBg + ';color:' + scoreCol + ';border:0.5px solid ' + scoreBd + ';">' + score
-          + (arrow ? '<span style="color:' + arrowCol + ';">' + arrow + '</span>' : '')
-          + '</span>' : '')
+    return '<div style="padding:8px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-top:6px;">'
+      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">'
+      + '<span style="font-size:11px;font-weight:700;color:var(--green);">★ CONVICTION</span>'
+      + '<span onclick="openTicker(\'' + ticker + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;color:var(--blue);cursor:pointer;padding:1px 7px;border-radius:6px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);">' + ticker + '</span>'
+      + scoreBadge
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + (pick.label||'') + '</div>'
       + '</div>';
   }).join('');
 
-  el.innerHTML = '<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Conviction plays — live signals</div>' + rows;
+  el.innerHTML = '<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Public conviction picks</div>' + blocks;
 }
 
 function renderThoughtLeaders() {
@@ -7787,25 +7871,24 @@ function renderThoughtLeaders() {
         : v.name;
 
     return '<div class="sm-voice-card">'
-      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;">'
       + '<div style="font-size:28px;line-height:1;flex-shrink:0;">' + v.emoji + '</div>'
       + '<div style="flex:1;">'
       + '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">' + nameLink + '</div>'
       + '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">' + v.role + '</div>'
-      + '<div style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;border-left:3px solid var(--blue-bd);padding-left:10px;margin-bottom:10px;">"' + v.thesis + '"</div>'
+      + '<div style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;border-left:3px solid var(--blue-bd);padding-left:10px;margin-bottom:8px;">"' + v.thesis + '"</div>'
+      + (v.signal ? '<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:6px 9px;border-radius:7px;background:var(--bg4);border:0.5px solid var(--border);margin-bottom:4px;">' + v.signal + '</div>' : '')
       + '</div></div>'
-      + '<div id="voice-signals-' + i + '" style="margin-bottom:10px;"></div>'
-      + '<div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px;">' + v.rationale + '</div>'
-      + '<div style="font-size:10px;color:var(--text2);line-height:1.6;padding:8px;border-radius:6px;background:var(--bg4);margin-bottom:8px;">' + v.notable + '</div>'
-      + '<div style="display:flex;gap:10px;">' + twitterLink + sourceLink + '</div>'
+      + '<div id="voice-signals-' + i + '" style="margin-bottom:8px;"></div>'
+      + '<div style="margin-top:8px;display:flex;gap:10px;">' + twitterLink + sourceLink + '</div>'
       + '</div>';
   }).join('');
 
   container.innerHTML = cards;
 
-  // Fill live signal scores for each voice's conviction tickers immediately (uses in-memory SCORES)
+  // Fill conviction pick blocks for each voice immediately (uses in-memory SCORES + picks array)
   THOUGHT_LEADERS.forEach(function(v, i) {
-    _renderVoiceSignals(i, v.conviction, focused);
+    _renderVoiceSignals(i, v, focused);
   });
 }
 
