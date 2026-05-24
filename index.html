@@ -7190,6 +7190,7 @@ const THOUGHT_LEADERS = [
 // Live data is fetched from /api/funds?cik=... on Funds tab open.
 const NOTABLE_MANAGERS = {
   'Pershing Square (Ackman)': {
+    emoji: '🎯',
     style: 'Activist · concentrated · 8–12 positions · avg hold 3–5yr',
     tickers: ['GOOGL','PLTR','MSFT','HHH','CMG','QSR'],
     cik: '0001336528',
@@ -7197,6 +7198,7 @@ const NOTABLE_MANAGERS = {
     thesis: 'Concentrated bets on dominant franchises. Discloses publicly — moves the price.'
   },
   'Duquesne (Druckenmiller)': {
+    emoji: '🌍',
     style: 'Global macro · concentrated high-conviction · 30%+ CAGR career',
     tickers: ['NVDA','MSFT','VST','CEG','META','ARM'],
     cik: '0001536411',
@@ -7204,6 +7206,7 @@ const NOTABLE_MANAGERS = {
     thesis: 'One of the greatest track records in history. His AI pivot in 2023 validated the entire infrastructure thesis.'
   },
   'Coatue Management': {
+    emoji: '🐯',
     style: 'Tiger cub · tech-focused long/short · $20B+ AUM',
     tickers: ['NVDA','META','MSFT','AMZN','GOOGL','SNOW'],
     cik: '0001336767',
@@ -7211,6 +7214,7 @@ const NOTABLE_MANAGERS = {
     thesis: 'Deep technology research. Among the first institutional funds to size NVDA pre-ChatGPT.'
   },
   'Tiger Global': {
+    emoji: '🐅',
     style: 'Long/short hedge fund · global tech · $15B+ AUM',
     tickers: ['META','MSFT','NVDA','AMZN','GOOGL','CRM'],
     cik: '0001167483',
@@ -7218,6 +7222,7 @@ const NOTABLE_MANAGERS = {
     thesis: 'Global technology investor. 13F shows concentrated bets on cloud AI and enterprise tech plays.'
   },
   'Scion Asset Mgmt (Burry)': {
+    emoji: '🩺',
     style: 'Deep value contrarian · "The Big Short" · 13F closely watched',
     tickers: ['JD','BABA','GOOG'],
     cik: '0001403395',
@@ -7261,72 +7266,125 @@ function switchSmartSubTab(tab, btn) {
 }
 
 // ─── Fund manager cards ──────────────────────────────────────────────────────
-function _fundCardHTML(name, m, focused, liveData) {
-  // Live holdings override static seed tickers if available
-  const liveTickers = liveData
-    ? liveData.top25.map(function(h) { return h.ticker; }).filter(Boolean).slice(0, 8)
-    : null;
-  const displayTickers = liveTickers || (m.tickers || []);
-  const holdsIt = displayTickers.includes(focused);
-
-  const chips = displayTickers.slice(0, 8).map(function(t) {
-    const liveH = liveData ? liveData.top25.find(function(h) { return h.ticker === t; }) : null;
-    const tooltip = liveH ? t + ' · $' + liveH.valueM + 'M · ' + liveH.pct + '% of portfolio' : t;
-    return '<span onclick="openTicker(\'' + t + '\');event.stopPropagation();" title="' + tooltip + '" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid ' + (t===focused?'var(--blue-bd)':'var(--border)') + ';background:' + (t===focused?'var(--blue-bg)':'var(--bg4)') + ';color:' + (t===focused?'var(--blue)':'var(--text2)') + ';">' + t + (liveH && liveH.pct >= 5 ? ' <span style="opacity:.6;">' + liveH.pct + '%</span>' : '') + '</span>';
-  }).join('');
-
-  const holdsFlag = holdsIt
+// ─── Fund card skeleton (no flash — positions fill in-place like Titans) ─────
+function _fundCardHTML(name, m, focused) {
+  const safeCIK = (m.cik||'').replace(/\W/g,'');
+  const holdsFlag = (m.tickers||[]).includes(focused)
     ? '<span style="padding:2px 8px;border-radius:10px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);font-size:10px;font-weight:700;">Holds ' + focused + '</span>'
     : '';
-
   const twitterLink = m.twitter
     ? '<a href="https://twitter.com/' + m.twitter + '" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--blue);text-decoration:none;">@' + m.twitter + ' ↗</a>'
     : '';
-
   const edgarLink = m.cik
     ? '<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + m.cik + '&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--text3);text-decoration:none;">13F ↗</a>'
     : '';
-
-  const filingBadge = liveData
-    ? '<span style="font-size:9px;color:var(--green);font-weight:600;background:var(--green-bg);border:0.5px solid var(--green-bd);padding:1px 6px;border-radius:8px;">● Live 13F · ' + liveData.filingDate + '</span>'
-    : '<span style="font-size:9px;color:var(--text3);padding:1px 0;">Curated holdings</span>';
-
-  const holdingsCount = liveData
-    ? '<span style="font-size:10px;color:var(--text3);">' + liveData.holdingsCount + ' total positions</span>'
-    : '';
-
   const whaleLink = '<a href="https://whalewisdom.com/filer/' + name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '" target="_blank" onclick="event.stopPropagation();" style="font-size:10px;color:var(--purple,#a78bfa);text-decoration:none;padding:3px 9px;border:0.5px solid rgba(167,139,250,.3);border-radius:5px;">All positions ↗</a>';
+  const nameLink = m.cik
+    ? '<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + m.cik + '&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">' + name + ' ↗</a>'
+    : m.twitter
+      ? '<a href="https://twitter.com/' + m.twitter + '" target="_blank" onclick="event.stopPropagation();" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none;">' + name + ' ↗</a>'
+      : '<span style="font-size:13px;font-weight:700;color:var(--text);">' + name + '</span>';
 
   return '<div class="sm-fund-card" style="margin-bottom:10px;">'
-    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">'
+    + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">'
+    + '<div style="font-size:24px;line-height:1;flex-shrink:0;margin-top:2px;">' + (m.emoji||'🏦') + '</div>'
     + '<div style="flex:1;min-width:0;">'
-    + '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">' + (m.cik ? '<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + m.cik + '&type=13F&dateb=&owner=include&count=5" target="_blank" onclick="event.stopPropagation();" style="color:var(--text);text-decoration:none;">' + name + ' ↗</a>' : m.twitter ? '<a href="https://twitter.com/' + m.twitter + '" target="_blank" onclick="event.stopPropagation();" style="color:var(--text);text-decoration:none;">' + name + ' ↗</a>' : name) + '</div>'
-    + '<div style="font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:4px;">' + (m.style||'') + '</div>'
-    + '<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;">' + (m.thesis||'') + '</div>'
-    + '</div>' + holdsFlag + '</div>'
-    + '<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Click any ticker to open its intelligence page:</div>'
-    + '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">' + chips + '</div>'
-    + '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + filingBadge + holdingsCount + '</div>'
-    + '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;">' + whaleLink + twitterLink + edgarLink + '</div>'
+    + '<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;">'
+    + nameLink
+    + '<span style="font-size:10px;color:var(--text3);">' + (m.style||'') + '</span>'
+    + holdsFlag
+    + '</div>'
+    + '<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:8px;">' + (m.thesis||'') + '</div>'
+    + '<div id="fund-positions-' + safeCIK + '" style="font-size:10px;color:var(--text3);">Loading 13F positions…</div>'
+    + '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + whaleLink + twitterLink + edgarLink + '</div>'
+    + '</div></div></div>';
+}
+
+// Fills the positions div for a single fund — called after 13F fetch (or with null for seed fallback)
+function _renderFundPositions(cik, liveData, focused) {
+  const safeCIK = (cik||'').replace(/\W/g,'');
+  const el = document.getElementById('fund-positions-' + safeCIK);
+  if (!el) return;
+
+  if (!liveData || !liveData.top25 || !liveData.top25.length) {
+    // Seed fallback: show known tickers as clickable chips
+    const m = Object.values(NOTABLE_MANAGERS).find(function(mgr) { return mgr.cik === cik; });
+    if (m && m.tickers && m.tickers.length) {
+      el.innerHTML = '<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">Known holdings (seed):</div>'
+        + '<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+        + m.tickers.map(function(t) {
+            const isFoc = t === focused;
+            return '<span onclick="openTicker(\'' + t + '\');event.stopPropagation();" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid '
+              + (isFoc?'var(--blue-bd)':'var(--border)') + ';background:' + (isFoc?'var(--blue-bg)':'var(--bg4)') + ';color:' + (isFoc?'var(--blue)':'var(--text2)') + ';">' + t + '</span>';
+          }).join('') + '</div>';
+    } else {
+      el.innerHTML = '<div style="font-size:11px;color:var(--text3);font-style:italic;">No positions data · Try refreshing</div>';
+    }
+    return;
+  }
+
+  // Live 13F data — render rich position blocks identical in style to Titan trade rows
+  const badge = '<div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;">'
+    + '<span style="font-size:9px;color:var(--green);font-weight:600;background:var(--green-bg);border:0.5px solid var(--green-bd);padding:1px 7px;border-radius:8px;">● Live 13F · ' + liveData.filingDate + '</span>'
+    + '<span style="font-size:10px;color:var(--text3);">' + liveData.holdingsCount + ' total positions</span>'
     + '</div>';
+
+  const top6 = liveData.top25.filter(function(h) { return h.ticker; }).slice(0, 6);
+  const rows = top6.map(function(h) {
+    const isFoc = h.ticker === focused;
+    const bg = isFoc ? 'var(--blue-bg)' : 'var(--bg4)';
+    const bd = isFoc ? 'var(--blue-bd)' : 'var(--border)';
+    const stockName = (typeof NAMES !== 'undefined' && NAMES[h.ticker]) || '';
+    const valStr = h.valueM >= 1000 ? '$' + (h.valueM/1000).toFixed(1) + 'B' : '$' + Math.round(h.valueM) + 'M';
+    const holdsBadge = isFoc ? '<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);font-weight:700;flex-shrink:0;">HOLDS</span>' : '';
+    return '<div style="padding:7px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-bottom:4px;display:flex;align-items:center;gap:8px;">'
+      + '<span onclick="openTicker(\'' + h.ticker + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;min-width:44px;">' + h.ticker + '</span>'
+      + '<span style="font-size:10px;color:var(--text3);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + stockName + '</span>'
+      + holdsBadge
+      + (h.pct ? '<span style="font-size:11px;font-weight:600;color:var(--text);flex-shrink:0;">' + h.pct + '%</span>' : '')
+      + '<span style="font-size:10px;color:var(--text3);flex-shrink:0;">' + valStr + '</span>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = badge + rows;
+
+  // Update "Holds X" badge on the card header if live data shows the focused stock
+  const liveTickers = liveData.top25.map(function(h) { return h.ticker; });
+  if (liveTickers.includes(focused)) {
+    const card = el.closest('.sm-fund-card');
+    if (card && !card.querySelector('[data-holds-live]')) {
+      const nameRow = card.querySelector('[style*="align-items:center"][style*="gap:7px"]');
+      if (nameRow) {
+        const badge2 = document.createElement('span');
+        badge2.dataset.holdsLive = '1';
+        badge2.style.cssText = 'padding:2px 8px;border-radius:10px;background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-bd);font-size:10px;font-weight:700;';
+        badge2.textContent = 'Holds ' + focused;
+        nameRow.appendChild(badge2);
+      }
+    }
+  }
 }
 
 async function renderFundManagerCards() {
   const container = document.getElementById('notable-fund-cards');
   if (!container) return;
-  // Clear rendered flag so re-opens after focus change show correct "Holds X" badge
   delete container.dataset.rendered;
   if (container.dataset.loading) return;
   container.dataset.loading = '1';
 
   const focused = (typeof S !== 'undefined' && S.focusTicker) || 'NVDA';
 
-  // Render immediately with static seed data
+  // Render skeletons immediately — each card has a positions div showing "Loading…"
   container.innerHTML = Object.entries(NOTABLE_MANAGERS).map(function([name, m]) {
-    return _fundCardHTML(name, m, focused, null);
+    return _fundCardHTML(name, m, focused);
   }).join('');
 
-  // Fetch live 13F in parallel for all funds (only on Vercel, silently skip errors)
+  // Fill seed chips while 13F loads
+  Object.entries(NOTABLE_MANAGERS).forEach(function([, m]) {
+    if (m.cik) _renderFundPositions(m.cik, null, focused);
+  });
+
+  // Fetch live 13F in parallel — then fill each card's positions div individually (no flash)
   if (!IS_VERCEL) { delete container.dataset.loading; return; }
 
   const entries = Object.entries(NOTABLE_MANAGERS).filter(function([, m]) { return m.cik; });
@@ -7334,15 +7392,11 @@ async function renderFundManagerCards() {
     return loadFundHoldings(m.cik);
   }));
 
-  // Re-render with live data overlaid
-  const liveMap = {};
-  entries.forEach(function([name], i) {
+  entries.forEach(function([, m], i) {
     const r = results[i];
-    liveMap[name] = (r.status === 'fulfilled' && r.value) ? r.value : null;
+    const liveData = (r.status === 'fulfilled' && r.value) ? r.value : null;
+    _renderFundPositions(m.cik, liveData, focused);
   });
-  container.innerHTML = Object.entries(NOTABLE_MANAGERS).map(function([name, m]) {
-    return _fundCardHTML(name, m, focused, liveMap[name] || null);
-  }).join('');
   delete container.dataset.loading;
 }
 
@@ -7616,40 +7670,84 @@ function renderCongressWatchList() {
 }
 
 // ─── Thought Leaders renderer ────────────────────────────────────────────────
+// ─── Thought Leaders — live signal blocks per conviction ticker ───────────────
+function _renderVoiceSignals(idx, tickers, focused) {
+  const el = document.getElementById('voice-signals-' + idx);
+  if (!el) return;
+  const validTickers = (tickers || []).filter(function(t) {
+    return typeof NAMES !== 'undefined' && NAMES[t];
+  }).slice(0, 5);
+  if (!validTickers.length) return;
+
+  const rows = validTickers.map(function(ticker) {
+    const score = (typeof SCORES !== 'undefined' && SCORES[ticker]) || null;
+    const serverSig = window._SERVER_SIGNALS && window._SERVER_SIGNALS[ticker];
+    const delta = serverSig && serverSig.delta ? serverSig.delta : null;
+    const isFoc = ticker === focused;
+    const bg = isFoc ? 'var(--blue-bg)' : 'var(--bg4)';
+    const bd = isFoc ? 'var(--blue-bd)' : 'var(--border)';
+    const scoreBg = score >= 70 ? 'var(--green-bg)' : score >= 55 ? 'rgba(245,158,11,.1)' : 'var(--bg4)';
+    const scoreCol = score >= 70 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
+    const scoreBd = score >= 70 ? 'var(--green-bd)' : score >= 55 ? 'rgba(245,158,11,.3)' : 'var(--border)';
+    const arrow = delta !== null ? (delta >= 4 ? ' ↑' : delta <= -4 ? ' ↓' : '') : '';
+    const arrowCol = arrow === ' ↑' ? 'var(--green)' : arrow === ' ↓' ? 'var(--red)' : scoreCol;
+    const stockName = (typeof NAMES !== 'undefined' && NAMES[ticker]) || '';
+    const activeBadge = score >= 70
+      ? '<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(34,197,94,.15);color:var(--green);border:0.5px solid rgba(34,197,94,.3);font-weight:700;margin-left:4px;">SIGNAL</span>'
+      : '';
+    return '<div style="padding:7px 10px;border-radius:8px;background:' + bg + ';border:0.5px solid ' + bd + ';margin-bottom:4px;display:flex;align-items:center;gap:8px;">'
+      + '<span onclick="openTicker(\'' + ticker + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;min-width:44px;">' + ticker + '</span>'
+      + '<span style="font-size:10px;color:var(--text3);flex:1;">' + stockName + activeBadge + '</span>'
+      + (score ? '<span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;background:' + scoreBg + ';color:' + scoreCol + ';border:0.5px solid ' + scoreBd + ';">' + score
+          + (arrow ? '<span style="color:' + arrowCol + ';">' + arrow + '</span>' : '')
+          + '</span>' : '')
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = '<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Conviction plays — live signals</div>' + rows;
+}
+
 function renderThoughtLeaders() {
   const container = document.getElementById('sm-voices-list');
-  if(!container || container.dataset.rendered) return;
+  if (!container || container.dataset.rendered) return;
   container.dataset.rendered = '1';
 
-  const cards = THOUGHT_LEADERS.map(v => {
-    const chips = (v.conviction || []).map(t =>
-      `<span onclick="openTicker('${t}')" style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:0.5px solid var(--blue-bd);background:var(--blue-bg);color:var(--blue);">${t}</span>`
-    ).join(' ');
+  const focused = (typeof S !== 'undefined' && S.focusTicker) || 'NVDA';
+
+  const cards = THOUGHT_LEADERS.map(function(v, i) {
     const twitterLink = v.twitter
-      ? `<a href="https://twitter.com/${v.twitter}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">@${v.twitter} ↗</a>`
+      ? '<a href="https://twitter.com/' + v.twitter + '" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none;">@' + v.twitter + ' ↗</a>'
       : '';
     const sourceLink = v.link
-      ? `<a href="${v.link}" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">Source ↗</a>`
+      ? '<a href="' + v.link + '" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;">Source ↗</a>'
       : '';
+    const nameLink = v.twitter
+      ? '<a href="https://twitter.com/' + v.twitter + '" target="_blank" style="color:var(--text);text-decoration:none;">' + v.name + ' ↗</a>'
+      : v.link
+        ? '<a href="' + v.link + '" target="_blank" style="color:var(--text);text-decoration:none;">' + v.name + ' ↗</a>'
+        : v.name;
 
-    return `<div class="sm-voice-card">
-      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
-        <div style="font-size:28px;line-height:1;flex-shrink:0;">${v.emoji}</div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">${v.twitter ? `<a href="https://twitter.com/${v.twitter}" target="_blank" style="color:var(--text);text-decoration:none;">${v.name} ↗</a>` : v.link ? `<a href="${v.link}" target="_blank" style="color:var(--text);text-decoration:none;">${v.name} ↗</a>` : v.name}</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">${v.role}</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;border-left:3px solid var(--blue-bd);padding-left:10px;margin-bottom:10px;">"${v.thesis}"</div>
-        </div>
-      </div>
-      <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Conviction plays</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">${chips}</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px;">${v.rationale}</div>
-      <div style="font-size:10px;color:var(--text2);line-height:1.6;padding:8px;border-radius:6px;background:var(--bg4);margin-bottom:8px;">${v.notable}</div>
-      <div style="display:flex;gap:10px;">${twitterLink}${sourceLink}</div>
-    </div>`;
+    return '<div class="sm-voice-card">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">'
+      + '<div style="font-size:28px;line-height:1;flex-shrink:0;">' + v.emoji + '</div>'
+      + '<div style="flex:1;">'
+      + '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">' + nameLink + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">' + v.role + '</div>'
+      + '<div style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;border-left:3px solid var(--blue-bd);padding-left:10px;margin-bottom:10px;">"' + v.thesis + '"</div>'
+      + '</div></div>'
+      + '<div id="voice-signals-' + i + '" style="margin-bottom:10px;"></div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px;">' + v.rationale + '</div>'
+      + '<div style="font-size:10px;color:var(--text2);line-height:1.6;padding:8px;border-radius:6px;background:var(--bg4);margin-bottom:8px;">' + v.notable + '</div>'
+      + '<div style="display:flex;gap:10px;">' + twitterLink + sourceLink + '</div>'
+      + '</div>';
   }).join('');
 
   container.innerHTML = cards;
+
+  // Fill live signal scores for each voice's conviction tickers immediately (uses in-memory SCORES)
+  THOUGHT_LEADERS.forEach(function(v, i) {
+    _renderVoiceSignals(i, v.conviction, focused);
+  });
 }
 
 
