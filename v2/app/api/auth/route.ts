@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         id: user.id, email: user.email, name: user.name,
         picture: user.picture, isPro: user.isPro
       },
-      watchlist: watchlist.map(w => w.tickerId)
+      watchlist: watchlist.map((w: { tickerId: string }) => w.tickerId)
     })
   } catch (err) {
     console.error('/api/auth error:', err)
