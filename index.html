@@ -911,7 +911,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="card">
     <div class="card-lbl">Macro signals</div>
     <div class="sc sc-g sc-na" style="margin-bottom:7px;"><div class="sul">Low VIX + rising indices = risk-on environment</div><div class="suh">Conditions favour adding to high-conviction positions. Don't wait for a perfect entry.</div></div>
-    <div class="sc sc-a sc-na" style="margin-bottom:7px;"><div class="sul">DXY strength → ASML EUR/USD headwind</div><div class="suh">USD strengthening vs EUR compresses ASML in dollar terms. Not thesis — sizing consideration.</div></div>
+    <div class="sc sc-a sc-na" style="margin-bottom:7px;"><div class="sul">DXY strength → <span onclick="openTicker('ASML')" style="color:var(--blue);cursor:pointer;font-family:'DM Mono',monospace;font-weight:700;">ASML</span> EUR/USD headwind</div><div class="suh">USD strengthening vs EUR compresses ASML in dollar terms. Not thesis — sizing consideration.</div></div>
     <div class="sc sc-r sc-na"><div class="sul">Gold +8% YTD alongside equities — dual hedge active</div><div class="suh">Market hedging macro tail risks while staying long growth. Maintain some cash buffer.</div></div>
   </div>
   <!-- LIVE FRED MACRO SIGNALS -->
@@ -4479,7 +4479,7 @@ function _renderMorningSummaryBanner() {
 
   el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:10px;padding:14px 18px;border:0.5px solid var(--border);" onclick="openTicker('${topTicker}','score')" style="cursor:pointer;">
     <div style="flex-shrink:0;cursor:pointer;" onclick="openTicker('${topTicker}','score')"><div style="font-size:38px;font-weight:700;letter-spacing:-2px;color:${scoreColor};font-family:'DM Mono',monospace;">${topScore}</div><div style="font-size:9px;color:var(--text3);text-align:center;font-weight:600;">${topTicker}</div></div>
-    <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;margin-bottom:5px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">${liveContext || 'Click any card below for full analysis.'}</div></div>
+    <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;margin-bottom:5px;">${signalSummary}</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">${linkTickers(liveContext || 'Click any card below for full analysis.')}</div></div>
   </div>`;
 }
 
@@ -5469,8 +5469,8 @@ function renderTkScore(sym){
     const liveTag = (serverComp && compMap[l.id])
       ? '<span style="font-size:9px;color:var(--green);font-weight:600;margin-left:4px;letter-spacing:.02em;">● live</span>'
       : '';
-    const sigs=l.signals.map(function(s){return '<div style="font-size:11px;color:var(--text2);padding:3px 0 3px 10px;border-left:2px solid var(--border2);margin-top:3px;">'+s+'</div>';}).join('');
-    return '<div style="margin-bottom:14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:var(--text3);width:18px;font-family:\'DM Mono\',monospace;">'+l.id+'</span><span style="font-size:12px;font-weight:600;flex:1;">'+l.name+'</span><span style="font-size:10px;font-family:\'DM Mono\',monospace;color:'+col+';font-weight:700;">'+livePts+'/'+l.max+'</span>'+liveTag+'</div><div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:6px;"><div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:2px;"></div></div><div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px;">'+l.desc+'</div>'+sigs+'</div>';
+    const sigs=l.signals.map(function(s){return '<div style="font-size:11px;color:var(--text2);padding:3px 0 3px 10px;border-left:2px solid var(--border2);margin-top:3px;">'+linkTickers(s)+'</div>';}).join('');
+    return '<div style="margin-bottom:14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:var(--text3);width:18px;font-family:\'DM Mono\',monospace;">'+l.id+'</span><span style="font-size:12px;font-weight:600;flex:1;">'+l.name+'</span><span style="font-size:10px;font-family:\'DM Mono\',monospace;color:'+col+';font-weight:700;">'+livePts+'/'+l.max+'</span>'+liveTag+'</div><div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:6px;"><div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:2px;"></div></div><div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px;">'+linkTickers(l.desc)+'</div>'+sigs+'</div>';
   }).join('');
 
   // Claude-generated live intelligence block (shown above layer bars when available)
@@ -6751,10 +6751,15 @@ window.addEventListener('DOMContentLoaded',()=>{
   try{renderPos();}catch(e){console.warn('renderPos',e);}
   try{renderMarkets();}catch(e){console.warn('renderMarkets',e);}
   try{updateBudget();}catch(e){console.warn('updateBudget',e);}
-  // Wire ticker links inside chain-insight and suh explanation text throughout the app
+  // Wire ticker links inside chain-insight, suh, and sul-in-sc-na throughout the app
   try{
     document.querySelectorAll('.chain-insight, .suh').forEach(function(el){
-      // Skip elements already processed or inside dynamic containers (avoid double-wrapping)
+      if(el.dataset.lt) return;
+      el.dataset.lt = '1';
+      el.innerHTML = linkTickers(el.innerHTML);
+    });
+    // Also linkify .sul titles inside non-interactive (sc-na) signal cards
+    document.querySelectorAll('.sc-na .sul').forEach(function(el){
       if(el.dataset.lt) return;
       el.dataset.lt = '1';
       el.innerHTML = linkTickers(el.innerHTML);
@@ -8430,7 +8435,7 @@ function showScoreBreakdown(sym, event) {
       + '<div style="height:6px;border-radius:3px;background:var(--bg4);margin-bottom:5px;">'
       + '<div style="height:100%;border-radius:3px;background:' + barColor + ';width:' + pct + '%;transition:width .4s;"></div>'
       + '</div>'
-      + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + l.desc + '</div>'
+      + '<div style="font-size:11px;color:var(--text2);line-height:1.5;">' + linkTickers(l.desc) + '</div>'
       + '</div>';
   }).join('');
 
@@ -12619,10 +12624,10 @@ function _renderL4Html({ movers, downstreamOf }) {
     const tagCls = dir === 'positive' ? 'at-buy' : 'at-skip';
     const topDownstream = relevant.slice(0, 4);
     html += '<div class="sc sc-b sc-na" style="margin-bottom:10px;border-left:3px solid ' + col + ';cursor:default;">';
-    html += '<div class="sul">' + anchor + ' ' + dpStr + ' today → ' + topDownstream.length + ' downstream stock' + (topDownstream.length > 1 ? 's' : '') + ' in lag window</div>';
+    html += '<div class="sul"><span onclick="openTicker(\'' + anchor + '\');event.stopPropagation();" style="font-family:\'DM Mono\',monospace;font-weight:700;color:var(--blue);cursor:pointer;">' + anchor + '</span> ' + dpStr + ' today → ' + topDownstream.length + ' downstream stock' + (topDownstream.length > 1 ? 's' : '') + ' in lag window</div>';
     topDownstream.forEach(d => {
       const lagStr = d.lag === 0 ? 'same quarter' : d.lag === 1 ? '~1 quarter' : '~' + d.lag + ' quarters';
-      html += '<div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.4;"><span style="font-weight:600;">' + d.sym + ':</span> ' + d.desc + ' <span style="color:var(--text3);">(lag: ' + lagStr + ')</span></div>';
+      html += '<div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.4;"><span onclick="openTicker(\'' + d.sym + '\');event.stopPropagation();" style="font-weight:700;font-family:\'DM Mono\',monospace;color:var(--blue);cursor:pointer;">' + d.sym + '</span>: ' + d.desc + ' <span style="color:var(--text3);">(lag: ' + lagStr + ')</span></div>';
     });
     const tags = topDownstream.map(d => _deTagHtml(d.sym)).join('');
     html += '<div class="sc-meta" style="margin-top:8px;"><span class="act-tag ' + tagCls + '">CHAIN MOVE</span>' + _deTagHtml(anchor) + '<span style="font-size:10px;color:var(--text3);padding:0 4px;">→</span>' + tags + '<span style="font-size:9px;color:var(--text3);margin-left:auto;">' + dpStr + ' today</span></div>';
