@@ -5367,7 +5367,7 @@ document.getElementById('ticker-content').innerHTML=`<div class="ticker-hdr"><di
 window._tkSym=sym;if(S.activeTab&&S.activeTab!=='ticker'&&S.activeTab!=='instrument')S.prevTab=S.activeTab;else S.prevTab=S.prevTab||'morning';gT('ticker',null);// Render signals tab immediately
 setTimeout(function(){const el=document.getElementById('tk-signals');if(el&&!el._r){el.innerHTML=renderTkSignals(sym);el._r=true;}},20);if(S.fh||IS_VERCEL){setTimeout(()=>fillTickerLive(sym),80);}
   // Jump to a specific tab if requested (e.g. 'score' from morning picks)
-  if(startTab){setTimeout(function(){const btn=document.querySelector('.ticker-tab[onclick*="\''+startTab+'\'"]');showTkT(startTab,btn||null);},60);}}
+  if(startTab){setTimeout(function(){var canonTab=(startTab==='score'||startTab==='ov'||startTab==='dedge')?'signals':(startTab==='news'||startTab==='flow'||startTab==='chain')?'chartnews':startTab;const btn=document.querySelector('.ticker-tab[onclick*="\''+canonTab+'\'"]');showTkT(canonTab,btn||null);},60);}}
 
 function showTkT(n,btn){
   // Map old tab IDs to new ones for backwards compatibility
