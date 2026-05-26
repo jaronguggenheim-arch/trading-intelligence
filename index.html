@@ -1950,11 +1950,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="card de-card" data-tickers="NVDA ASML">
       <div class="card-lbl" style="margin-bottom:8px;">NVDA AI compute supply chain</div>
       <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;font-size:11px;margin-bottom:10px;">
-        <div style="padding:5px 9px;background:rgba(245,158,11,0.10);border:0.5px solid rgba(245,158,11,0.3);border-radius:6px;font-weight:600;color:var(--amber);">ASML EUV</div>
+        <div onclick="openTicker('ASML')" style="padding:5px 9px;background:rgba(245,158,11,0.10);border:0.5px solid rgba(245,158,11,0.3);border-radius:6px;font-weight:600;color:var(--amber);cursor:pointer;">ASML EUV ↗</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:rgba(59,130,246,0.10);border:0.5px solid rgba(59,130,246,0.3);border-radius:6px;font-weight:600;color:var(--blue);">TSMC CoWoS</div>
+        <div onclick="openTicker('TSM')" style="padding:5px 9px;background:rgba(59,130,246,0.10);border:0.5px solid rgba(59,130,246,0.3);border-radius:6px;font-weight:600;color:var(--blue);cursor:pointer;">TSMC CoWoS ↗</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);">NVDA Blackwell</div>
+        <div onclick="openTicker('NVDA')" style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);cursor:pointer;">NVDA Blackwell ↗</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
         <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Cloud Giants</div>
       </div>
@@ -1968,9 +1968,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div style="color:var(--text3);padding:0 4px;">→</div>
         <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Trumpf Laser</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);">ASML EUV</div>
+        <div onclick="openTicker('ASML')" style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);cursor:pointer;">ASML EUV ↗</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:rgba(59,130,246,0.10);border:0.5px solid rgba(59,130,246,0.3);border-radius:6px;color:var(--blue);">TSMC / Intel / Samsung</div>
+        <div style="padding:5px 9px;background:rgba(59,130,246,0.10);border:0.5px solid rgba(59,130,246,0.3);border-radius:6px;color:var(--blue);display:flex;gap:4px;align-items:center;"><span onclick="openTicker('TSM')" style="cursor:pointer;">TSM ↗</span> / <span onclick="openTicker('INTC')" style="cursor:pointer;">INTC ↗</span></div>
       </div>
       <div class="sc sc-g sc-na" style="margin-bottom:6px;cursor:default;"><div class="sul">No ASML EUV alternative exists below 7nm</div><div class="suh">Zeiss produces the only optical mirrors capable of EUV precision. Trumpf makes the only viable EUV light source. Both are sole-source suppliers to ASML — creating a 3-layer supply chain moat no competitor can replicate in under 10 years.</div></div>
       <div class="sc sc-a sc-na" style="cursor:default;"><div class="sul">China restriction = demand redistribution, not loss</div><div class="suh">DUV restrictions to China are headwind. But demand doesn't disappear — it redistributes to TSMC, Intel, Samsung who absorb with their own capex plans. Net ASML demand is structurally intact.</div></div>
@@ -6748,6 +6748,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   try{renderPos();}catch(e){console.warn('renderPos',e);}
   try{renderMarkets();}catch(e){console.warn('renderMarkets',e);}
   try{updateBudget();}catch(e){console.warn('updateBudget',e);}
+  // Wire ticker links inside chain-insight paragraphs and Morning Brief text
+  try{
+    document.querySelectorAll('.chain-insight').forEach(function(el){
+      el.innerHTML = linkTickers(el.innerHTML);
+    });
+  }catch(e){}
   if(S.td||S.av||IS_VERCEL)fetchPrices();
   let visited=false;
   try{visited=localStorage.getItem('ti72_visited');}catch(e){}
@@ -9803,7 +9809,7 @@ function renderNewsFilter(ticker) {
       </div>`;
     }
     const expandBody = `<div id="ni-${idx}" style="display:${expandedDefault?'':'none'};margin-top:9px;padding:11px 13px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
-      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${bodyText || 'No summary available for this article.'}</p>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${linkTickers(bodyText || 'No summary available for this article.')}</p>
       ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;" onclick="event.stopPropagation()">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — live news loads automatically on Vercel</span>` : ''}
       ${intelBlock}
     </div>`;
@@ -9817,7 +9823,7 @@ function renderNewsFilter(ticker) {
       </div>
       ${previewText ? `<div style="font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:5px;">${previewText}</div>` : ''}
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-        <span style="font-size:10px;color:var(--text3);">${a.source||'\u2014'} \u00b7 ${_fmtTime(a.time_published)}</span>
+        ${a.url && a.url !== '#' ? `<a href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="font-size:10px;color:var(--text3);text-decoration:none;">${a.source||'Source'} \u2197 \u00b7 ${_fmtTime(a.time_published)}</a>` : `<span style="font-size:10px;color:var(--text3);">${a.source||'\u2014'} \u00b7 ${_fmtTime(a.time_published)}</span>`}
         ${topicTags}${relTickers}
       </div>
       ${expandBody}
