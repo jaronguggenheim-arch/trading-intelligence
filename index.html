@@ -1956,7 +1956,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div style="color:var(--text3);padding:0 4px;">→</div>
         <div onclick="openTicker('NVDA')" style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);cursor:pointer;">NVDA Blackwell ↗</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Cloud Giants</div>
+        <div onclick="gT('correlations',null)" title="See hyperscaler capex signals" style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--blue);cursor:pointer;">Cloud Giants ↗</div>
       </div>
       <div class="sc sc-g sc-na" style="margin-bottom:6px;cursor:default;"><div class="sul">TSMC CoWoS capacity constraint easing (Q3 signal)</div><div class="suh">CoWoS advanced packaging was the Blackwell bottleneck. TSMC adding 30% CoWoS capacity in Q3. Directly unlocks NVDA delivery timelines — 6–9 month revenue pull-forward.</div></div>
       <div class="sc sc-r sc-na" style="cursor:default;"><div class="sul">TSMC Q1 capex +15% → ASML orders in 6–9 months</div><div class="suh">Historical lag: TSMC capex raise precedes ASML EUV orders by 6–9 months. Q1 raise = orders arriving now. ASML order book confirmation expected Q3 earnings.</div></div>
@@ -1964,9 +1964,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="card de-card" data-tickers="ASML">
       <div class="card-lbl" style="margin-bottom:8px;">ASML upstream supply chain</div>
       <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;font-size:11px;margin-bottom:10px;">
-        <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Zeiss Optics</div>
+        <div title="Zeiss — private company, sole-source EUV optics supplier to ASML" style="padding:5px 9px;background:rgba(150,150,150,0.06);border:0.5px dashed var(--border2);border-radius:6px;color:var(--text3);cursor:default;opacity:.75;">Zeiss Optics</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
-        <div style="padding:5px 9px;background:rgba(150,150,150,0.08);border:0.5px solid var(--border2);border-radius:6px;color:var(--text2);">Trumpf Laser</div>
+        <div title="Trumpf — private company, sole-source EUV laser supplier to ASML" style="padding:5px 9px;background:rgba(150,150,150,0.06);border:0.5px dashed var(--border2);border-radius:6px;color:var(--text3);cursor:default;opacity:.75;">Trumpf Laser</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
         <div onclick="openTicker('ASML')" style="padding:5px 9px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:6px;font-weight:600;color:var(--text);cursor:pointer;">ASML EUV ↗</div>
         <div style="color:var(--text3);padding:0 4px;">→</div>
@@ -4570,7 +4570,7 @@ function _renderMorningPicksCard() {
     const edgeBadge = _getEdgeBadge(p.t);
     return `<div class="sc ${p.cls} convergence-stock-card" data-ticker="${p.t}" onclick="openTicker('${p.t}','score')">
       <div class="sul">${p.t} — Score ${p.s} · ${titleDesc}</div>
-      <div class="suh">${bodyText}</div>
+      <div class="suh">${linkTickers(bodyText)}</div>
       <div class="sc-meta">${edgeBadge}<span class="act-tag ${p.tag}">${p.cat}</span><span class="tf-tag tf-mid">${tf}</span><span class="score-pill">${p.s}/100</span>${trendHtml}${ageHtml}</div>
     </div>`;
   }).join('');
@@ -6483,13 +6483,16 @@ function initLandingDynamic(){
         var td = TICKER_DATA[sym]||{};
         var scCls = sc>=70?'hi':sc>=40?'mid':'lo';
         var barColor = sc>=70?'var(--green)':sc>=40?'var(--amber)':'var(--red)';
-        var ld = LAYER_DATA[sym]||{};
-        // Build signal pills from top signals
-        var sigs = [];
-        if(ld.l2&&ld.l2.signals&&ld.l2.signals[0]) sigs.push('Insider '+( ld.l2.signals[0].b==='bullish'?'buy':'sell')+' <span>+'+(ld.l2.score||20)+'</span>');
-        if(ld.l1&&ld.l1.signals&&ld.l1.signals[0]) sigs.push(ld.l1.signals[0].t.split(':')[0]+' <span>+'+(ld.l1.score||15)+'</span>');
-        if(ld.l3&&ld.l3.signals&&ld.l3.signals[0]) sigs.push(ld.l3.signals[0].t.split(':')[0]+' <span>+'+(ld.l3.score||10)+'</span>');
-        var sigStr = sigs.slice(0,2).join(' · ') || 'Signal convergence detected';
+        var ldArr = (typeof LAYER_DATA !== 'undefined' && LAYER_DATA[sym]) ? LAYER_DATA[sym] : [];
+        // Build signal pills from top layer signals (LAYER_DATA is an array of layer objects)
+        var topLayers = ldArr.filter(function(l){ return l.pts > 0; }).sort(function(a,b){ return (b.pts||0)-(a.pts||0); });
+        var sigs = topLayers.slice(0,2).map(function(l){
+          return (l.name||l.layer||'Signal') + ' <span>+' + (l.pts||10) + '</span>';
+        });
+        // Also pull from _SERVER_SIGNALS if available
+        var serverSig = window._SERVER_SIGNALS && window._SERVER_SIGNALS[sym];
+        if(!sigs.length && serverSig) sigs.push('Live signal active');
+        var sigStr = sigs.join(' · ') || 'Signal convergence detected';
         return '<div class="lp-score-card" style="cursor:pointer;" onclick="enterApp();setTimeout(function(){if(typeof openTicker===\'function\')openTicker(\''+sym+'\');},400);" title="Open '+sym+'">'
           +'<div class="lp-s-pill '+scCls+'">'+sc+'</div>'
           +'<div class="lp-s-info">'
@@ -6748,9 +6751,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   try{renderPos();}catch(e){console.warn('renderPos',e);}
   try{renderMarkets();}catch(e){console.warn('renderMarkets',e);}
   try{updateBudget();}catch(e){console.warn('updateBudget',e);}
-  // Wire ticker links inside chain-insight paragraphs and Morning Brief text
+  // Wire ticker links inside chain-insight and suh explanation text throughout the app
   try{
-    document.querySelectorAll('.chain-insight').forEach(function(el){
+    document.querySelectorAll('.chain-insight, .suh').forEach(function(el){
+      // Skip elements already processed or inside dynamic containers (avoid double-wrapping)
+      if(el.dataset.lt) return;
+      el.dataset.lt = '1';
       el.innerHTML = linkTickers(el.innerHTML);
     });
   }catch(e){}
