@@ -26,13 +26,14 @@ export interface SignalCard {
   id: string
   tickerId: string
   type: SignalType
-  layer: 1 | 2 | 3 | 4 | 5
+  layer: number
   title: string
   body: string
-  direction?: 'bull' | 'bear' | 'neutral'
-  strength?: number
-  source?: string
-  createdAt: string
+  direction?: string | null
+  strength?: number | null
+  source?: string | null
+  createdAt: string | Date
+  expiresAt?: Date | null
 }
 
 export type SignalType =
@@ -84,12 +85,19 @@ export interface InsiderEvent {
   id: string
   tickerId: string
   insiderName: string
-  insiderTitle?: string
-  transactionType: 'BUY' | 'SELL'
+  insiderTitle?: string | null
+  transactionType: string
   shares: number
-  pricePerShare?: number
-  totalValue?: number
-  transactionDate: string
+  pricePerShare?: number | null
+  totalValue?: number | null
+  transactionDate: Date | string
+  createdAt?: Date
+  source?: string
+  filedDate?: Date | null
+  formType?: string
+  personName?: string
+  role?: string
+  formUrl?: string
 }
 
 export interface AnalystEvent {

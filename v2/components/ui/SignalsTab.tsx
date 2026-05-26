@@ -1,6 +1,6 @@
 // components/ui/SignalsTab.tsx
 import { SignalCard } from './SignalCard'
-import type { SignalCardData } from '@/types'
+import type { SignalCard as SignalCardData } from '@/types'
 
 interface Props {
   signals: SignalCardData[]

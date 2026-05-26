@@ -49,9 +49,16 @@ export default async function StockPage({ params, searchParams }: Props) {
   const { meta, latestScore, history, signals, insiderEvents } = await getStockData(ticker)
   if (!meta) notFound()
 
-  const scoreHistory = history.map(h => ({
+  const scoreHistory = history.map((h: { date: Date; score: number }) => ({
     date: h.date.toISOString().slice(0, 10),
     score: h.score
+  }))
+
+  const mappedInsiderEvents = insiderEvents.map((e: any) => ({
+    ...e,
+    personName: e.insiderName,
+    role: e.insiderTitle,
+    formUrl: null
   }))
 
   return (
@@ -99,7 +106,7 @@ export default async function StockPage({ params, searchParams }: Props) {
       <Suspense fallback={<div className="ti-card animate-pulse h-48" />}>
         {activeTab === 'chain'   && <ChainTab ticker={ticker} />}
         {activeTab === 'signals' && <SignalsTab signals={signals} />}
-        {activeTab === 'insider' && <InsiderTab events={insiderEvents} />}
+        {activeTab === 'insider' && <InsiderTab events={mappedInsiderEvents} />}
         {activeTab === 'score'   && latestScore && (
           <div className="ti-card space-y-3">
             <h2 className="text-sm font-semibold">5-Layer Signal Score</h2>

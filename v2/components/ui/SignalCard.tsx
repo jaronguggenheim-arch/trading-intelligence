@@ -1,6 +1,6 @@
 // components/ui/SignalCard.tsx
 import Link from 'next/link'
-import type { SignalCardData } from '@/types'
+import type { SignalCard as SignalCardData } from '@/types'
 
 const LAYER_LABELS: Record<number, string> = {
   1: 'L1 Market',
@@ -37,28 +37,20 @@ export function SignalCard({ signal }: Props) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <p className="text-sm font-medium leading-snug">{signal.headline}</p>
-          {signal.ticker && (
+          <p className="text-sm font-medium leading-snug">{signal.title}</p>
+          {signal.tickerId && (
             <Link
-              href={`/stock/${signal.ticker}`}
+              href={`/stock/${signal.tickerId}`}
               className="shrink-0 text-xs mono font-bold text-accent hover:underline"
             >
-              {signal.ticker}
+              {signal.tickerId}
             </Link>
           )}
         </div>
         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <span>{signal.source}</span>
-          <span>·</span>
+          {signal.source && <span>{signal.source}</span>}
+          {signal.source && <span>·</span>}
           <span>{new Date(signal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-          {signal.expiresAt && (
-            <>
-              <span>·</span>
-              <span className="text-amber-400">
-                expires {new Date(signal.expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
-            </>
-          )}
         </div>
       </div>
     </div>

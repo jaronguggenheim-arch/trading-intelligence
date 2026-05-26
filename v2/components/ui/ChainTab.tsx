@@ -54,7 +54,7 @@ export async function ChainTab({ ticker }: Props) {
             Active lag windows
           </h2>
           <div className="space-y-2">
-            {activeWindows.map(w => (
+            {activeWindows.map((w: any) => (
               <ChainWindowCard key={w.id} event={w as any} />
             ))}
           </div>
@@ -68,7 +68,7 @@ export async function ChainTab({ ticker }: Props) {
             Upstream signals → {ticker}
           </h2>
           <div className="space-y-2">
-            {upstreamRels.map(rel => (
+            {upstreamRels.map((rel: any) => (
               <div key={rel.id} className="ti-card flex items-start gap-3">
                 <Link href={`/stock/${rel.upstream.id}`} className="text-sm font-bold mono text-accent hover:underline shrink-0">
                   {rel.upstream.id}
@@ -92,7 +92,7 @@ export async function ChainTab({ ticker }: Props) {
             {ticker} signals → downstream
           </h2>
           <div className="space-y-2">
-            {downstreamRels.map(rel => (
+            {downstreamRels.map((rel: any) => (
               <div key={rel.id} className="ti-card flex items-start gap-3">
                 <Link href={`/stock/${rel.downstream.id}`} className="text-sm font-bold mono text-accent hover:underline shrink-0">
                   {rel.downstream.id}
