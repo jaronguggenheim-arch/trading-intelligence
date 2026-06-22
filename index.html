@@ -182,6 +182,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
   .g13,.g2,#morning-2col{grid-template-columns:1fr !important;}
   .g3{grid-template-columns:1fr 1fr !important;}
   .g4{grid-template-columns:1fr 1fr !important;}
+  .ticker-stats{grid-template-columns:1fr 1fr !important;}
 
   /* ── Cards ───────────────────────────────── */
   .card{padding:12px 12px;}
@@ -2245,7 +2246,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 <div class="sec" id="tab-portfolio">
 
   <!-- BUDGET SUMMARY STRIP (always visible) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
+  <div class="g4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
     <div class="smc" style="cursor:pointer;"><div class="smn" id="bud-weekly" style="color:var(--green);">$1,000</div><div class="sml-lbl" id="bud-period-lbl">Weekly budget</div></div>
     <div class="smc"><div class="smn" id="bud-deployed">$0</div><div class="sml-lbl">Deployed</div></div>
     <div class="smc"><div class="smn" id="bud-remain" style="color:var(--amber);">$1,000</div><div class="sml-lbl">Remaining</div></div>
