@@ -3648,22 +3648,20 @@ function renderSageCard() {
 
 // ── MY INTEL — PERSONALIZED WATCHLIST INTELLIGENCE ──────────────────────────
 
+const DEFAULT_GSI_CLIENT_ID = '159555471278-585o0dob4f41klhfvu2gd0jercgtm4e4.apps.googleusercontent.com';
 function _gsiInit() {
-  const gsiId = S.gsi || localStorage.getItem('ti72_gsi');
-  if (!gsiId || typeof google === 'undefined') return;
+  const gsiId = S.gsi || localStorage.getItem('ti72_gsi') || DEFAULT_GSI_CLIENT_ID;
+  if (typeof google === 'undefined' || !google.accounts) return;
   try {
-    google.accounts.id.initialize({
-      client_id: gsiId,
-      callback: _gsiCallback,
-      auto_select: true,
-    });
-    // Render sign-in button if not already signed in
-    const btnEl = document.getElementById('gsi-btn');
-    if (btnEl && !S.gUser) {
-      google.accounts.id.renderButton(btnEl, {
-        theme: 'outline', size: 'small', type: 'standard', shape: 'pill',
-        logo_alignment: 'left', text: 'signin_with', locale: 'en'
-      });
+    google.accounts.id.initialize({ client_id: gsiId, callback: _gsiCallback, auto_select: true });
+    if (!S.gUser) {
+      const area = document.getElementById('hdr-auth-area');
+      if (area) {
+        area.innerHTML = '<div id="gsi-btn"></div>';
+        const btnEl = document.getElementById('gsi-btn');
+        if (btnEl) google.accounts.id.renderButton(btnEl, { theme:'outline', size:'medium', type:'standard', shape:'pill', logo_alignment:'left', text:'signin_with', locale:'en' });
+      }
+      try { google.accounts.id.prompt(); } catch(e) {}
     }
   } catch(e) { console.warn('GSI init:', e); }
 }
@@ -6639,7 +6637,7 @@ function enterApp(){
   // Kick off live score computation in background
   if(S.fh||IS_VERCEL)setTimeout(function(){try{initLiveScores();}catch(e){console.warn('initLiveScores',e);}},1500);
   // Load Google Sign-In script if client ID is saved
-  const _gsiKey = S.gsi || (function(){try{return localStorage.getItem('ti72_gsi');}catch(e){return null;}}());
+  const _gsiKey = S.gsi || (function(){try{return localStorage.getItem('ti72_gsi');}catch(e){return null;}}()) || DEFAULT_GSI_CLIENT_ID;
   if (_gsiKey && !document.getElementById('gsi-script')) {
     S.gsi = _gsiKey;
     const _sc = document.createElement('script'); _sc.id = 'gsi-script';
