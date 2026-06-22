@@ -426,7 +426,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button type="button" class="hbtn" onclick="gT('about',null)">About</button>
     <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
     <span class="plan-chip" onclick="showProModal()" id="hdr-pro-chip" style="display:none;">✦ Pro</span>
-    <button type="button" class="hbtn pri" onclick="showPinSetup()" id="pinLbl">Set PIN</button>
     <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
 </div>
@@ -2490,30 +2489,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- PIN SETUP MODAL -->
-<div class="overlay" id="m-ps" style="display:none;">
-  <div class="modal">
-    <h2>Set PIN</h2>
-    <p>4-digit PIN locks the My Intel tab.</p>
-    <input type="password" id="p1" maxlength="4" placeholder="····" inputmode="numeric">
-    <input type="password" id="p2" maxlength="4" placeholder="Confirm PIN" inputmode="numeric">
-    <div id="p-err" class="merr">PINs don't match or too short</div>
-    <button class="mbtn" onclick="savePin()">Set PIN</button>
-    <button class="mcancel" onclick="cM('m-ps')">Cancel</button>
-  </div>
-</div>
-
-<!-- PIN ENTRY MODAL -->
-<div class="overlay" id="m-pe" style="display:none;">
-  <div class="modal">
-    <h2>Private section</h2>
-    <p>Enter your PIN to access My Intel.</p>
-    <input type="password" id="pe" maxlength="4" placeholder="····" inputmode="numeric">
-    <div id="pe-err" class="merr">Wrong PIN — try again</div>
-    <button class="mbtn" onclick="checkPin()">Unlock</button>
-    <button class="mcancel" onclick="cM('m-pe')">Cancel</button>
-  </div>
-</div>
 
 <script src="/data/demo_news.js"></script>
 <script src="/data/chain_graph.js"></script>
