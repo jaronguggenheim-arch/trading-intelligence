@@ -271,6 +271,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 #app-hdr{overflow:hidden;max-width:100%;}
   .hdr-left{display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .brand{font-size:13px;font-weight:700;letter-spacing:-.4px;color:var(--text);}
+#myintel-gate{display:none;}
+#tab-portfolio.locked > :not(#myintel-gate){display:none !important;}
+#tab-portfolio.locked #myintel-gate{display:block;}
 .brand-sub{font-size:10px;color:var(--text3);font-weight:400;}
 .live-p{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);background:var(--green-bg);padding:2px 8px;border-radius:20px;font-weight:600;border:0.5px solid var(--green-bd);white-space:nowrap;}
 .ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0;}
@@ -2249,6 +2252,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 <!-- PORTFOLIO (PIN) -->
 <div class="sec" id="tab-portfolio">
+  <div id="myintel-gate"><div style="max-width:420px;margin:48px auto;text-align:center;padding:0 16px;">
+    <div style="font-size:34px;margin-bottom:10px;">🔒</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:6px;">Your portfolio is private</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:18px;">Sign in with Google to track your positions, watchlist and budget — saved securely and synced across your devices.</div>
+    <div id="gate-gsi-btn" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
+    <button onclick="_gsiInit()" style="background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:11px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign in with Google</button>
+  </div></div>
 
   <!-- BUDGET SUMMARY STRIP (always visible) -->
   <div class="g4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
@@ -3774,6 +3784,7 @@ function _gsiCallback(response) {
     loadFromCloud(response.credential);
     renderMyIntelBrief();
     updateHeaderUser();
+    try{ if(S.activeTab==='portfolio') _renderMyIntelTab(); }catch(e){}
   } catch(e) { console.warn('GSI callback:', e); }
 }
 
@@ -6338,6 +6349,20 @@ function renderHist(){const el=document.getElementById('trade-hist');if(!S.hist.
 
 function updateBudget(){const _bs=document.getElementById('budget-slider');if(!_bs)return;S.budget=parseInt(_bs.value);document.getElementById('budget-display').textContent='$'+S.budget.toLocaleString();document.getElementById('core-amt').textContent='$'+Math.round(S.budget*0.4);document.getElementById('trend-amt').textContent='$'+Math.round(S.budget*0.4);document.getElementById('risk-amt').textContent='$'+Math.round(S.budget*0.2);const weights=[{id:'alloc-asml',w:.29},{id:'alloc-nvda',w:.21},{id:'alloc-rklb',w:.17},{id:'alloc-pltr',w:.17},{id:'alloc-cash',w:.16}];weights.forEach(w=>{const el=document.getElementById(w.id);if(el)el.textContent='$'+Math.round(S.budget*w.w);});}
 
+function _renderMyIntelTab(){
+  var tp=document.getElementById("tab-portfolio");
+  var locked=!S.gUser;
+  if(tp) tp.classList.toggle("locked", locked);
+  if(locked){
+    try{ if(typeof google!=="undefined" && google.accounts){
+      google.accounts.id.initialize({client_id:(S.gsi||localStorage.getItem("ti72_gsi")||DEFAULT_GSI_CLIENT_ID),callback:_gsiCallback,auto_select:true});
+      var gb=document.getElementById("gate-gsi-btn"); if(gb){gb.innerHTML=""; google.accounts.id.renderButton(gb,{theme:"filled_blue",size:"large",type:"standard",shape:"pill",text:"signin_with",locale:"en"});}
+    }}catch(e){}
+    return;
+  }
+  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderPortfolioChain();}catch(e){}
+}
+
 function gT(n,btn){
   const mktTabs=['landing','about'];
   const isMkt=mktTabs.includes(n);
@@ -6380,7 +6405,7 @@ function gT(n,btn){
   if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
   if(n==='smart'){setTimeout(function(){try{renderFundManagerCards();populateSmartMoneySelect&&populateSmartMoneySelect();populateEdgarButtons&&populateEdgarButtons();renderSmartMoney&&renderSmartMoney();}catch(e){}},80);}
   if(n==='portfolio'){setTimeout(function(){try{
-    renderWL();renderBudgetTab();renderMyIntelBrief();try{renderPortfolioChain();}catch(e){}  
+    _renderMyIntelTab();  
   }catch(e){}},50);}
 }
 
