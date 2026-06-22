@@ -175,9 +175,12 @@ body.mkt-mode .main{padding:0;max-width:none;}
   /* ── Layout ─────────────────────────────── */
   .main{padding:10px 10px;}
   .hdr{padding:0 12px;gap:8px;}
+  .hdr{flex-wrap:wrap !important;height:auto !important;}
+  #live-ticker-strip{order:5 !important;flex:1 0 100% !important;width:100% !important;height:24px !important;}
   .brand{font-size:11.5px;}
   .hdr-r{gap:5px;}
-  #stock-focus-bar > div{overflow-x:visible !important;}
+  #stock-focus-bar > div{overflow:hidden !important;}
+  #stock-focus-bar > div > div:first-child{flex:1 1 100% !important;min-width:0 !important;}
   .hbtn{padding:5px 9px;}
   .hdr-r button[onclick="showAPI()"]{display:none;}
   .brand-sub{display:none;}
@@ -6357,7 +6360,7 @@ function _renderMyIntelTab(){
     try{ if(typeof google!=="undefined" && google.accounts){
       google.accounts.id.initialize({client_id:(S.gsi||localStorage.getItem("ti72_gsi")||DEFAULT_GSI_CLIENT_ID),callback:_gsiCallback,auto_select:true});
       var gb=document.getElementById("gate-gsi-btn"); if(gb){gb.innerHTML=""; google.accounts.id.renderButton(gb,{theme:"filled_blue",size:"large",type:"standard",shape:"pill",text:"signin_with",locale:"en"});}
-    }}catch(e){}
+    } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
   }
   try{renderWL();renderBudgetTab();renderMyIntelBrief();renderPortfolioChain();}catch(e){}
@@ -6648,7 +6651,7 @@ function enterApp(){
     S.gsi = _gsiKey;
     const _sc = document.createElement('script'); _sc.id = 'gsi-script';
     _sc.src = 'https://accounts.google.com/gsi/client'; _sc.async = true; _sc.defer = true;
-    _sc.onload = function() { setTimeout(function(){ try{_gsiInit();}catch(e){} }, 400); };
+    _sc.onload = function() { setTimeout(function(){ try{_gsiInit();}catch(e){} try{ if(S.activeTab==='portfolio') _renderMyIntelTab(); }catch(e){} }, 400); };
     document.head.appendChild(_sc);
   }
   // Render live ticker strip (shows immediately with fallback prices, updates with live data)
