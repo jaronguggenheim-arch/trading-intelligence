@@ -438,8 +438,69 @@ async function buildMoverReason(moverTicker, sageTicker, dp, fhKey, chainRole) {
   return (NAMES[moverTicker] || moverTicker) + ' scores ' + Math.round(BASE_SCORES[moverTicker] || 65) + '/100 — multi-layer signal convergence.';
 }
 
+// ── Today's tape: market headlines + earnings reporting today ────────────────
+const APP_BASE = 'https://www.everythingisjustoneclickaway.com';
+function tapeLink(ticker) {
+  const utm = 'utm_source=email&utm_medium=digest&utm_campaign=morningbrief';
+  return ticker ? `${APP_BASE}/?t=${encodeURIComponent(ticker)}&${utm}` : `${APP_BASE}/?${utm}`;
+}
+
+async function fetchMarketHeadlines(fhKey, limit) {
+  limit = limit || 5;
+  const news = await fhFetch('news', { category: 'general' }, fhKey);
+  if (!Array.isArray(news)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const n of news) {
+    const hl = (n.headline || '').trim();
+    if (!hl || seen.has(hl)) continue;
+    seen.add(hl);
+    out.push({
+      headline: hl,
+      source: n.source || '',
+      related: (n.related || '').split(',')[0].trim() || ''
+    });
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+async function fetchEarningsToday(fhKey) {
+  const today = _dateStr(0);
+  const data = await fhFetch('calendar/earnings', { from: today, to: today }, fhKey);
+  const arr = (data && data.earningsCalendar) || [];
+  const seen = new Set();
+  const out = [];
+  for (const e of arr) {
+    if (!NAMES[e.symbol] || seen.has(e.symbol)) continue;
+    seen.add(e.symbol);
+    out.push({ symbol: e.symbol, hour: e.hour });
+  }
+  return out;
+}
+
+function buildTapeHtml(headlines, earningsToday) {
+  if ((!headlines || !headlines.length) && (!earningsToday || !earningsToday.length)) return '';
+  let inner = '';
+
+  if (earningsToday && earningsToday.length) {
+    const chips = earningsToday.slice(0, 10).map(e => {
+      const when = e.hour === 'bmo' ? ' ☀' : e.hour === 'amc' ? ' 🌙' : '';
+      return `<a href="${tapeLink(e.symbol)}" style="display:inline-block;text-decoration:none;font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:#18181b;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:6px;padding:3px 9px;margin:0 5px 6px 0;">${e.symbol}${when}</a>`;
+    }).join('');
+    inner += `<div style="margin-bottom:16px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:8px;">📅 Reporting today</div>${chips}<div style="font-size:10px;color:#c4c4cc;margin-top:2px;">☀ before open · 🌙 after close</div></div>`;
+  }
+
+  if (headlines && headlines.length) {
+    const rows = headlines.map(n => `<tr><td style="padding:9px 0;border-bottom:1px solid #f4f4f5;"><a href="${tapeLink(n.related)}" style="text-decoration:none;color:#18181b;font-size:13px;font-weight:600;line-height:1.5;">${n.headline}</a><div style="font-size:11px;color:#a1a1aa;margin-top:3px;">${n.source}${n.related ? ' · ' + n.related : ''}</div></td></tr>`).join('');
+    inner += `<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:8px;">📰 Today's tape · markets &amp; business</div><table cellpadding="0" cellspacing="0" border="0" width="100%">${rows}</table></div>`;
+  }
+
+  return `<div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">${inner}<div style="margin-top:14px;"><a href="${tapeLink(null)}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">Open the app →</a></div></div>`;
+}
+
 // ── Email HTML template ───────────────────────────────────────────────────────
-function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date, triggeredAlerts, chainWindows }) {
+function buildEmailHtml({ ticker, name, score, price, change, changeColor, signals, movers, date, triggeredAlerts, chainWindows, tapeHtml }) {
   const sc = scoreColor(score);
   const appUrl = 'https://www.everythingisjustoneclickaway.com';
 
@@ -497,6 +558,49 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
       <td style="text-align:right;font-size:11px;color:#a1a1aa;">${date}</td>
     </tr>
   </table>
+
+${tapeHtml || ''}
+
+  ${movers.length > 0 ? `
+  <!-- Also watching -->
+  <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:4px;">Supply chain · also watching</div>
+    <div style="font-size:11px;color:#71717a;margin-bottom:14px;">Stocks upstream or downstream of today's Sage pick</div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${moverRows}
+    </table>
+    <div style="margin-top:14px;">
+      <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">See all signals →</a>
+    </div>
+  </div>` : ''}
+
+  ${triggeredAlerts && triggeredAlerts.length > 0 ? `
+  <!-- Triggered alerts -->
+  <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:2px solid #f59e0b;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#d97706;margin-bottom:14px;">⚡ Your alerts fired today</div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${triggeredAlerts.map(a => `
+      <tr>
+        <td style="padding:8px 0;border-bottom:1px solid #fef3c7;">
+          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+              <td style="font-size:14px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;">${a.ticker}</td>
+              <td style="font-size:12px;color:#71717a;padding:0 8px;">${a.name}</td>
+              <td style="font-size:13px;font-weight:700;color:${scoreColor(a.score)};font-family:'Courier New',monospace;text-align:right;">${a.score}/100</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="font-size:12px;color:#92400e;padding-top:3px;">
+                Score ${a.type === 'above' ? 'crossed above' : 'dropped below'} your ${a.threshold} threshold
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>`).join('')}
+    </table>
+    <div style="margin-top:12px;">
+      <a href="https://www.everythingisjustoneclickaway.com" style="display:inline-block;background:#f59e0b;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;">Review alerts →</a>
+    </div>
+  </div>` : ''}
 
   <!-- Sage pick card -->
   <div style="background:#fff;border-radius:14px;padding:28px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">
@@ -572,47 +676,6 @@ function buildEmailHtml({ ticker, name, score, price, change, changeColor, signa
       <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:11px 22px;border-radius:8px;border:1px solid #e4e4e7;">Full Morning Brief</a>
     </div>
   </div>
-
-  ${movers.length > 0 ? `
-  <!-- Also watching -->
-  <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:1px solid #e4e4e7;">
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:4px;">Supply chain · also watching</div>
-    <div style="font-size:11px;color:#71717a;margin-bottom:14px;">Stocks upstream or downstream of today's Sage pick</div>
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-      ${moverRows}
-    </table>
-    <div style="margin-top:14px;">
-      <a href="${appUrl}" style="display:inline-block;background:#f4f4f5;color:#374151;text-decoration:none;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:1px solid #e4e4e7;">See all signals →</a>
-    </div>
-  </div>` : ''}
-
-  ${triggeredAlerts && triggeredAlerts.length > 0 ? `
-  <!-- Triggered alerts -->
-  <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:12px;border:2px solid #f59e0b;">
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#d97706;margin-bottom:14px;">⚡ Your alerts fired today</div>
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-      ${triggeredAlerts.map(a => `
-      <tr>
-        <td style="padding:8px 0;border-bottom:1px solid #fef3c7;">
-          <table cellpadding="0" cellspacing="0" border="0" width="100%">
-            <tr>
-              <td style="font-size:14px;font-family:'Courier New',monospace;font-weight:700;color:#18181b;">${a.ticker}</td>
-              <td style="font-size:12px;color:#71717a;padding:0 8px;">${a.name}</td>
-              <td style="font-size:13px;font-weight:700;color:${scoreColor(a.score)};font-family:'Courier New',monospace;text-align:right;">${a.score}/100</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="font-size:12px;color:#92400e;padding-top:3px;">
-                Score ${a.type === 'above' ? 'crossed above' : 'dropped below'} your ${a.threshold} threshold
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>`).join('')}
-    </table>
-    <div style="margin-top:12px;">
-      <a href="https://www.everythingisjustoneclickaway.com" style="display:inline-block;background:#f59e0b;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;">Review alerts →</a>
-    </div>
-  </div>` : ''}
 
   <!-- Footer -->
   <div style="text-align:center;padding:16px 0;">
@@ -729,6 +792,12 @@ export default async function handler(req, res) {
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
+  // Today's tape — fetched once, shared across all subscribers
+  let _headlines = [], _earningsToday = [];
+  try { _headlines = await fetchMarketHeadlines(FH_KEY, 8); } catch (e) {}
+  try { _earningsToday = await fetchEarningsToday(FH_KEY); } catch (e) {}
+  const tapeHtml = buildTapeHtml(_headlines, _earningsToday);
+
   // ── Step 5: Get subscribers ───────────────────────────────────────────────
   let subscribers = [];
   if (KV_REST_API_URL && KV_REST_API_TOKEN) {
@@ -775,7 +844,8 @@ export default async function handler(req, res) {
       movers,
       date: dateStr,
       triggeredAlerts,
-      chainWindows
+      chainWindows,
+      tapeHtml
     })
       .replace('__EMAIL__', encodeURIComponent(email))
       .replace('__TOKEN__', unsubToken);
