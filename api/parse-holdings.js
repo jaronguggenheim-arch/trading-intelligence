@@ -61,7 +61,8 @@ export default async function handler(req, res) {
       })
     });
     const data = await r.json();
-    if (data.error) return res.status(502).json({ error: 'gateway error', detail: (data.error.message || data.error) });
+    if (data.error) { console.error('AI gateway error:', JSON.stringify(data).slice(0,1000)); return res.status(502).json({ error: 'gateway error', detail: (data.error.message || JSON.stringify(data.error)) }); }
+    if (!data.choices || !data.choices[0]) { console.error('AI gateway unexpected response:', JSON.stringify(data).slice(0,1000)); return res.status(502).json({ error: 'gateway error', detail: JSON.stringify(data).slice(0,300) }); }
 
     let text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content)
       ? String(data.choices[0].message.content).trim() : '';
