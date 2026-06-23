@@ -3703,13 +3703,14 @@ function _renderMorningSubscribeCTA() {
     </div>`;
     return;
   }
+  const _preE=(typeof S!=='undefined'&&S.gUser&&S.gUser.email)?S.gUser.email:'';
   el.innerHTML = `<div style="background:var(--bg2);border:0.5px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
     <div style="flex:1;min-width:160px;">
       <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">📬 Get this in your inbox</div>
       <div style="font-size:11px;color:var(--text3);">Sage pick + top signals at 6:50am weekdays</div>
     </div>
     <div id="morning-sub-row" style="display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap;align-items:center;">
-      <input id="morning-email-inp" type="email" placeholder="your@email.com" style="padding:7px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:11px;background:var(--bg);color:var(--text);font-family:inherit;width:170px;">
+      <input id="morning-email-inp" type="email" placeholder="your@email.com" value="${_preE}" style="padding:7px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:11px;background:var(--bg);color:var(--text);font-family:inherit;width:170px;">
       <button onclick="_subscribeMorning()" style="padding:7px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">Subscribe →</button>
     </div>
   </div>`;
