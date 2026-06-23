@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   // Try in order; first one that is available + works wins. Free-tier vision models first.
   const candidates = process.env.AI_MODEL
     ? [process.env.AI_MODEL]
-    : ['google/gemini-2.5-flash', 'google/gemini-2.0-flash', 'google/gemini-2.5-flash-lite', 'anthropic/claude-haiku-4.5', 'anthropic/claude-opus-4.7'];
+    : ['openai/gpt-4.1-nano', 'meta/llama-4-scout', 'google/gemini-2.5-flash', 'google/gemini-2.0-flash', 'meta/llama-4-maverick', 'anthropic/claude-haiku-4.5', 'anthropic/claude-opus-4.7'];
 
   // Body may arrive parsed (req.body) or raw.
   let body = req.body;
