@@ -2385,6 +2385,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <button style="padding:8px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="addPos()">Add</button>
         </div>
         <input id="f-thesis" placeholder="Why are you buying? (your thesis — optional)" style="width:100%;margin-top:8px;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);">
+        <div style="margin-top:10px;"><input type="file" id="shot-input" accept="image/*" capture="environment" style="display:none;" onchange="importHoldingsFromScreenshot(this.files&&this.files[0])"><button onclick="document.getElementById('shot-input').click()" style="width:100%;padding:9px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">📷 Import from screenshot</button><div id="shot-status" style="font-size:11px;color:var(--text3);margin-top:6px;"></div></div>
       </div>
       <div>
         <div class="card" style="margin-bottom:12px;">
@@ -6402,6 +6403,67 @@ function mirrorTrade(sym,price,reason){const p=parseFloat(price)||0;if(!p){alert
 function paperTrade(sym,price){const p=parseFloat(price)||0;S.paperPos.push({t:sym,p,date:new Date().toLocaleDateString()});S.hist.unshift({type:'PAPER',t:sym,shares:1,price:p,pnl:'0',why:'Paper trade simulation',date:new Date().toLocaleDateString()});localStorage.setItem('ti72_paper',JSON.stringify(S.paperPos));save();renderPaper();}
 function renderPaper(){const el=document.getElementById('paper-list');el.innerHTML=S.paperPos.length?S.paperPos.map(p=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:11px;"><span style="font-family:'DM Mono',monospace;font-weight:600;">${p.t}</span><span style="color:var(--text3);">Paper @ $${p.p} · ${p.date}</span><span class="up">+0.0%</span></div>`).join(''):'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No paper trades yet</div>';}
 function togglePaper(){S.paperMode=!S.paperMode;document.getElementById('paper-lbl').textContent=S.paperMode?'On':'Off';}
+
+function importHoldingsFromScreenshot(file){
+  var st=document.getElementById('shot-status');
+  if(!file) return;
+  if(!/^image\//.test(file.type)){ if(st)st.textContent='Please choose an image.'; return; }
+  if(file.size>5*1024*1024){ if(st)st.textContent='Image too large (max ~5MB).'; return; }
+  if(st)st.textContent='Reading screenshot…';
+  var fr=new FileReader();
+  fr.onload=function(){ _sendShot(fr.result); };
+  fr.onerror=function(){ if(st)st.textContent='Could not read file.'; };
+  fr.readAsDataURL(file);
+  var inp=document.getElementById('shot-input'); if(inp) inp.value='';
+}
+function _sendShot(dataUrl){
+  var st=document.getElementById('shot-status');
+  if(st)st.textContent='Parsing holdings… (a few seconds)';
+  fetch('/api/parse-holdings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl})})
+    .then(function(r){return r.json().then(function(d){return {ok:r.ok,status:r.status,d:d};});})
+    .then(function(res){
+      var d=res.d;
+      if(!res.ok||d.error){ if(st)st.textContent='Could not parse: '+(d.error||('HTTP '+res.status)); return; }
+      if(!d.positions||!d.positions.length){ if(st)st.textContent='No holdings found in that image.'; return; }
+      if(st)st.textContent='';
+      showImportConfirm(d.positions, d.warnings||'');
+    })
+    .catch(function(){ if(st)st.textContent='Upload failed — try again.'; });
+}
+function closeImport(){ var o=document.getElementById('import-ov'); if(o) o.remove(); }
+function showImportConfirm(positions, warnings){
+  var ov=document.getElementById('import-ov');
+  if(!ov){ ov=document.createElement('div'); ov.id='import-ov'; ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:10000;padding:16px;'; document.body.appendChild(ov); }
+  var rows=positions.map(function(p){ return '<div style="display:grid;grid-template-columns:1fr 78px 96px 26px;gap:6px;align-items:center;margin-bottom:6px;"><input data-k="ticker" value="'+(p.ticker||'')+'" style="padding:7px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;text-transform:uppercase;"><input data-k="shares" type="number" value="'+(p.shares!=null?p.shares:'')+'" placeholder="shares" style="padding:7px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;"><input data-k="cost" type="number" value="'+(p.avg_cost!=null?p.avg_cost:'')+'" placeholder="avg cost" style="padding:7px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;"><button onclick="this.parentNode.remove()" style="border:none;background:none;color:var(--text3);cursor:pointer;font-size:16px;">×</button></div>'; }).join('');
+  var note = warnings ? '<br><span style="color:var(--amber);">Note: '+warnings+'</span>' : '';
+  ov.innerHTML='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;max-width:520px;width:100%;max-height:84vh;overflow:auto;padding:20px;"><div style="font-size:15px;font-weight:700;margin-bottom:4px;">Confirm imported positions</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Check what I read from your screenshot. Edit anything wrong, delete rows you do not want, then save. Leave avg cost blank to use the current price.'+note+'</div><div style="display:grid;grid-template-columns:1fr 78px 96px 26px;gap:6px;font-size:10px;color:var(--text3);margin-bottom:4px;"><span>Ticker</span><span>Shares</span><span>Avg cost</span><span></span></div><div id="import-rows">'+rows+'</div><div style="display:flex;gap:8px;margin-top:14px;"><button onclick="closeImport()" style="flex:1;padding:10px;border:0.5px solid var(--border2);border-radius:8px;background:none;color:var(--text);font-size:13px;cursor:pointer;">Cancel</button><button onclick="applyImport()" style="flex:2;padding:10px;border:none;border-radius:8px;background:var(--green);color:#000;font-size:13px;font-weight:600;cursor:pointer;">Save to portfolio</button></div></div>';
+}
+async function applyImport(){
+  var rows=document.querySelectorAll('#import-rows > div');
+  var toAdd=[];
+  rows.forEach(function(row){
+    var t=(row.querySelector('[data-k=ticker]').value||'').toUpperCase().trim();
+    var sh=parseFloat(row.querySelector('[data-k=shares]').value);
+    var c=parseFloat(row.querySelector('[data-k=cost]').value);
+    if(!t||isNaN(sh)) return;
+    toAdd.push({t:t,s:sh,c:isNaN(c)?null:c});
+  });
+  for(var k=0;k<toAdd.length;k++){
+    if(toAdd[k].c==null){
+      try{ var rr=await fetch(fhURL('quote',{symbol:toAdd[k].t})); var dd=await rr.json(); var px=dd&&(dd.c!=null?dd.c:dd.close); if(px) toAdd[k].c=parseFloat(px); }catch(e){}
+      if(toAdd[k].c==null) toAdd[k].c=0;
+    }
+  }
+  var added=0;
+  toAdd.forEach(function(a){
+    var ex=(S.pos||[]).find(function(x){return x.t===a.t;});
+    if(ex){ ex.s=a.s; if(a.c) ex.p=a.c; } else { S.pos.push({t:a.t,s:a.s,p:a.c,cur:a.c}); }
+    S.hist.unshift({type:'IMPORT',t:a.t,shares:a.s,price:a.c,pnl:'0',why:'Screenshot import',date:new Date().toLocaleDateString()});
+    added++;
+  });
+  closeImport();
+  if(added){ save(); renderPos(); try{renderGoalTracker();renderFactorConcentration();renderConvictionJournal();}catch(e){} }
+}
 
 function addPos(){const t=document.getElementById('f-t').value.toUpperCase().trim();const s=parseFloat(document.getElementById('f-s').value);const p=parseFloat(document.getElementById('f-p').value);if(!t||isNaN(s)||isNaN(p)){alert('Please fill in all three fields');return;}var _th=document.getElementById('f-thesis');S.pos.push({t,s,p,cur:p,thesis:(_th?_th.value.trim():'')});S.hist.unshift({type:'BUY',t,shares:s,price:p,pnl:'0',why:'Manual entry',date:new Date().toLocaleDateString()});save();['f-t','f-s','f-p','f-thesis'].forEach(id=>{var e=document.getElementById(id);if(e)e.value='';});renderPos();try{renderConvictionJournal();}catch(e){}}
 function renderPos(){const list=document.getElementById('pos-list'),conc=document.getElementById('conc');if(!S.pos.length){list.innerHTML='<div style="padding:14px 0;text-align:center;color:var(--text3);font-size:12px;">No positions yet</div>';conc.innerHTML='';['r-pos','r-top'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='—';el.className='b b-gray';}});['p-val','p-pnl','p-inv'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});document.getElementById('p-realised').textContent=(S.realised>=0?'+':'')+'$'+S.realised.toFixed(0);renderHist();return;}
