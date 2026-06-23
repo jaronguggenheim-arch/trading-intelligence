@@ -2302,6 +2302,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- FACTOR CONCENTRATION -->
   <div id="pt-factor" style="margin-bottom:24px;"></div>
 
+  <!-- CONVICTION JOURNAL -->
+  <div id="pt-conviction" style="margin-bottom:24px;"></div>
+
   <!-- WATCHLIST SECTION -->
   <div id="pt-watchlist" style="margin-bottom:24px;">
     <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Watchlist</div>
@@ -2381,6 +2384,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Avg cost $</label><input id="f-p" type="number" placeholder="487.00" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;"></div>
           <button style="padding:8px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="addPos()">Add</button>
         </div>
+        <input id="f-thesis" placeholder="Why are you buying? (your thesis — optional)" style="width:100%;margin-top:8px;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);">
       </div>
       <div>
         <div class="card" style="margin-bottom:12px;">
@@ -4070,6 +4074,21 @@ function renderFactorConcentration(){
   var flag = (maxR && maxR.pct>50) ? '<div style="font-size:11px;color:var(--amber);margin-top:8px;background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; Concentration risk: <strong>'+maxR.pct.toFixed(0)+'%</strong> of your portfolio is in '+maxR.label+'. Consider trimming below 50%.</div>' : '';
   var bars=rows.map(function(r){return '<div style="display:flex;align-items:center;gap:10px;padding:5px 0;"><span style="font-size:11px;color:var(--text2);width:120px;flex-shrink:0;">'+r.label+'</span><div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:'+r.pct+'%;height:5px;background:'+(r.pct>50?'var(--amber)':r.color)+';border-radius:3px;"></div></div><span style="font-size:10px;color:var(--text3);width:42px;text-align:right;">'+r.pct.toFixed(0)+'%</span></div>';}).join('');
   el.innerHTML='<div class="card"><div class="card-lbl">Factor concentration &#8212; by holdings value</div>'+bars+flag+'</div>';
+}
+
+function renderConvictionJournal(){
+  var el=document.getElementById('pt-conviction'); if(!el) return;
+  var pos=(S.pos||[]).filter(function(p){return p.thesis;});
+  if(!pos.length){ el.innerHTML=''; return; }
+  var rows=pos.map(function(p){
+    var chg=p.p?(((p.cur||p.p)-p.p)/p.p*100):0;
+    var draw=chg<=-15;
+    var head='<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;"><span style="font-size:13px;font-weight:700;">'+p.t+'</span><span style="font-size:11px;color:'+(chg>=0?'var(--green)':'var(--red)')+';">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</span></div>';
+    var th='<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+String(p.thesis).replace(/</g,'&lt;')+'</div>';
+    var pr=draw?'<div style="margin-top:6px;font-size:11px;color:var(--amber);background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; Down '+Math.abs(chg).toFixed(0)+'% — does your thesis still hold? If the reason you bought is broken, consider exiting; if not, the drawdown is noise.</div>':'';
+    return '<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">'+head+th+pr+'</div>';
+  }).join('');
+  el.innerHTML='<div class="card"><div class="card-lbl">Conviction journal — why you bought</div>'+rows+'</div>';
 }
 
 function renderGoalTracker(){
@@ -6384,7 +6403,7 @@ function paperTrade(sym,price){const p=parseFloat(price)||0;S.paperPos.push({t:s
 function renderPaper(){const el=document.getElementById('paper-list');el.innerHTML=S.paperPos.length?S.paperPos.map(p=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:11px;"><span style="font-family:'DM Mono',monospace;font-weight:600;">${p.t}</span><span style="color:var(--text3);">Paper @ $${p.p} · ${p.date}</span><span class="up">+0.0%</span></div>`).join(''):'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No paper trades yet</div>';}
 function togglePaper(){S.paperMode=!S.paperMode;document.getElementById('paper-lbl').textContent=S.paperMode?'On':'Off';}
 
-function addPos(){const t=document.getElementById('f-t').value.toUpperCase().trim();const s=parseFloat(document.getElementById('f-s').value);const p=parseFloat(document.getElementById('f-p').value);if(!t||isNaN(s)||isNaN(p)){alert('Please fill in all three fields');return;}S.pos.push({t,s,p,cur:p});S.hist.unshift({type:'BUY',t,shares:s,price:p,pnl:'0',why:'Manual entry',date:new Date().toLocaleDateString()});save();['f-t','f-s','f-p'].forEach(id=>document.getElementById(id).value='');renderPos();}
+function addPos(){const t=document.getElementById('f-t').value.toUpperCase().trim();const s=parseFloat(document.getElementById('f-s').value);const p=parseFloat(document.getElementById('f-p').value);if(!t||isNaN(s)||isNaN(p)){alert('Please fill in all three fields');return;}var _th=document.getElementById('f-thesis');S.pos.push({t,s,p,cur:p,thesis:(_th?_th.value.trim():'')});S.hist.unshift({type:'BUY',t,shares:s,price:p,pnl:'0',why:'Manual entry',date:new Date().toLocaleDateString()});save();['f-t','f-s','f-p','f-thesis'].forEach(id=>{var e=document.getElementById(id);if(e)e.value='';});renderPos();try{renderConvictionJournal();}catch(e){}}
 function renderPos(){const list=document.getElementById('pos-list'),conc=document.getElementById('conc');if(!S.pos.length){list.innerHTML='<div style="padding:14px 0;text-align:center;color:var(--text3);font-size:12px;">No positions yet</div>';conc.innerHTML='';['r-pos','r-top'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='—';el.className='b b-gray';}});['p-val','p-pnl','p-inv'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});document.getElementById('p-realised').textContent=(S.realised>=0?'+':'')+'$'+S.realised.toFixed(0);renderHist();return;}
 const tot=S.pos.reduce((a,p)=>a+p.s*p.cur,0);const sorted=[...S.pos].sort((a,b)=>(b.s*b.cur)-(a.s*a.cur));
 list.innerHTML=sorted.map(p=>{const val=p.s*p.cur,cost=p.s*p.p,pnl=val-cost,pct=((pnl/cost)*100).toFixed(1),up=pnl>=0;const ri=S.pos.indexOf(p);return`<div class="pos-row"><div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;"><span class="pos-tk" onclick="openTicker('${p.t}')">${p.t}</span><span style="font-size:10px;color:var(--text3);">${p.s} shares · avg $${p.p.toFixed(2)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span class="${up?'up':'dn'}" style="font-size:11px;font-weight:600;">${up?'+':''}$${pnl.toFixed(0)} (${up?'+':''}${pct}%)</span><canvas id="spk-${p.t}" width="64" height="22" style="display:block;"></canvas><span style="font-size:10px;color:var(--text3);">$${val.toFixed(0)}</span></div></div><button class="sell-btn" onclick="openSell(${ri})">Sell</button></div>`;}).join('');
@@ -6408,7 +6427,7 @@ function _renderMyIntelTab(){
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
   }
-  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderPortfolioChain();}catch(e){}
+  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioChain();}catch(e){}
 }
 
 function gT(n,btn){
