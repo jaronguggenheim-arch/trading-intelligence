@@ -6423,7 +6423,7 @@ function _sendShot(dataUrl){
     .then(function(r){return r.json().then(function(d){return {ok:r.ok,status:r.status,d:d};});})
     .then(function(res){
       var d=res.d;
-      if(!res.ok||d.error){ if(st)st.textContent='Could not parse: '+(d.error||('HTTP '+res.status)); return; }
+      if(!res.ok||d.error){ if(st)st.textContent='Error: '+(d.error||('HTTP '+res.status))+(d.detail?(' — '+(typeof d.detail==='string'?d.detail:JSON.stringify(d.detail))):'')+(d.raw?(' | model said: '+d.raw):''); return; }
       if(!d.positions||!d.positions.length){ if(st)st.textContent='No holdings found in that image.'; return; }
       if(st)st.textContent='';
       showImportConfirm(d.positions, d.warnings||'');
