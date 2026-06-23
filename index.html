@@ -2299,6 +2299,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- GOAL TRACKER -->
   <div id="pt-goal" style="margin-bottom:24px;"></div>
 
+  <!-- FACTOR CONCENTRATION -->
+  <div id="pt-factor" style="margin-bottom:24px;"></div>
+
   <!-- WATCHLIST SECTION -->
   <div id="pt-watchlist" style="margin-bottom:24px;">
     <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Watchlist</div>
@@ -4048,6 +4051,26 @@ function updateHeaderUser() {
   }
 }
 
+
+function renderFactorConcentration(){
+  var el=document.getElementById('pt-factor'); if(!el) return;
+  var pos=S.pos||[];
+  var SECT=(typeof SECTORS!=='undefined')?SECTORS:{};
+  var total=pos.reduce(function(a,p){return a+(p.s*(p.cur||p.p||0));},0);
+  if(!pos.length || total<=0){ el.innerHTML=''; return; }
+  var byF={};
+  pos.forEach(function(p){
+    var v=p.s*(p.cur||p.p||0), lbl='Other', col='var(--text3)';
+    for(var k in SECT){ if(SECT[k].tickers && SECT[k].tickers.indexOf(p.t)>=0){ lbl=SECT[k].label||k; col=SECT[k].color||'var(--blue)'; break; } }
+    if(!byF[lbl]) byF[lbl]={v:0,color:col};
+    byF[lbl].v+=v;
+  });
+  var rows=Object.keys(byF).map(function(k){return {label:k,v:byF[k].v,color:byF[k].color,pct:byF[k].v/total*100};}).sort(function(a,b){return b.v-a.v;});
+  var maxR=rows[0];
+  var flag = (maxR && maxR.pct>50) ? '<div style="font-size:11px;color:var(--amber);margin-top:8px;background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; Concentration risk: <strong>'+maxR.pct.toFixed(0)+'%</strong> of your portfolio is in '+maxR.label+'. Consider trimming below 50%.</div>' : '';
+  var bars=rows.map(function(r){return '<div style="display:flex;align-items:center;gap:10px;padding:5px 0;"><span style="font-size:11px;color:var(--text2);width:120px;flex-shrink:0;">'+r.label+'</span><div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:'+r.pct+'%;height:5px;background:'+(r.pct>50?'var(--amber)':r.color)+';border-radius:3px;"></div></div><span style="font-size:10px;color:var(--text3);width:42px;text-align:right;">'+r.pct.toFixed(0)+'%</span></div>';}).join('');
+  el.innerHTML='<div class="card"><div class="card-lbl">Factor concentration &#8212; by holdings value</div>'+bars+flag+'</div>';
+}
 
 function renderGoalTracker(){
   var el=document.getElementById('pt-goal'); if(!el) return;
@@ -6385,7 +6408,7 @@ function _renderMyIntelTab(){
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
   }
-  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderPortfolioChain();}catch(e){}
+  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderPortfolioChain();}catch(e){}
 }
 
 function gT(n,btn){
