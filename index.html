@@ -4077,19 +4077,39 @@ function renderFactorConcentration(){
   el.innerHTML='<div class="card"><div class="card-lbl">Factor concentration &#8212; by holdings value</div>'+bars+flag+'</div>';
 }
 
+function refreshPositionPrices(){
+  if(!(S.pos&&S.pos.length)) return;
+  var seen={}, list=[];
+  S.pos.forEach(function(p){ if(p&&p.t&&!seen[p.t]){ seen[p.t]=1; list.push(p.t); } });
+  (async function(){
+    for(var i=0;i<list.length;i++){
+      try{ var r=await fetch(fhURL('quote',{symbol:list[i]})); var d=await r.json(); var px=parseFloat(d&&(d.c!=null?d.c:d.close)); if(px&&px>0){ S.pos.forEach(function(p){ if(p.t===list[i]) p.cur=px; }); } }catch(e){}
+      await new Promise(function(res){ setTimeout(res,200); });
+    }
+    try{ localStorage.setItem('ti72_pos', JSON.stringify(S.pos)); }catch(e){}
+    try{ renderPos(); renderGoalTracker(); renderFactorConcentration(); renderConvictionJournal(); }catch(e){}
+  })();
+}
 function renderConvictionJournal(){
   var el=document.getElementById('pt-conviction'); if(!el) return;
-  var pos=(S.pos||[]).filter(function(p){return p.thesis;});
+  var pos=(S.pos||[]);
   if(!pos.length){ el.innerHTML=''; return; }
+  function statusFor(p){
+    var chg=p.p?(((p.cur||p.p)-p.p)/p.p*100):0;
+    var sc=(typeof SCORES!=='undefined' && SCORES[p.t]!=null)?SCORES[p.t]:null;
+    if(chg<=-25 || (sc!=null&&sc<40)) return {ic:'🔴',lbl:'Alert',col:'var(--red)'};
+    if(chg<=-15 || (sc!=null&&sc<55)) return {ic:'⚠️',lbl:'Monitor',col:'var(--amber)'};
+    return {ic:'✅',lbl:'Intact',col:'var(--green)'};
+  }
   var rows=pos.map(function(p){
     var chg=p.p?(((p.cur||p.p)-p.p)/p.p*100):0;
-    var draw=chg<=-15;
-    var head='<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;"><span style="font-size:13px;font-weight:700;">'+p.t+'</span><span style="font-size:11px;color:'+(chg>=0?'var(--green)':'var(--red)')+';">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</span></div>';
-    var th='<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+String(p.thesis).replace(/</g,'&lt;')+'</div>';
-    var pr=draw?'<div style="margin-top:6px;font-size:11px;color:var(--amber);background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; Down '+Math.abs(chg).toFixed(0)+'% — does your thesis still hold? If the reason you bought is broken, consider exiting; if not, the drawdown is noise.</div>':'';
+    var st=statusFor(p);
+    var head='<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;"><span style="font-size:13px;font-weight:700;">'+p.t+'</span><span style="font-size:11px;color:'+(chg>=0?'var(--green)':'var(--red)')+';">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</span><span style="font-size:10px;margin-left:auto;color:'+st.col+';font-weight:600;">'+st.ic+' '+st.lbl+'</span></div>';
+    var th=p.thesis?'<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+String(p.thesis).replace(/</g,'&lt;')+'</div>':'<div style="font-size:11px;color:var(--text3);font-style:italic;">No thesis yet — add one when you buy to track conviction.</div>';
+    var pr=(chg<=-15 && p.thesis)?'<div style="margin-top:6px;font-size:11px;color:var(--amber);background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; Down '+Math.abs(chg).toFixed(0)+'% — does your thesis still hold? If the reason you bought is broken, consider exiting; if not, the drawdown is noise.</div>':'';
     return '<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">'+head+th+pr+'</div>';
   }).join('');
-  el.innerHTML='<div class="card"><div class="card-lbl">Conviction journal — why you bought</div>'+rows+'</div>';
+  el.innerHTML='<div class="card"><div class="card-lbl">Thesis status — your positions</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;">✅ Intact · ⚠️ Monitor · 🔴 Alert — from signal score + price drawdown</div>'+rows+'</div>';
 }
 
 function renderGoalTracker(){
@@ -6490,7 +6510,7 @@ function _renderMyIntelTab(){
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
   }
-  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioChain();}catch(e){}
+  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioChain();refreshPositionPrices();}catch(e){}
 }
 
 function gT(n,btn){
