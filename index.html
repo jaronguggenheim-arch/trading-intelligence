@@ -2109,32 +2109,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- LEGACY EP PANELS (kept for backward compat) -->
-  <div id="ep-nvda">
-    <div class="g2">
-      <div class="card">
-        <div style="font-size:19px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:5px;">NVDA · May 22 after close</div>
-        <div style="font-size:11px;color:var(--text2);margin-bottom:13px;">17 days away · Beat rate 78% over last 8 quarters</div>
-        <div class="g3" style="margin-bottom:13px;">
-          <div class="smc"><div class="smn up">±11.4%</div><div class="sml-lbl">Implied move</div></div>
-          <div class="smc"><div class="smn">±8.2%</div><div class="sml-lbl">Historical avg</div></div>
-          <div class="smc"><div class="smn up">$24.5B</div><div class="sml-lbl">Revenue est.</div></div>
-        </div>
-        <div class="sc sc-r sc-na" style="margin-bottom:6px;"><div class="sul">The one number that matters</div><div class="suh">Data Center revenue est $21B+. Miss here = -15%+ regardless of other metrics.</div></div>
-        <div class="sc sc-a sc-na" style="margin-bottom:6px;"><div class="sul">Watch the Blackwell supply language</div><div class="suh">"Constraints easing" = neutral. "Constraints persisting" = -5%, even on revenue beat.</div></div>
-        <div class="sc sc-g sc-na"><div class="sul">Q3 guidance is the real catalyst</div><div class="suh">Above $26B = +10%+. In-line = flat. Below consensus = -8%.</div></div>
-      </div>
-      <div class="card">
-        <div class="card-lbl">Pre-earnings signal stack + strategy</div>
-        <div class="sc sc-r sc-na" style="margin-bottom:6px;"><div class="sul">Options + dark pool — Bullish</div><div class="suh">$47M call sweep at $600 strike May 23 + $180M dark pool above VWAP. Two independent institutional signals.</div><div class="sc-meta"><span class="act-tag at-buy">BULLISH</span></div></div>
-        <div class="sc sc-g sc-na" style="margin-bottom:6px;"><div class="sul">Estimate acceleration — Bullish</div><div class="suh">6 raises in 21 days, avg +8.4%. Analysts getting positive channel checks from supply chain.</div><div class="sc-meta"><span class="act-tag at-buy">BULLISH</span></div></div>
-        <div class="sc sc-a sc-na"><div class="sul">Strategy — 50% now, 50% post-earnings</div><div class="suh">$125 now. Reserve $125 for post-result. Data center beats AND Q3 guidance >$26B → deploy. Miss → wait 48h.</div><div class="sc-meta"><span class="act-tag at-add">ADD 50% NOW</span><span class="tf-tag tf-short">Before May 22</span></div></div>
-      </div>
-    </div>
-  </div>
-  <div id="ep-asml" style="display:none;"><div class="card"><div style="font-size:19px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:9px;">ASML · Jul 16 after close</div><div class="sc sc-g sc-na"><div class="sul">Buy the dip now — 72 days to accumulate before earnings</div><div class="suh">TSMC capex lag window active. CEO + CFO + Board bought this week. China noise overstated in current price. Build full position before July.</div><div class="sc-meta"><span class="act-tag at-buy">BUILD POSITION</span><span class="tf-tag tf-mid">72 days window</span></div></div></div></div>
-  <div id="ep-amd" style="display:none;"><div class="card"><div style="font-size:19px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:9px;">AMD · Jul 30 after close</div><div class="sc sc-gray sc-na"><div class="sul">Skip adding — revisit 2 weeks before Jul 30</div><div class="suh">Mixed signals. No insider buying. Solo downgrade. Watch for call sweep or analyst cluster in July before adding.</div><div class="sc-meta"><span class="act-tag at-hold">HOLD EXISTING</span><span class="tf-tag tf-mixed">Revisit mid-July</span></div></div></div></div>
-  <div id="ep-meta" style="display:none;"><div class="card"><div style="font-size:19px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:9px;">META · May 1 — Beat confirmed</div><div class="g3" style="margin:12px 0;"><div class="smc"><div class="smn up">+8.4%</div><div class="sml-lbl">Stock reaction</div></div><div class="smc"><div class="smn up">+27%</div><div class="sml-lbl">Ad revenue YoY</div></div><div class="smc"><div class="smn up">$31M</div><div class="sml-lbl">Call sweep ✓</div></div></div><div class="sc sc-b sc-na"><div class="sul">Pattern lesson — apply the same lens to NVDA May 22</div><div class="suh">$31M call sweep before META earnings confirmed with +8.4% move. NVDA now has $47M sweep — same pattern, larger size, stronger conviction.</div><div class="sc-meta"><span class="act-tag at-buy">PATTERN VALIDATED</span></div></div></div></div>
 </div>
 
 <!-- SMART MONEY -->
@@ -2304,6 +2278,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
   <!-- CONVICTION JOURNAL -->
   <div id="pt-conviction" style="margin-bottom:24px;"></div>
+  <div id="pt-earnings" style="margin-bottom:24px;"></div>
 
   <!-- WATCHLIST SECTION -->
   <div id="pt-watchlist" style="margin-bottom:24px;">
@@ -4090,6 +4065,48 @@ function refreshPositionPrices(){
     try{ renderPos(); renderGoalTracker(); renderFactorConcentration(); renderConvictionJournal(); }catch(e){}
   })();
 }
+async function renderPortfolioEarnings(){
+  var el=document.getElementById('pt-earnings'); if(!el) return;
+  var pos=(S.pos||[]);
+  if(!pos.length){ el.innerHTML=''; return; }
+  var mineSet={}; pos.forEach(function(p){ if(p&&p.t) mineSet[p.t]=1; });
+  var arr=null;
+  try{
+    if(_earningsCache && _earningsCache.length){ arr=_earningsCache; }
+    else{
+      var today=new Date(); var toD=new Date(today); toD.setDate(toD.getDate()+90);
+      var fmt=function(d){ return d.toISOString().split('T')[0]; };
+      var IS_V=(typeof IS_VERCEL!=='undefined')?IS_VERCEL:(window.location.protocol!=='file:');
+      var base=IS_V?'/api/fh':'https://finnhub.io/api/v1';
+      var keyQ=IS_V?'':('&token='+(window.FINNHUB_KEY||''));
+      var resp=await fetch(base+'/calendar/earnings?from='+fmt(today)+'&to='+fmt(toD)+keyQ);
+      var data=await resp.json();
+      arr=(data.earningsCalendar||[]);
+      if(arr.length){ _earningsCache=arr; _earningsCacheTime=Date.now(); }
+    }
+  }catch(e){ arr=null; }
+  if(!arr||!arr.length){ try{ arr=getStaticEarningsFallback(); }catch(e){ arr=[]; } }
+  var todayStr=new Date().toISOString().split('T')[0];
+  var mine=arr.filter(function(e){ return mineSet[e.symbol] && e.date>=todayStr; });
+  var seen={}; mine=mine.filter(function(e){ if(seen[e.symbol]) return false; seen[e.symbol]=1; return true; });
+  mine.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  if(!mine.length){ el.innerHTML='<div class="card"><div class="card-lbl">Your earnings calendar</div><div style="font-size:11px;color:var(--text3);">No reports in the next 90 days for your holdings.</div></div>'; return; }
+  function daysUntil(ds){ var d=new Date(ds+'T00:00:00'); var n=new Date(); n.setHours(0,0,0,0); return Math.round((d-n)/86400000); }
+  function hourLbl(h){ return h==='bmo'?'before open':h==='amc'?'after close':''; }
+  var rows=mine.map(function(e){
+    var du=daysUntil(e.date);
+    var soon=du<=7;
+    var dlabel=du<=0?'Today':du===1?'Tomorrow':('in '+du+' days');
+    var dt=new Date(e.date+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    var eps=(e.epsEstimate!=null)?('EPS est '+e.epsEstimate):'';
+    var col=soon?'var(--amber)':'var(--text3)';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);">'
+      +'<span style="font-size:13px;font-weight:700;min-width:52px;cursor:pointer;color:var(--text);" onclick="openTicker(\''+e.symbol+'\')">'+e.symbol+'</span>'
+      +'<div style="flex:1;"><div style="font-size:12px;color:var(--text);">'+dt+(hourLbl(e.hour)?' · '+hourLbl(e.hour):'')+'</div>'+(eps?'<div style="font-size:10px;color:var(--text3);">'+eps+'</div>':'')+'</div>'
+      +'<span style="font-size:11px;font-weight:600;color:'+col+';">'+dlabel+'</span></div>';
+  }).join('');
+  el.innerHTML='<div class="card"><div class="card-lbl">Your earnings calendar — holdings reporting soon</div><div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Catalysts for stocks you actually hold · amber = within 7 days. Tap a ticker for the full picture.</div>'+rows+'</div>';
+}
 function renderConvictionJournal(){
   var el=document.getElementById('pt-conviction'); if(!el) return;
   var pos=(S.pos||[]);
@@ -5699,7 +5716,6 @@ function renderTkDeep(sym){
   return '<div class="card"><div class="card-lbl">Deep Edge \u2014 '+sym+'</div>'+html+'<div style="margin-top:12px;"><span style="font-size:11px;color:var(--blue);cursor:pointer;" onclick="gT(\'deepedge\',null)">See full Deep Edge analysis \u2192</span></div></div>';
 }
 /* ── END MODAL RENDERERS ──────────────────────────── */
-function showEP(n,btn){['nvda','asml','amd','meta'].forEach(x=>{const el=document.getElementById('ep-'+x);if(el)el.style.display='none';});document.getElementById('ep-'+n).style.display='block';document.querySelectorAll('.ticker-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');}
 
 // ═══════════════════════════════════════════════════════════════
 // DYNAMIC TICKER DATA — fetches any stock from Finnhub
@@ -6510,7 +6526,7 @@ function _renderMyIntelTab(){
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
   }
-  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioChain();refreshPositionPrices();}catch(e){}
+  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioChain();renderPortfolioEarnings();refreshPositionPrices();}catch(e){}
 }
 
 function gT(n,btn){
