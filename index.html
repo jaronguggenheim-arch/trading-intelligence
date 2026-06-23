@@ -3753,7 +3753,7 @@ async function loadFromCloud(credential) {
   if (!IS_VERCEL) return;
   try {
     const r = await fetch('/api/sync?credential=' + encodeURIComponent(credential));
-    if (!r.ok) return;
+    if (!r.ok) { if (r.status===401){ try{localStorage.removeItem('ti72_gsiCred');}catch(e){} S._gsiCredential=null; try{_gsiInit();}catch(e){} } return; }
     const j = await r.json();
     if (!j.ok || !j.data) return;
     const d = j.data;
@@ -3783,6 +3783,7 @@ function _gsiCallback(response) {
     const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
     S.gUser = { name: payload.name, email: payload.email, picture: payload.picture, given_name: payload.given_name };
     S._gsiCredential = response.credential;
+    try { localStorage.setItem('ti72_gsiCred', response.credential); } catch(e) {}
     try { localStorage.setItem('ti72_gUser', JSON.stringify(S.gUser)); } catch(e) {}
     loadFromCloud(response.credential);
     renderMyIntelBrief();
@@ -3792,8 +3793,8 @@ function _gsiCallback(response) {
 }
 
 function gsiSignOut() {
-  S.gUser = null;
-  try { localStorage.removeItem('ti72_gUser'); } catch(e) {}
+  S.gUser = null; S._gsiCredential = null;
+  try { localStorage.removeItem('ti72_gUser'); localStorage.removeItem('ti72_gsiCred'); } catch(e) {}
   if (typeof google !== 'undefined') try { google.accounts.id.disableAutoSelect(); } catch(e) {}
   updateHeaderUser();
   renderMyIntelBrief();
@@ -3803,6 +3804,8 @@ function gsiSignOut() {
 try {
   const saved = localStorage.getItem('ti72_gUser');
   if (saved) S.gUser = JSON.parse(saved);
+  const savedCred = localStorage.getItem('ti72_gsiCred');
+  if (savedCred) { S._gsiCredential = savedCred; try { loadFromCloud(savedCred); } catch(e) {} }
 } catch(e) {}
 
 
