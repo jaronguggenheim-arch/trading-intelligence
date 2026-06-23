@@ -2296,6 +2296,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- MY INTEL PERSONALIZED BRIEF -->
   <div id="my-intel-brief" style="margin-bottom:20px;"></div>
 
+  <!-- GOAL TRACKER -->
+  <div id="pt-goal" style="margin-bottom:24px;"></div>
+
   <!-- WATCHLIST SECTION -->
   <div id="pt-watchlist" style="margin-bottom:24px;">
     <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Watchlist</div>
@@ -4045,6 +4048,22 @@ function updateHeaderUser() {
   }
 }
 
+
+function renderGoalTracker(){
+  var el=document.getElementById('pt-goal'); if(!el) return;
+  var GOAL=1000000, TY=2034;
+  var val=(S.pos||[]).reduce(function(a,p){return a+(p.s*(p.cur||p.p||0));},0)+(S.realised||0);
+  var now=new Date();
+  var yearsLeft=Math.max(0.1,(TY-now.getFullYear())-(now.getMonth()/12));
+  var pct=Math.max(0,Math.min(100,val/GOAL*100));
+  var msg;
+  if(val<=0){ msg='Add a position to start tracking your path to $1,000,000.'; }
+  else { var cagr=(Math.pow(GOAL/val,1/yearsLeft)-1)*100; msg='Needs <strong style="color:var(--text);">'+(isFinite(cagr)?cagr.toFixed(0):'?')+'%</strong> per year from here · ~'+yearsLeft.toFixed(1)+' yrs to '+TY+'.'; }
+  el.innerHTML='<div class="card"><div class="card-lbl">Goal — $1,000,000 by '+TY+'</div>'
+    +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="font-size:24px;font-weight:700;">$'+Math.round(val).toLocaleString()+'</span><span style="font-size:11px;color:var(--text3);">of $1,000,000 ('+pct.toFixed(1)+'%)</span></div>'
+    +'<div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:10px;"><div style="height:8px;width:'+pct+'%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:4px;"></div></div>'
+    +'<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+msg+'</div></div>';
+}
 
 function renderMyIntelBrief() {
   const el = document.getElementById('my-intel-brief');
@@ -6366,7 +6385,7 @@ function _renderMyIntelTab(){
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
   }
-  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderPortfolioChain();}catch(e){}
+  try{renderWL();renderBudgetTab();renderMyIntelBrief();renderGoalTracker();renderPortfolioChain();}catch(e){}
 }
 
 function gT(n,btn){
