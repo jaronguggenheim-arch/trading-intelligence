@@ -2796,6 +2796,16 @@ var _SERVER_COMPONENTS = {};
 var _SERVER_SIGNALS = {};
 var _SERVER_DELTAS  = {};  // { ticker: delta_vs_yesterday } — from nightly KV cron
 
+var _QUOTE_CACHE = {};
+async function loadQuoteSnapshot(){
+  try{
+    const r = await fetch('/api/quotes', { signal: AbortSignal.timeout(6000) });
+    const j = await r.json();
+    if (j && j.quotes && typeof j.quotes === 'object') { _QUOTE_CACHE = j.quotes; }
+  }catch(e){}
+  return _QUOTE_CACHE;
+}
+
 async function loadServerScores() {
   if (!IS_VERCEL) return false;
   try {
@@ -3235,33 +3245,20 @@ async function renderLiveTickerStrip() {
   const track = document.getElementById('ticker-track');
   if (!strip || !track) return;
 
-  const key = S.fh || localStorage.getItem('ti72_fh') || '';
   const liveData = {};
-
-  // Fetch live quotes — use Vercel proxy on Vercel (no user key needed), or direct Finnhub with key
-  // Limit to first 40 tickers on Vercel to stay within Finnhub free-tier rate limits; warm CDN cache serves the rest
-  if (key || IS_VERCEL) {
-    const toFetch = IS_VERCEL && !key ? _tickerStripTickers.slice(0, 40) : _tickerStripTickers;
-    await Promise.allSettled(toFetch.map(async t => {
-      try {
-        const url = IS_VERCEL
-          ? fhURL('quote', { symbol: t })
-          : `https://finnhub.io/api/v1/quote?symbol=${t}&token=${key}`;
-        const r = await fetch(url);
-        const d = await r.json();
-        if (d && d.c) liveData[t] = { price: d.c, change: d.dp, up: d.dp >= 0 };
-      } catch(e) {}
-    }));
-  }
+  // Read prices from the server-side cached quotes snapshot (one cheap call for all
+  // tickers) instead of each user hammering Finnhub per-ticker (which caused $— gaps).
+  try { await loadQuoteSnapshot(); } catch(e) {}
+  _tickerStripTickers.forEach(t => {
+    const q = (typeof _QUOTE_CACHE !== 'undefined') ? _QUOTE_CACHE[t] : null;
+    if (q && q.c != null) liveData[t] = { price: q.c, change: q.dp, up: (q.dp || 0) >= 0 };
+  });
 
   function makeItem(t) {
-    const td = TICKER_DATA[t] || {};
     const live = liveData[t];
-    const price = live ? Number(live.price).toFixed(2) : (td.price || '—');
-    const change = live
-      ? (live.change >= 0 ? '+' : '') + Number(live.change).toFixed(1) + '%'
-      : (td.change || '—');
-    const isUp = live ? live.up : td.up;
+    const price = live ? Number(live.price).toFixed(2) : '—';
+    const change = live ? ((live.change >= 0 ? '+' : '') + Number(live.change).toFixed(1) + '%') : '';
+    const isUp = live ? live.up : true;
     const score = SCORES[t] || 0;
     const scoreColor = score >= 75 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
     const scoreBg   = score >= 75 ? 'var(--green-bg)' : score >= 55 ? 'var(--amber-bg)' : 'var(--bg3)';
@@ -6895,7 +6892,7 @@ async function fetchPrices(){
   }
 }
 
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded',()=>{try{loadQuoteSnapshot();}catch(e){}
   try{if(S.pin)document.getElementById('pinLbl').textContent='Change PIN';}catch(e){}
   try{renderWL();}catch(e){console.warn('renderWL',e);}
   try{renderPos();}catch(e){console.warn('renderPos',e);}

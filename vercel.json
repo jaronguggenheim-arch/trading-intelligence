@@ -12,7 +12,8 @@
     "api/sam.js":        { "memory": 128, "maxDuration": 15 },
     "api/alerts.js":     { "memory": 128, "maxDuration": 10 },
     "api/push.js":       { "memory": 128, "maxDuration": 10 },
-    "api/parse-holdings.js": { "memory": 256, "maxDuration": 30 }
+    "api/parse-holdings.js": { "memory": 256, "maxDuration": 30 },
+    "api/quotes.js":     { "memory": 256, "maxDuration": 300 }
   },
   "crons": [
     {
@@ -22,6 +23,10 @@
     {
       "path": "/api/scores",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/quotes",
+      "schedule": "*/10 11-23 * * 1-5"
     }
   ]
 }
