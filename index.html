@@ -4499,6 +4499,7 @@ function renderMorningBriefDynamic() {
     try { renderInsiderClusterCard(); } catch(e) {}
     try { renderAnalystCascadeCard(); } catch(e) {}
     _renderMorningPicksCard();
+    try { _sanitizeSignalCards(); } catch(e) {}
   } catch(e) { console.warn('renderMorningBriefDynamic:', e); }
 }
 
@@ -6376,7 +6377,7 @@ function renderWL(){const list=document.getElementById('my-wl-list');list.innerH
 document.getElementById('wl-scores').innerHTML=S.wl.map(sym=>{const s=SCORES[sym]||0;const color=s>=80?'var(--red)':s>=60?'var(--amber)':s>=40?'var(--green)':'var(--border2)';return`<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:0.5px solid var(--border);"><div style="width:40px;height:40px;border-radius:50%;border:2.5px solid ${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${color};flex-shrink:0;">${s||'—'}</div><div style="flex:1;cursor:pointer;" onclick="openTicker('${sym}')"><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">${sym}</div><div style="font-size:10px;color:var(--text3);">${NAMES[sym]||sym}</div></div><span class="act-tag ${s>=80?'at-buy':s>=60?'at-watch':s>=40?'at-hold':'at-skip'}">${s>=80?'BUY':s>=60?'WATCH':s>=40?'HOLD':'SKIP'}</span></div>`;}).join('');
 document.getElementById('morning-wl').innerHTML=S.wl.slice(0,5).map(sym=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('${sym}')"><span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${sym}</span>${SCORES[sym]?`<span class="score-pill">${SCORES[sym]}/100</span>`:'<span class="b b-gray">—</span>'}</div>`).join('');
 const bwl=document.getElementById('brief-wl');if(bwl)bwl.innerHTML=S.wl.slice(0,6).map(sym=>{const s=SCORES[sym]||0;const sc=s>=80?'var(--green)':s>=60?'var(--amber)':s>=40?'var(--text2)':'var(--red)';return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openTicker('${sym}')"><div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">${sym}</div><div style="font-size:10px;color:var(--text3);">${NAMES[sym]||''}</div></div><span style="font-size:11px;font-weight:600;color:${sc};">${s||'—'}</span></div>`;}).join('');
-document.getElementById('comm-wl').innerHTML=COMMUNITY.map(sym=>`<div class="wl-item" onclick="openTicker('${sym}')"><div><div class="wl-ticker">${sym}</div><div style="font-size:10px;color:var(--text3);">${Math.floor(Math.random()*900+80)} watching</div></div><button onclick="event.stopPropagation();addSym('${sym}')" style="font-size:10px;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Add</button></div>`).join('');}
+document.getElementById('comm-wl').innerHTML=COMMUNITY.map(sym=>`<div class="wl-item" onclick="openTicker('${sym}')"><div><div class="wl-ticker">${sym}</div><div style="font-size:10px;color:var(--text3);">${(typeof NAMES!=='undefined'&&NAMES[sym])||''}</div></div><button onclick="event.stopPropagation();addSym('${sym}')" style="font-size:10px;padding:3px 9px;border:0.5px solid var(--border2);border-radius:4px;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">Add</button></div>`).join('');}
 
 
 function renderPortfolioChain(){
@@ -9411,6 +9412,37 @@ function buildDynamicScoreCards() {
   return added;
 }
 
+function _sanitizeSignalCards(){
+  try{
+    document.querySelectorAll('.convergence-stock-card[data-ticker]').forEach(function(card){
+      var t=card.dataset.ticker;
+      var live=(typeof _SERVER_SIGNALS!=='undefined')?(_SERVER_SIGNALS[t]||null):null;
+      var sc=(typeof SCORES!=='undefined'&&SCORES[t]!=null)?SCORES[t]:null;
+      // Make the displayed score live (rings/pills were hardcoded)
+      var ring=card.querySelector('.ring'); if(ring&&sc!=null) ring.textContent=sc;
+      var pill=card.querySelector('.score-pill'); if(pill&&sc!=null) pill.textContent=sc+'/100';
+      // Format A (.sul/.suh): strip fabricated narrative, use live or neutral
+      var sul=card.querySelector('.sul');
+      if(sul){
+        var m=(sul.textContent||'').match(/Score\s*(\d+)/);
+        sul.textContent=t+' — Score '+(sc!=null?sc:(m?m[1]:''));
+      }
+      var suh=card.querySelector('.suh');
+      if(suh){
+        suh.textContent=(live&&live[0]&&live[0].length>8)?live[0]:'Live multi-layer signal score. Tap for the full breakdown.';
+      }
+      // Format B: remove hardcoded fabricated evidence badges
+      card.querySelectorAll('.b').forEach(function(p){ p.remove(); });
+      // Remove hardcoded allocation / buy-dollar advice prose (leaf divs with $ + advice words)
+      card.querySelectorAll('div').forEach(function(d){
+        if(d.children.length) return;
+        var tx=(d.textContent||'');
+        if(/\$\s?\d/.test(tx) && /(allocation|buy dip|post-earnings|tranche|exit if|do not add|all-in|deploy|add 50|reserve)/i.test(tx)){ d.remove(); }
+      });
+    });
+  }catch(e){}
+}
+
 function renderConvergence() {
   const ft = S.focusTicker;
   // Build dynamic cards for the 130 stocks not in static HTML
@@ -9443,6 +9475,7 @@ function renderConvergence() {
     // Ticker not in preset buttons (e.g. DELL) — still update the panel
     if (!found) renderLayerAnalysis(ft, null);
   }
+  try { _sanitizeSignalCards(); } catch(e) {}
 }
 
 
