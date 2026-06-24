@@ -5828,16 +5828,16 @@ async function fillTickerLive(sym) {
   const w52   = document.getElementById('tk-hdr-w52');
   const syn   = document.getElementById('tk-ov-synopsis');
 
-  if (name)  name.textContent  = data.name;
-  if (price) price.textContent = data.price === '—' ? '—' : '$' + data.price;
+  if (name && data.name) name.textContent = data.name;
+  if (price) price.textContent = (data.price && data.price !== '—') ? '$' + data.price : '—';
   if (chg) {
-    chg.textContent  = data.change;
-    chg.className    = data.up ? 'up' : 'dn';
+    if (data.change && data.change !== '—') { chg.textContent = data.change; chg.className = data.up ? 'up' : 'dn'; }
+    else { chg.textContent = ''; }
   }
-  if (mc)  mc.textContent  = data.mktcap;
-  if (vol) vol.textContent = data.vol;
-  if (w52) w52.textContent = data.week52;
-  if (syn) syn.textContent = data.desc;
+  if (mc)  mc.textContent  = (data.mktcap && data.mktcap !== '—') ? data.mktcap : '—';
+  if (vol) vol.textContent = (data.vol && data.vol !== '—') ? data.vol : '—';
+  if (w52) w52.textContent = (data.week52 && data.week52 !== '—') ? data.week52 : '—';
+  if (syn && data.desc) syn.textContent = data.desc;
 
   // Re-render score sparkline now that server data + live SCORES are both available.
   // Seeds a synthetic 2-point history from _SERVER_DELTAS when localStorage has < 2 days.
