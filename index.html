@@ -4116,15 +4116,24 @@ function renderConvictionJournal(){
     if(chg<=-15 || (sc!=null&&sc<55)) return {ic:'⚠️',lbl:'Monitor',col:'var(--amber)'};
     return {ic:'✅',lbl:'Intact',col:'var(--green)'};
   }
+  var noThesis=0;
   var rows=pos.map(function(p){
     var chg=p.p?(((p.cur||p.p)-p.p)/p.p*100):0;
     var st=statusFor(p);
-    var head='<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;"><span style="font-size:13px;font-weight:700;">'+p.t+'</span><span style="font-size:11px;color:'+(chg>=0?'var(--green)':'var(--red)')+';">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</span><span style="font-size:10px;margin-left:auto;color:'+st.col+';font-weight:600;">'+st.ic+' '+st.lbl+'</span></div>';
-    var th=p.thesis?'<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+String(p.thesis).replace(/</g,'&lt;')+'</div>':'<div style="font-size:11px;color:var(--text3);font-style:italic;">No thesis yet — add one when you buy to track conviction.</div>';
-    var pr=(chg<=-15 && p.thesis)?'<div style="margin-top:6px;font-size:11px;color:var(--amber);background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; Down '+Math.abs(chg).toFixed(0)+'% — does your thesis still hold? If the reason you bought is broken, consider exiting; if not, the drawdown is noise.</div>':'';
-    return '<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">'+head+th+pr+'</div>';
+    if(!p.thesis) noThesis++;
+    var row='<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);">'
+      +'<span style="font-size:12px;font-weight:700;min-width:52px;cursor:pointer;color:var(--text);" onclick="openTicker(\''+p.t+'\')">'+p.t+'</span>'
+      +'<span style="font-size:11px;color:'+(chg>=0?'var(--green)':'var(--red)')+';min-width:54px;">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</span>'
+      +'<span style="font-size:10px;margin-left:auto;color:'+st.col+';font-weight:600;white-space:nowrap;">'+st.ic+' '+st.lbl+'</span></div>';
+    var extra='';
+    if(p.thesis){
+      extra+='<div style="font-size:11px;color:var(--text2);line-height:1.5;padding:2px 0 6px 0;">'+String(p.thesis).replace(/</g,'&lt;')+'</div>';
+      if(chg<=-15){ extra+='<div style="margin:0 0 6px;font-size:11px;color:var(--amber);background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:7px 10px;">&#9888; '+p.t+' down '+Math.abs(chg).toFixed(0)+'% — does your thesis still hold? If the reason you bought is broken, consider exiting; if not, the drawdown is noise.</div>'; }
+    }
+    return row+extra;
   }).join('');
-  el.innerHTML='<div class="card"><div class="card-lbl">Thesis status — your positions</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;">✅ Intact · ⚠️ Monitor · 🔴 Alert — from signal score + price drawdown</div>'+rows+'</div>';
+  var footer=noThesis?'<div style="font-size:10px;color:var(--text3);margin-top:8px;">'+noThesis+' of '+pos.length+' holdings have no thesis yet — tap a holding’s Edit button to add one and track conviction.</div>':'';
+  el.innerHTML='<div class="card"><div class="card-lbl">Thesis status — your positions</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;">✅ Intact · ⚠️ Monitor · 🔴 Alert — from signal score + price drawdown</div>'+rows+footer+'</div>';
 }
 
 function renderGoalTracker(){
