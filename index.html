@@ -7575,8 +7575,7 @@ function _fundCardHTML(name, m, focused) {
     + holdsFlag
     + '</div>'
     + '<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:4px;">' + (m.thesis||'') + '</div>'
-    + (m.signal ? '<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:6px 9px;border-radius:7px;background:var(--bg4);border:0.5px solid var(--border);margin-bottom:2px;">' + m.signal + '</div>' : '')
-    + tradesHTML
+    + (m.signal ? '<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:6px 9px;border-radius:7px;background:var(--bg4);border:0.5px solid var(--border);margin-bottom:2px;">' + m.signal +'</div>' : '')
     + '<div id="fund-positions-' + safeCIK + '" style="margin-top:10px;"></div>'
     + '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + whaleLink + twitterLink + edgarLink + '</div>'
     + '</div></div></div>';
