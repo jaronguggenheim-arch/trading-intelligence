@@ -6430,6 +6430,52 @@ function rmWL(s){S.wl=S.wl.filter(x=>x!==s);saveWL();renderWL();try{renderMyInte
 function toggleWL(sym,btn){if(S.wl.includes(sym)){rmWL(sym);btn.textContent='+ Add to watchlist';btn.classList.remove('watching');}else{addSym(sym);btn.textContent='Watching ✓';btn.classList.add('watching');}}
 function saveWL(){localStorage.setItem('ti72_wl',JSON.stringify(S.wl));try{syncToCloud();}catch(e){}}
 
+function editPos(idx){
+  var p=S.pos[idx]; if(!p) return;
+  closeEditPos();
+  var th=p.thesis?String(p.thesis).replace(/"/g,'&quot;'):'';
+  var ov=document.createElement('div');
+  ov.id='m-editpos';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+  ov.innerHTML='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;max-width:380px;width:100%;padding:20px;">'
+    +'<div style="font-size:15px;font-weight:700;margin-bottom:4px;">Edit '+p.t+'</div>'
+    +'<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Fix the average cost if it was read wrong, or update your share count.</div>'
+    +'<label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Shares</label>'
+    +'<input id="edit-shares" type="number" step="any" value="'+p.s+'" style="width:100%;padding:9px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);margin-bottom:12px;font-family:inherit;">'
+    +'<label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Average cost $</label>'
+    +'<input id="edit-cost" type="number" step="any" value="'+p.p+'" style="width:100%;padding:9px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);margin-bottom:12px;font-family:inherit;">'
+    +'<label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Why you own it (optional)</label>'
+    +'<input id="edit-thesis" type="text" value="'+th+'" placeholder="Your thesis" style="width:100%;padding:9px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);margin-bottom:16px;font-family:inherit;">'
+    +'<div style="display:flex;gap:8px;align-items:center;">'
+    +'<button onclick="deletePos('+idx+')" style="padding:10px 14px;border:0.5px solid var(--red-bd,#7f1d1d);border-radius:8px;background:none;color:var(--red);font-size:13px;cursor:pointer;font-family:inherit;">Delete</button>'
+    +'<button onclick="closeEditPos()" style="flex:1;padding:10px;border:0.5px solid var(--border2);border-radius:8px;background:none;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>'
+    +'<button onclick="saveEditPos('+idx+')" style="flex:1;padding:10px;border:none;border-radius:8px;background:var(--green);color:#000;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>'
+    +'</div></div>';
+  ov.addEventListener('click',function(e){ if(e.target===ov) closeEditPos(); });
+  document.body.appendChild(ov);
+  var f=document.getElementById('edit-cost'); if(f) f.focus();
+}
+function closeEditPos(){ var ov=document.getElementById('m-editpos'); if(ov) ov.remove(); }
+function saveEditPos(idx){
+  var p=S.pos[idx]; if(!p){ closeEditPos(); return; }
+  var sh=parseFloat(document.getElementById('edit-shares').value);
+  var c=parseFloat(document.getElementById('edit-cost').value);
+  var th=(document.getElementById('edit-thesis').value||'').trim();
+  if(isNaN(sh)||sh<=0||isNaN(c)||c<0){ alert('Enter valid shares (>0) and average cost.'); return; }
+  p.s=sh; p.p=c; p.thesis=th; if(!p.cur) p.cur=c;
+  S.hist.unshift({type:'EDIT',t:p.t,shares:sh,price:c,pnl:'0',why:'Edited holding',date:new Date().toLocaleDateString()});
+  save(); closeEditPos(); renderPos();
+  try{renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioEarnings();}catch(e){}
+}
+function deletePos(idx){
+  var p=S.pos[idx]; if(!p){ closeEditPos(); return; }
+  if(!confirm('Remove '+p.t+' from your portfolio?')) return;
+  S.pos.splice(idx,1);
+  S.hist.unshift({type:'REMOVE',t:p.t,shares:p.s,price:p.p,pnl:'0',why:'Removed holding',date:new Date().toLocaleDateString()});
+  save(); closeEditPos(); renderPos();
+  try{renderGoalTracker();renderFactorConcentration();renderConvictionJournal();renderPortfolioEarnings();}catch(e){}
+}
+
 function openSell(idx){S.sellTarget=idx;S.sellWhy='';document.querySelectorAll('.why-tag').forEach(t=>t.classList.remove('selected'));const pos=S.pos[idx];document.getElementById('sell-title').textContent='Sell '+pos.t;document.getElementById('sell-shares').value=pos.s;document.getElementById('sell-price').value=pos.cur||pos.p;document.getElementById('sell-err').style.display='none';document.getElementById('m-sell').style.display='flex';}
 function selWhy(btn,why){document.querySelectorAll('.why-tag').forEach(t=>t.classList.remove('selected'));btn.classList.add('selected');S.sellWhy=why;}
 function confirmSell(){const shares=parseFloat(document.getElementById('sell-shares').value);const price=parseFloat(document.getElementById('sell-price').value);if(isNaN(shares)||isNaN(price)){document.getElementById('sell-err').style.display='block';return;}const pos=S.pos[S.sellTarget];const pnl=(price-pos.p)*shares;S.realised+=pnl;localStorage.setItem('ti72_realised',S.realised.toString());S.hist.unshift({type:'SELL',t:pos.t,shares,price,pnl:pnl.toFixed(0),why:S.sellWhy||'No reason tagged',date:new Date().toLocaleDateString()});if(shares>=pos.s)S.pos.splice(S.sellTarget,1);else S.pos[S.sellTarget].s-=shares;save();renderPos();cM('m-sell');}
@@ -6501,10 +6547,10 @@ async function applyImport(mode){
   save(); renderPos(); try{renderGoalTracker();renderFactorConcentration();renderConvictionJournal();}catch(e){}
 }
 
-function addPos(){const t=document.getElementById('f-t').value.toUpperCase().trim();const s=parseFloat(document.getElementById('f-s').value);const p=parseFloat(document.getElementById('f-p').value);if(!t||isNaN(s)||isNaN(p)){alert('Please fill in all three fields');return;}var _th=document.getElementById('f-thesis');S.pos.push({t,s,p,cur:p,thesis:(_th?_th.value.trim():'')});S.hist.unshift({type:'BUY',t,shares:s,price:p,pnl:'0',why:'Manual entry',date:new Date().toLocaleDateString()});save();['f-t','f-s','f-p','f-thesis'].forEach(id=>{var e=document.getElementById(id);if(e)e.value='';});renderPos();try{renderConvictionJournal();}catch(e){}}
+function addPos(){const t=document.getElementById('f-t').value.toUpperCase().trim();const s=parseFloat(document.getElementById('f-s').value);const p=parseFloat(document.getElementById('f-p').value);if(!t||isNaN(s)||isNaN(p)){alert('Please fill in all three fields');return;}var _th=document.getElementById('f-thesis');var _ex=S.pos.find(x=>x.t===t);if(_ex){var _ts=_ex.s+s;_ex.p=((_ex.s*_ex.p)+(s*p))/_ts;_ex.s=_ts;if(!_ex.cur)_ex.cur=p;if(_th&&_th.value.trim())_ex.thesis=_th.value.trim();}else{S.pos.push({t,s,p,cur:p,thesis:(_th?_th.value.trim():'')});}S.hist.unshift({type:'BUY',t,shares:s,price:p,pnl:'0',why:'Manual entry',date:new Date().toLocaleDateString()});save();['f-t','f-s','f-p','f-thesis'].forEach(id=>{var e=document.getElementById(id);if(e)e.value='';});renderPos();try{renderConvictionJournal();}catch(e){}}
 function renderPos(){const list=document.getElementById('pos-list'),conc=document.getElementById('conc');if(!S.pos.length){list.innerHTML='<div style="padding:14px 0;text-align:center;color:var(--text3);font-size:12px;">No positions yet</div>';conc.innerHTML='';['r-pos','r-top'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='—';el.className='b b-gray';}});['p-val','p-pnl','p-inv'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});document.getElementById('p-realised').textContent=(S.realised>=0?'+':'')+'$'+S.realised.toFixed(0);renderHist();return;}
 const tot=S.pos.reduce((a,p)=>a+p.s*p.cur,0);const sorted=[...S.pos].sort((a,b)=>(b.s*b.cur)-(a.s*a.cur));
-list.innerHTML=sorted.map(p=>{const val=p.s*p.cur,cost=p.s*p.p,pnl=val-cost,pct=((pnl/cost)*100).toFixed(1),up=pnl>=0;const ri=S.pos.indexOf(p);return`<div class="pos-row"><div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;"><span class="pos-tk" onclick="openTicker('${p.t}')">${p.t}</span><span style="font-size:10px;color:var(--text3);">${p.s} shares · avg $${p.p.toFixed(2)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span class="${up?'up':'dn'}" style="font-size:11px;font-weight:600;">${up?'+':''}$${pnl.toFixed(0)} (${up?'+':''}${pct}%)</span><canvas id="spk-${p.t}" width="64" height="22" style="display:block;"></canvas><span style="font-size:10px;color:var(--text3);">$${val.toFixed(0)}</span></div></div><button class="sell-btn" onclick="openSell(${ri})">Sell</button></div>`;}).join('');
+list.innerHTML=sorted.map(p=>{const val=p.s*p.cur,cost=p.s*p.p,pnl=val-cost,pct=((pnl/cost)*100).toFixed(1),up=pnl>=0;const ri=S.pos.indexOf(p);return`<div class="pos-row"><div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;"><span class="pos-tk" onclick="openTicker('${p.t}')">${p.t}</span><span style="font-size:10px;color:var(--text3);">${p.s} shares · avg $${p.p.toFixed(2)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span class="${up?'up':'dn'}" style="font-size:11px;font-weight:600;">${up?'+':''}$${pnl.toFixed(0)} (${up?'+':''}${pct}%)</span><canvas id="spk-${p.t}" width="64" height="22" style="display:block;"></canvas><span style="font-size:10px;color:var(--text3);">$${val.toFixed(0)}</span></div></div><button class="sell-btn" onclick="editPos(${ri})" style="background:none;color:var(--text2);border:0.5px solid var(--border2);margin-right:6px;">Edit</button><button class="sell-btn" onclick="openSell(${ri})">Sell</button></div>`;}).join('');
 setTimeout(()=>{sorted.forEach(p=>{const c=document.getElementById('spk-'+p.t);if(c)drawSparkline(c,genSparkData(p.s*p.cur>=p.s*p.p),p.s*p.cur>=p.s*p.p);});},50);
 conc.innerHTML=sorted.slice(0,5).map(p=>{const pct=((p.s*p.cur/tot)*100).toFixed(1),w=Math.min(parseFloat(pct),100);const col=parseFloat(pct)>35?'var(--amber)':parseFloat(pct)>20?'var(--blue)':'var(--green)';return`<div class="mw"><div class="mt2"><span class="ml">${p.t}</span><span class="mv">${pct}%</span></div><div class="mb"><div class="mf" style="width:${w}%;background:${col};"></div></div></div>`;}).join('');
 const top3=sorted.slice(0,3).reduce((a,p)=>a+p.s*p.cur,0);const t3p=((top3/tot)*100).toFixed(1),cnt=S.pos.length;const rp=document.getElementById('r-pos');rp.textContent=`${cnt}${cnt>12?' · above ~12 guide':' · OK'}`;rp.className=cnt>12?'b b-a':'b b-g';const rt=document.getElementById('r-top');const ok=parseFloat(t3p)>=40&&parseFloat(t3p)<=50;rt.textContent=`${t3p}% — ${ok?'On target':parseFloat(t3p)<40?'Under':'Over'}`;rt.className=ok?'b b-g':'b b-a';
