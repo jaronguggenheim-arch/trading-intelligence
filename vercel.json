@@ -13,7 +13,8 @@
     "api/alerts.js":     { "memory": 128, "maxDuration": 10 },
     "api/push.js":       { "memory": 128, "maxDuration": 10 },
     "api/parse-holdings.js": { "memory": 256, "maxDuration": 30 },
-    "api/quotes.js":     { "memory": 256, "maxDuration": 300 }
+    "api/quotes.js":     { "memory": 256, "maxDuration": 300 },
+    "api/news-brief.js": { "memory": 256, "maxDuration": 20 }
   },
   "crons": [
     {

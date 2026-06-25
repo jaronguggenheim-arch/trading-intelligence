@@ -10015,6 +10015,7 @@ function renderNewsFilter(ticker) {
     let intelBlock = '';
     if (pt) {
       const ptScore = (typeof SCORES !== 'undefined' && SCORES[pt]) ? SCORES[pt] : 0;
+      (window._newsBriefData=window._newsBriefData||{})[idx]={h:a.title,s:(bodyText||''),t:pt,sc:ptScore};
       const ptTrend = (typeof getScoreTrend === 'function') ? getScoreTrend(pt) : null;
       const trendStr = ptTrend && Math.abs(ptTrend.delta) >= 2
         ? ` <span style="color:${ptTrend.color};font-weight:700;">${ptTrend.arrow}${Math.abs(ptTrend.delta)} (${ptTrend.days}d)</span>` : '';
@@ -10046,6 +10047,7 @@ function renderNewsFilter(ticker) {
     const expandBody = `<div id="ni-${idx}" style="display:${expandedDefault?'':'none'};margin-top:9px;padding:11px 13px;background:var(--bg3);border-radius:7px;border:0.5px solid var(--border2);">
       <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${linkTickers(bodyText || 'No summary available for this article.')}</p>
       ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;" onclick="event.stopPropagation()">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — live news loads automatically on Vercel</span>` : ''}
+      <div id="nb-${idx}" style="margin-top:9px;"></div>
       ${intelBlock}
     </div>`;
     return divider + `<div style="padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="toggleNewsItem(${idx}, this)">
@@ -10066,6 +10068,19 @@ function renderNewsFilter(ticker) {
   }).join('');
 }
 
+async function loadNewsBrief(idx){
+  var el=document.getElementById('nb-'+idx); if(!el||el.dataset.loaded) return;
+  var d=(window._newsBriefData||{})[idx]; if(!d||!d.h) return;
+  el.dataset.loaded='1';
+  el.innerHTML='<div style="font-size:11px;color:var(--text3);">Generating context…</div>';
+  try{
+    var r=await fetch('/api/news-brief',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({headline:d.h,summary:d.s,ticker:d.t,score:d.sc})});
+    var j=await r.json();
+    if(j&&j.brief){ el.innerHTML='<div style="font-size:10px;font-weight:700;color:#6366f1;letter-spacing:.04em;margin-bottom:6px;">\U0001f9e0 WHY IT MATTERS · AI context</div><div style="font-size:12px;color:var(--text2);line-height:1.7;">'+String(j.brief).replace(/</g,'&lt;')+'</div>'; }
+    else { el.innerHTML=''; }
+  }catch(e){ el.innerHTML=''; }
+}
+
 function toggleNewsItem(idx, row) {
   const body = document.getElementById('ni-' + idx);
   const chevron = row.querySelector('.ni-chevron');
@@ -10073,6 +10088,7 @@ function toggleNewsItem(idx, row) {
   const open = body.style.display !== 'none';
   body.style.display = open ? 'none' : '';
   if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+  if (!open) { try { loadNewsBrief(idx); } catch(e){} }
 }
 function newsLoadMore() {
   _newsDisplayCount += NEWS_PAGE_SIZE;
