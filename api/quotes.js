@@ -79,14 +79,28 @@ export default async function handler(req, res) {
   // Refresh path (cron / manual): fetch all quotes paced under the rate limit
   if (!FH_KEY) return res.status(200).json(cache || { quotes: {}, count: 0, computedAt: null, note: 'FH_KEY not configured' });
   const quotes = (cache && cache.quotes) ? Object.assign({}, cache.quotes) : {};
-  const BATCH = 10, DELAY = 11000; // ~55 calls/min, under Finnhub free 60/min
-  for (let i = 0; i < ALL_TICKERS.length; i += BATCH) {
-    const batch = ALL_TICKERS.slice(i, i + BATCH);
-    const results = await Promise.allSettled(batch.map(t => fhQuote(t, FH_KEY)));
-    results.forEach((r, idx) => { if (r.status === 'fulfilled' && r.value) quotes[batch[idx]] = r.value; });
-    if (i + BATCH < ALL_TICKERS.length) await new Promise(r => setTimeout(r, DELAY));
+  const BATCH = 5, DELAY = 5500; // gentle bursts (~54/min) to avoid 429 drops
+  async function runPass(list) {
+    for (let i = 0; i < list.length; i += BATCH) {
+      const batch = list.slice(i, i + BATCH);
+      const results = await Promise.allSettled(batch.map(t => fhQuote(t, FH_KEY)));
+      results.forEach((r, idx) => { if (r.status === 'fulfilled' && r.value) quotes[batch[idx]] = r.value; });
+      if (i + BATCH < list.length) await new Promise(r => setTimeout(r, DELAY));
+    }
   }
-  const snapshot = { quotes, count: Object.keys(quotes).length, computedAt: new Date().toISOString() };
+  await runPass(ALL_TICKERS);
+  // Fallback: fill any still-missing tickers from the nightly scores snapshot (last close)
+  const stillMissing = ALL_TICKERS.filter(t => !(quotes[t] && quotes[t].c));
+  if (stillMissing.length && kvUrl && kvToken) {
+    const snap = await kvGetJSON(kvUrl, kvToken, 'ti:scores:latest');
+    const meta = (snap && snap.meta) || {};
+    stillMissing.forEach(t => {
+      const m = meta[t];
+      if (m && m.price) quotes[t] = { c: m.price, d: null, dp: (m.dp != null ? m.dp : null), h: m.h52 || null, l: m.l52 || null, v: null, eod: true };
+    });
+  }
+  const live = ALL_TICKERS.filter(t => quotes[t] && quotes[t].c && !quotes[t].eod).length;
+  const snapshot = { quotes, count: Object.keys(quotes).length, live, computedAt: new Date().toISOString() };
   if (kvUrl && kvToken) await kvExec(kvUrl, kvToken, ['SET', 'ti:quotes:latest', JSON.stringify(snapshot)]);
   return res.status(200).json(snapshot);
 }
