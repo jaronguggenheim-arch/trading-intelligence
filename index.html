@@ -10012,6 +10012,10 @@ function renderNewsFilter(ticker) {
       .filter(function(t){ return typeof NAMES !== 'undefined' && NAMES[t.ticker]; })
       .sort(function(x,y){ return parseFloat(y.relevance_score||0) - parseFloat(x.relevance_score||0); })[0];
     const pt = primaryTicker ? primaryTicker.ticker : null;
+    const _pSc = pt ? ((typeof SCORES!=='undefined' && SCORES[pt]) ? SCORES[pt] : 0) : 0;
+    const _pCol = _pSc>=70?'var(--green)':_pSc>=50?'var(--amber)':'var(--red)';
+    const _pBg = _pSc>=70?'var(--green-bg)':_pSc>=50?'var(--amber-bg)':'var(--red-bg)';
+    const scoreChip = (pt && _pSc) ? `<span onclick="event.stopPropagation();openTicker('${pt}')" title="${pt} signal score ${_pSc}/100 — tap for full analysis" style="font-size:10px;font-weight:700;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:5px;background:${_pBg};color:${_pCol};border:0.5px solid ${_pCol};white-space:nowrap;cursor:pointer;">${pt} ${_pSc}</span>` : '';
     let intelBlock = '';
     if (pt) {
       const ptScore = (typeof SCORES !== 'undefined' && SCORES[pt]) ? SCORES[pt] : 0;
@@ -10048,13 +10052,13 @@ function renderNewsFilter(ticker) {
       <p style="font-size:12px;color:var(--text2);line-height:1.7;margin:0 0 8px 0;">${linkTickers(bodyText || 'No summary available for this article.')}</p>
       ${!isDemo && a.url && a.url!=='#' ? `<a href="${a.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-weight:600;" onclick="event.stopPropagation()">Read full article ↗</a>` : isDemo ? `<span style="font-size:10px;color:var(--text3);">Demo article — live news loads automatically on Vercel</span>` : ''}
       <div id="nb-${idx}" style="margin-top:9px;"></div>
-      ${intelBlock}
+      ${pt ? `<div style="margin-top:8px;"><span onclick="event.stopPropagation();openTicker('${pt}')" style="font-size:11px;color:#6366f1;font-weight:600;cursor:pointer;">${pt} — full analysis →</span></div>` : ''}
     </div>`;
     return divider + `<div style="padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="toggleNewsItem(${idx}, this)">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4;flex:1;">${a.title}</div>
         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
-          <span style="font-size:10px;padding:3px 8px;border-radius:5px;background:${_sBg(sl)};color:${_sColor(sl)};border:0.5px solid ${_sBd(sl)};white-space:nowrap;font-weight:600;">${_sLabel(sl)}</span>
+          ${scoreChip}<span style="font-size:10px;padding:3px 8px;border-radius:5px;background:${_sBg(sl)};color:${_sColor(sl)};border:0.5px solid ${_sBd(sl)};white-space:nowrap;font-weight:600;">${_sLabel(sl)}</span>
           <span class="ni-chevron" style="font-size:10px;color:var(--text3);transition:transform .2s;${expandedDefault?'transform:rotate(180deg)':''}">▾</span>
         </div>
       </div>
