@@ -2270,6 +2270,46 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <!-- MY INTEL PERSONALIZED BRIEF -->
   <div id="my-intel-brief" style="margin-bottom:20px;"></div>
 
+  <!-- POSITIONS SECTION -->
+  <div id="pt-positions" style="margin-bottom:24px;">
+    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Positions</div>
+    <div class="g4" style="margin-bottom:12px;">
+      <div class="smc"><div class="smn up" id="p-val">—</div><div class="sml-lbl">Portfolio value</div></div>
+      <div class="smc"><div class="smn up" id="p-pnl">—</div><div class="sml-lbl">Unrealised P&L</div></div>
+      <div class="smc"><div class="smn" id="p-inv">—</div><div class="sml-lbl">Invested</div></div>
+      <div class="smc"><div class="smn" id="p-realised">$0</div><div class="sml-lbl">Realised P&L</div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-lbl">Open positions — click ticker · Sell to close</div>
+        <div id="pos-list"><div style="padding:14px 0;text-align:center;color:var(--text3);font-size:12px;">No positions yet — add below</div></div>
+        <div class="div"></div>
+        <div class="card-lbl">Add position manually</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
+          <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Ticker</label><input id="f-t" placeholder="NVDA" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);text-transform:uppercase;font-family:'DM Sans',sans-serif;"></div>
+          <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Shares</label><input id="f-s" type="number" placeholder="10" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;"></div>
+          <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Avg cost $</label><input id="f-p" type="number" placeholder="487.00" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;"></div>
+          <button style="padding:8px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="addPos()">Add</button>
+        </div>
+        <input id="f-thesis" placeholder="Why are you buying? (your thesis — optional)" style="width:100%;margin-top:8px;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);">
+        <div style="margin-top:10px;"><input type="file" id="shot-input" accept="image/*" style="display:none;" onchange="importHoldingsFromScreenshot(this.files&&this.files[0])"><button onclick="document.getElementById('shot-input').click()" style="width:100%;padding:9px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">📷 Import from screenshot</button><div id="shot-status" style="font-size:11px;color:var(--text3);margin-top:6px;"></div></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-lbl">Trade history</div>
+          <div id="trade-hist"><div style="font-size:11px;color:var(--text3);padding:8px 0;">No trades yet</div></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Portfolio rules check</div>
+          <div id="conc"></div>
+          <div class="div"></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:11px;"><span style="color:var(--text2);">Diversification guide (~12)</span><span id="r-pos" class="b b-gray">—</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:11px;"><span style="color:var(--text2);">Top 3 at 40–50%</span><span id="r-top" class="b b-gray">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- GOAL TRACKER -->
   <div id="pt-goal" style="margin-bottom:24px;"></div>
 
@@ -2333,46 +2373,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div class="card">
           <div class="card-lbl">Your watchlist — quick view</div>
           <div id="brief-wl"><div style="font-size:11px;color:var(--text3);">Add tickers in the Watchlist tab</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- POSITIONS SECTION -->
-  <div id="pt-positions" style="margin-bottom:24px;">
-    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Positions</div>
-    <div class="g4" style="margin-bottom:12px;">
-      <div class="smc"><div class="smn up" id="p-val">—</div><div class="sml-lbl">Portfolio value</div></div>
-      <div class="smc"><div class="smn up" id="p-pnl">—</div><div class="sml-lbl">Unrealised P&L</div></div>
-      <div class="smc"><div class="smn" id="p-inv">—</div><div class="sml-lbl">Invested</div></div>
-      <div class="smc"><div class="smn" id="p-realised">$0</div><div class="sml-lbl">Realised P&L</div></div>
-    </div>
-    <div class="g2">
-      <div class="card">
-        <div class="card-lbl">Open positions — click ticker · Sell to close</div>
-        <div id="pos-list"><div style="padding:14px 0;text-align:center;color:var(--text3);font-size:12px;">No positions yet — add below</div></div>
-        <div class="div"></div>
-        <div class="card-lbl">Add position manually</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
-          <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Ticker</label><input id="f-t" placeholder="NVDA" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);text-transform:uppercase;font-family:'DM Sans',sans-serif;"></div>
-          <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Shares</label><input id="f-s" type="number" placeholder="10" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;"></div>
-          <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;">Avg cost $</label><input id="f-p" type="number" placeholder="487.00" style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;"></div>
-          <button style="padding:8px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="addPos()">Add</button>
-        </div>
-        <input id="f-thesis" placeholder="Why are you buying? (your thesis — optional)" style="width:100%;margin-top:8px;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);">
-        <div style="margin-top:10px;"><input type="file" id="shot-input" accept="image/*" style="display:none;" onchange="importHoldingsFromScreenshot(this.files&&this.files[0])"><button onclick="document.getElementById('shot-input').click()" style="width:100%;padding:9px;border:0.5px dashed var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">📷 Import from screenshot</button><div id="shot-status" style="font-size:11px;color:var(--text3);margin-top:6px;"></div></div>
-      </div>
-      <div>
-        <div class="card" style="margin-bottom:12px;">
-          <div class="card-lbl">Trade history</div>
-          <div id="trade-hist"><div style="font-size:11px;color:var(--text3);padding:8px 0;">No trades yet</div></div>
-        </div>
-        <div class="card">
-          <div class="card-lbl">Portfolio rules check</div>
-          <div id="conc"></div>
-          <div class="div"></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:11px;"><span style="color:var(--text2);">Diversification guide (~12)</span><span id="r-pos" class="b b-gray">—</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:11px;"><span style="color:var(--text2);">Top 3 at 40–50%</span><span id="r-top" class="b b-gray">—</span></div>
         </div>
       </div>
     </div>
@@ -12284,6 +12284,7 @@ function renderBudgetTab(){
   // Trades this week
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
   const weekTrades = (S.hist||[]).filter(h => {
+    if(!h || ['BUY','SELL','MIRROR'].indexOf(h.type)===-1) return false; // real trades only, not imports/edits
     try { return new Date(h.date) >= weekAgo; } catch(e) { return false; }
   }).length;
 
