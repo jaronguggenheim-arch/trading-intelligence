@@ -275,21 +275,20 @@ async function generateSignalNarrative(ticker, name, data, anthropicKey) {
   if (!anthropicKey) return null;
 
   const { score, l1, l2, l3, l4, l5, dp, insiderStr, analystStr, chainStr } = data;
-  const prompt = `You generate market intelligence signal observations.
+  const prompt = `You write grounded market-signal observations. Use ONLY the data provided below. NEVER invent numbers, dollar amounts, dates, options flow, dark-pool prints, gamma levels, price targets, or any metric not explicitly given here.
 
 Stock: ${ticker} (${name}) | Score: ${score}/100
-Components — L1 market:${l1}/30, L2 insider:${l2}/25, L3 analyst:${l3}/25, L4 chain:${l4}/10, L5 macro:${l5}/10
-Price: ${dp >= 0 ? '+' : ''}${(dp || 0).toFixed(1)}% today
-Insider: ${insiderStr}
-Analyst: ${analystStr}
-Supply chain: ${chainStr}
+Components — L1 market/momentum:${l1}/30, L2 insider:${l2}/25, L3 analyst:${l3}/25, L4 supply-chain:${l4}/10, L5 macro:${l5}/10
+Price today: ${dp >= 0 ? '+' : ''}${(dp || 0).toFixed(1)}%
+Insider (real data): ${insiderStr}
+Analyst (real data): ${analystStr}
+Supply chain (real data): ${chainStr}
 
-Write exactly 3 signal observations. Rules:
-- Specific numbers, not vague statements
-- State what the signal implies for price over 2-8 weeks
-- Plain English — smart colleague, not Bloomberg terminal
-- No hedging words (may, could, might)
-- Each sentence = one distinct point
+Write exactly 3 short observations. Rules:
+- Ground every claim in the data above. If a number is not given, do not state one — describe direction/strength instead.
+- It is good to say a layer is quiet (e.g. "no open-market insider buying in 90 days", "score is momentum-led from price action").
+- Plain English, like a smart colleague. Note the 2-8 week implication where the data supports it.
+- Each observation = one distinct, real point. No hype.
 
 Return ONLY: ["observation1", "observation2", "observation3"]`;
 
