@@ -233,6 +233,9 @@ export default async function handler(req, res) {
     const q = indexQuotes[i]?.status === 'fulfilled' ? indexQuotes[i].value : null;
     const r = fmt(q);
     if (!r) return;
+    // ETF proxies trade at a fraction of the index they track — scale to the real index level
+    const _lvlMult = { SPX:10, NDX:41, DJI:100, RUT:10 }[id];
+    if (_lvlMult && q && q.c) { r.raw = q.c * _lvlMult; r.val = fmtNum(r.raw); }
     // Attach multi-timeframe performance from weekly candles
     const candles = indexCandles[i]?.status === 'fulfilled' ? indexCandles[i].value : null;
     const tf = computeTF(candles, q?.c);
@@ -261,6 +264,7 @@ export default async function handler(req, res) {
   Object.keys(COMMODITY_PROXIES).forEach((id, i) => {
     const q = commQuotes[i]?.status === 'fulfilled' ? commQuotes[i].value : null;
     const r = fmt(q, '$');
+    if (r && id === 'GOLD' && q && q.c) { r.raw = q.c * 10; r.val = '$' + fmtNum(r.raw); }
     if (r) commodities[id] = r;
   });
 
