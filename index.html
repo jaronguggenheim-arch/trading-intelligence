@@ -9998,8 +9998,10 @@ function renderNewsFilter(ticker) {
     const sl = a.overall_sentiment_label||'Neutral';
     const topicTags = (a._cats||(a.topics||[]).map(t=>t.topic)).slice(0,2)
       .map(cat=>`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:var(--bg3);color:var(--text3);border:0.5px solid var(--border2);">${_topicLabel(cat)}</span>`).join('');
+    const _hay = ((a.title||'')+' '+(a.summary||'')+' '+(a.body||'')).toUpperCase();
+    const _mentions = function(tk){ if(!tk) return false; try{ if(new RegExp('\\b'+String(tk).replace(/[^A-Za-z0-9]/g,'')+'\\b').test(_hay)) return true; }catch(e){} var nm=(typeof NAMES!=='undefined'&&NAMES[tk])?String(NAMES[tk]).toUpperCase():''; return !!(nm && _hay.indexOf(nm)>=0); };
     const relTickers = (a.ticker_sentiment||[])
-      .filter(t=>watchlist.includes(t.ticker)&&parseFloat(t.relevance_score||0)>0.1)
+      .filter(t=>watchlist.includes(t.ticker)&&_mentions(t.ticker)&&parseFloat(t.relevance_score||0)>0.1)
       .sort((x,y)=>parseFloat(y.relevance_score||0)-parseFloat(x.relevance_score||0))
       .slice(0,4)
       .map(t=>{const tsl=t.ticker_sentiment_label||'Neutral';return `<span onclick="event.stopPropagation();openTicker('${t.ticker}')" style="font-size:10px;padding:2px 6px;border-radius:4px;background:${_sBg(tsl)};color:${_sColor(tsl)};border:0.5px solid ${_sBd(tsl)};font-family:'DM Mono',monospace;font-weight:600;cursor:pointer;">${t.ticker}</span>`;}).join('');
@@ -10018,7 +10020,7 @@ function renderNewsFilter(ticker) {
       : '';
     // ── Intelligence Context — enriched block for covered tickers ────────────
     const primaryTicker = (a.ticker_sentiment||[])
-      .filter(function(t){ return typeof NAMES !== 'undefined' && NAMES[t.ticker]; })
+      .filter(function(t){ return typeof NAMES !== 'undefined' && NAMES[t.ticker] && _mentions(t.ticker); })
       .sort(function(x,y){ return parseFloat(y.relevance_score||0) - parseFloat(x.relevance_score||0); })[0];
     const pt = primaryTicker ? primaryTicker.ticker : null;
     const _pSc = pt ? ((typeof SCORES!=='undefined' && SCORES[pt]) ? SCORES[pt] : 0) : 0;
