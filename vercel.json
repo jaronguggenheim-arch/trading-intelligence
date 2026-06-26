@@ -3,7 +3,7 @@
     "api/fh.js":         { "memory": 128, "maxDuration": 10 },
     "api/td.js":         { "memory": 128, "maxDuration": 10 },
     "api/sync.js":       { "memory": 128, "maxDuration": 10 },
-    "api/markets.js":    { "memory": 128, "maxDuration": 20 },
+    "api/markets.js":    { "memory": 256, "maxDuration": 60 },
     "api/digest.js":     { "memory": 256, "maxDuration": 30 },
     "api/scores.js":     { "memory": 256, "maxDuration": 60 },
     "api/funds.js":      { "memory": 128, "maxDuration": 15 },
@@ -27,6 +27,10 @@
     },
     {
       "path": "/api/quotes",
+      "schedule": "*/10 11-23 * * 1-5"
+    },
+    {
+      "path": "/api/markets",
       "schedule": "*/10 11-23 * * 1-5"
     }
   ]

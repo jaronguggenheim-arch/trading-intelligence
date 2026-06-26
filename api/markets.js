@@ -6,6 +6,22 @@
 //   Indices/Equities/Commodities/Crypto → Finnhub (via FH_KEY)
 //   Treasury yields → FRED API (free, no key needed for public series)
 
+function _kvEnv() {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_REST_API_TOKEN;
+  return { url, token };
+}
+async function _kvExec(url, token, cmd) {
+  try {
+    const r = await fetch(url, { method:'POST', headers:{ Authorization:`Bearer ${token}`, 'Content-Type':'application/json' }, body:JSON.stringify(cmd), signal:AbortSignal.timeout(6000) });
+    const j = await r.json(); return j.result ?? null;
+  } catch (e) { return null; }
+}
+async function _kvGetJSON(url, token, key) {
+  const raw = await _kvExec(url, token, ['GET', key]);
+  try { return raw ? JSON.parse(raw) : null; } catch { return null; }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -16,6 +32,15 @@ export default async function handler(req, res) {
 
   const FH = process.env.FH_KEY;
   if (!FH) return res.status(500).json({ ok: false, error: 'FH_KEY not configured' });
+
+  // Server-side cache: browsers read the KV snapshot (kept warm by the /api/markets cron),
+  // so we don't fetch ~50 Finnhub+FRED symbols on every page view (which caused stale fallbacks).
+  const { url: _kvUrl, token: _kvToken } = _kvEnv();
+  const _isCron = (req.headers['user-agent'] || '').toLowerCase().includes('vercel-cron') || (req.query && req.query.refresh === '1');
+  if (!_isCron && _kvUrl && _kvToken) {
+    const _cache = await _kvGetJSON(_kvUrl, _kvToken, 'ti:markets:latest');
+    if (_cache) return res.status(200).json(_cache);
+  }
 
   // ── Symbol maps ────────────────────────────────────────────────────────────
   // Finnhub quote endpoint returns: c (current), d (change), dp (% change), h, l, o, pc
@@ -258,13 +283,7 @@ export default async function handler(req, res) {
     }
   });
 
-  return res.status(200).json({
-    ok: true,
-    computedAt: new Date().toISOString(),
-    indices,
-    crypto,
-    commodities,
-    fx,
-    yields
-  });
+  const _payload = { ok: true, computedAt: new Date().toISOString(), indices, crypto, commodities, fx, yields };
+  if (_kvUrl && _kvToken) { try { await _kvExec(_kvUrl, _kvToken, ['SET', 'ti:markets:latest', JSON.stringify(_payload)]); } catch (e) {} }
+  return res.status(200).json(_payload);
 }
