@@ -37,10 +37,8 @@ export default async function handler(req, res) {
   // so we don't fetch ~50 Finnhub+FRED symbols on every page view (which caused stale fallbacks).
   const { url: _kvUrl, token: _kvToken } = _kvEnv();
   const _isCron = (req.headers['user-agent'] || '').toLowerCase().includes('vercel-cron') || (req.query && req.query.refresh === '1');
-  if (!_isCron && _kvUrl && _kvToken) {
-    const _cache = await _kvGetJSON(_kvUrl, _kvToken, 'ti:markets:latest');
-    if (_cache) return res.status(200).json(_cache);
-  }
+  const _cache = (_kvUrl && _kvToken) ? await _kvGetJSON(_kvUrl, _kvToken, 'ti:markets:latest') : null;
+  if (!_isCron && _cache) return res.status(200).json(_cache);
 
   // ── Symbol maps ────────────────────────────────────────────────────────────
   // Finnhub quote endpoint returns: c (current), d (change), dp (% change), h, l, o, pc
@@ -288,6 +286,10 @@ export default async function handler(req, res) {
   });
 
   const _payload = { ok: true, computedAt: new Date().toISOString(), indices, crypto, commodities, fx, yields };
-  if (_kvUrl && _kvToken) { try { await _kvExec(_kvUrl, _kvToken, ['SET', 'ti:markets:latest', JSON.stringify(_payload)]); } catch (e) {} }
-  return res.status(200).json(_payload);
+  const _cnt = o => o ? (Object.keys(o.indices||{}).length + Object.keys(o.crypto||{}).length + Object.keys(o.commodities||{}).length + Object.keys(o.fx||{}).length) : 0;
+  const _newN = _cnt(_payload), _oldN = _cnt(_cache);
+  if (_kvUrl && _kvToken && _newN >= Math.max(20, Math.floor(_oldN * 0.8))) {
+    try { await _kvExec(_kvUrl, _kvToken, ['SET', 'ti:markets:latest', JSON.stringify(_payload)]); } catch (e) {}
+  }
+  return res.status(200).json(_newN >= _oldN ? _payload : _cache);
 }
