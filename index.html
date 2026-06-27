@@ -5176,8 +5176,8 @@ function renderMarkets(){
     return `<div class="market-cell" onclick="openInstrument('${m.id}')"><div class="mc-name">${m.region?`<span class="mkt-region">${m.region}</span>`:''}${m.name}</div><div class="mc-val">${m.val}</div><div class="mc-chg ${up?'up':'dn'}">${chg}</div></div>`;
   };
   const fill=(rid,arr)=>{const el=document.getElementById(rid);if(el)el.innerHTML=arr.map(cell).join('');};
-  fill('indices-row',MARKETS.indices);
-  fill('fx-row',MARKETS.fx);
+  fill('indices-row',MARKETS.indices.filter(m=>['SPX','NDX','DJI','RUT','VIX'].includes(m.id)));
+  fill('fx-row',MARKETS.fx.filter(m=>m.id!=='DXY'));
   fill('yields-row',MARKETS.yields);
   fill('commodities-row',MARKETS.commodities);
   fill('crypto-row',MARKETS.crypto);

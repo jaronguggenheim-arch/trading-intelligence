@@ -202,13 +202,13 @@ export default async function handler(req, res) {
   const oneYearAgo = nowTs - 366 * 86400;
 
   // Fetch all ETF/equity/crypto quotes + index weekly candles in parallel
-  const [indexQuotes, cryptoQuotes, commQuotes, vixQuote, indexCandles] = await Promise.all([
+  const [indexQuotes, cryptoQuotes, commQuotes, vixQuote] = await Promise.all([
     Promise.allSettled(indexSymbols.map(s => fhQuote(s))),
     Promise.allSettled(cryptoSymbols.map(s => fhQuote(s))),
     Promise.allSettled(commSymbols.map(s => fhQuote(s))),
-    fhQuote('^VIX'),
-    Promise.allSettled(indexSymbols.map(s => fhCandles(s, oneYearAgo, nowTs, 'W')))
+    fhQuote('^VIX')
   ]);
+  const indexCandles = [];
 
   // Fetch FX pairs (slightly different endpoint)
   const fxKeys    = Object.keys(FX_PAIRS);
