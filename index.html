@@ -778,7 +778,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
     <!-- RIGHT COLUMN: summary + today's pick + signal cards -->
     <div id="morning-right">
-      <div id="morning-summary-banner" style="margin-bottom:14px;"></div>
+      <div id="sage-mode-card" style="margin-bottom:14px;"></div>
       <div id="morning-picks-card" class="card" style="margin-bottom:14px;"></div>
       <div id="morning-chain-card" style="margin-bottom:14px;min-height:0;"></div>
       <div id="morning-insider-card" style="margin-bottom:14px;min-height:0;"></div>
@@ -786,10 +786,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div><!-- end #morning-right -->
 
   </div><!-- end #morning-2col -->
-
-  <!-- Sage pick + daily intel moved below the news feed (news-first) -->
-  <!-- SAGE MODE CARD -->
-  <div id="sage-mode-card" style="margin:14px 0;"></div>
 
   <!-- DAILY INTELLIGENCE CARD — what fired since yesterday -->
   <div id="morning-intel-card" style="margin-bottom:14px;"></div>
@@ -9983,8 +9979,11 @@ function renderNewsFilterBtns() {
   var sectorEl = document.getElementById('news-sector-btns');
   if (sectorEl) {
     var sh = '<div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:6px;flex-shrink:0">Sector:</div>';
+    var _na = (typeof _avNewsCache!=='undefined') ? _avNewsCache : [];
+    function _secCnt(k){ var set=new Set((NEWS_SECTORS[k].tickers)||[]); return _na.filter(function(a){ var ts=(a.ticker_sentiment||[]).map(function(t){return t.ticker;}); var lk=a._ticker||null; return (lk&&set.has(lk))||ts.some(function(t){return set.has(t);}); }).length; }
     Object.entries(NEWS_SECTORS).forEach(function(e) {
       var key = e[0], s = e[1];
+      if (_na.length && _newsActiveSector!==key && _secCnt(key)===0) return; // hide sectors with no news right now
       var active = (_newsActiveSector === key) ? ' active' : '';
       sh += '<button class="ns-pill' + active + '" onclick="filterNewsBySector(' + "'" + key + "'" + ',this)">' + s.label + '</button>';
     });
@@ -10016,6 +10015,20 @@ function filterNewsBySector(sector, btn) {
 }
 
 
+function _pruneEmptyNewsFilters(){
+  try{
+    var arts=(typeof _avNewsCache!=='undefined')?_avNewsCache:[];
+    if(!arts.length) return;
+    var tc={};
+    arts.forEach(function(a){ (a._cats||(a.topics||[]).map(function(t){return t.topic;})).forEach(function(c){ tc[c]=(tc[c]||0)+1; }); });
+    document.querySelectorAll('#news-topic-btns button').forEach(function(b){
+      var m=(b.getAttribute('onclick')||'').match(/filterNewsTopic\('([^']+)'/);
+      if(!m) return; var tp=m[1];
+      b.style.display=(tp==='all'||tc[tp]>0)?'':'none';
+    });
+  }catch(e){}
+}
+
 function renderNewsFilter(ticker) {
   const feed = document.getElementById('av-news-feed');
   if (!feed) return;
@@ -10023,6 +10036,7 @@ function renderNewsFilter(ticker) {
     feed.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:18px 0;border:0.5px dashed var(--border2);border-radius:7px;">No articles loaded yet \u2014 click Refresh.</div>`;
     return;
   }
+  try { _pruneEmptyNewsFilters(); } catch(e) {}
   let articles = _avNewsCache;
   // Sector filter
   if (_newsActiveSector && _newsActiveSector !== 'all') {
