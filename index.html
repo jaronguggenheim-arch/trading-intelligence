@@ -1917,20 +1917,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="font-size:11px;font-weight:700;color:var(--text);">Market structure <span style="font-weight:400;color:var(--text3);">· 0–5 day signals</span></div>
     <div style="font-size:9px;color:var(--text3);margin-left:auto;" id="de-l1-ts">Live signals · refreshes automatically</div>
   </div>
-  <div class="g2" style="margin-bottom:16px;">
+  <div style="margin-bottom:16px;">
     <div class="card">
-      <div class="card-lbl">Dark pool clustering — institutional accumulation</div>
-      <div style="padding:12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">
-        <div id="de-dp-body" style="margin-bottom:6px;"><div style="font-size:10px;color:var(--text3);">Scanning volume anomalies…</div></div>
-        <div style="font-size:10px;color:var(--text3);font-style:italic;">Silent accumulation = elevated volume + price flat = institutions building a cost basis. Breakout typically follows within 30 days, 60–70% of the time.</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-lbl">GEX — gamma exposure price gravity</div>
-      <div style="padding:12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">
-        <div id="de-gex-body" style="margin-bottom:6px;"><div style="font-size:10px;color:var(--text3);">Computing price structure…</div></div>
-        <div style="font-size:10px;color:var(--text3);font-style:italic;">Positive GEX = dealers long gamma = buy dips, sell rips = low-vol drift higher. RSI + MA position is the free proxy: above MA20 with RSI 45–65 = positive GEX regime.</div>
-      </div>
+      <div class="card-lbl">Market structure — momentum &amp; price strength</div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">The L1 layer of the score: short-term price &amp; volume momentum from the live score engine — higher means stronger near-term structure. Price-based only; no options or dark-pool data.</div>
+      <div id="de-l1-momentum"><div style="font-size:11px;color:var(--text3);padding:8px 0;">Loading market structure…</div></div>
     </div>
   </div>
 
@@ -1971,10 +1962,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div id="de-l3-revisions"><div style="font-size:11px;color:var(--text3);padding:10px 0;">Loading analyst intelligence…</div></div>
     </div>
     <div class="card">
-      <div class="card-lbl">Options flow — institutional pre-positioning</div>
+      <div class="card-lbl">Catalyst window — high-conviction names reporting soon</div>
       <div style="padding:12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);">
         <div id="de-opts-body" style="margin-bottom:6px;"><div style="font-size:10px;color:var(--text3);">Loading pre-earnings windows…</div></div>
-        <div style="font-size:10px;color:var(--text3);font-style:italic;">High convergence score + earnings within 21 days = classic pre-positioning window. Institutional options sweeps concentrate here — rising score momentum is the free proxy.</div>
+        <div style="font-size:10px;color:var(--text3);font-style:italic;">Tracked stocks with earnings in the next 21 days, ranked by signal score — a high score heading into a catalyst is where institutional moves cluster. ⬆ = score rising into the event.</div>
       </div>
     </div>
   </div>
@@ -13176,6 +13167,23 @@ function _initPreEarningsFlow() {
   } catch(err){el.innerHTML='<div style="font-size:10px;color:var(--text3);">Loading earnings windows…</div>';}
 }
 
+function renderDeepEdgeL1(){
+  var el=document.getElementById('de-l1-momentum'); if(!el) return;
+  var comp=(typeof _SERVER_COMPONENTS!=='undefined')?_SERVER_COMPONENTS:{};
+  var rows=Object.keys(comp).filter(function(t){ return comp[t] && comp[t].l1!=null && (typeof NAMES!=='undefined'&&NAMES[t]); });
+  if(!rows.length){ el.innerHTML='<div style="font-size:11px;color:var(--text3);font-style:italic;padding:6px 0;">Live market-structure scores load with the daily score engine.</div>'; return; }
+  rows.sort(function(a,b){ return (comp[b].l1||0)-(comp[a].l1||0); });
+  el.innerHTML=rows.slice(0,8).map(function(t){
+    var l1=comp[t].l1||0; var pct=Math.max(3,Math.min(100,Math.round(l1/30*100)));
+    var col=l1>=20?'var(--green)':l1>=12?'var(--amber)':'var(--text3)';
+    return '<div onclick="openTicker(\''+t+'\')" style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">'
+      +'<span style="font-size:12px;font-weight:700;font-family:\'DM Mono\',monospace;min-width:50px;color:var(--text);">'+t+'</span>'
+      +'<div style="flex:1;height:6px;border-radius:4px;background:var(--bg4);overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:'+col+';"></div></div>'
+      +'<span style="font-size:11px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+col+';min-width:36px;text-align:right;">'+l1+'/30</span>'
+      +'</div>';
+  }).join('');
+}
+
 async function initDeepEdge(force) {
   if (_deInitDone && !force) return;
   _deInitDone = true;
@@ -13184,8 +13192,7 @@ async function initDeepEdge(force) {
   if (hdrTs) hdrTs.textContent = 'Live · ' + ts;
   try { renderDeepEdgeServerL4(); } catch(e) {}
   try { _initPreEarningsFlow(); } catch(e) {}
-  _initVolumeCluster();
-  _initPriceStructure();
+  try { renderDeepEdgeL1(); } catch(e) {}
   await Promise.all([renderDeepEdgeL2(), renderDeepEdgeL3(), renderDeepEdgeL4()]);
 }
 // ═══════════════════════════════════════════════════════════════
