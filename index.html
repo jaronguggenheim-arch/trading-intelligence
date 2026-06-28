@@ -1236,6 +1236,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div style="font-size:11px;color:var(--text3);line-height:1.6;">Each card below is one real chain: the signal, how long the lag runs, and what to watch. <strong style="color:var(--text2);">Pick an industry</strong> to filter the chains, tap any ticker to open it, or open any stock to see where it sits.</div>
   </div>
 
+<!-- SECTOR HEATMAP -->
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-lbl">Sector signal heatmap — avg signal strength by layer</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each cell = average L1–L5 score across sector tickers. <span style="color:var(--green);font-weight:600;">Green ≥75</span> · <span style="color:var(--amber);font-weight:600;">Amber 55–74</span> · <span style="color:var(--text3);font-weight:600;">Gray &lt;55</span>. Click any cell to drill in — opens score breakdown for each stock in that sector.</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><div id="sector-heatmap-el" style="min-width:540px;"></div></div>
+    <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
+  </div>
+
 <!-- CHAIN INDUSTRY FILTER -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
   <div style="font-size:12px;font-weight:600;color:var(--text);">Pick an industry</div>
@@ -1249,13 +1257,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-  <!-- SECTOR HEATMAP -->
-  <div class="card" style="margin-bottom:12px;">
-    <div class="card-lbl">Sector signal heatmap — avg signal strength by layer</div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each cell = average L1–L5 score across sector tickers. <span style="color:var(--green);font-weight:600;">Green ≥75</span> · <span style="color:var(--amber);font-weight:600;">Amber 55–74</span> · <span style="color:var(--text3);font-weight:600;">Gray &lt;55</span>. Click any cell to drill in — opens score breakdown for each stock in that sector.</div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><div id="sector-heatmap-el" style="min-width:540px;"></div></div>
-    <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
-  </div>
 
 <!-- CHAIN: URANIUM -->
   <div class="chain-card" data-chain-ticker="CCJ">
