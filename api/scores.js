@@ -313,7 +313,11 @@ Return ONLY: ["observation1", "observation2", "observation3"]`;
     const match = text.match(/\[[\s\S]*?\]/);
     if (match) {
       const arr = JSON.parse(match[0]);
-      return Array.isArray(arr) && arr.length === 3 ? arr : null;
+      if (!Array.isArray(arr)) return null;
+      // Safety net: drop any observation asserting institutional data we don't have
+      const FAB = /(dark[\s-]?pool|call\s*sweep|put\s*sweep|option[s]?\s*sweep|gamma\s*exposure|\bGEX\b|block\s*trade|options\s*flow|institutional\s*sweep)/i;
+      const clean = arr.filter(x => typeof x === 'string' && x.trim() && !FAB.test(x));
+      return clean.length ? clean : null;
     }
     return null;
   } catch (e) { return null; }
