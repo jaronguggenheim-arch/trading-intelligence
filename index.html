@@ -277,6 +277,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 #myintel-gate{display:none;}
 #tab-portfolio.locked > :not(#myintel-gate){display:none !important;}
 #tab-portfolio.locked #myintel-gate{display:block;}
+#pt-goal:empty,#pt-factor:empty,#pt-conviction:empty,#pt-earnings:empty,#pt-chain:empty,#pt-budget:empty,#pt-brief:empty{display:none !important;margin:0 !important;}
 .brand-sub{font-size:10px;color:var(--text3);font-weight:400;}
 .live-p{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);background:var(--green-bg);padding:2px 8px;border-radius:20px;font-weight:600;border:0.5px solid var(--green-bd);white-space:nowrap;}
 .ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0;}
@@ -437,7 +438,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="hdr-r">
     <button type="button" class="hbtn" onclick="gT('landing',null)">Home</button>
     <button type="button" class="hbtn" onclick="gT('about',null)">About</button>
-    <button type="button" class="hbtn" onclick="showAPI()">API Key</button>
+    <button type="button" class="hbtn" onclick="showAPI()" style="display:none">API Key</button>
     <span class="plan-chip" onclick="showProModal()" id="hdr-pro-chip" style="display:none;">✦ Pro</span>
     <span id="hdr-auth-area" style="margin-left:4px;"></span>
   </div>
@@ -6784,7 +6785,7 @@ function initLandingDynamic(){
       var topSc = SCORES[topSym];
       var topNm = NAMES[topSym]||topSym;
       var topTd = TICKER_DATA[topSym]||{};
-      var priceStr = topTd.price ? '$'+topTd.price.toFixed(2) : '—';
+      var _qLp=(window._QUOTE_CACHE&&_QUOTE_CACHE[topSym])?_QUOTE_CACHE[topSym]:null; var priceStr = (_qLp&&_qLp.c) ? '$'+Number(_qLp.c).toFixed(2) : '—';
       var ld2 = LAYER_DATA[topSym]||{};
       // Build 2-sentence rationale from top signals
       var whySigs = [];
