@@ -507,7 +507,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <div style="width:30px;height:30px;border-radius:8px;background:var(--blue-bg);border:0.5px solid var(--blue-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;">🎯</div>
         <div>
           <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;">5 signal layers → one 0–100 score</div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.5;">Insider activity, options flow, analyst moves, supply chain position, and macro regime — compressed into one conviction score per stock, updated daily.</div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5;">Insider filings, market structure, analyst moves, supply chain position, and macro regime — compressed into one conviction score per stock, updated daily.</div>
         </div>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
@@ -538,7 +538,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="lp-hero">
     <div class="lp-badge"><div class="lp-dot" style="width:6px;height:6px;animation:blink 2s infinite;display:inline-block;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);"></div>Live signals · Updated daily</div>
     <h1 class="lp-h1">Stop being one step<br><span class="acc">behind the market.</span></h1>
-    <p class="lp-sub">Institutional-grade signals — insider trades, dark pool activity, options flow, analyst moves — translated into plain English. One decision. Every morning.</p>
+    <p class="lp-sub">Institutional-grade signals — insider filings, analyst moves, supply-chain shifts, and market momentum — translated into plain English. One decision. Every morning.</p>
     <div class="lp-actions">
       <button type="button" class="lp-btn-pri" onclick="enterApp()">Open the Dashboard →</button>
       <button type="button" class="lp-btn-sec" onclick="gT('about',null)">How it works</button>
@@ -558,7 +558,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div>
       <div class="lp-sec-lbl" style="color:var(--amber);">The problem</div>
       <h2 class="lp-h2">Hedge funds read the signals.<br>You read the headlines — 48 hours later.</h2>
-      <p class="lp-p">By the time a stock makes the news, the smart money already moved. Insiders filed. Dark pools printed. Options swept. The institutions have had their meal. You're getting the leftovers.</p>
+      <p class="lp-p">By the time a stock makes the news, the smart money already moved. Insiders filed. Analysts revised. Suppliers signaled. The institutions have had their meal. You're getting the leftovers.</p>
       <p class="lp-p">It's not about being smarter. It's about having the same information — translated into something you can act on before the crowd catches up.</p>
     </div>
     <ul class="lp-pain">
@@ -574,10 +574,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <p class="lp-p" style="text-align:center;max-width:500px;margin:0 auto 50px;">We aggregate 6 institutional signal types, score them 0–100, and tell you what they mean — in one sentence.</p>
     <div class="lp-sig-grid">
       <div class="lp-sig-card c-green"><div class="lp-sig-ico">🏦</div><h3>Insider Cluster Buys</h3><p>Multiple executives buying with their own money in the same window — the most reliable bullish signal available.</p><div class="lp-ex">"3 ASML executives bought $2.4M this week — rare and historically bullish."</div></div>
-      <div class="lp-sig-card c-blue"><div class="lp-sig-ico">🌊</div><h3>Dark Pool Prints</h3><p>Off-exchange institutional block trades that often precede significant price moves.</p><div class="lp-ex">"$340M dark pool block on NVDA above ask — accumulation signal."</div></div>
-      <div class="lp-sig-card c-purple"><div class="lp-sig-ico">⚡</div><h3>Options Flow</h3><p>Large sweeping call or put orders that often front-run catalysts by days or weeks.</p><div class="lp-ex">"$2.1M call sweep on PLTR at 12× average volume — someone expects a move."</div></div>
+      <div class="lp-sig-card c-blue"><div class="lp-sig-ico">📈</div><h3>Market Structure</h3><p>Short-term price and volume momentum — where near-term strength is building, scored live from market data.</p><div class="lp-ex">"NVDA momentum scores 27/30 — among the strongest near-term structures in coverage."</div></div>
+      <div class="lp-sig-card c-purple"><div class="lp-sig-ico">📅</div><h3>Catalyst Timing</h3><p>High-conviction names with earnings or catalysts approaching — the windows where moves tend to cluster.</p><div class="lp-ex">"TSM scores 72 with earnings 18 days out — a catalyst window worth watching."</div></div>
       <div class="lp-sig-card c-amber"><div class="lp-sig-ico">📊</div><h3>Analyst Upgrades</h3><p>Tier-1 bank revisions that carry weight, especially when multiple analysts move together.</p><div class="lp-ex">"Goldman upgraded ASML to Strong Buy, PT $720→$850. 5th upgrade this quarter."</div></div>
-      <div class="lp-sig-card c-teal"><div class="lp-sig-ico">🧮</div><h3>GEX / Gamma Exposure</h3><p>Market maker positioning data that reveals where price is likely to pin or accelerate.</p><div class="lp-ex">"NVDA flipped to positive GEX at $880 — price acceleration likely above this level."</div></div>
+      <div class="lp-sig-card c-teal"><div class="lp-sig-ico">🌍</div><h3>Macro &amp; Sector Regime</h3><p>The backdrop — interest rates, sector flows, and market regime that lift or pressure the whole group.</p><div class="lp-ex">"Falling yields with semis leading the tape — a supportive regime for the AI hardware chain."</div></div>
       <div class="lp-sig-card c-indigo"><div class="lp-sig-ico">🔗</div><h3>Supply Chain Correlation</h3><p>When a key supplier moves, downstream stocks follow with a measurable lag.</p><div class="lp-ex">"ASML booked record orders. NVDA, TSM, SMCI historically follow with 3–7 day lag."</div></div>
     </div>
   </div></div>
@@ -586,7 +586,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div>
       <div class="lp-sec-lbl" style="color:var(--blue);">Signal scores</div>
       <h2 class="lp-h2">Every ticker.<br>One number.<br>Zero guesswork.</h2>
-      <p class="lp-p">We roll up insider activity, options flow, dark pool prints, analyst sentiment, GEX, and supply chain signals into a single 0–100 conviction score — recalculated daily.</p>
+      <p class="lp-p">We roll up insider filings, analyst revisions, market structure, supply-chain lead/lag, and macro regime into a single 0–100 conviction score — recalculated daily.</p>
       <button type="button" class="lp-btn-pri" onclick="enterApp()">See your tickers →</button>
     </div>
   </div></div></div></div>
@@ -605,7 +605,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <h2 class="lp-h2" style="text-align:center;margin-bottom:10px;">From signal to action in minutes</h2>
     <p class="lp-p" style="text-align:center;max-width:480px;margin:0 auto 48px;">Built for people with a day job who still want an institutional edge.</p>
     <div class="lp-how-grid">
-      <div class="lp-how-card"><div class="lp-how-num">1</div><h3>Signals aggregated overnight</h3><p>We pull SEC Form 4 filings, options flow, dark pool prints, analyst revisions, and gamma data — updated before market open.</p></div>
+      <div class="lp-how-card"><div class="lp-how-num">1</div><h3>Signals aggregated overnight</h3><p>We pull SEC Form 4 filings, analyst revisions, price and volume momentum, supply-chain moves, and macro data — updated before market open.</p></div>
       <div class="lp-how-card"><div class="lp-how-num">2</div><h3>Scores calculated, plain English written</h3><p>Each signal is weighted into a 0–100 conviction score. A one-sentence explanation is generated for every signal card.</p></div>
       <div class="lp-how-card"><div class="lp-how-num">3</div><h3>You make one call</h3><p>Open Sage Mode for a single decision, or dive into Deep Edge and Signal Scores for the full picture.</p></div>
     </div>
@@ -688,7 +688,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
   <div class="ap-prose">
     <h2>The frustration that started this</h2>
-    <p>Every market participant has had this experience: you watch a stock climb for weeks, finally read an article explaining why, and realize — the smart money was in this trade a month ago. The insider filing happened. The large options sweep happened. The dark pool block printed. Everything was in the public record. You just didn't have the tools to see it.</p>
+    <p>Every market participant has had this experience: you watch a stock climb for weeks, finally read an article explaining why, and realize — the smart money was in this trade a month ago. The insider filing happened. The analyst revision happened. The supplier's order book turned. Everything was in the public record. You just didn't have the tools to see it.</p>
     <p>That gap isn't about intelligence. It's about access to aggregated, interpreted, actionable signal data — the kind of infrastructure that institutional desks have built over decades. We built this platform to close that gap.</p>
     <h2>Who this is for</h2>
     <p>We built this for the person who takes their investing seriously but doesn't have six hours a day to read SEC filings, scan options chains, and parse analyst upgrades. Someone who understands that there's a difference between reading the news and reading the signals — but has never had the tools to act on that difference.</p>
@@ -699,10 +699,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div class="ap-expls">
     <h2>How the signals work</h2>
     <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">🏦</div><div class="ap-expl-nm">Insider Cluster Buys</div><div class="ap-expl-wt">up to +40 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>When corporate insiders buy shares and file a Form 4 with the SEC, it's public record. A cluster — three or more buys from different executives in the same 30-day window — is one of the most reliably bullish signals in the market. Insiders can sell for many reasons. They buy for one: they believe the stock is going higher.</p><div class="ap-expl-ex">"3 ASML executives purchased a combined $2.4M in shares over 8 days — a rare cluster buy that historically precedes a 12–18% move over 60 days."</div></div></div>
-    <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">🌊</div><div class="ap-expl-nm">Dark Pool Prints</div><div class="ap-expl-wt">up to +30 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>Dark pools are private, off-exchange venues where institutions execute large block trades without publicly impacting price. A large block printed at or above the ask price signals institutional accumulation — someone wants in and isn't waiting for a dip.</p><div class="ap-expl-ex">"$340M dark pool block on NVDA printed at $870 — above the current ask. Unusual size suggests a new or expanded institutional position."</div></div></div>
-    <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">⚡</div><div class="ap-expl-nm">Options Flow</div><div class="ap-expl-wt">up to +25 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>Options sweep detection identifies large, aggressive orders that sweep multiple exchanges — meaning the buyer needed to fill immediately regardless of price. Sweeps above a certain size relative to average daily volume often front-run catalysts by days or weeks.</p><div class="ap-expl-ex">"$2.1M call sweep on PLTR, 45-day expiry, 12× average daily volume. Multi-exchange sweep suggests urgency."</div></div></div>
+    <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">📈</div><div class="ap-expl-nm">Market Structure</div><div class="ap-expl-wt">up to +30 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>The L1 layer of the score reads short-term price and volume momentum — relative strength, trend, and volume behaviour — to gauge how strong a stock's near-term structure is. It is computed entirely from live market data; no options or dark-pool feeds are used.</p><div class="ap-expl-ex">"NVDA market-structure score 27/30 — among the strongest near-term setups in coverage this week."</div></div></div>
+    <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">⚡</div><div class="ap-expl-nm">Catalyst Timing</div><div class="ap-expl-wt">up to +25 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>Stocks with a high conviction score heading into a known catalyst — most often an earnings date inside the next three weeks — are where large moves tend to cluster. We combine the live earnings calendar with score momentum to surface those windows. It does not claim to see options order flow.</p><div class="ap-expl-ex">"TSM scores 72 with earnings 18 days out and its score rising into the print — a catalyst window worth watching."</div></div></div>
     <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">📊</div><div class="ap-expl-nm">Analyst Upgrades</div><div class="ap-expl-wt">up to +20 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>Analyst revisions from Tier 1 institutions carry more weight than consensus moves, especially when a price target moves significantly above current price. Revision clusters — multiple analysts moving in the same direction in a short window — are especially meaningful.</p><div class="ap-expl-ex">"Goldman upgraded ASML to Strong Buy, raising PT from $720→$850. 5th analyst upgrade this quarter."</div></div></div>
-    <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">🧮</div><div class="ap-expl-nm">GEX / Gamma</div><div class="ap-expl-wt">up to +20 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>Gamma Exposure measures how much market makers need to hedge as price moves. When GEX flips from negative to positive, market makers switch from amplifying to dampening moves — creating a magnetic effect toward key levels and supporting sustained trends.</p><div class="ap-expl-ex">"NVDA crossed into positive GEX at $880. Dealers are now net long gamma — supports a grind higher."</div></div></div>
+    <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">🌍</div><div class="ap-expl-nm">Macro &amp; Sector Regime</div><div class="ap-expl-wt">up to +20 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>The L5 layer reads the backdrop a stock trades inside — interest-rate direction, sector momentum, and overall market regime. A supportive regime lifts an entire group; a hostile one pressures even strong names. Built from live index and rate data.</p><div class="ap-expl-ex">"Falling yields with semiconductors leading the tape — a supportive macro regime for the AI hardware chain."</div></div></div>
     <div class="ap-expl"><div class="ap-expl-l"><div class="ap-expl-ic">🔗</div><div class="ap-expl-nm">Supply Chain Correlation</div><div class="ap-expl-wt">up to +15 pts</div></div><div class="ap-expl-r"><h4>What it is</h4><p>Key nodes in a supply chain move in correlated fashion with a measurable lag. When ASML beats on orders, TSM typically follows 3–7 days later. We map 6 supply chains and score whether a chain move is likely to propagate downstream.</p><div class="ap-expl-ex">"ASML reported record Q1 bookings. TSM and NVDA have followed with 3–7 day lag in 7 of the last 9 instances."</div></div></div>
   </div>
   <div class="ap-sage">
