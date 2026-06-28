@@ -1214,7 +1214,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;">
     <div>
       <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Supply chain intelligence</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.6;">Upstream companies are leading indicators. When TSMC raises capex, ASML order book follows 6–9 months later. Filter by sector below — or open any stock page to see its chain position.</div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.6;">Track the companies whose moves lead the stocks you trade. Pick an industry below to see its chain.</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <span id="correlations-updated-ts" style="font-size:10px;color:var(--text3);"></span>
@@ -1222,17 +1222,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- SECTOR HEATMAP -->
+  <!-- HOW IT WORKS -->
   <div class="card" style="margin-bottom:12px;">
-    <div class="card-lbl">Sector signal heatmap — avg signal strength by layer</div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each cell = average L1–L5 score across sector tickers. <span style="color:var(--green);font-weight:600;">Green ≥75</span> · <span style="color:var(--amber);font-weight:600;">Amber 55–74</span> · <span style="color:var(--text3);font-weight:600;">Gray &lt;55</span>. Click any cell to drill in — opens score breakdown for each stock in that sector.</div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><div id="sector-heatmap-el" style="min-width:540px;"></div></div>
-    <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
+    <div class="card-lbl" style="margin-bottom:6px;">How to read this — supply chains as early signals</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.65;">Some companies move <strong>before</strong> the ones everyone watches. When a chip foundry raises spending, the machine-makers it buys from get orders months later — and the chipmakers it supplies report stronger sales a quarter or two after that. Catch the upstream move and you can see the downstream one coming.</div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:12px 0;font-family:'DM Mono',monospace;font-size:11px;">
+      <span style="padding:4px 10px;border-radius:6px;background:var(--blue-bg);color:var(--blue);">Upstream signal</span>
+      <span style="color:var(--text3);">— lag →</span>
+      <span style="padding:4px 10px;border-radius:6px;background:var(--bg3);color:var(--text2);border:0.5px solid var(--border2);">Mid-chain</span>
+      <span style="color:var(--text3);">— lag →</span>
+      <span style="padding:4px 10px;border-radius:6px;background:var(--green-bg);color:var(--green);">The stock you trade</span>
+    </div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.6;">Each card below is one real chain: the signal, how long the lag runs, and what to watch. <strong style="color:var(--text2);">Pick an industry</strong> to filter the chains, tap any ticker to open it, or open any stock to see where it sits.</div>
   </div>
 
 <!-- CHAIN INDUSTRY FILTER -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-  <div style="font-size:12px;font-weight:600;color:var(--text);">Chain intelligence</div>
+  <div style="font-size:12px;font-weight:600;color:var(--text);">Pick an industry</div>
   <div id="chain-industry-filter" style="display:flex;gap:5px;flex-wrap:wrap;">
     <button onclick="filterCorrChainsBySector(null,this)" data-csec="" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--blue-bd);background:var(--blue-bg);color:var(--blue);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;">All chains</button>
     <button onclick="filterCorrChainsBySector('Semis',this)" data-csec="Semis" style="font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Semiconductors</button>
@@ -1243,7 +1249,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-
+  <!-- SECTOR HEATMAP -->
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-lbl">Sector signal heatmap — avg signal strength by layer</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each cell = average L1–L5 score across sector tickers. <span style="color:var(--green);font-weight:600;">Green ≥75</span> · <span style="color:var(--amber);font-weight:600;">Amber 55–74</span> · <span style="color:var(--text3);font-weight:600;">Gray &lt;55</span>. Click any cell to drill in — opens score breakdown for each stock in that sector.</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><div id="sector-heatmap-el" style="min-width:540px;"></div></div>
+    <div id="sector-drill-el" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2);display:none;"></div>
+  </div>
 
 <!-- CHAIN: URANIUM -->
   <div class="chain-card" data-chain-ticker="CCJ">
