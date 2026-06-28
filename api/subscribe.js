@@ -81,6 +81,15 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, audienceId: id, subscribers: list.length, synced });
   }
 
+  // ── Check (read-only): is an email subscribed + total list size ────────────
+  if (req.method === 'GET' && req.query && req.query.action === 'check') {
+    if (!kvUrl || !kvToken) return res.status(200).json({ ok: false, reason: 'KV not configured' });
+    const email = req.query.email ? decodeURIComponent(req.query.email).toLowerCase().trim() : '';
+    const total = await kvExec(kvUrl, kvToken, ['SCARD', 'ti:subscribers']);
+    const isMember = email ? await kvExec(kvUrl, kvToken, ['SISMEMBER', 'ti:subscribers', email]) : null;
+    return res.status(200).json({ ok: true, email, subscribed: isMember === 1, total: total || 0 });
+  }
+
   // ── Unsubscribe (GET, from the link in the email footer) ───────────────────
   if (req.method === 'GET' && req.query && req.query.action === 'unsub') {
     const email = req.query.email ? decodeURIComponent(req.query.email) : '';
