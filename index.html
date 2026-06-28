@@ -6677,7 +6677,7 @@ function gT(n,btn){
   if(n==='markets'){setTimeout(function(){try{_updateMarketPulse();_updateSectorHeat();}catch(e){}},80);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
-  if(n==='deepedge'){setTimeout(function(){try{if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
+  if(n==='deepedge'){setTimeout(function(){try{initDeepEdge();if(S.focusTicker)filterDeepEdge(S.focusTicker,null);}catch(e){}},50);}
   if(n==='smart'){setTimeout(function(){try{renderFundManagerCards();populateSmartMoneySelect&&populateSmartMoneySelect();populateEdgarButtons&&populateEdgarButtons();renderSmartMoney&&renderSmartMoney();}catch(e){}},80);}
   if(n==='portfolio'){setTimeout(function(){try{
     _renderMyIntelTab();  
