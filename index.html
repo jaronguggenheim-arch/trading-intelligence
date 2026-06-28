@@ -12224,7 +12224,37 @@ document.addEventListener('click', function(e) {
   }
 });
 
+function renderChainLiveStatus(){
+  var SC=(typeof SCORES!=='undefined')?SCORES:{};
+  var DL=(typeof _SERVER_DELTAS!=='undefined')?_SERVER_DELTAS:{};
+  var NM=(typeof NAMES!=='undefined')?NAMES:{};
+  var anyScore=Object.keys(SC).length>0;
+  document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(function(card){
+    var set={}; var anchor=card.getAttribute('data-chain-ticker'); if(anchor) set[anchor]=1;
+    card.querySelectorAll('[onclick*="openTicker("]').forEach(function(el){
+      var m=(el.getAttribute('onclick')||'').match(/openTicker\('([A-Z]+)'\)/); if(m) set[m[1]]=1;
+    });
+    var tks=Object.keys(set).filter(function(t){ return NM[t] && SC[t]!=null; }).slice(0,5);
+    var strip=card.querySelector(':scope > .chain-live-strip');
+    if(!anyScore || !tks.length){ if(strip) strip.remove(); return; }
+    var chips=tks.map(function(t){
+      var sc=SC[t]; var d=DL[t];
+      var col=sc>=70?'var(--green)':sc>=50?'var(--amber)':'var(--text3)';
+      var arr=(d!=null&&Math.abs(d)>=2)?(' <span style="color:'+(d>0?'var(--green)':'var(--red)')+';">'+(d>0?'↑':'↓')+Math.abs(d)+'</span>'):'';
+      return '<span onclick="event.stopPropagation();openTicker(\''+t+'\')" style="cursor:pointer;font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text2);margin-right:12px;white-space:nowrap;">'+t+' <b style="color:'+col+';">'+sc+'</b>'+arr+'</span>';
+    }).join('');
+    var ts=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    if(!strip){
+      strip=document.createElement('div'); strip.className='chain-live-strip';
+      strip.style.cssText='margin-top:10px;padding-top:9px;border-top:0.5px solid var(--border);display:flex;align-items:center;flex-wrap:wrap;gap:2px;';
+      card.appendChild(strip);
+    }
+    strip.innerHTML='<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-right:10px;">Live scores</span>'+chips+'<span style="font-size:9px;color:var(--text3);margin-left:auto;">updated '+ts+'</span>';
+  });
+}
+
 function initCorrTab() {
+  try { renderChainLiveStatus(); } catch(e) {}
   // Make chain-card headers clickable — wire chain-title + chain-action to open the stock modal
   document.querySelectorAll('.chain-card[data-chain-ticker]').forEach(function(card) {
     const ticker = card.dataset.chainTicker;
