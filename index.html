@@ -10146,6 +10146,7 @@ function renderNewsFilter(ticker) {
     const _pCol = _pSc>=70?'var(--green)':_pSc>=50?'var(--amber)':'var(--red)';
     const _pBg = _pSc>=70?'var(--green-bg)':_pSc>=50?'var(--amber-bg)':'var(--red-bg)';
     const scoreChip = (pt && _pSc) ? `<span onclick="event.stopPropagation();openTicker('${pt}')" title="${pt} signal score ${_pSc}/100 — tap for full analysis" style="font-size:10px;font-weight:700;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:5px;background:${_pBg};color:${_pCol};border:0.5px solid ${_pCol};white-space:nowrap;cursor:pointer;">${pt} ${_pSc}</span>` : '';
+    (window._newsBriefData=window._newsBriefData||{})[idx]={h:a.title,s:(bodyText||a.summary||''),t:pt||'',sc:(pt&&typeof SCORES!=='undefined'&&SCORES[pt])?SCORES[pt]:null};
     let intelBlock = '';
     if (pt) {
       const ptScore = (typeof SCORES !== 'undefined' && SCORES[pt]) ? SCORES[pt] : 0;
@@ -10200,6 +10201,7 @@ function renderNewsFilter(ticker) {
       ${expandBody}
     </div>`;
   }).join('');
+  try { if (showing > 0) loadNewsBrief(startIdx); } catch(e) {}
 }
 
 async function loadNewsBrief(idx){
