@@ -3700,10 +3700,13 @@ function _subscribeDigest() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email })
   }).then(r => r.json()).then(j => {
-    if (row) row.innerHTML = '<span style="font-size:11px;color:var(--green);">✓ Subscribed — Morning Brief arrives at 6:50am weekdays</span>';
-    try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
-    // Also update the morning tab CTA if visible
-    try { _renderMorningSubscribeCTA(); } catch(e) {}
+    if (j && j.ok) {
+      if (row) row.innerHTML = '<span style="font-size:11px;color:var(--green);">✓ Subscribed — Morning Brief arrives at 6:50am weekdays</span>';
+      try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
+      try { _renderMorningSubscribeCTA(); } catch(e) {}
+    } else {
+      if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Couldn\'t subscribe — please try again in a moment</span>';
+    }
   }).catch(() => {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Error — please try again</span>';
   });
@@ -3723,8 +3726,12 @@ function _subscribeMorning() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email })
   }).then(r => r.json()).then(j => {
-    if (row) row.innerHTML = '<span style="font-size:12px;color:var(--green);">✓ Subscribed — you\'ll get the Morning Brief at 6:50am weekdays</span>';
-    try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
+    if (j && j.ok) {
+      if (row) row.innerHTML = '<span style="font-size:12px;color:var(--green);">✓ Subscribed — you\'ll get the Morning Brief at 6:50am weekdays</span>';
+      try { localStorage.setItem('ti_digest_email', email); } catch(e) {}
+    } else {
+      if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Couldn\'t subscribe — please try again in a moment</span>';
+    }
   }).catch(() => {
     if (row) row.innerHTML = '<span style="font-size:11px;color:var(--red);">Something went wrong — please try again</span>';
   });
