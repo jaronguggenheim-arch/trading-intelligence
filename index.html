@@ -4143,7 +4143,7 @@ async function renderPortfolioEarnings(){
       var resp=await fetch(base+'/calendar/earnings?from='+fmt(today)+'&to='+fmt(toD)+keyQ);
       var data=await resp.json();
       arr=(data.earningsCalendar||[]);
-      if(arr.length){ _earningsCache=arr; _earningsCacheTime=Date.now(); }
+      if(arr.length){ _earningsCache=arr; _earningsCacheTime=Date.now(); try{applyLiveCatalysts(arr);}catch(e){} }
     }
   }catch(e){ arr=null; }
   if(!arr||!arr.length){ try{ arr=getStaticEarningsFallback(); }catch(e){ arr=[]; } }
@@ -6688,7 +6688,7 @@ function gT(n,btn){
   /* Show layer quick-picks only on Signal Scores tab */
   try{const ltb=document.getElementById('layer-ticker-btns');if(ltb)ltb.style.display=isMkt?'none':'flex';}catch(e){}
   if(n==='landing'){setTimeout(function(){try{initLandingDynamic();}catch(e){}},50);}
-  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();_updateMarketPulse();_updateSectorHeat();}catch(e){}},50);}
+  if(n==='morning'){setTimeout(function(){try{renderHotBar();renderMorningBriefDynamic();renderNewsFilterBtns();_updateMarketPulse();_updateSectorHeat();loadEarningsCalendar();}catch(e){}},50);}
   if(n==='markets'){setTimeout(function(){try{_updateMarketPulse();_updateSectorHeat();}catch(e){}},80);}
   if(n==='convergence'){setTimeout(function(){try{initLayerPanel();renderConvergence&&renderConvergence();}catch(e){}},50);}
   if(n==='correlations'){setTimeout(function(){try{initCorrTab();}catch(e){}},50);}
@@ -8200,6 +8200,39 @@ function toggleEarningsFilter() {
   renderEarningsCalendar(_earningsCache);
 }
 
+function applyLiveCatalysts(arr){
+  try{
+    if (typeof UPCOMING_CATALYSTS === 'undefined') return;
+    var today = new Date().toISOString().slice(0,10);
+    if (arr && arr.length){
+      var bySym = {};
+      arr.forEach(function(e){
+        if (!e || !e.symbol || !e.date || e.date < today) return;
+        if (!bySym[e.symbol] || e.date < bySym[e.symbol].date) bySym[e.symbol] = e;
+      });
+      Object.keys(bySym).forEach(function(sym){
+        var e = bySym[sym];
+        var eps = (e.epsEstimate != null) ? ('EPS est ' + e.epsEstimate) : '';
+        var ex = UPCOMING_CATALYSTS[sym];
+        if (ex){
+          ex.date = e.date;
+          ex.label = 'Earnings';
+          ex.note = String(ex.note||'').replace(/\s*[·,]?\s*implied move[^·]*/i,'').trim() || eps || 'Upcoming earnings report';
+        } else {
+          UPCOMING_CATALYSTS[sym] = { date: e.date, label: 'Earnings', note: eps || 'Upcoming earnings report' };
+        }
+      });
+    }
+    // Drop any catalyst now in the past so a stale date never shows
+    Object.keys(UPCOMING_CATALYSTS).forEach(function(sym){
+      var c = UPCOMING_CATALYSTS[sym];
+      if (c && c.date && c.date < today) delete UPCOMING_CATALYSTS[sym];
+    });
+    try { renderMorningBriefDynamic(); } catch(e) {}
+    try { if (typeof S !== 'undefined' && S.activeTab === 'portfolio') _renderMyIntelTab(); } catch(e) {}
+  } catch(e) {}
+}
+
 async function loadEarningsCalendar(forceRefresh) {
   const container = document.getElementById('earnings-calendar-container');
   if (!container) return;
@@ -8242,12 +8275,14 @@ async function loadEarningsCalendar(forceRefresh) {
     _earningsCache = earningsArr;
     _earningsCacheTime = now;
     renderEarningsCalendar(earningsArr);
+    try { applyLiveCatalysts(earningsArr); } catch(e) {}
   } catch(err) {
     console.warn('Earnings calendar fetch failed:', err);
     // Fallback: show a curated static list
     _earningsCache = getStaticEarningsFallback();
     _earningsCacheTime = now;
     renderEarningsCalendar(_earningsCache);
+    try { applyLiveCatalysts(_earningsCache); } catch(e) {}
   }
 }
 
@@ -11792,7 +11827,7 @@ const SIGNAL_EVENTS = {
   ]
 };
 
-const UPCOMING_CATALYSTS = {
+let UPCOMING_CATALYSTS = {
   NVDA:  { date:'2026-05-22', label:'Q1 FY2026 earnings', note:'Blackwell ramp · implied move ±11.4%' },
   ASML:  { date:'2026-07-16', label:'Q2 2026 order intake', note:'TSMC lag window opens in ~7 weeks' },
   TSM:   { date:'2026-07-17', label:'TSMC Q2 2026 earnings', note:'Capex trajectory + CoWoS yield update' },
