@@ -6717,13 +6717,14 @@ function initLandingDynamic(){
       // Build double set for infinite scroll
       var buildTick = function(sym){
         var sc = SCORES[sym]||50;
-        var td = TICKER_DATA[sym]||{};
-        var price = td.price ? '$'+td.price.toFixed(2) : '—';
-        var chg = td.chg !== undefined ? td.chg : (Math.random()>0.5?1:-1)*(Math.random()*3).toFixed(1)*1;
-        var chgStr = (chg>=0?'+':'')+chg.toFixed(1)+'%';
-        var cls = chg>=0?'up':'dn';
+        var q = (window._QUOTE_CACHE && _QUOTE_CACHE[sym]) ? _QUOTE_CACHE[sym] : null;
+        var price = (q && q.c) ? '$'+Number(q.c).toFixed(2) : '—';
+        var hasChg = q && q.dp != null;
+        var chg = hasChg ? Number(q.dp) : null;
+        var chgStr = hasChg ? ((chg>=0?'+':'')+chg.toFixed(1)+'%') : '';
+        var cls = (chg!=null && chg>=0)?'up':'dn';
         var scCls = sc>=70?'hi':sc>=40?'mid':'lo';
-        return '<div class="lp-tick"><span class="lp-tick-sym">'+sym+'</span><span class="lp-tick-p">'+price+'</span><span class="'+cls+'">'+chgStr+'</span><span class="lp-tick-s '+scCls+'">'+sc+'</span></div>';
+        return '<div class="lp-tick"><span class="lp-tick-sym">'+sym+'</span><span class="lp-tick-p">'+price+'</span>'+(chgStr?'<span class="'+cls+'">'+chgStr+'</span>':'')+'<span class="lp-tick-s '+scCls+'">'+sc+'</span></div>';
       };
       stripTickers.forEach(function(sym){ stripHtml += buildTick(sym); });
       stripTickers.forEach(function(sym){ stripHtml += buildTick(sym); }); // duplicate for loop
