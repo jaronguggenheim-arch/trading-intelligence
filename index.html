@@ -10256,7 +10256,7 @@ async function loadNewsBrief(idx){
   try{
     var r=await fetch('/api/news-brief',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({headline:d.h,summary:d.s,ticker:d.t,score:d.sc})});
     var j=await r.json();
-    if(j&&j.brief){ el.innerHTML='<div style="font-size:10px;font-weight:700;color:#6366f1;letter-spacing:.04em;margin-bottom:6px;">\U0001f9e0 WHY IT MATTERS · AI context</div><div style="font-size:12px;color:var(--text2);line-height:1.7;">'+String(j.brief).replace(/</g,'&lt;')+'</div>'; }
+    if(j&&j.brief){ el.innerHTML='<div style="font-size:10px;font-weight:700;color:#6366f1;letter-spacing:.04em;margin-bottom:6px;">🧠 WHY IT MATTERS · AI context</div><div style="font-size:12px;color:var(--text2);line-height:1.7;">'+String(j.brief).replace(/</g,'&lt;')+'</div>'; }
     else { el.innerHTML=''; }
   }catch(e){ el.innerHTML=''; }
 }
