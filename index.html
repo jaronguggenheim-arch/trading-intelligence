@@ -176,7 +176,7 @@ body.mkt-mode .main{padding:0;max-width:none;}
   .main{padding:10px 10px;}
   html,body{overflow-x:hidden !important;max-width:100% !important;}
   .hdr{padding:0 12px;gap:8px;}
-  #live-ticker-strip{display:none !important;}
+  #live-ticker-strip{display:flex !important;}
   .brand{font-size:12px !important;white-space:nowrap;}
   .hdr-r{gap:5px;}
   #stock-focus-bar > div{overflow:hidden !important;}
@@ -205,7 +205,8 @@ body.mkt-mode .main{padding:0;max-width:none;}
   #stock-focus-bar{padding:5px 10px;}
   #stock-focus-bar *::-webkit-scrollbar{display:none;}
   #stock-focus-bar > div{scrollbar-width:none;-ms-overflow-style:none;}
-  #focus-search-input{font-size:11px;}
+  #focus-search-input{font-size:16px;}
+  input[type="text"],input[type="email"],input[type="number"],input[type="search"],textarea{font-size:16px !important;}
   /* Search box: flex-grow to fill row 1 */
   #stock-focus-bar > div > div:nth-child(2){width:auto;flex:1;min-width:0;}
   /* Ticker chips: smaller on mobile */
@@ -249,9 +250,9 @@ body.mkt-mode .main{padding:0;max-width:none;}
   /* Layer ticker buttons: full-width second row, no left separator */
   #layer-ticker-btns{width:100%;flex:none !important;min-width:0;padding-left:0 !important;border-left:none !important;margin-top:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
   /* Remove mask gradient — clips on narrow screens */
-  #ticker-scroll-wrap{mask-image:none !important;-webkit-mask-image:none !important;overflow-x:auto;}
+  #ticker-scroll-wrap{mask-image:none !important;-webkit-mask-image:none !important;overflow:hidden;}
   /* Stop infinite animation on mobile — let user scroll manually */
-  #ticker-scroll-track{animation:none !important;transform:none !important;width:max-content;}
+  #ticker-scroll-track{width:max-content;}
 }
 
 
