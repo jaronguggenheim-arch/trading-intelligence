@@ -3675,7 +3675,7 @@ function _gsiInit() {
   const gsiId = S.gsi || localStorage.getItem('ti72_gsi') || DEFAULT_GSI_CLIENT_ID;
   if (typeof google === 'undefined' || !google.accounts) return;
   try {
-    google.accounts.id.initialize({ client_id: gsiId, callback: _gsiCallback, auto_select: !window._AUTH_EXPIRED });
+    google.accounts.id.initialize({ client_id: gsiId, callback: _gsiCallback, auto_select: !window._AUTH_EXPIRED, use_fedcm_for_prompt: true });
     if (!S.gUser) {
       const area = document.getElementById('hdr-auth-area');
       if (area) {
@@ -6647,7 +6647,7 @@ function _renderMyIntelTab(){
   if(tp) tp.classList.toggle("locked", locked);
   if(locked){
     try{ if(typeof google!=="undefined" && google.accounts){
-      google.accounts.id.initialize({client_id:(S.gsi||localStorage.getItem("ti72_gsi")||DEFAULT_GSI_CLIENT_ID),callback:_gsiCallback,auto_select:!window._AUTH_EXPIRED});
+      google.accounts.id.initialize({client_id:(S.gsi||localStorage.getItem("ti72_gsi")||DEFAULT_GSI_CLIENT_ID),callback:_gsiCallback,auto_select:!window._AUTH_EXPIRED,use_fedcm_for_prompt:true});
       var gb=document.getElementById("gate-gsi-btn"); if(gb){gb.innerHTML=""; google.accounts.id.renderButton(gb,{theme:"filled_blue",size:"large",type:"standard",shape:"pill",text:"signin_with",locale:"en"});}
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
