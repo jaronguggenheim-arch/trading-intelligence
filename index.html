@@ -5266,7 +5266,7 @@ function renderMarkets(){
   fill('indices-row',MARKETS.indices.filter(m=>['SPX','NDX','DJI','RUT','VIX'].includes(m.id)));
   fill('fx-row',MARKETS.fx.filter(m=>m.id!=='DXY'));
   fill('yields-row',MARKETS.yields);
-  fill('commodities-row',MARKETS.commodities);
+  fill('commodities-row',MARKETS.commodities.filter(m=>m.id==='GOLD')); // only GOLD (GLDx10) is accurate; other ETF proxies misrepresent the commodity
   fill('crypto-row',MARKETS.crypto);
   // Update Commodities sector tile % from gold's live change
   const goldM = MARKETS.commodities.find(m=>m.id==='GOLD');
@@ -8837,7 +8837,7 @@ async function renderDailyIntelCard() {
   const l3key = 'l3_' + today.toDateString();
   const l3d = typeof DE_CACHE !== 'undefined' && DE_CACHE[l3key] && DE_CACHE[l3key].data;
   const cascades = (l3d && typeof detectAnalystCascades !== 'undefined')
-    ? detectAnalystCascades(l3d).slice(0, 3) : [];
+    ? detectAnalystCascades(l3d).filter(function(c){ return (c.upgradeCount||0) > 0; }).slice(0, 3) : [];
 
   const hasData = movers.length || newsSignals.length || chainSignals.length || cascades.length;
   if (!hasData) {
