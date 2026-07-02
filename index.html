@@ -4218,18 +4218,29 @@ function renderConvictionJournal(){
 
 function renderGoalTracker(){
   var el=document.getElementById('pt-goal'); if(!el) return;
-  var GOAL=1000000, TY=2034;
+  var GOAL=parseFloat(localStorage.getItem('ti_goal_amt'))||1000000;
+  var TY=parseInt(localStorage.getItem('ti_goal_year'))||2034;
+  var gStr='$'+Math.round(GOAL).toLocaleString();
   var val=(S.pos||[]).reduce(function(a,p){return a+(p.s*(p.cur||p.p||0));},0)+(S.realised||0);
   var now=new Date();
   var yearsLeft=Math.max(0.1,(TY-now.getFullYear())-(now.getMonth()/12));
   var pct=Math.max(0,Math.min(100,val/GOAL*100));
   var msg;
-  if(val<=0){ msg='Add a position to start tracking your path to $1,000,000.'; }
+  if(val<=0){ msg='Add a position to start tracking your path to '+gStr+'.'; }
   else { var cagr=(Math.pow(GOAL/val,1/yearsLeft)-1)*100; msg='Needs <strong style="color:var(--text);">'+(isFinite(cagr)?cagr.toFixed(0):'?')+'%</strong> per year from here · ~'+yearsLeft.toFixed(1)+' yrs to '+TY+'.'; }
-  el.innerHTML='<div class="card"><div class="card-lbl">Goal — $1,000,000 by '+TY+'</div>'
-    +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="font-size:24px;font-weight:700;">$'+Math.round(val).toLocaleString()+'</span><span style="font-size:11px;color:var(--text3);">of $1,000,000 ('+pct.toFixed(1)+'%)</span></div>'
+  el.innerHTML='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div class="card-lbl" style="margin-bottom:0;">Goal — '+gStr+' by '+TY+'</div><span onclick="editGoal()" style="font-size:10px;color:var(--blue);cursor:pointer;flex-shrink:0;">\u270E Edit</span></div>'
+    +'<div id="goal-edit" style="display:none;margin:9px 0;gap:6px;flex-wrap:wrap;align-items:center;"><label style="font-size:10px;color:var(--text3);">Target $ <input id="goal-amt-in" type="number" value="'+GOAL+'" style="width:120px;padding:6px 8px;font-size:16px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);"></label><label style="font-size:10px;color:var(--text3);">by year <input id="goal-year-in" type="number" value="'+TY+'" min="'+now.getFullYear()+'" max="2100" style="width:80px;padding:6px 8px;font-size:16px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);"></label><button onclick="saveGoal()" style="padding:6px 14px;border:none;border-radius:6px;background:var(--text);color:var(--bg);font-size:12px;font-weight:600;cursor:pointer;">Save</button></div>'
+    +'<div style="display:flex;align-items:baseline;gap:8px;margin:8px 0;flex-wrap:wrap;"><span style="font-size:24px;font-weight:700;">$'+Math.round(val).toLocaleString()+'</span><span style="font-size:11px;color:var(--text3);">of '+gStr+' ('+pct.toFixed(1)+'%)</span></div>'
     +'<div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:10px;"><div style="height:8px;width:'+pct+'%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:4px;"></div></div>'
     +'<div style="font-size:11px;color:var(--text2);line-height:1.5;">'+msg+'</div></div>';
+}
+function editGoal(){ var e=document.getElementById('goal-edit'); if(e) e.style.display=(e.style.display==='none'?'flex':'none'); }
+function saveGoal(){
+  var a=parseFloat((document.getElementById('goal-amt-in')||{}).value);
+  var y=parseInt((document.getElementById('goal-year-in')||{}).value);
+  if(a&&a>0) localStorage.setItem('ti_goal_amt', String(Math.round(a)));
+  if(y&&y>=2020&&y<=2100) localStorage.setItem('ti_goal_year', String(y));
+  try{ renderGoalTracker(); }catch(e){}
 }
 
 function renderMyIntelBrief() {
