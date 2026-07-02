@@ -493,8 +493,14 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // ── GET: serve latest pre-computed scores to the browser ─────────────────
-  if (req.method === 'GET') {
+  // ── Cron detection: Vercel invokes crons with a GET, so a plain GET must
+  //    still be able to trigger the nightly compute (else scores go stale). ──
+  const _auth = req.headers['authorization'] || '';
+  const _ua = req.headers['user-agent'] || '';
+  const _isCron = CRON_SECRET ? (_auth === `Bearer ${CRON_SECRET}`) : /vercel-cron/i.test(_ua);
+
+  // ── GET (browser, non-cron): serve latest pre-computed scores ────────────
+  if (req.method === 'GET' && !_isCron) {
     if (!KV_REST_API_URL || !KV_REST_API_TOKEN) {
       return res.status(200).json({ ok: false, reason: 'KV not configured', scores: {} });
     }
@@ -528,11 +534,8 @@ export default async function handler(req, res) {
   // ── POST/cron: protected — requires CRON_SECRET ───────────────────────────
   // Vercel automatically sends Authorization: Bearer {CRON_SECRET} for scheduled crons.
   // Manual triggers must include the same header.
-  if (CRON_SECRET) {
-    const auth = req.headers['authorization'];
-    if (auth !== `Bearer ${CRON_SECRET}`) {
-      return res.status(401).json({ error: 'Unauthorized — valid Authorization: Bearer <CRON_SECRET> required' });
-    }
+  if (!_isCron && CRON_SECRET && _auth !== `Bearer ${CRON_SECRET}`) {
+    return res.status(401).json({ error: 'Unauthorized — valid Authorization: Bearer <CRON_SECRET> required' });
   }
 
   if (!FH_KEY) return res.status(500).json({ error: 'FH_KEY not configured' });
