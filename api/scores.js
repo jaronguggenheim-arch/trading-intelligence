@@ -32,10 +32,12 @@ const ALL_TICKERS = [
   'KTOS','LDOS','BA','SAIC','HII',
   'NIO','XPEV','LCID','F','GM',
   'ROKU','SNAP','PINS','ZM','NTNX',
-  'MELI','SE','FLUT','UPST','LMND'
+  'MELI','SE','FLUT','UPST','LMND',
+  'QQQ','SPY','SMH','IWM','XLK','MSTR','MARA','RIOT'
 ];
 
 const NAMES = {
+  QQQ:'Invesco QQQ',SPY:'SPDR S&P 500',SMH:'VanEck Semis',IWM:'Russell 2000',XLK:'Tech Select SPDR',MSTR:'MicroStrategy',MARA:'MARA Holdings',RIOT:'Riot Platforms',
   NVDA:'NVIDIA',ASML:'ASML Holding',AMD:'AMD',RKLB:'Rocket Lab',PLTR:'Palantir',
   TSM:'Taiwan Semi',SMCI:'Super Micro',META:'Meta',MSFT:'Microsoft',GOOGL:'Alphabet',
   VST:'Vistra',CEG:'Constellation Energy',AMAT:'Applied Materials',LRCX:'Lam Research',
