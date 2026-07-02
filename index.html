@@ -3677,7 +3677,7 @@ function _gsiInit() {
   if (typeof google === 'undefined' || !google.accounts) return;
   try {
     var _gopts = { client_id: gsiId, callback: _gsiCallback, auto_select: !window._AUTH_EXPIRED, use_fedcm_for_prompt: true };
-    if (_isSafariLike()) { _gopts.ux_mode='redirect'; _gopts.login_uri = location.origin + '/api/auth-redirect'; }
+    if (_isSafariLike()) { _gopts.ux_mode='redirect'; _gopts.login_uri = 'https://www.everythingisjustoneclickaway.com/api/auth-redirect'; }
     google.accounts.id.initialize(_gopts);
     if (!S.gUser) {
       const area = document.getElementById('hdr-auth-area');
@@ -6662,7 +6662,7 @@ function _renderMyIntelTab(){
   if(tp) tp.classList.toggle("locked", locked);
   if(locked){
     try{ if(typeof google!=="undefined" && google.accounts){
-      var _gopts2={client_id:(S.gsi||localStorage.getItem("ti72_gsi")||DEFAULT_GSI_CLIENT_ID),callback:_gsiCallback,auto_select:!window._AUTH_EXPIRED,use_fedcm_for_prompt:true};if(_isSafariLike()){_gopts2.ux_mode="redirect";_gopts2.login_uri=location.origin+"/api/auth-redirect";}google.accounts.id.initialize(_gopts2);
+      var _gopts2={client_id:(S.gsi||localStorage.getItem("ti72_gsi")||DEFAULT_GSI_CLIENT_ID),callback:_gsiCallback,auto_select:!window._AUTH_EXPIRED,use_fedcm_for_prompt:true};if(_isSafariLike()){_gopts2.ux_mode="redirect";_gopts2.login_uri="https://www.everythingisjustoneclickaway.com/api/auth-redirect";}google.accounts.id.initialize(_gopts2);
       var gb=document.getElementById("gate-gsi-btn"); if(gb){gb.innerHTML=""; google.accounts.id.renderButton(gb,{theme:"filled_blue",size:"large",type:"standard",shape:"pill",text:"signin_with",locale:"en"});}
     } else { setTimeout(_renderMyIntelTab,700); } }catch(e){}
     return;
